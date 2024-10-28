@@ -1,0 +1,380 @@
+.items {
+    color: $white;
+
+    &__h1 {
+        font-size: #{scaleValue(30)};
+        font-weight: 500;
+        color: rgba($white, 0.9);
+
+        & span {
+            &:nth-child(1) {
+                color: $primary-color;
+            }
+
+            &:nth-child(2) {
+                font-size: #{scaleValue(18)};
+            }
+        }
+    }
+
+    &__h2 {
+        font-size: #{scaleValue(15)};
+        font-weight: 400;
+        color: rgba($white, 0.9);
+    }
+
+    &__header {
+        line-height: #{scaleValue(40)};
+        margin-bottom: #{scaleValue(30)};
+    }
+
+    &__search {
+        & input {
+
+            width: #{scaleValue(500)};
+            @include inputbase;
+        }
+    }
+
+    &__listcontent {
+        height: #{scaleValue(1000)};
+        overflow-y: scroll;
+        padding-bottom: #{scaleValue(500)};
+
+        &--add {
+            background: $grey-3;
+            display: flex;
+            align-items: center;
+            padding: #{scaleValue(10)} 0;
+            padding-left: #{scaleValue(10)};
+            text-align: left;
+            font-size: #{scaleValue(12)};
+            cursor: pointer;
+
+            & svg {
+                fill: rgba($white, 0.7);
+                height: #{scaleValue(10)};
+                width: #{scaleValue(10)};
+            }
+
+            & span {
+                display: flex;
+                align-items: center;
+                margin-right: #{scaleValue(7)};
+                color: rgba($white, 0.7);
+            }
+        }
+    }
+
+    &__listrow {
+        display: grid;
+
+        border-bottom: 1px solid rgb(47, 47, 47);
+
+        &--item {
+            border-right: 1px solid rgb(47, 47, 47);
+            padding: #{scaleValue(10)} 0;
+            padding-left: #{scaleValue(10)};
+            text-align: left;
+            font-size: #{scaleValue(12)};
+            display: flex;
+
+            position: relative;
+            //min-width: #{scaleValue(60)};
+
+            &.header {
+                border-top: 1px solid rgb(47, 47, 47);
+                font-size: #{scaleValue(11.5)};
+                color: rgba($white, 0.5);
+            }
+
+            &.editable {
+                position: relative;
+                cursor: pointer;
+                color: rgba($white, 0.7);
+                white-space: nowrap;
+                overflow-x: auto;
+                overflow: scroll;
+            }
+
+            &.link {
+                & a {
+                    color: rgba($white, 0.7);
+                }
+            }
+        }
+
+        &--buttons {
+            margin-right: #{scaleValue(10.5)};
+
+            & button {
+                border: none;
+                color: rgba($white, 0.4);
+                background: transparent;
+                cursor: pointer;
+                font-size: #{scaleValue(9)};
+                margin-right: #{scaleValue(15.5)};
+
+                &.edit {
+                    color: $edit-btn;
+                }
+
+                &.delete {
+                    color: $delete-btn;
+
+                    & svg {
+                        fill: $delete-btn;
+                    }
+                }
+            }
+        }
+
+        &--textinput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 2;
+
+            & input {
+
+                height: 100%;
+                @include inputbase;
+                font-size: #{scaleValue(13)};
+
+                &.text {
+                    width: #{scaleValue(240)};
+                }
+            }
+
+            & textarea {
+                @include inputbase;
+                width: #{scaleValue(500)};
+                height: #{scaleValue(200)};
+                font-size: #{scaleValue(13)};
+            }
+        }
+
+        &--imagearea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 2;
+            //background: rgba($font-color, 0.4);
+            width: 100%;
+            transition: all .4s ease;
+
+            display: flex;
+            align-items: center;
+
+            & span {
+                position: relative;
+                z-index: 2;
+
+                &.blackbackground {
+                    background: $font-color;
+                    margin-right: #{scaleValue(8)};
+                    padding: #{scaleValue(5)} #{scaleValue(7)};
+                    border-radius: #{scaleValue(6)};
+                    cursor: pointer;
+                    font-size: #{scaleValue(10)};
+                }
+
+                &.preview {
+
+
+                    &:hover {
+                        &+input+.uploadpreview {
+                            display: block;
+                        }
+                    }
+                }
+
+                & svg {
+                    fill: rgba($white, 0.7);
+                    height: #{scaleValue(14)};
+                    width: #{scaleValue(14)};
+                }
+
+                &.uploadpreview {
+                    position: absolute;
+                    top: #{scaleValue(14)};
+                    height: #{scaleValue(150)};
+                    width: #{scaleValue(150)};
+
+                    right: #{scaleValue(-75)};
+                    transition: all .5s ease;
+                    display: none;
+                    z-index: 3;
+
+                    &:hover {
+                        display: block;
+                    }
+
+                    & img {
+                        height: 120%;
+                        width: 120%;
+                        object-fit: contain;
+                    }
+                }
+            }
+        }
+    }
+
+    &__listroweditor {
+
+        & input {}
+
+        & textarea {}
+    }
+
+    &__listheader {}
+
+    &__ingredientsview {
+        //padding-top: #{scaleValue(10)};
+
+        font-size: #{scaleValue(12)};
+        border-bottom: 1px solid rgba($primary-color, .5);
+
+        &--input {
+
+            & input {
+                @include inputbase;
+                width: #{scaleValue(651)};
+            }
+        }
+
+        &--content {
+            display: grid;
+            grid-template-columns: repeat(2, #{scaleValue(650)});
+            margin-top: #{scaleValue(10)};
+        }
+
+        &--products {
+            border-right: 1px solid rgb(47, 47, 47);
+            padding-top: #{scaleValue(10)};
+            padding-left: #{scaleValue(10)};
+            padding-bottom: #{scaleValue(10)};
+
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        &--ingredients {
+            padding-top: #{scaleValue(10)};
+            padding-left: #{scaleValue(10)};
+            padding-bottom: #{scaleValue(10)};
+
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        &--product {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+
+            animation: slideIn 0.5s ease-in-out;
+
+            & figure {
+                border-radius: #{scaleValue(10)};
+                height: #{scaleValue(100)};
+                width: #{scaleValue(100)};
+                position: relative;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    border-radius: #{scaleValue(10)};
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba($black, .5);
+                    opacity: 0;
+                    z-index: 2
+                }
+
+                &:hover {
+
+                    &::before {
+                        opacity: 1;
+                    }
+                }
+
+                & img {
+                    object-fit: cover;
+                    height: 100%;
+                    width: 100%;
+                    border-radius: #{scaleValue(10)};
+                }
+            }
+
+            & label {
+                display: inline-block;
+                font-size: #{scaleValue(13)};
+                margin-top: #{scaleValue(20)};
+                color: $primary-color;
+                text-transform: capitalize;
+            }
+
+            & span {
+
+                &.ingredient-add {
+                    position: absolute;
+                    z-index: 3;
+                    right: #{scaleValue(-9)};
+                    top: #{scaleValue(-9)};
+                    color: rgba($black, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    height: #{scaleValue(20)};
+                    width: #{scaleValue(20)};
+                    align-items: center;
+                    border-radius: 100%;
+                    font-size: #{scaleValue(20)};
+                    cursor: pointer;
+                    font-weight: 600;
+                    background: rgba($primary-color, .8);
+                }
+            }
+        }
+
+        &--productstock {
+            margin-top: #{scaleValue(10)};
+
+            & span {
+
+                &:nth-child(1) {
+                    color: $primary-color;
+                    font-weight: 500;
+                }
+
+                &:nth-child(2) {}
+            }
+        }
+    }
+
+    &__stepsview {
+
+        &--h4 {
+            margin: #{scaleValue(10)} 0;
+            font-size: #{scaleValue(13)};
+            font-weight: 400;
+            text-transform: capitalize;
+
+            color: rgba($primary-color, .8)
+        }
+    }
+}
+
+.editable {
+    position: relative;
+    cursor: pointer;
+    color: rgba($white, 0.7);
+    white-space: nowrap;
+    overflow-x: auto;
+
+    min-width: 100%;
+}

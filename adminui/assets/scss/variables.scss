@@ -1,0 +1,21 @@
+@function scaleValue($value) {
+    @return calc(
+      #{$value} * (clamp(350px, 100vw, 3840px) / var(--ideal-viewport-width))
+    );
+};
+  
+$grey: rgba(244, 244, 244, 1);
+$grey-2: rgba(217, 217, 217, 1);
+$grey-3: rgba(255, 255, 255, 0.055);
+$white: #fff;
+$font-color: rgba(0, 0, 0, 1);
+$svg-color: rgba(106, 106, 106, 1);
+$primary-color: rgba(36, 155, 72, 1);
+$border-radius: #{scaleValue(20)};
+$border: 1px solid $grey-2;
+$section-top-margin: #{scaleValue(300)};
+$red: #FF0000;
+$link-color: #0000EE;
+$edit-btn: #007bff;
+$delete-btn: #dc3545;
+$black: #000000; 

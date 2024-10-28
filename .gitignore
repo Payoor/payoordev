@@ -1,0 +1,7 @@
+node_modules/
+.env
+Dockerfile
+playground/
+playground.js
+generate-key.js
+test/

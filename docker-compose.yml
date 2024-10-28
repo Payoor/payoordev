@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  payoorserver:
+    container_name: payoorserver
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/data/certs:/etc/nginx/certs
+      
+
+  payoordb:
+    container_name: payoordb
+    image: mongo
+    environment:
+      - PORT=27017
+    volumes:
+      - /data-vol:/data/payoordb
+
+  nodeserver:
+    container_name: nodeserver
+    restart: always
+    build: ./nodeserver
+    environment:
+      - PORT=8080
+
+  adminui:
+    container_name: adminui
+    restart: always
+    build: ./adminui
+    environment:
+      - PORT=8082

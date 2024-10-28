@@ -1,0 +1,84 @@
+.auth {
+    padding: #{scaleValue(10)} #{scaleValue(30)};
+
+    &__form {
+
+        &-group {
+            color: $white;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: #{scaleValue(20)};
+        }
+    }
+
+    &__label {
+        font-size: #{scaleValue(12)};
+        margin-bottom: #{scaleValue(5)};
+        color: $primary-color;
+    }
+
+    &__input {
+        position: relative;
+        z-index: 2;
+        border: 1px solid transparent;
+        outline: none;
+        border-radius: #{scaleValue(12)};
+        width: #{scaleValue(500)};
+        height: #{scaleValue(45)};
+        padding: #{scaleValue(12)};
+
+        font-size: #{scaleValue(12)};
+        background: rgba($primary-color, .2);
+        color: $white;
+
+        &:focus {
+            border: 1px solid $primary-color;
+        }
+    }
+
+    &__submit {
+
+        &-btn {
+            position: relative;
+            z-index: 1;
+            padding: #{scaleValue(10)} #{scaleValue(20)};
+            font-size: #{scaleValue(14)};
+            height: #{scaleValue(40)};
+            width: #{scaleValue(100)};
+            transition: all .5s ease;
+            transform: translateY(#{scaleValue(-10)});
+            opacity: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &.showAuthBtn {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            &.isLoading {
+
+                & span {
+
+                    &:nth-child(1) {
+                        display: none;
+                    }
+                }
+
+                &::before {
+                    content: "";
+                    height: #{scaleValue(20)};
+                    width: #{scaleValue(20)};
+                    border-right: #{scaleValue(2)} solid $white;
+                    border-left: #{scaleValue(2)} solid $white;
+                    border-bottom: #{scaleValue(2)} solid transparent;
+                    border-top: #{scaleValue(2)} solid transparent;
+                    border-radius: 100%;
+                    animation: spin 1s linear infinite;
+                }
+            }
+        }
+    }
+}

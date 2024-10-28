@@ -1,0 +1,43 @@
+@mixin respond-to($breakpoint) {
+    $breakpoints: ("small": 320px,
+            "medium": 360px,
+            "large": 375px,
+            "xlarge": 414px,
+            "xxlarge": 480px,
+            "xxxlarge": 540px,
+            "mobile-landscape": 600px,
+            "tablet-small": 720px,
+            "tablet-large": 768px);
+
+    @if map-has-key($breakpoints, $breakpoint) {
+        $width: map-get($breakpoints, $breakpoint);
+
+        @media only screen and (max-width: $width) {
+            @content;
+        }
+    }
+
+    @else {
+        @warn "No breakpoint found for `#{$breakpoint}`. Available breakpoints are: #{map-keys($breakpoints)}.";
+    }
+}
+
+@mixin inputbase() {
+    background: rgba($font-color, 1);
+    outline: none;
+    border: 1px solid rgb(47, 47, 47);
+    border-radius: #{scaleValue(5)};
+    padding: #{scaleValue(12)} #{scaleValue(10)};
+    color: $white;
+    font-size: #{scaleValue(15)};
+
+    -webkit-appearance: none;
+    /* for Chrome, Safari */
+    -moz-appearance: none;
+    /* for Firefox */
+    appearance: none;
+
+    &:focus {
+        border: 1px solid rgba($primary-color, 0.5);
+    }
+}

@@ -1,0 +1,225 @@
+.chat {
+    display: flex;
+    justify-content: space-between;
+    color: $white;
+
+    &__section {
+        border-radius: #{scaleValue(5)};
+        border: .1px solid rgba($primary-color, .5);
+
+        height: #{scaleValue(900)};
+    }
+
+    &__left {
+        margin-left: #{scaleValue(100)};
+        margin-right: #{scaleValue(15)};
+        width: #{scaleValue(250)};
+
+        height: #{scaleValue(800)};
+        max-height: #{scaleValue(800)};
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        padding-bottom: #{scaleValue(300)};
+
+        &--header {
+            font-size: #{scaleValue(10)};
+
+            padding: #{scaleValue(20)};
+        }
+    }
+
+    &__right {
+        border-radius: #{scaleValue(5)};
+        width: #{scaleValue(1000)};
+
+
+        &--header {
+            border-bottom: .1px solid rgba($primary-color, .5);
+
+            display: flex;
+            align-items: center;
+            padding: #{scaleValue(20)};
+        }
+
+        &--img {
+            height: #{scaleValue(20)};
+            width: #{scaleValue(20)};
+            flex-shrink: 0;
+
+            background: $white;
+            color: $white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 100%;
+            margin-right: #{scaleValue(10)};
+
+            font-size: #{scaleValue(10)};
+            color: $primary-color;
+
+            border: 1.5px solid rgba($primary-color, .5);
+
+            &.userchatcard {
+                position: relative;
+
+                &::before {
+                    content: "";
+                    height: #{scaleValue(7)};
+                    width: #{scaleValue(7)};
+                    background: $primary-color;
+
+                    border-radius: 100%;
+
+
+                    position: absolute;
+                    right: #{scaleValue(-1)};
+                    bottom: #{scaleValue(-2)};
+                }
+            }
+        }
+
+        &--user {
+            font-size: #{scaleValue(10)};
+        }
+
+        &--name {
+            margin-bottom: #{scaleValue(2)};
+
+            display: flex;
+            align-items: center;
+
+            & span {
+                margin-right:  #{scaleValue(10)};
+
+                &:nth-child(1) {}
+
+                &:nth-child(3) {
+                    background: rgba($primary-color, .8);
+                    display: inline-block;
+                    height: #{scaleValue(5)};
+                    width: #{scaleValue(5)};
+                    border-radius: 100%;
+                    margin-left: #{scaleValue(4)};
+                }
+            }
+        }
+
+        &--typing {
+            font-size: #{scaleValue(8)};
+            color: rgba($primary-color, 1);
+        }
+
+        &--body {
+            height: #{scaleValue(800)};
+            max-height: #{scaleValue(800)};
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            padding-bottom: #{scaleValue(400)};
+        }
+    }
+
+    &__usercard {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: .5s ease;
+
+        padding: #{scaleValue(20)};
+
+        &:hover {
+            background: rgba($grey-3, .2);
+        }
+
+        &--right {
+            display: flex;
+            flex-direction: column; 
+            line-height: #{scaleValue(10)};
+        }
+
+        &--username {
+
+        }
+
+        &--details {
+
+            & span {
+
+                &.unread {
+                    opacity: .9;
+                    color: $primary-color;
+                    font-size: #{scaleValue(8)};
+                }
+            }
+        }
+
+        & span {
+
+            display: inline-block;
+            font-size: #{scaleValue(8)};
+
+            &:nth-child(1) {
+                font-weight: 500;
+                font-size: #{scaleValue(10)};
+                margin-bottom: #{scaleValue(5)};
+            }
+
+            &:nth-child(2) {
+                opacity: .5;
+            }
+        }
+    }
+
+    &__messagebox {
+        position: absolute;
+        padding: #{scaleValue(20)};
+        bottom: 0;
+
+
+        background: #2f2f2f;
+        width: #{scaleValue(1000)};
+        z-index: 30;
+
+        &--msg {
+            display: flex;
+            justify-content: space-between;
+
+            align-items: baseline;
+
+            & textarea {
+                width: 90%;
+                padding: 10px;
+                border: .5px solid $grey-2;
+                border-radius: 4px;
+                font-size: #{scaleValue(12)};
+                line-height: 1.4;
+                outline: none;
+                background: #2f2f2f;
+                color: $white;
+                resize: none;
+                min-height: #{scaleValue(70)};
+
+                overflow-y: hidden;
+                transition: height 0.1s ease;
+                line-height: 1.5;
+            }
+        }
+
+        &--send {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+
+            background: rgba($primary-color, .9);
+            color: $white;
+        }
+    }
+}
