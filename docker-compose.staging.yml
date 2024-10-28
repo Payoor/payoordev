@@ -1,0 +1,63 @@
+version: '3.8'
+services:
+  payoorserver:
+    container_name: payoorserver-staging
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.staging.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/staging.data/certs:/etc/nginx/certs
+    depends_on:
+      - nodeserver
+      - adminui
+      - chatuiserver
+    networks:
+      - payoor_staging_network
+    
+  payoordb:
+    container_name: payoordb-staging
+    image: mongo
+    environment:
+      - PORT=27017
+    volumes:
+      - /data-vol-staging:/data/payoordb
+    networks:
+      - payoor_staging_network
+
+  nodeserver:
+    container_name: nodeserver-staging
+    restart: always
+    build: ./nodeserver
+    environment:
+      - PORT=8080
+      - NODE_ENV=staging
+    depends_on:
+      - payoordb
+    networks:
+      - payoor_staging_network
+
+  adminui:
+    container_name: adminui-staging
+    restart: always
+    build: ./adminui
+    environment:
+      - PORT=8082
+      - NODE_ENV=staging
+    networks:
+      - payoor_staging_network
+
+  chatuiserver:
+    container_name: chatuiserver-staging
+    restart: always
+    build: ./chatuiserver
+    environment:
+      - PORT=8083
+      - NODE_ENV=staging
+    networks:
+      - payoor_staging_network
+
+networks:
+  payoor_staging_network:
+    driver: bridge

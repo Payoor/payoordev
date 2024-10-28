@@ -45,9 +45,6 @@ app.use(function (req, res, next) {
   }
   next();
 });
-var PORT = process.env.PORT;
-var FLUTTER_WEB_APP = _path["default"].join(__dirname, '../public', 'web');
-app.use(express["static"](FLUTTER_WEB_APP));
 app.use(_bodyParser["default"].json({
   limit: '50mb'
 }));
@@ -55,10 +52,16 @@ app.use(_bodyParser["default"].urlencoded({
   limit: '50mb',
   extended: true
 }));
-app.get('/', function (req, res) {
-  var indexPath = _path["default"].join(FLUTTER_WEB_APP, 'index.html');
+var PORT = process.env.PORT;
+/*const FLUTTER_WEB_APP = path.join(__dirname, '../public', 'web');
+app.use(express.static(FLUTTER_WEB_APP));
+
+app.get('/', (req, res) => {
+  const indexPath = path.join(FLUTTER_WEB_APP, 'index.html');
+
   res.sendFile(indexPath);
-});
+});*/
+
 var uploadDir = _path["default"].resolve(__dirname, '..', '.', 'uploads');
 
 // Ensure the upload directory exists
