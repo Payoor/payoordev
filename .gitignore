@@ -4,4 +4,4 @@ Dockerfile
 playground/
 playground.js
 generate-key.js
-test/
+#test/
