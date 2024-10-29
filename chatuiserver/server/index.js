@@ -18,8 +18,6 @@ app.get('/', (req, res) => {
     res.sendFile(indexPath);
 });
 
-console.log('hello')
-
 server.listen(PORT, (error) => {
     if (error) {
         return console.error('Error starting server:', error);

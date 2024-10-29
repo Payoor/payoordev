@@ -1,13 +1,32 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:chat/classes/_message.dart';
 
 class PayoorUrl {
   final Uri baseUri;
+  final String currentUrl = html.window.location.href;
 
-  PayoorUrl({String baseUrl = 'http://localhost:3030'})
-      : baseUri = Uri.parse(baseUrl);
+  PayoorUrl({String? baseUrl})
+      : baseUri = Uri.parse(() {
+          if (kIsWeb) {
+            var location = html.window.location.href;
+
+            if (location.contains('localhost')) {
+              return 'http://localhost:3030';
+            }
+
+            if (location.contains('staging')) {
+              return 'https://server.staging.payoor.store';
+            }
+
+            return 'https://server.payoor.store';
+          }
+
+          return baseUrl ?? 'http://localhost:3030';
+        }());
 
   String getBaseUri() {
     return baseUri.toString();
