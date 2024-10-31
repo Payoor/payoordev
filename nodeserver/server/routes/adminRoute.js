@@ -5,9 +5,18 @@ import AdminController from "../controllers/adminController";
 
 const adminRoute = express();
 
-function uploadFileWithMulter(storagepath) {
+function uploadFileWithMulter(storagepath = null) {
+    if (!storagepath) {
+        // Use memory storage if no path provided
+        return multer({ storage: multer.memoryStorage() });
+    }
+
+    // Use disk storage if path is provided
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
+            if (!fs.existsSync(storagepath)) {
+                fs.mkdirSync(storagepath, { recursive: true });
+            }
             cb(null, storagepath);
         },
         filename: (req, file, cb) => {
@@ -27,6 +36,12 @@ adminRoute.get('/admin/get/product', AdminController.getProduct);
 adminRoute.patch('/admin/update/product', AdminController.updateProduct);
 
 adminRoute.delete('/admin/delete/product', AdminController.deleteProduct);
+
+adminRoute.post('/admin/upload/product/image', uploadFileWithMulter().single('file'), AdminController.uploadProductImage);
+
+adminRoute.get('/admin/product/images', AdminController.getProductImages);
+
+adminRoute.delete('/admin/product/image', AdminController.deleteProductImage);
 
 
 export default adminRoute;
