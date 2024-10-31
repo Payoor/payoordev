@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose');
 var productSchema = new mongoose.Schema({
-  excelSheet: {
+  filepath: {
     type: String,
     required: true,
     unique: true
@@ -10,6 +10,10 @@ var productSchema = new mongoose.Schema({
   data: {
     type: mongoose.Schema.Types.Mixed,
     "default": {}
+  },
+  images: {
+    type: [String],
+    "default": []
   }
 }, {
   timestamps: true

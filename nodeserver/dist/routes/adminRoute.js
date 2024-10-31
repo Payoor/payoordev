@@ -24,4 +24,7 @@ function uploadFileWithMulter(storagepath) {
 }
 adminRoute.post('/admin/upload/products/excel', uploadFileWithMulter("files/excel").single('file'), _adminController["default"].uploadExcelSheet);
 adminRoute.get('/admin/get/products', _adminController["default"].getProducts);
+adminRoute.get('/admin/get/product', _adminController["default"].getProduct);
+adminRoute.patch('/admin/update/product', _adminController["default"].updateProduct);
+adminRoute["delete"]('/admin/delete/product', _adminController["default"].deleteProduct);
 var _default = exports["default"] = adminRoute;

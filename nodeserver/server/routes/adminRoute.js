@@ -22,5 +22,11 @@ adminRoute.post('/admin/upload/products/excel', uploadFileWithMulter("files/exce
 
 adminRoute.get('/admin/get/products', AdminController.getProducts);
 
+adminRoute.get('/admin/get/product', AdminController.getProduct);
+
+adminRoute.patch('/admin/update/product', AdminController.updateProduct);
+
+adminRoute.delete('/admin/delete/product', AdminController.deleteProduct);
+
 
 export default adminRoute;
