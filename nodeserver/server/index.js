@@ -48,8 +48,14 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({
+  limit: '50mb',
+  extended: true,
+  type: (req) => {
+    return !req.headers['content-type']?.includes('multipart/form-data');
+  }
+}));
 
 const PORT = process.env.PORT;
 /*const FLUTTER_WEB_APP = path.join(__dirname, '../public', 'web');

@@ -45,12 +45,16 @@ app.use(function (req, res, next) {
   }
   next();
 });
-app.use(_bodyParser["default"].json({
+app.use(express.json({
   limit: '50mb'
 }));
-app.use(_bodyParser["default"].urlencoded({
+app.use(express.urlencoded({
   limit: '50mb',
-  extended: true
+  extended: true,
+  type: function type(req) {
+    var _req$headers$content;
+    return !((_req$headers$content = req.headers['content-type']) !== null && _req$headers$content !== void 0 && _req$headers$content.includes('multipart/form-data'));
+  }
 }));
 var PORT = process.env.PORT;
 /*const FLUTTER_WEB_APP = path.join(__dirname, '../public', 'web');

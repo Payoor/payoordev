@@ -12,7 +12,6 @@ function uploadFileWithMulter(storagepath = null) {
         return multer({ storage: multer.memoryStorage() });
     }
 
-    // Use disk storage if path is provided
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
             if (!fs.existsSync(storagepath)) {

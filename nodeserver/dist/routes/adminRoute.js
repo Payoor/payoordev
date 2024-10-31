@@ -18,8 +18,6 @@ function uploadFileWithMulter() {
       storage: _multer["default"].memoryStorage()
     });
   }
-
-  // Use disk storage if path is provided
   var storage = _multer["default"].diskStorage({
     destination: function destination(req, file, cb) {
       if (!_fs["default"].existsSync(storagepath)) {
