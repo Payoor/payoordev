@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = void 0;
 var _express = _interopRequireDefault(require("express"));
 var _multer = _interopRequireDefault(require("multer"));
+var _fs = _interopRequireDefault(require("fs"));
 var _adminController = _interopRequireDefault(require("../controllers/adminController"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var adminRoute = (0, _express["default"])();
@@ -21,8 +22,8 @@ function uploadFileWithMulter() {
   // Use disk storage if path is provided
   var storage = _multer["default"].diskStorage({
     destination: function destination(req, file, cb) {
-      if (!fs.existsSync(storagepath)) {
-        fs.mkdirSync(storagepath, {
+      if (!_fs["default"].existsSync(storagepath)) {
+        _fs["default"].mkdirSync(storagepath, {
           recursive: true
         });
       }
