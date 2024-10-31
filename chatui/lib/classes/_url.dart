@@ -22,6 +22,10 @@ class PayoorUrl {
               return 'https://server.staging.payoor.store';
             }
 
+            if (location.contains('development')) {
+              return 'https://server.development.payoor.store';
+            }
+
             return 'https://server.payoor.store';
           }
 

@@ -2,22 +2,27 @@ const path = require('path');
 const XLSX = require('xlsx');
 
 import Product from "../models/product";
+import Image from "../models/image";
 
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
 }
 
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const fs = require('fs');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
-// Configure AWS client
 const s3Client = new S3Client({
-    region: 'your-region', // e.g., 'us-east-1'
+    region: process.env.AWSS3REGION,
     credentials: {
-        accessKeyId: 'your-access-key-id',
-        secretAccessKey: 'your-secret-access-key'
+        accessKeyId: process.env.AWSACCESSKEY,
+        secretAccessKey: process.env.AWSSECRETACCESSKEY
     }
 });
+
+/**
+ * @param {string} bucketName - The name of the S3 bucket
+ * @param {string} filePath - Local path of the file to upload
+ * @param {string} key - The key (path) where the file will be stored in S3
+ */
 
 class AdminController {
 
@@ -137,6 +142,108 @@ class AdminController {
             res.status(500).send({ message: error.message });
         }
     }
+
+    async uploadProductImage(req, res) {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            const { id } = req.query;
+
+            const file = req.file;
+            const fileName = generateUniqueFileName(file.originalname);
+
+            const uploadParams = {
+                Bucket: 'payoorimages',
+                Key: `products/${fileName}`,
+                Body: file.buffer,
+                ContentType: file.mimetype
+            };
+
+            const command = new PutObjectCommand(uploadParams);
+            const s3Response = await s3Client.send(command);
+
+            const imageUrl = `https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/${fileName}`;
+
+            const image = new Image({
+                imageUrl,
+                product: id
+            });
+
+            await image.save();
+
+            res.status(200).send({ message: "product image uploaded successfully", image });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ message: error.message });
+        }
+    }
+
+    async getProductImages(req, res) {
+        try {
+            const { id } = req.query;
+
+            const images = await Image.find({ product: id });
+
+            res.status(200).send({ message: "images found", images, total: images.length });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ message: error.message });
+        }
+    }
+
+    async deleteProductImage(req, res) {
+        try {
+            const { id } = req.query;
+
+            if (!id) {
+                return res.status(400).json({ message: 'Image ID is required' });
+            }
+
+            const image = await Image.findOne({ _id: id });
+
+            if (!image) {
+                return res.status(404).json({ message: 'Image not found' });
+            }
+
+            const key = image.imageUrl.split('.com/').pop();
+
+            const deleteCommand = new DeleteObjectCommand({
+                Bucket: 'payoorimages',
+                Key: key
+            });
+
+            await s3Client.send(deleteCommand);
+
+            await Image.findOneAndDelete({ _id: id });
+
+            res.status(200).json({
+                message: 'Image deleted successfully',
+                deletedImage: image
+            });
+
+        } catch (error) {
+            console.log(error);
+
+            if (error.name === 'CastError') {
+                return res.status(400).json({ message: 'Invalid image ID format' });
+            }
+
+            if (error.$metadata?.httpStatusCode) {
+                return res.status(error.$metadata.httpStatusCode).json({
+                    message: 'Error deleting image from storage',
+                    error: error.message
+                });
+            }
+
+
+            res.status(500).send({
+                message: 'Error deleting image',
+                error: error.message
+            });
+        }
+    }
 }
 
 export default new AdminController();
@@ -158,4 +265,10 @@ async function processExcelSheetData(excelSheetData, filepath) {
         await productData.save();
     }
 }
+
+const generateUniqueFileName = (originalname) => {
+    const timestamp = Date.now();
+    const extension = originalname.split('.').pop();
+    return `${timestamp}-${Math.random().toString(36).substring(2, 15)}.${extension}`;
+};
 

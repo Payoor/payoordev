@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var _product = _interopRequireDefault(require("../models/product"));
+var _image = _interopRequireDefault(require("../models/image"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -25,18 +26,21 @@ if (process.env.NODE_ENV !== 'production') {
 }
 var _require = require('@aws-sdk/client-s3'),
   S3Client = _require.S3Client,
-  PutObjectCommand = _require.PutObjectCommand;
-var fs = require('fs');
-
-// Configure AWS client
+  PutObjectCommand = _require.PutObjectCommand,
+  DeleteObjectCommand = _require.DeleteObjectCommand;
 var s3Client = new S3Client({
-  region: 'your-region',
-  // e.g., 'us-east-1'
+  region: process.env.AWSS3REGION,
   credentials: {
-    accessKeyId: 'your-access-key-id',
-    secretAccessKey: 'your-secret-access-key'
+    accessKeyId: process.env.AWSACCESSKEY,
+    secretAccessKey: process.env.AWSSECRETACCESSKEY
   }
 });
+
+/**
+ * @param {string} bucketName - The name of the S3 bucket
+ * @param {string} filePath - Local path of the file to upload
+ * @param {string} key - The key (path) where the file will be stored in S3
+ */
 var AdminController = /*#__PURE__*/function () {
   function AdminController() {
     _classCallCheck(this, AdminController);
@@ -315,6 +319,197 @@ var AdminController = /*#__PURE__*/function () {
       }
       return deleteProduct;
     }()
+  }, {
+    key: "uploadProductImage",
+    value: function () {
+      var _uploadProductImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+        var id, file, fileName, uploadParams, command, s3Response, imageUrl, image;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              _context6.prev = 0;
+              if (req.file) {
+                _context6.next = 3;
+                break;
+              }
+              return _context6.abrupt("return", res.status(400).json({
+                error: 'No file uploaded'
+              }));
+            case 3:
+              id = req.query.id;
+              file = req.file;
+              fileName = generateUniqueFileName(file.originalname);
+              uploadParams = {
+                Bucket: 'payoorimages',
+                Key: "products/".concat(fileName),
+                Body: file.buffer,
+                ContentType: file.mimetype
+              };
+              command = new PutObjectCommand(uploadParams);
+              _context6.next = 10;
+              return s3Client.send(command);
+            case 10:
+              s3Response = _context6.sent;
+              imageUrl = "https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/".concat(fileName);
+              image = new _image["default"]({
+                imageUrl: imageUrl,
+                product: id
+              });
+              _context6.next = 15;
+              return image.save();
+            case 15:
+              res.status(200).send({
+                message: "product image uploaded successfully",
+                image: image
+              });
+              _context6.next = 22;
+              break;
+            case 18:
+              _context6.prev = 18;
+              _context6.t0 = _context6["catch"](0);
+              console.log(_context6.t0);
+              res.status(500).send({
+                message: _context6.t0.message
+              });
+            case 22:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6, null, [[0, 18]]);
+      }));
+      function uploadProductImage(_x11, _x12) {
+        return _uploadProductImage.apply(this, arguments);
+      }
+      return uploadProductImage;
+    }()
+  }, {
+    key: "getProductImages",
+    value: function () {
+      var _getProductImages = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+        var id, images;
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
+            case 0:
+              _context7.prev = 0;
+              id = req.query.id;
+              _context7.next = 4;
+              return _image["default"].find({
+                product: id
+              });
+            case 4:
+              images = _context7.sent;
+              res.status(200).send({
+                message: "images found",
+                images: images,
+                total: images.length
+              });
+              _context7.next = 12;
+              break;
+            case 8:
+              _context7.prev = 8;
+              _context7.t0 = _context7["catch"](0);
+              console.log(_context7.t0);
+              res.status(500).send({
+                message: _context7.t0.message
+              });
+            case 12:
+            case "end":
+              return _context7.stop();
+          }
+        }, _callee7, null, [[0, 8]]);
+      }));
+      function getProductImages(_x13, _x14) {
+        return _getProductImages.apply(this, arguments);
+      }
+      return getProductImages;
+    }()
+  }, {
+    key: "deleteProductImage",
+    value: function () {
+      var _deleteProductImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
+        var id, image, key, deleteCommand, _error$$metadata;
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
+            case 0:
+              _context8.prev = 0;
+              id = req.query.id;
+              if (id) {
+                _context8.next = 4;
+                break;
+              }
+              return _context8.abrupt("return", res.status(400).json({
+                message: 'Image ID is required'
+              }));
+            case 4:
+              _context8.next = 6;
+              return _image["default"].findOne({
+                _id: id
+              });
+            case 6:
+              image = _context8.sent;
+              if (image) {
+                _context8.next = 9;
+                break;
+              }
+              return _context8.abrupt("return", res.status(404).json({
+                message: 'Image not found'
+              }));
+            case 9:
+              key = image.imageUrl.split('.com/').pop();
+              deleteCommand = new DeleteObjectCommand({
+                Bucket: 'payoorimages',
+                Key: key
+              });
+              _context8.next = 13;
+              return s3Client.send(deleteCommand);
+            case 13:
+              _context8.next = 15;
+              return _image["default"].findOneAndDelete({
+                _id: id
+              });
+            case 15:
+              res.status(200).json({
+                message: 'Image deleted successfully',
+                deletedImage: image
+              });
+              _context8.next = 26;
+              break;
+            case 18:
+              _context8.prev = 18;
+              _context8.t0 = _context8["catch"](0);
+              console.log(_context8.t0);
+              if (!(_context8.t0.name === 'CastError')) {
+                _context8.next = 23;
+                break;
+              }
+              return _context8.abrupt("return", res.status(400).json({
+                message: 'Invalid image ID format'
+              }));
+            case 23:
+              if (!((_error$$metadata = _context8.t0.$metadata) !== null && _error$$metadata !== void 0 && _error$$metadata.httpStatusCode)) {
+                _context8.next = 25;
+                break;
+              }
+              return _context8.abrupt("return", res.status(_context8.t0.$metadata.httpStatusCode).json({
+                message: 'Error deleting image from storage',
+                error: _context8.t0.message
+              }));
+            case 25:
+              res.status(500).send({
+                message: 'Error deleting image',
+                error: _context8.t0.message
+              });
+            case 26:
+            case "end":
+              return _context8.stop();
+          }
+        }, _callee8, null, [[0, 18]]);
+      }));
+      function deleteProductImage(_x15, _x16) {
+        return _deleteProductImage.apply(this, arguments);
+      }
+      return deleteProductImage;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -326,36 +521,41 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x11, _x12) {
+function processExcelSheetData(_x17, _x18) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
+    return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+      while (1) switch (_context9.prev = _context9.next) {
         case 0:
-          _context6.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context9.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context6.t1 = _context6.t0()).done) {
-            _context6.next = 8;
+          if ((_context9.t1 = _context9.t0()).done) {
+            _context9.next = 8;
             break;
           }
-          index = _context6.t1.value;
+          index = _context9.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context6.next = 6;
+          _context9.next = 6;
           return productData.save();
         case 6:
-          _context6.next = 1;
+          _context9.next = 1;
           break;
         case 8:
         case "end":
-          return _context6.stop();
+          return _context9.stop();
       }
-    }, _callee6);
+    }, _callee9);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }
+var generateUniqueFileName = function generateUniqueFileName(originalname) {
+  var timestamp = Date.now();
+  var extension = originalname.split('.').pop();
+  return "".concat(timestamp, "-").concat(Math.random().toString(36).substring(2, 15), ".").concat(extension);
+};

@@ -140,6 +140,89 @@ DELETE /admin/delete/product
 - 404: Product not found
 - 500: Server error
 
+### 6. Upload Product Image
+```http
+POST /admin/upload/product/image
+```
+
+**Query Parameters:**
+- `id` (required): Product ID
+
+**Request:**
+- Content-Type: `multipart/form-data`
+- Body:
+  - `file`: Image file (required)
+
+**Response:**
+```json
+{
+  "message": "product image uploaded successfully",
+  "image": {
+    "imageUrl": "https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/filename",
+    "product": "product_id",
+    "_id": "image_id"
+  }
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: No file uploaded
+- 500: Server error
+
+### 7. Get Product Images
+```http
+GET /admin/product/images
+```
+
+**Query Parameters:**
+- `id` (required): Product ID
+
+**Response:**
+```json
+{
+  "message": "images found",
+  "images": [
+    {
+      "imageUrl": "image_url",
+      "product": "product_id",
+      "_id": "image_id"
+    }
+  ],
+  "total": 1
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 500: Server error
+
+### 8. Delete Product Image
+```http
+DELETE /admin/product/image
+```
+
+**Query Parameters:**
+- `id` (required): Image ID
+
+**Response:**
+```json
+{
+  "message": "Image deleted successfully",
+  "deletedImage": {
+    "imageUrl": "image_url",
+    "product": "product_id",
+    "_id": "image_id"
+  }
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Image ID missing/Invalid image ID format
+- 404: Image not found
+- 500: Server error
+
 ## Error Handling
 All endpoints follow a consistent error response format:
 ```json
@@ -149,8 +232,10 @@ All endpoints follow a consistent error response format:
 ```
 
 ## Implementation Notes
-1. All requests that require a product ID should pass it as a query parameter (`?id=...`)
+1. All requests that require IDs should pass them as query parameters (`?id=...`)
 2. Pagination is available for the products list endpoint
 3. The Excel upload endpoint requires multipart/form-data with a file field named 'file'
 4. Product updates should be sent as a plain object, not an array
-5. All successful responses include a message field and the relevant data
+5. Image uploads are stored in AWS S3 bucket 'payoorimages'
+6. Images are stored with unique filenames in the 'products/' directory of the S3 bucket
+7. All successful responses include a message field and the relevant data
