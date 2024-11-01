@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 const serverUrl = `https://server.development.payoor.store`;
 
 export default {
@@ -144,22 +145,24 @@ export default {
         const formData = new FormData();
         formData.append('file', this.selectedFile);
 
-        const response = await this.$axios.$post(`${serverUrl}/admin/upload/products/excel`, formData, {
+        const response = await axios.post(`${serverUrl}/admin/upload/products/excel`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-          }
+          },
         });
-
+        
         const { message } = response.data;
         this.uploadMessage = message;
 
         setTimeout(() => {
-          this.redirectToProductsPpage()
+          this.redirectToProductsPage()
         }, 2000)
 
       } catch (error) {
         this.hasError = true;
         this.uploadMessage = 'Failed to upload file. Please try again.';
+        console.log(error.response);
+        
 
       } finally {
         this.isLoading = false;
@@ -167,7 +170,7 @@ export default {
       }
     },
 
-    redirectToProductsPpage() {
+    redirectToProductsPage() {
       this.$router.push("/all-products");
     },
   },
