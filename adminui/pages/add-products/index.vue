@@ -24,11 +24,11 @@
 
         <div>
           <div v-if="selectedFile" class="selected-file">
-            <FileIcon v-if="!isLoading" class="file-icon" />
+            <FileIcon v-if="!isUploading" class="file-icon" />
             <div class="file-name">
               <p>{{ selectedFile.name }}</p>
 
-              <div v-if="isLoading" class="progress-bar">
+              <div v-if="isUploading" class="progress-bar">
                 <div :style="{ width: progress + '%' }" class="progress-bar-fill"></div>
               </div>
             </div>
@@ -42,10 +42,11 @@
         <div>
           <button 
             @click="uploadFile"
-            class="upload-btn btn"
+            class="upload-btn btn auth__submit-btn"
+            :class="{isLoading, showAuthBtn}"
             :disabled="!selectedFile" 
           >
-            Upload file
+            <span>Upload file</span> 
           </button>
         </div>
 
@@ -58,114 +59,117 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+const serverUrl = `https://server.development.payoor.store`;
 
 export default {
-  setup() {
-    const selectedFile = ref(null);
-    const isLoading = ref(false);
-    const isUploading = ref(false);
-    const fileLoaded = ref(false);
-    const progress = ref(0);
-    const hasError = ref(false);
-    const uploadMessage = ref('');
-
-    const handleFileSelect = (e) => {
+  data() {
+    return {
+      selectedFile: null,
+      isLoading: false,
+      isUploading: false,
+      fileLoaded: false,
+      progress: 0,
+      hasError: false,
+      uploadMessage: '',
+    };
+  },
+  computed: {
+    showAuthBtn() {
+      return this.selectedFile !== null;
+    },
+  },
+  methods: {
+    handleFileSelect(e) {
       const file = e.target.files[0];
       if (file) {
-        // validate file type to accept only Excel files
+        // Validate file type to accept only Excel files
         const isExcelFile = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
         if (!isExcelFile) {
-          hasError.value = true;
-          uploadMessage.value = 'Please select a valid Excel file (.xls or .xlsx)';
-          selectedFile.value = null;
-          fileLoaded.value = false;
+          this.hasError = true;
+          this.uploadMessage = 'Please select a valid Excel file (.xls or .xlsx)';
+          this.selectedFile = null;
+          this.fileLoaded = false;
           return;
         }
 
-        selectedFile.value = file;
-        hasError.value = false;
-        uploadMessage.value = ''; // clear any previous messages
-        loadFile();
+        this.selectedFile = file;
+        this.hasError = false;
+        this.uploadMessage = ''; // Clear any previous messages
+        console.log(this.selectedFile);
+
+        this.loadFile();
       }
-    };
+    },
 
-    const handleFileRemoval = () => {
-      selectedFile.value = null;
-    }
+    handleFileRemoval() {
+      this.selectedFile = null;
+    },
 
-    const loadFile = () => {
-      isLoading.value = true;
-      fileLoaded.value = false;
+    loadFile() {
+      this.isUploading = true;
+      this.fileLoaded = false;
       const reader = new FileReader();
 
       reader.onloadstart = () => {
-        progress.value = 0;
+        this.progress = 0;
       };
 
       reader.onprogress = (event) => {
         if (event.lengthComputable) {
-          progress.value = Math.round((event.loaded / event.total) * 100);
+          this.progress = Math.round((event.loaded / event.total) * 100);
         }
       };
 
       reader.onloadend = () => {
-        progress.value = 100;
-        isLoading.value = false;
-        fileLoaded.value = true;
-        console.log(selectedFile.value)
+        this.progress = 100;
+        this.isUploading = false;
+        this.fileLoaded = true;
       };
 
       reader.onerror = () => {
-        hasError.value = true;
-        uploadMessage.value = 'Error loading file';
-        isLoading.value = false;
+        this.hasError = true;
+        this.uploadMessage = 'Error loading file';
+        this.isUploading = false;
       };
 
-      reader.readAsDataURL(selectedFile.value);
-    };
+      reader.readAsDataURL(this.selectedFile);
+    },
 
-    const uploadFile = async () => {
-      if (!fileLoaded.value) return;
-      isUploading.value = true;
-      progress.value = 0;
+    async uploadFile() {
+      if (!this.fileLoaded) return;
+      this.isLoading = true;
 
       try {
         const formData = new FormData();
-        formData.append('file', selectedFile.value);
+        formData.append('file', this.selectedFile);
 
-        // simulate file upload
-        return new Promise((resolve) => {
-          uploadMessage.value = 'File uploaded successfully!';
-          setTimeout(() => {
-            uploadMessage.value = '';
-          }, 2000)
+        const response = await this.$axios.$post(`${serverUrl}/admin/upload/products/excel`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
         });
-        
+
+        const { message } = response.data;
+        this.uploadMessage = message;
+
+        setTimeout(() => {
+          this.redirectToProductsPpage()
+        }, 2000)
+
       } catch (error) {
-        hasError.value = false;
-        uploadMessage.value = 'Failed to upload file. Please try again.';
+        this.hasError = true;
+        this.uploadMessage = 'Failed to upload file. Please try again.';
 
       } finally {
-        isUploading.value = false;
-        selectedFile.value = null;
+        this.isLoading = false;
+        this.selectedFile = null;
       }
-    };
+    },
 
-
-    return {
-      selectedFile,
-      isLoading,
-      isUploading,
-      fileLoaded,
-      progress,
-      uploadMessage,
-      handleFileSelect,
-      uploadFile,
-      handleFileRemoval,
-      hasError,
-    };
+    redirectToProductsPpage() {
+      this.$router.push("/all-products");
+    },
   },
 };
 </script>
@@ -251,7 +255,7 @@ export default {
 
   .upload-btn {
     background-color: $primary-color;
-    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
 
     &:disabled {
       opacity: 50%;
