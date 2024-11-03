@@ -1,16 +1,12 @@
 <template>
-  <div>
-    <div class="container">
-      <div class="items container__header">
-        <h1 class="items__h1">
-          <span>Upload Products File</span>
-        </h1>
-      </div>
+  <div class="page__container">
+    <div class="page__container-wrapper">
+      <HeaderText :pageText="'Add Products'"/>
       
-      <div class="file-upload container__header">
+      <div class="file-upload">
         <label for="excel-file" class="custom-input">
           <UploadIcon class="upload-icon" />
-          <span>Click to upload</span>
+          <span>Click to upload products list</span>
 
           <input 
             ref="fileInput" 
@@ -42,9 +38,9 @@
         <div>
           <button 
             @click="uploadFile"
-            class="upload-btn btn auth__submit-btn"
-            :class="{isLoading, showAuthBtn}"
-            :disabled="!selectedFile" 
+            class="upload-btn submit-btn"
+            :class="{ isLoading }"
+            :disabled="!selectedFile"
           >
             <span>Upload file</span> 
           </button>
@@ -186,7 +182,7 @@ export default {
   margin-top: 2rem;
 
   .custom-input {
-    width: #{scaleValue(500)};
+    width: 100%;
     height: auto;
     padding: 1.5rem 2rem;
     display: flex;
@@ -197,6 +193,10 @@ export default {
     border-radius: 0.5rem;
     gap: 0.5rem;
     color: rgba($white, 0.7);
+
+    @media screen and (min-width: 768px) {
+      width: 500px;
+    }
 
     &:hover {
       opacity: 70%;
@@ -213,11 +213,15 @@ export default {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: #{scaleValue(500)};
+    width: 100%;
     background-color: $grey-3;
     padding: 1rem 0.5rem;
     border-radius: 0.5rem;
     color: rgba($white, 0.7);
+
+    @media screen and (min-width: 768px) {
+      width: 500px;
+    }
 
     .file-icon {
       color: $primary-color;
@@ -259,6 +263,15 @@ export default {
   .upload-btn {
     background-color: $primary-color;
     font-size: 0.8rem;
+    color: rgba($white, .9);
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      opacity: .8;
+    }
 
     &:disabled {
       opacity: 50%;
