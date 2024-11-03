@@ -49,6 +49,8 @@ export default {
       '~/assets/scss/items.scss',
       '~/assets/scss/chat.scss',
       '~/assets/scss/auth.scss',
+      '~/assets/scss/pagecontainer.scss',
+      '~/assets/scss/loader.scss',
     ],
     hoistUseStatements: true
   },
