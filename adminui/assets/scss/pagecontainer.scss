@@ -1,0 +1,23 @@
+.page__container {
+	width: 100%;
+	padding: 1.25rem;
+
+	&-wrapper {
+		margin-top: 5rem;
+		@media screen and (min-width: 1024px) {
+			margin-top: 7rem;
+		}
+	}
+	
+	@media screen and (min-width: 768px) {
+		padding-inline: 2rem;
+	}
+
+	@media screen and (min-width: 1024px) {
+		padding-inline: 4rem;
+	}
+
+	@media screen and (min-width: 1440px) {
+		padding-inline: 6rem;
+	}
+}
