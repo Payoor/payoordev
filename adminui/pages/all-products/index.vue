@@ -230,15 +230,17 @@ export default {
         const formData = new FormData();
         formData.append("file", this.selectedImage);
 
-        const response = await axios.post(`${serverUrl}/admin/upload/product/image?id=${this.selectedProductId}/image`, formData);
+        const response = await axios.post(`${serverUrl}/admin/upload/product/image?id=${this.selectedProductId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         
         this.selectedImage = null;
         this.imagePreview = null;
 
         const { message } = response.data;
         this.message = message;
-
-        console.log("Image uploaded successfully");
 
         setTimeout(() => {
           this.isLoading = false;
