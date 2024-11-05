@@ -51,6 +51,7 @@ export default {
       '~/assets/scss/auth.scss',
       '~/assets/scss/pagecontainer.scss',
       '~/assets/scss/loader.scss',
+      '~/assets/scss/table.scss',
     ],
     hoistUseStatements: true
   },

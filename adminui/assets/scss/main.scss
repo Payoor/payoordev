@@ -59,3 +59,19 @@ input[type="number"]::-ms-clear,
 input[type="number"]::-ms-reveal {
     display: none;
 }
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .3s;
+}
+
+.fade-enter,
+.fade-leave-to
+{
+    opacity: 0;
+}
