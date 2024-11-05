@@ -52,6 +52,7 @@ export default {
       '~/assets/scss/pagecontainer.scss',
       '~/assets/scss/loader.scss',
       '~/assets/scss/table.scss',
+      '~/assets/scss/chatbox.scss',
     ],
     hoistUseStatements: true
   },
