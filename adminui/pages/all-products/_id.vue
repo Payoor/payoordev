@@ -36,7 +36,6 @@
 <script>
 import axios from 'axios';
 import { formatAmount } from '../../helpers';
-import tomatoImg from '../../assets/imgs/tomato.jpg';
 
 const serverUrl = `https://server.development.payoor.store`;
 
@@ -46,7 +45,6 @@ export default {
       product: {},
       productId: undefined,
       productImages: [],
-      tomatoImg,
     }
   },
 
