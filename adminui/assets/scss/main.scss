@@ -31,18 +31,22 @@ html {
     // }
 }
 
-body::-webkit-scrollbar {
-    //width: #{scaleValue(5)};
+*::-webkit-scrollbar {
+    width: 5px;
 }
 
-body::-webkit-scrollbar-track {
-    // background: #F16961; 
+*::-webkit-scrollbar-track {
+    background: transparent; 
 }
 
-body::-webkit-scrollbar-thumb {
-    /*background-color:#fff;
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(88, 88, 88, 0.178);
     border-radius: 3rem;  
-    border: none;*/
+    border: none;
+}
+
+textarea {
+    font-family: 'Poppins';
 }
 
 input[type="number"]::-webkit-inner-spin-button,
