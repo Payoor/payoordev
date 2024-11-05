@@ -47,7 +47,10 @@
         </div>
 
         <div v-if="uploadMessage">
-          <p :class="['upload-message' , hasError ? 'error' : 'success']">{{ uploadMessage }}</p>
+          <Notification 
+            :message="uploadMessage"
+            :isError="hasError"
+          />
         </div>
       </div>
     </div>
@@ -190,7 +193,7 @@ export default {
     align-items: center;
     justify-content: center;
     border: 2px dashed $primary-color;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     gap: 0.5rem;
     color: rgba($white, 0.7);
 
@@ -216,7 +219,7 @@ export default {
     width: 100%;
     background-color: $grey-3;
     padding: 1rem 0.5rem;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     color: rgba($white, 0.7);
 
     @media screen and (min-width: 768px) {
@@ -266,35 +269,11 @@ export default {
     color: rgba($white, .9);
     padding: 0.75rem 1rem;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     cursor: pointer;
 
     &:hover {
       opacity: .8;
-    }
-
-    &:disabled {
-      opacity: 50%;
-      cursor: not-allowed;
-    }
-  }
-
-  .upload-message {
-    width: fit-content;
-    font-size: 0.75rem;
-    padding: 0.25rem 1rem;
-    border-radius: 0.25rem;
-
-    &.error {
-      color: #d82b2b;
-      background-color: rgba(255, 0, 0, 0.2);
-      border: 1px solid #d82b2b;
-    }
-
-    &.success {
-      color: $primary-color;
-      background-color: rgba($primary-color, 0.2);
-      border: 1px solid $primary-color;
     }
   }
 }
