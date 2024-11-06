@@ -16,10 +16,22 @@
       </div>
 
       <div class="chat__box">
-        <div class="topbar"></div>
+        <div class="topbar">
+          <UserCard class="topbar-user-indicator" />
+        </div>
 
         <!-- conversation box -->
-        <div class="chats"></div>
+        <div class="chats">
+          <MessageBubble 
+            :sender-type="senderType.ADMIN" 
+            :message="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus eligendi fugiat possimus asperiores eveniet sed dolorem commodi excepturi'"
+          />
+
+          <MessageBubble 
+            :sender-type="senderType.USER" 
+            :message="'veniam alias consectetur incidunt corrupti voluptates, culpa iure, quam exercitationem, vero maxime.'"
+          />
+        </div>
         <!--  -->
 
         <div class="chat__input">
@@ -49,7 +61,7 @@ import SendIcon from "../../components/icons/SendIcon.vue";
 export default {
   components: {
     DefaultLayout: Default,
-    SendIcon
+    SendIcon,
   },
 
   setup() {
@@ -65,6 +77,11 @@ export default {
       // token: null,
       // socket: null,
     });
+
+    const senderType = {
+      USER: "user",
+      ADMIN: "admin",
+    };
 
     const autoGrow = () => {
       const el = textarea.value;
@@ -83,6 +100,7 @@ export default {
       textarea,
       state,
       autoGrow,
+      senderType,
     };
   },
 };

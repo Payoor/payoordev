@@ -19,8 +19,8 @@
   cursor: pointer;
 
   .avatar {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     background-color: $primary-color;
     display: flex;
@@ -37,6 +37,17 @@
   &.active {
     background-color: rgb(66, 66, 66);
     border-radius: 0.25rem;
+  }
+  
+  &.topbar-user-indicator {
+    border-bottom: 0;
+    padding: 0;
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+      border-radius: 0;
+    }
   }
 }
 </style>
