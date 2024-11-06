@@ -1,0 +1,60 @@
+<template>
+  <div>
+  <DefaultLayout>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+    <div>Dashboard</div>
+  </DefaultLayout>
+  </div>
+</template>
+
+<script>
+  import Default from '../../layouts/Default.vue';
+  export default {
+    components: {
+      'DefaultLayout': Default
+    }
+  }
+</script>

@@ -1,9 +1,5 @@
 <template>
-  <div class="page__container">
-    <div class="page__container-wrapper">
-      <HeaderText :pageText="'Users'" />
-    </div>
-
+  <DefaultLayout :page-text="'Chats'">
     <div class="chat__container">
       <div class="chat__sidebar">
         <div class="sidebar__header">
@@ -32,7 +28,6 @@
               ref="textarea"
               @input="autoGrow"
               v-model="state.textareaMsg"
-              @keydown="handleTyping"
               placeholder="Start typing..."
             ></textarea>
 
@@ -43,13 +38,20 @@
         </div>
       </div>
     </div>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script>
 import { reactive, ref } from "vue";
+import Default from "../../layouts/Default.vue";
+import SendIcon from "../../components/icons/SendIcon.vue";
 
 export default {
+  components: {
+    DefaultLayout: Default,
+    SendIcon
+  },
+
   setup() {
     const textarea = ref(null);
     const state = reactive({

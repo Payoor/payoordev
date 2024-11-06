@@ -1,126 +1,140 @@
 <template>
-  <div class="page__container">
-    <div class="page__container-wrapper">
-      <HeaderText :pageText="'Products'" />
+  <DefaultLayout :page-text="'Products'">
+    <template v-if="products.length > 0">
+      <div class="table__container">
+        <table>
+          <thead>
+            <tr>
+              <th v-for="(header, idx) in getTableHeaders" :key="idx">
+                {{ header.toLowerCase() }}
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(data, rowIndex) in editableTableData" :key="rowIndex">
+              <td>{{ data["S/N"] }}</td>
+              <td
+                v-for="(value, key, colIndex) in data"
+                :key="colIndex"
+                v-if="key !== 'S/N' && key !== '_id'"
+                @click="editCell(rowIndex, colIndex)"
+              >
+                <div v-if="isEditingCell(rowIndex, colIndex)">
+                  <input
+                    type="text"
+                    v-model="editableTableData[rowIndex][key]"
+                    @blur="saveEdit(rowIndex, key)"
+                    @keyup.enter="saveEdit(rowIndex, key)"
+                  />
+                </div>
+                <div v-else>{{ value }}</div>
+              </td>
 
-      <template v-if="products">
-        <div class="table__container">
-          <table>
-            <thead>
-              <tr>
-                <th v-for="header, idx in getTableHeaders" :key="idx">{{ header.toLowerCase() }}</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="data, rowIndex in editableTableData" :key="rowIndex">
-                <td>{{ data["S/N"] }}</td>
-                <td
-                  v-for="(value, key, colIndex) in data"
-                  :key="colIndex"
-                  v-if="key !== 'S/N' && key !== '_id'"
-                  @click="editCell(rowIndex, colIndex)"
+              <td class="actions-cell">
+                <button
+                  class="actions-toggle"
+                  @click="toggleDropdown(rowIndex)"
                 >
-                  <div v-if="isEditingCell(rowIndex, colIndex)">
-                    <input
-                      type="text"
-                      v-model="editableTableData[rowIndex][key]"
-                      @blur="saveEdit(rowIndex, key)"
-                      @keyup.enter="saveEdit(rowIndex, key)"
-                    />
-                  </div>
-                  <div v-else>{{ value }}</div>
-                </td>
+                  ...
+                </button>
+                <div v-if="dropdownIndex === rowIndex" class="dropdown">
+                  <button @click="viewProduct(data._id)">View Product</button>
+                  <button @click="openImageModal(data._id)">Add Image</button>
+                  <button @click="openDeleteModal(data._id)">
+                    Delete Product
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
 
-                <td class="actions-cell">
-                  <button class="actions-toggle" @click="toggleDropdown(rowIndex)">...</button>
-                  <div v-if="dropdownIndex === rowIndex" class="dropdown">
-                    <button @click="viewProduct(data._id)">View Product</button>
-                    <button @click="openImageModal(data._id)">Add Image</button>
-                    <button @click="openDeleteModal(data._id)">Delete Product</button>
-                  </div>
-                </td>
+    <template v-else>
+      <EmptyProduct />
+    </template>
 
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </template>
-
-      <template v-if="!products">
-        <EmptyProduct />
-      </template>
-
-      <Transition name="fade">
-        <Modal 
-          v-if="showImageModal"
-          v-on:close-modal="closeImageModal"
-          v-on:submit-form="uploadImage"
-          :modal-header="'Upload Product Image'"
-          :confirm-text="'Upload'"
-          :is-loading="isLoading"
-        >
-          <template #modalContent>
-            <div class="upload-img">
-              <label for="product-img">
-                {{ selectedImage ? 'Choose another image' : 'Choose image' }}
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  id="product-img"
-                  @change="handleImageSelect"
-                  hidden
-                >
-              </label>
-
-              <div v-if="imagePreview" class="preview">
-                <img :src="imagePreview" alt="preview of selected image">
-
-                <span>{{ selectedImage.name }}</span>
-              </div>
-              
-              <div v-if="message" class="notification">
-                <Notification 
-                  :message="message"
-                  :isError="hasError"
-                />
-              </div>
-            </div>
-          </template>
-        </Modal>
-      </Transition>
-
-      <Transition name="fade">
-        <Modal 
-          v-if="showDeleteModal"
-          v-on:close-modal="showDeleteModal = false"
-          v-on:submit-form="deleteProduct"
-          :modal-header="'Delete Product'"
-          :confirm-text="'Yes, proceed'"
-          :is-loading="isLoading"
-        >
-          <template #modalContent>
-            <p>Are you sure you want to delete this product?</p>
-            <div v-if="message" class="notification">
-              <Notification 
-                :message="message"
-                :isError="hasError"
+    <Transition name="fade">
+      <Modal
+        v-if="showImageModal"
+        v-on:close-modal="closeImageModal"
+        v-on:submit-form="uploadImage"
+        :modal-header="'Upload Product Image'"
+        :confirm-text="'Upload'"
+        :is-loading="isLoading"
+      >
+        <template #modalContent>
+          <div class="upload-img">
+            <label for="product-img">
+              {{ selectedImage ? "Choose another image" : "Choose image" }}
+              <input
+                type="file"
+                accept="image/*"
+                id="product-img"
+                @change="handleImageSelect"
+                hidden
               />
+            </label>
+
+            <div v-if="imagePreview" class="preview">
+              <img :src="imagePreview" alt="preview of selected image" />
+
+              <span>{{ selectedImage.name }}</span>
             </div>
-          </template>
-        </Modal>
-      </Transition>
-    </div>
-  </div>
+
+            <div v-if="message" class="notification">
+              <Notification :message="message" :isError="hasError" />
+            </div>
+          </div>
+        </template>
+      </Modal>
+    </Transition>
+
+    <Transition name="fade">
+      <Modal
+        v-if="showDeleteModal"
+        v-on:close-modal="showDeleteModal = false"
+        v-on:submit-form="deleteProduct"
+        :modal-header="'Delete Product'"
+        :confirm-text="'Yes, proceed'"
+        :is-loading="isLoading"
+      >
+        <template #modalContent>
+          <p>Are you sure you want to delete this product?</p>
+          <div v-if="message" class="notification">
+            <Notification :message="message" :isError="hasError" />
+          </div>
+        </template>
+      </Modal>
+    </Transition>
+  </DefaultLayout>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+import Default from "../../layouts/Default.vue";
 
 const serverUrl = `https://server.development.payoor.store`;
 
 export default {
-  data () {
+  components: {
+    DefaultLayout: Default,
+  },
+
+  computed: {
+    getTableHeaders() {
+      return this.products.length
+        ? [
+            "S/N",
+            ...Object.keys(this.products[0]).filter((key) => key !== "_id"),
+          ]
+        : [];
+    },
+  },
+
+  data() {
     return {
       products: [],
       editableTableData: [],
@@ -134,14 +148,7 @@ export default {
       isLoading: false,
       message: "",
       hasError: false,
-    }
-  },
-  computed: {
-    getTableHeaders () {
-      return this.products.length
-        ? ['S/N', ...Object.keys(this.products[0]).filter(key => key !== '_id')]
-        : [];
-    },
+    };
   },
 
   methods: {
@@ -149,42 +156,45 @@ export default {
       try {
         const response = await axios.get(`${serverUrl}/admin/get/products`);
         this.products = response.data.products;
-        
-        this.editableTableData = this.products.map((item, index) => ({
-          'S/N': index + 1,
-          ...Object.fromEntries(
-            Object.entries(item).filter(([key]) => key !== '_id')
-          ),
-          _id: item._id // Keep the _id for sending updates
-        })); 
 
+        this.editableTableData = this.products.map((item, index) => ({
+          "S/N": index + 1,
+          ...Object.fromEntries(
+            Object.entries(item).filter(([key]) => key !== "_id")
+          ),
+          _id: item._id, // Keep the _id for sending updates
+        }));
       } catch (error) {
-        console.log(error.response.data.message)
+        console.log(error.response.data.message);
       }
     },
 
-    editCell (rowIndex, colIndex) {
+    editCell(rowIndex, colIndex) {
       this.editingCell = { row: rowIndex, col: colIndex };
     },
 
-    isEditingCell (row, col) {
+    isEditingCell(row, col) {
       return this.editingCell.row === row && this.editingCell.col === col;
     },
 
-    async saveEdit (rowIndex, colKey) {
+    async saveEdit(rowIndex, colKey) {
       const editedProduct = { ...this.editableTableData[rowIndex] };
       const productId = editedProduct._id;
       delete editedProduct["S/N"];
 
       try {
         // Send the update request to the server
-        const response = await axios.patch(`${serverUrl}/admin/update/product?id=${productId}`, editedProduct);
+        const response = await axios.patch(
+          `${serverUrl}/admin/update/product?id=${productId}`,
+          editedProduct
+        );
 
-        if (response.status == 200){
+        if (response.status == 200) {
           this.fetchProducts();
-          console.log(`Successfully updated row ${rowIndex + 1}, column ${colKey}`);
+          console.log(
+            `Successfully updated row ${rowIndex + 1}, column ${colKey}`
+          );
         }
-
       } catch (error) {
         console.error("Error updating product:", error);
       }
@@ -193,21 +203,21 @@ export default {
       this.editingCell = { row: null, col: null };
     },
 
-    viewProduct (productId) {
+    viewProduct(productId) {
       this.$router.push(`/all-products/${productId}`);
     },
 
-    toggleDropdown (index) {
+    toggleDropdown(index) {
       this.dropdownIndex = this.dropdownIndex === index ? null : index;
     },
 
-    openImageModal (productId) {
+    openImageModal(productId) {
       this.dropdownIndex = null;
       this.selectedProductId = productId;
       this.showImageModal = true;
     },
 
-    closeImageModal () {
+    closeImageModal() {
       this.showImageModal = false;
       this.selectedImage = null;
       this.message = "";
@@ -230,12 +240,16 @@ export default {
         const formData = new FormData();
         formData.append("file", this.selectedImage);
 
-        const response = await axios.post(`${serverUrl}/admin/upload/product/image?id=${this.selectedProductId}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        
+        const response = await axios.post(
+          `${serverUrl}/admin/upload/product/image?id=${this.selectedProductId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         this.selectedImage = null;
         this.imagePreview = null;
 
@@ -246,35 +260,35 @@ export default {
           this.isLoading = false;
           this.message = "";
           this.closeImageModal();
-        }, 2000)
-
+        }, 2000);
       } catch (error) {
         this.isLoading = false;
         this.hasError = true;
-        this.message = 'Failed to upload product image. Please try again.';
+        this.message = "Failed to upload product image. Please try again.";
         console.error("Error uploading image:", error.response);
       }
     },
 
-    openDeleteModal (productId) {
+    openDeleteModal(productId) {
       this.dropdownIndex = null;
       this.selectedProductId = productId;
       this.showDeleteModal = true;
     },
 
-    closeDeleteModal () {
+    closeDeleteModal() {
       this.showDeleteModal = false;
       this.message = "";
     },
 
-    async deleteProduct () {
-
+    async deleteProduct() {
       this.hasError = false;
       this.isLoading = true;
       this.message = "";
 
       try {
-        const response = await axios.delete(`${serverUrl}/admin/delete/product?id=${this.selectedProductId}`);
+        const response = await axios.delete(
+          `${serverUrl}/admin/delete/product?id=${this.selectedProductId}`
+        );
         console.log("Product deleted successfully");
 
         const { message } = response.data;
@@ -285,140 +299,139 @@ export default {
           this.message = "";
           this.fetchProducts();
           this.closeDeleteModal();
-        }, 2000)
-
+        }, 2000);
       } catch (error) {
         this.isLoading = false;
         this.hasError = true;
-        this.message = 'Failed to delete product. Please try again.';
+        this.message = "Failed to delete product. Please try again.";
         console.error("Error deleting product:", error.response);
       }
-    }
+    },
   },
 
   mounted() {
     this.fetchProducts();
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-  input {
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    padding: 0.5rem;
-    color: rgba($white, .5);
+input {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  color: rgba($white, 0.5);
+  font-size: 1rem;
+
+  &::placeholder {
     font-size: 1rem;
-
-    &::placeholder {
-      font-size: 1rem;
-    }
-
-    &:focus {
-      outline: none;
-      border: 1px solid rgb(47, 47, 47);
-    }
   }
 
-  .actions-cell {
-    position: relative;
+  &:focus {
+    outline: none;
+    border: 1px solid rgb(47, 47, 47);
+  }
+}
 
-    .actions-toggle {
-      padding-inline: 1rem;
-      background-color: transparent;
-      color: rgba($white, .5);
-      border: none;
-      font-size: 1.5rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.actions-cell {
+  position: relative;
 
-    .dropdown {
-      position: absolute;
-      width: 150px;
-      height: auto;
-      display: grid;
-      background-color: rgb(47, 47, 47);
-      z-index: 1;
-      left: -100%;
-      top: 100%;
-      border-radius: 0.25rem;
-
-      @media screen and (min-width: 768px) {
-        left: -50%;
-      }
-
-      @media screen and (min-width: 1024px) {
-        left: -30%;
-      }
-      
-      button {
-        background-color: transparent;
-        color: rgba($white, .5);
-        border: none;
-        font-size: 0.8rem;
-        padding: 1rem;
-        text-align: left;
-        transition: 0.2s;
-        cursor: pointer;
-
-        &:hover {
-          opacity: 0.7;
-        }
-      }
-    }
+  .actions-toggle {
+    padding-inline: 1rem;
+    background-color: transparent;
+    color: rgba($white, 0.5);
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
   }
 
-  .upload-img {
-    width: 100%;
+  .dropdown {
+    position: absolute;
+    width: 150px;
+    height: auto;
     display: grid;
-    gap: 1rem;
+    background-color: rgb(47, 47, 47);
+    z-index: 1;
+    left: -100%;
+    top: 100%;
+    border-radius: 0.25rem;
 
-    label {
-      width: 100%;
-      border: 2px dashed $white;
-      border-radius: 0.25rem;
-      padding: 0.5rem 1rem;
-      color: $white;
+    @media screen and (min-width: 768px) {
+      left: -50%;
+    }
+
+    @media screen and (min-width: 1024px) {
+      left: -30%;
+    }
+
+    button {
+      background-color: transparent;
+      color: rgba($white, 0.5);
+      border: none;
+      font-size: 0.8rem;
+      padding: 1rem;
+      text-align: left;
+      transition: 0.2s;
       cursor: pointer;
-      transition: .2s;
-      opacity: 0.5;
 
       &:hover {
-        opacity: .8;
-      }
-    }
-
-    .preview {
-      width: 100%;
-      height: 300px;
-      border-radius: 0.5rem;
-
-      @media screen and (min-width: 768px) {
-        height: 400px;
-      }
-
-      img {
-        width: 100%;
-        height: 90%;
-        background-color: rgba(0, 0, 0, 0.39);
-        object-fit: contain;
-        border-radius: 0.5rem;
-      }
-
-      span {
-        color: rgba($white, .5);
-        font-size: 0.75rem;
-        padding: 0.2rem 0;
+        opacity: 0.7;
       }
     }
   }
+}
 
-  .notification {
+.upload-img {
+  width: 100%;
+  display: grid;
+  gap: 1rem;
+
+  label {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 0.5rem;
+    border: 2px dashed $white;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    color: $white;
+    cursor: pointer;
+    transition: 0.2s;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
+
+  .preview {
+    width: 100%;
+    height: 300px;
+    border-radius: 0.5rem;
+
+    @media screen and (min-width: 768px) {
+      height: 400px;
+    }
+
+    img {
+      width: 100%;
+      height: 90%;
+      background-color: rgba(0, 0, 0, 0.39);
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+
+    span {
+      color: rgba($white, 0.5);
+      font-size: 0.75rem;
+      padding: 0.2rem 0;
+    }
+  }
+}
+
+.notification {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
 </style>

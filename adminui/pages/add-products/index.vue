@@ -1,67 +1,75 @@
 <template>
-  <div class="page__container">
-    <div class="page__container-wrapper">
-      <HeaderText :pageText="'Add Products'"/>
-      
-      <div class="file-upload">
-        <label for="excel-file" class="custom-input">
-          <UploadIcon class="upload-icon" />
-          <span>Click to upload products list</span>
+  <DefaultLayout :page-text="'Add Products'">
+    <div class="file-upload">
+      <label for="excel-file" class="custom-input">
+        <UploadIcon class="upload-icon" />
+        <span>Click to upload products list</span>
 
-          <input 
-            ref="fileInput" 
-            type="file"
-            accept=".xls, .xlsx"
-            id="excel-file" 
-            @change="handleFileSelect" 
-            hidden
-          />
-        </label>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".xls, .xlsx"
+          id="excel-file"
+          @change="handleFileSelect"
+          hidden
+        />
+      </label>
 
-        <div>
-          <div v-if="selectedFile" class="selected-file">
-            <FileIcon v-if="!isUploading" class="file-icon" />
-            <div class="file-name">
-              <p>{{ selectedFile.name }}</p>
+      <div>
+        <div v-if="selectedFile" class="selected-file">
+          <FileIcon v-if="!isUploading" class="file-icon" />
+          <div class="file-name">
+            <p>{{ selectedFile.name }}</p>
 
-              <div v-if="isUploading" class="progress-bar">
-                <div :style="{ width: progress + '%' }" class="progress-bar-fill"></div>
-              </div>
+            <div v-if="isUploading" class="progress-bar">
+              <div
+                :style="{ width: progress + '%' }"
+                class="progress-bar-fill"
+              ></div>
             </div>
-
-            <button @click="handleFileRemoval">
-              <CircleXIcon />
-            </button>
           </div>
-        </div>
 
-        <div>
-          <button 
-            @click="uploadFile"
-            class="upload-btn submit-btn"
-            :class="{ isLoading }"
-            :disabled="!selectedFile"
-          >
-            <span>Upload file</span> 
+          <button @click="handleFileRemoval">
+            <CircleXIcon />
           </button>
         </div>
+      </div>
 
-        <div v-if="uploadMessage">
-          <Notification 
-            :message="uploadMessage"
-            :isError="hasError"
-          />
-        </div>
+      <div>
+        <button
+          @click="uploadFile"
+          class="upload-btn submit-btn"
+          :class="{ isLoading }"
+          :disabled="!selectedFile"
+        >
+          <span>Upload file</span>
+        </button>
+      </div>
+
+      <div v-if="uploadMessage">
+        <Notification :message="uploadMessage" :isError="hasError" />
       </div>
     </div>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
+import Default from "../../layouts/Default.vue";
+import UploadIcon from "../../components/icons/UploadIcon.vue";
+import CircleXIcon from "../../components/icons/CircleXIcon.vue";
+import FileIcon from "../../components/icons/FileIcon.vue";
+
 const serverUrl = `https://server.development.payoor.store`;
 
 export default {
+  components: {
+    DefaultLayout: Default,
+    CircleXIcon: CircleXIcon,
+    UploadIcon: UploadIcon,
+    FileIcon: FileIcon,
+  },
+
   data() {
     return {
       selectedFile: null,
@@ -70,7 +78,7 @@ export default {
       fileLoaded: false,
       progress: 0,
       hasError: false,
-      uploadMessage: '',
+      uploadMessage: "",
     };
   },
   computed: {
@@ -83,11 +91,15 @@ export default {
       const file = e.target.files[0];
       if (file) {
         // Validate file type to accept only Excel files
-        const isExcelFile = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const isExcelFile =
+          file.type === "application/vnd.ms-excel" ||
+          file.type ===
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
         if (!isExcelFile) {
           this.hasError = true;
-          this.uploadMessage = 'Please select a valid Excel file (.xls or .xlsx)';
+          this.uploadMessage =
+            "Please select a valid Excel file (.xls or .xlsx)";
           this.selectedFile = null;
           this.fileLoaded = false;
           return;
@@ -95,7 +107,7 @@ export default {
 
         this.selectedFile = file;
         this.hasError = false;
-        this.uploadMessage = ''; // Clear any previous messages
+        this.uploadMessage = ""; // Clear any previous messages
         console.log(this.selectedFile);
 
         this.loadFile();
@@ -129,7 +141,7 @@ export default {
 
       reader.onerror = () => {
         this.hasError = true;
-        this.uploadMessage = 'Error loading file';
+        this.uploadMessage = "Error loading file";
         this.isUploading = false;
       };
 
@@ -142,27 +154,28 @@ export default {
 
       try {
         const formData = new FormData();
-        formData.append('file', this.selectedFile);
+        formData.append("file", this.selectedFile);
 
-        const response = await axios.post(`${serverUrl}/admin/upload/products/excel`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        
+        const response = await axios.post(
+          `${serverUrl}/admin/upload/products/excel`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         const { message } = response.data;
         this.uploadMessage = message;
 
         setTimeout(() => {
-          this.redirectToProductsPage()
-        }, 2000)
-
+          this.redirectToProductsPage();
+        }, 2000);
       } catch (error) {
         this.hasError = true;
-        this.uploadMessage = 'Failed to upload file. Please try again.';
+        this.uploadMessage = "Failed to upload file. Please try again.";
         console.log(error.response);
-        
-
       } finally {
         this.isLoading = false;
         this.selectedFile = null;
@@ -266,14 +279,14 @@ export default {
   .upload-btn {
     background-color: $primary-color;
     font-size: 0.8rem;
-    color: rgba($white, .9);
+    color: rgba($white, 0.9);
     padding: 0.75rem 1rem;
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
 
     &:hover {
-      opacity: .8;
+      opacity: 0.8;
     }
   }
 }

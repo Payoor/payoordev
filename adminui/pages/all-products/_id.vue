@@ -1,79 +1,90 @@
 <template>
-  <div class="page__container">
-    <div class="page__container-wrapper">
-      <HeaderText :pageText="'Product Details'" />
-      <div class="go-back">
-        <button @click="$router.push('/all-products')">
-          <ChevronLeftIcon class="arrow-icon"/>
-          Go back
-        </button>
-      </div>
-      <div class="product-details-container">
-        <div class="details-wrapper">
-          <div class="">
-            <div class="product-image">
-              <template v-if="product.images && product.images.length !== 0">
-                <img :src="product.images[0]" alt="">
-              </template>
-              <template v-else>
-                <PlaceholderImage class="img-placeholder" />
-              </template>
-            </div>
+  <DefaultLayout :page-text="'Product Details'">
+    <div class="go-back">
+      <button @click="$router.push('/all-products')">
+        <ChevronLeftIcon class="arrow-icon" />
+        Go back
+      </button>
+    </div>
+    <div class="product-details-container">
+      <div class="details-wrapper">
+        <div class="">
+          <div class="product-image">
+            <template v-if="product.images && product.images.length !== 0">
+              <img :src="product.images[0]" alt="" />
+            </template>
+            <template v-else>
+              <PlaceholderImageIcon class="img-placeholder" />
+            </template>
           </div>
+        </div>
 
-          <div class="details">
-            <h2 class="name">{{ product.NAME }}</h2>
-            <p class="price"><strong>Price: </strong>{{ formatAmount(product.PRICE) }}</p>
-            <p class="category"><strong>Category: </strong>{{ product.CATEGORY }}</p>
-            <p class="unit"><strong>Unit: </strong>{{ product.UNIT }}</p>
-          </div>
+        <div class="details">
+          <h2 class="name">{{ product.NAME }}</h2>
+          <p class="price">
+            <strong>Price: </strong>{{ formatAmount(product.PRICE) }}
+          </p>
+          <p class="category">
+            <strong>Category: </strong>{{ product.CATEGORY }}
+          </p>
+          <p class="unit"><strong>Unit: </strong>{{ product.UNIT }}</p>
         </div>
       </div>
     </div>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script>
-import axios from 'axios';
-import { formatAmount } from '../../helpers';
+import axios from "axios";
+import { formatAmount } from "../../helpers";
+import ChevronLeftIcon from "../../components/icons/ChevronLeftIcon.vue";
+import PlaceholderImageIcon from "../../components/icons/PlaceholderImageIcon.vue";
+import Default from "../../layouts/Default.vue";
 
 const serverUrl = `https://server.development.payoor.store`;
 
 export default {
+  components: {
+    DefaultLayout: Default,
+    ChevronLeftIcon,
+    PlaceholderImageIcon,
+  },
+
   data() {
     return {
       product: {},
       productId: undefined,
       productImages: [],
-    }
+    };
   },
 
   methods: {
     formatAmount,
-    async getProductById () {
+    async getProductById() {
       try {
-        const response = await axios.get(`${serverUrl}/admin/get/product?id=${this.productId}`);
+        const response = await axios.get(
+          `${serverUrl}/admin/get/product?id=${this.productId}`
+        );
 
         this.product = response.data;
         console.log(this.product);
-
       } catch (error) {
         console.log(error);
       }
     },
 
-    async getProductImages () {
+    async getProductImages() {
       try {
-        const response = await axios.get(`${serverUrl}/admin/product/images?id=${this.productId}`);
+        const response = await axios.get(
+          `${serverUrl}/admin/product/images?id=${this.productId}`
+        );
 
         this.productImages = response.data.images;
         console.log(this.productImages);
-        
-
       } catch (error) {
         console.log(error);
       }
-    }
+    },
   },
 
   mounted() {
@@ -81,7 +92,7 @@ export default {
     this.getProductById();
     this.getProductImages();
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -99,7 +110,7 @@ export default {
     transition: 0.2s;
     opacity: 0.8;
     cursor: pointer;
-  
+
     &:hover {
       opacity: 1;
     }
@@ -124,7 +135,7 @@ export default {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    color: rgba($white, .7);
+    color: rgba($white, 0.7);
     gap: 2rem;
 
     @media screen and (min-width: 1024px) {
@@ -155,7 +166,7 @@ export default {
     }
 
     .details {
-      color: rgba($white, .7);
+      color: rgba($white, 0.7);
       padding: 1rem 0;
       align-self: center;
       display: grid;
@@ -166,5 +177,5 @@ export default {
       }
     }
   }
-}  
+}
 </style>
