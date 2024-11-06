@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = void 0;
 var _product = _interopRequireDefault(require("../models/product"));
 var _image = _interopRequireDefault(require("../models/image"));
+var _admin = _interopRequireDefault(require("../models/admin"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -510,6 +511,225 @@ var AdminController = /*#__PURE__*/function () {
       }
       return deleteProductImage;
     }()
+  }, {
+    key: "createAdmin",
+    value: function () {
+      var _createAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
+        var _req$body, username, password, existingAdmin, admin, token;
+        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+          while (1) switch (_context9.prev = _context9.next) {
+            case 0:
+              _context9.prev = 0;
+              _req$body = req.body, username = _req$body.username, password = _req$body.password; // Validate input
+              if (!(!username || !password)) {
+                _context9.next = 4;
+                break;
+              }
+              return _context9.abrupt("return", res.status(400).json({
+                error: 'Username and password are required'
+              }));
+            case 4:
+              _context9.next = 6;
+              return _admin["default"].findOne({
+                username: username
+              });
+            case 6:
+              existingAdmin = _context9.sent;
+              if (!existingAdmin) {
+                _context9.next = 9;
+                break;
+              }
+              return _context9.abrupt("return", res.status(400).json({
+                error: 'Username already exists'
+              }));
+            case 9:
+              // Create new admin
+              admin = new _admin["default"]({
+                username: username,
+                password: password
+              }); // Save admin and generate token
+              _context9.next = 12;
+              return admin.save();
+            case 12:
+              _context9.next = 14;
+              return admin.generateAuthToken();
+            case 14:
+              token = _context9.sent;
+              res.status(201).json({
+                admin: admin,
+                token: token
+              });
+              _context9.next = 21;
+              break;
+            case 18:
+              _context9.prev = 18;
+              _context9.t0 = _context9["catch"](0);
+              res.status(400).json({
+                error: _context9.t0.message
+              });
+            case 21:
+            case "end":
+              return _context9.stop();
+          }
+        }, _callee9, null, [[0, 18]]);
+      }));
+      function createAdmin(_x17, _x18) {
+        return _createAdmin.apply(this, arguments);
+      }
+      return createAdmin;
+    }()
+  }, {
+    key: "signInAdmin",
+    value: function () {
+      var _signInAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
+        var _req$body2, username, password, admin, token;
+        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
+            case 0:
+              _context10.prev = 0;
+              _req$body2 = req.body, username = _req$body2.username, password = _req$body2.password; // Validate input
+              if (!(!username || !password)) {
+                _context10.next = 4;
+                break;
+              }
+              return _context10.abrupt("return", res.status(400).json({
+                error: 'Username and password are required'
+              }));
+            case 4:
+              _context10.next = 6;
+              return _admin["default"].findByCredentials(username, password);
+            case 6:
+              admin = _context10.sent;
+              _context10.next = 9;
+              return admin.generateAuthToken();
+            case 9:
+              token = _context10.sent;
+              res.json({
+                admin: admin,
+                token: token
+              });
+              _context10.next = 16;
+              break;
+            case 13:
+              _context10.prev = 13;
+              _context10.t0 = _context10["catch"](0);
+              res.status(401).json({
+                error: 'Invalid login credentials'
+              });
+            case 16:
+            case "end":
+              return _context10.stop();
+          }
+        }, _callee10, null, [[0, 13]]);
+      }));
+      function signInAdmin(_x19, _x20) {
+        return _signInAdmin.apply(this, arguments);
+      }
+      return signInAdmin;
+    }()
+  }, {
+    key: "deleteAdmin",
+    value: function () {
+      var _deleteAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
+        var adminId, adminCount, adminToDelete;
+        return _regeneratorRuntime().wrap(function _callee11$(_context11) {
+          while (1) switch (_context11.prev = _context11.next) {
+            case 0:
+              _context11.prev = 0;
+              adminId = req.params.adminId; // Check if trying to delete self
+              if (!(adminId === req.admin._id.toString())) {
+                _context11.next = 4;
+                break;
+              }
+              return _context11.abrupt("return", res.status(400).json({
+                error: 'Cannot delete your own admin account'
+              }));
+            case 4:
+              _context11.next = 6;
+              return _admin["default"].countDocuments({});
+            case 6:
+              adminCount = _context11.sent;
+              if (!(adminCount <= 1)) {
+                _context11.next = 9;
+                break;
+              }
+              return _context11.abrupt("return", res.status(400).json({
+                error: 'Cannot delete the last admin account'
+              }));
+            case 9:
+              _context11.next = 11;
+              return _admin["default"].findById(adminId);
+            case 11:
+              adminToDelete = _context11.sent;
+              if (adminToDelete) {
+                _context11.next = 14;
+                break;
+              }
+              return _context11.abrupt("return", res.status(404).json({
+                error: 'Admin not found'
+              }));
+            case 14:
+              _context11.next = 16;
+              return _admin["default"].findByIdAndDelete(adminId);
+            case 16:
+              res.json({
+                message: 'Admin deleted successfully',
+                deletedAdmin: adminToDelete.username
+              });
+              _context11.next = 22;
+              break;
+            case 19:
+              _context11.prev = 19;
+              _context11.t0 = _context11["catch"](0);
+              res.status(400).json({
+                error: 'Failed to delete admin',
+                details: _context11.t0.message
+              });
+            case 22:
+            case "end":
+              return _context11.stop();
+          }
+        }, _callee11, null, [[0, 19]]);
+      }));
+      function deleteAdmin(_x21, _x22) {
+        return _deleteAdmin.apply(this, arguments);
+      }
+      return deleteAdmin;
+    }() // Optional: Add a method to get all admins for reference
+  }, {
+    key: "getAllAdmins",
+    value: function () {
+      var _getAllAdmins = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
+        var admins;
+        return _regeneratorRuntime().wrap(function _callee12$(_context12) {
+          while (1) switch (_context12.prev = _context12.next) {
+            case 0:
+              _context12.prev = 0;
+              _context12.next = 3;
+              return _admin["default"].find({}, 'username _id');
+            case 3:
+              admins = _context12.sent;
+              res.json(admins);
+              _context12.next = 10;
+              break;
+            case 7:
+              _context12.prev = 7;
+              _context12.t0 = _context12["catch"](0);
+              res.status(400).json({
+                error: 'Failed to fetch admins',
+                details: _context12.t0.message
+              });
+            case 10:
+            case "end":
+              return _context12.stop();
+          }
+        }, _callee12, null, [[0, 7]]);
+      }));
+      function getAllAdmins(_x23, _x24) {
+        return _getAllAdmins.apply(this, arguments);
+      }
+      return getAllAdmins;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -521,36 +741,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x17, _x18) {
+function processExcelSheetData(_x25, _x26) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee13(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-      while (1) switch (_context9.prev = _context9.next) {
+    return _regeneratorRuntime().wrap(function _callee13$(_context13) {
+      while (1) switch (_context13.prev = _context13.next) {
         case 0:
-          _context9.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context13.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context9.t1 = _context9.t0()).done) {
-            _context9.next = 8;
+          if ((_context13.t1 = _context13.t0()).done) {
+            _context13.next = 8;
             break;
           }
-          index = _context9.t1.value;
+          index = _context13.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context9.next = 6;
+          _context13.next = 6;
           return productData.save();
         case 6:
-          _context9.next = 1;
+          _context13.next = 1;
           break;
         case 8:
         case "end":
-          return _context9.stop();
+          return _context13.stop();
       }
-    }, _callee9);
+    }, _callee13);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }

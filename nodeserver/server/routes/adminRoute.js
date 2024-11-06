@@ -4,6 +4,8 @@ import fs from "fs";
 
 import AdminController from "../controllers/adminController";
 
+const { authenticate, isFirstAdmin } = require('../middleware/admin/auth');
+
 const adminRoute = express();
 
 function uploadFileWithMulter(storagepath = null) {
@@ -27,21 +29,31 @@ function uploadFileWithMulter(storagepath = null) {
     return multer({ storage: storage });
 }
 
-adminRoute.post('/admin/upload/products/excel', uploadFileWithMulter("files/excel").single('file'), AdminController.uploadExcelSheet);
+adminRoute.post('/admin/create', authenticate, AdminController.createAdmin);
 
-adminRoute.get('/admin/get/products', AdminController.getProducts);
+adminRoute.post('/admin/initialize', isFirstAdmin, AdminController.createAdmin);
 
-adminRoute.get('/admin/get/product', AdminController.getProduct);
+adminRoute.delete('/admin/:adminId', authenticate, AdminController.deleteAdmin);
 
-adminRoute.patch('/admin/update/product', AdminController.updateProduct);
+adminRoute.get('/admins', authenticate, AdminController.getAllAdmins);
 
-adminRoute.delete('/admin/delete/product', AdminController.deleteProduct);
+adminRoute.post('/admin/login', AdminController.signInAdmin);
 
-adminRoute.post('/admin/upload/product/image', uploadFileWithMulter().single('file'), AdminController.uploadProductImage);
+adminRoute.post('/admin/upload/products/excel', authenticate, uploadFileWithMulter("files/excel").single('file'), AdminController.uploadExcelSheet);
 
-adminRoute.get('/admin/product/images', AdminController.getProductImages);
+adminRoute.get('/admin/get/products', authenticate, AdminController.getProducts);
 
-adminRoute.delete('/admin/product/image', AdminController.deleteProductImage);
+adminRoute.get('/admin/get/product', authenticate, AdminController.getProduct);
+
+adminRoute.patch('/admin/update/product', authenticate, AdminController.updateProduct);
+
+adminRoute.delete('/admin/delete/product', authenticate, AdminController.deleteProduct);
+
+adminRoute.post('/admin/upload/product/image', authenticate, uploadFileWithMulter().single('file'), AdminController.uploadProductImage);
+
+adminRoute.get('/admin/product/images', authenticate, AdminController.getProductImages);
+
+adminRoute.delete('/admin/product/image', authenticate, AdminController.deleteProductImage);
 
 
 export default adminRoute;

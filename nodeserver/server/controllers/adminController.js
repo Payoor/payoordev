@@ -3,6 +3,7 @@ const XLSX = require('xlsx');
 
 import Product from "../models/product";
 import Image from "../models/image";
+import Admin from "../models/admin";
 
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
@@ -241,6 +242,111 @@ class AdminController {
             res.status(500).send({
                 message: 'Error deleting image',
                 error: error.message
+            });
+        }
+    }
+
+    async createAdmin(req, res) {
+        try {
+            const { username, password } = req.body;
+
+            // Validate input
+            if (!username || !password) {
+                return res.status(400).json({ error: 'Username and password are required' });
+            }
+
+            // Check if admin already exists
+            const existingAdmin = await Admin.findOne({ username });
+            if (existingAdmin) {
+                return res.status(400).json({ error: 'Username already exists' });
+            }
+
+            // Create new admin
+            const admin = new Admin({
+                username,
+                password
+            });
+
+            // Save admin and generate token
+            await admin.save();
+            const token = await admin.generateAuthToken();
+
+            res.status(201).json({ admin, token });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+
+    async signInAdmin(req, res) {
+        try {
+            const { username, password } = req.body;
+
+            // Validate input
+            if (!username || !password) {
+                return res.status(400).json({ error: 'Username and password are required' });
+            }
+
+            // Find admin by credentials
+            const admin = await Admin.findByCredentials(username, password);
+            const token = await admin.generateAuthToken();
+
+            res.json({ admin, token });
+        } catch (error) {
+            res.status(401).json({ error: 'Invalid login credentials' });
+        }
+    }
+
+    async deleteAdmin(req, res) {
+        try {
+            const { adminId } = req.params;
+
+            // Check if trying to delete self
+            if (adminId === req.admin._id.toString()) {
+                return res.status(400).json({
+                    error: 'Cannot delete your own admin account'
+                });
+            }
+
+            // Count total admins
+            const adminCount = await Admin.countDocuments({});
+            if (adminCount <= 1) {
+                return res.status(400).json({
+                    error: 'Cannot delete the last admin account'
+                });
+            }
+
+            // Find and delete the admin
+            const adminToDelete = await Admin.findById(adminId);
+
+            if (!adminToDelete) {
+                return res.status(404).json({
+                    error: 'Admin not found'
+                });
+            }
+
+            await Admin.findByIdAndDelete(adminId);
+
+            res.json({
+                message: 'Admin deleted successfully',
+                deletedAdmin: adminToDelete.username
+            });
+        } catch (error) {
+            res.status(400).json({
+                error: 'Failed to delete admin',
+                details: error.message
+            });
+        }
+    }
+
+    // Optional: Add a method to get all admins for reference
+    async getAllAdmins(req, res) {
+        try {
+            const admins = await Admin.find({}, 'username _id');
+            res.json(admins);
+        } catch (error) {
+            res.status(400).json({
+                error: 'Failed to fetch admins',
+                details: error.message
             });
         }
     }
