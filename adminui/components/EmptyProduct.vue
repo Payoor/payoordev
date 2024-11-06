@@ -9,6 +9,13 @@
 </template>
 
 <script>
+import CartIcon from './icons/CartIcon.vue';
+
+export default {
+  components: {
+    CartIcon
+  }
+}
 </script>
 
 <style lang="scss" scoped>
