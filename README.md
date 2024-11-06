@@ -1,241 +1,372 @@
-# Admin Product Management API Documentation
+# Admin API Documentation
 
 ## Base URL
 ```
-/admin
+/api/v1
 ```
 
-## Available Endpoints
-
-### 1. Upload Products Excel Sheet
-```http
-POST /admin/upload/products/excel
+## Authentication
+Most endpoints require authentication using a Bearer token in the Authorization header:
+```
+Authorization: Bearer <your_token>
 ```
 
-**Request:**
-- Content-Type: `multipart/form-data`
-- Body:
-  - `file`: Excel file (required)
+## Admin Management Endpoints
 
-**Response:**
-```json
-{
-  "message": "Excel sheet uploaded successfully"
-}
-```
+### Create Admin
+Creates a new admin user. Only available when no admins exist in the system.
 
-**Status Codes:**
-- 200: Success
-- 400: No file uploaded
-- 500: Server error
-
-### 2. Get Products List
-```http
-GET /admin/get/products
-```
-
-**Query Parameters:**
-- `page` (optional): Page number (default: 1)
-- `limit` (optional): Number of items per page (default: 10)
-
-**Response:**
-```json
-{
-  "message": "Products retrieved",
-  "page": 1,
-  "totalPages": 5,
-  "totalCount": 48,
-  "products": [
+- **URL:** `/admin/create`
+- **Method:** `POST`
+- **Auth Required:** No (only for first admin), Yes (for subsequent admins)
+- **Request Body:**
+  ```json
+  {
+    "username": "string",
+    "password": "string"
+  }
+  ```
+- **Success Response:**
+  - **Code:** 201
+  - **Content:**
+    ```json
     {
-      "_id": "product_id",
-      ...productData
+      "admin": {
+        "username": "string",
+        "_id": "string"
+      },
+      "token": "string"
     }
-  ]
-}
-```
-
-**Status Codes:**
-- 200: Success
-- 500: Server error
-
-### 3. Get Single Product
-```http
-GET /admin/get/product
-```
-
-**Query Parameters:**
-- `id` (required): Product ID
-
-**Response:**
-```json
-{
-  "_id": "product_id",
-  "images": [...],
-  ...productData
-}
-```
-
-**Status Codes:**
-- 200: Success
-- 400: Product ID missing
-- 404: Product not found
-- 500: Server error
-
-### 4. Update Product
-```http
-PATCH /admin/update/product
-```
-
-**Query Parameters:**
-- `id` (required): Product ID
-
-**Request Body:**
-- Object containing product data to update
-```json
-{
-  "field1": "value1",
-  "field2": "value2"
-}
-```
-
-**Response:**
-```json
-{
-  "message": "Product updated",
-  "product": {
-    "_id": "product_id",
-    ...updatedProductData
-  }
-}
-```
-
-**Status Codes:**
-- 200: Success
-- 400: Invalid update data
-- 404: Product not found
-- 500: Server error
-
-### 5. Delete Product
-```http
-DELETE /admin/delete/product
-```
-
-**Query Parameters:**
-- `id` (required): Product ID
-
-**Response:**
-```json
-{
-  "message": "Product deleted successfully",
-  "product": {
-    "_id": "product_id",
-    ...deletedProductData
-  }
-}
-```
-
-**Status Codes:**
-- 200: Success
-- 400: Product ID missing
-- 404: Product not found
-- 500: Server error
-
-### 6. Upload Product Image
-```http
-POST /admin/upload/product/image
-```
-
-**Query Parameters:**
-- `id` (required): Product ID
-
-**Request:**
-- Content-Type: `multipart/form-data`
-- Body:
-  - `file`: Image file (required)
-
-**Response:**
-```json
-{
-  "message": "product image uploaded successfully",
-  "image": {
-    "imageUrl": "https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/filename",
-    "product": "product_id",
-    "_id": "image_id"
-  }
-}
-```
-
-**Status Codes:**
-- 200: Success
-- 400: No file uploaded
-- 500: Server error
-
-### 7. Get Product Images
-```http
-GET /admin/product/images
-```
-
-**Query Parameters:**
-- `id` (required): Product ID
-
-**Response:**
-```json
-{
-  "message": "images found",
-  "images": [
+    ```
+- **Error Responses:**
+  - **Code:** 400
+    ```json
     {
-      "imageUrl": "image_url",
-      "product": "product_id",
-      "_id": "image_id"
+      "error": "Username already exists"
     }
-  ],
-  "total": 1
-}
-```
+    ```
+  - **Code:** 400
+    ```json
+    {
+      "error": "Username and password are required"
+    }
+    ```
 
-**Status Codes:**
-- 200: Success
-- 500: Server error
+### Initialize First Admin
+Special endpoint for creating the very first admin in the system.
 
-### 8. Delete Product Image
-```http
-DELETE /admin/product/image
-```
+- **URL:** `/admin/initialize`
+- **Method:** `POST`
+- **Auth Required:** No
+- **Request Body:** Same as Create Admin
+- **Success/Error Responses:** Same as Create Admin
+- **Additional Error:**
+  - **Code:** 403
+    ```json
+    {
+      "error": "Initial admin already exists. New admins must be created by an authenticated admin."
+    }
+    ```
 
-**Query Parameters:**
-- `id` (required): Image ID
+### Delete Admin
+Removes an admin from the system. Cannot delete the last admin or self.
 
-**Response:**
-```json
-{
-  "message": "Image deleted successfully",
-  "deletedImage": {
-    "imageUrl": "image_url",
-    "product": "product_id",
-    "_id": "image_id"
+- **URL:** `/admin/:adminId`
+- **Method:** `DELETE`
+- **Auth Required:** Yes
+- **URL Params:** `adminId=[string]`
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Admin deleted successfully",
+      "deletedAdmin": "username"
+    }
+    ```
+- **Error Responses:**
+  - **Code:** 400
+    ```json
+    {
+      "error": "Cannot delete your own admin account"
+    }
+    ```
+  - **Code:** 400
+    ```json
+    {
+      "error": "Cannot delete the last admin account"
+    }
+    ```
+
+### Get All Admins
+Retrieves a list of all admin users.
+
+- **URL:** `/admins`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    [
+      {
+        "_id": "string",
+        "username": "string"
+      }
+    ]
+    ```
+
+### Admin Login
+Authenticates an admin and returns a token.
+
+- **URL:** `/admin/login`
+- **Method:** `POST`
+- **Auth Required:** No
+- **Request Body:**
+  ```json
+  {
+    "username": "string",
+    "password": "string"
   }
-}
-```
+  ```
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "admin": {
+        "username": "string",
+        "_id": "string"
+      },
+      "token": "string"
+    }
+    ```
+- **Error Response:**
+  - **Code:** 401
+    ```json
+    {
+      "error": "Invalid login credentials"
+    }
+    ```
 
-**Status Codes:**
-- 200: Success
-- 400: Image ID missing/Invalid image ID format
-- 404: Image not found
-- 500: Server error
+## Product Management Endpoints
+
+### Upload Product Excel Sheet
+Uploads and processes an Excel file containing product data.
+
+- **URL:** `/admin/upload/products/excel`
+- **Method:** `POST`
+- **Auth Required:** Yes
+- **Content-Type:** `multipart/form-data`
+- **Request Body:**
+  - `file`: Excel file
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Excel sheet uploaded successfully"
+    }
+    ```
+
+### Get Products
+Retrieves a paginated list of products.
+
+- **URL:** `/admin/get/products`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `page` (optional, default: 1)
+  - `limit` (optional, default: 10)
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Products retrieved",
+      "page": number,
+      "totalPages": number,
+      "totalCount": number,
+      "products": [
+        {
+          "_id": "string",
+          ...productData
+        }
+      ]
+    }
+    ```
+
+### Get Single Product
+Retrieves details of a specific product.
+
+- **URL:** `/admin/get/product`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "_id": "string",
+      ...productData,
+      "images": [...imageData]
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "Product not found"
+    }
+    ```
+
+### Update Product
+Updates a product's information.
+
+- **URL:** `/admin/update/product`
+- **Method:** `PATCH`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product ID
+- **Request Body:** Object containing updated product data
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Product updated",
+      "product": {
+        "_id": "string",
+        ...updatedProductData
+      }
+    }
+    ```
+
+### Delete Product
+Removes a product from the system.
+
+- **URL:** `/admin/delete/product`
+- **Method:** `DELETE`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Product deleted successfully",
+      "product": {
+        "_id": "string",
+        ...deletedProductData
+      }
+    }
+    ```
+
+## Product Image Management
+
+### Upload Product Image
+Uploads an image for a specific product.
+
+- **URL:** `/admin/upload/product/image`
+- **Method:** `POST`
+- **Auth Required:** Yes
+- **Content-Type:** `multipart/form-data`
+- **Query Params:**
+  - `id`: Product ID
+- **Request Body:**
+  - `file`: Image file
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "product image uploaded successfully",
+      "image": {
+        "imageUrl": "string",
+        "product": "string",
+        "_id": "string"
+      }
+    }
+    ```
+
+### Get Product Images
+Retrieves all images associated with a product.
+
+- **URL:** `/admin/product/images`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "images found",
+      "images": [
+        {
+          "imageUrl": "string",
+          "product": "string",
+          "_id": "string"
+        }
+      ],
+      "total": number
+    }
+    ```
+
+### Delete Product Image
+Removes an image from a product.
+
+- **URL:** `/admin/product/image`
+- **Method:** `DELETE`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Image ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Image deleted successfully",
+      "deletedImage": {
+        "imageUrl": "string",
+        "product": "string",
+        "_id": "string"
+      }
+    }
+    ```
+- **Error Responses:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "Image not found"
+    }
+    ```
+  - **Code:** 400
+    ```json
+    {
+      "message": "Invalid image ID format"
+    }
+    ```
 
 ## Error Handling
-All endpoints follow a consistent error response format:
-```json
-{
-  "message": "Error description"
-}
-```
 
-## Implementation Notes
-1. All requests that require IDs should pass them as query parameters (`?id=...`)
-2. Pagination is available for the products list endpoint
-3. The Excel upload endpoint requires multipart/form-data with a file field named 'file'
-4. Product updates should be sent as a plain object, not an array
-5. Image uploads are stored in AWS S3 bucket 'payoorimages'
-6. Images are stored with unique filenames in the 'products/' directory of the S3 bucket
-7. All successful responses include a message field and the relevant data
+All endpoints may return these common error responses:
+
+- **Unauthorized Error:**
+  - **Code:** 401
+    ```json
+    {
+      "error": "Please authenticate",
+      "details": "error message"
+    }
+    ```
+
+- **Server Error:**
+  - **Code:** 500
+    ```json
+    {
+      "message": "error message"
+    }
+    ```
+
+## Notes for Frontend Implementation
+
+1. All authenticated requests must include the Bearer token in the Authorization header
+2. File uploads must use `multipart/form-data` content type
+3. Pagination is available for product listing
+4. Image URLs are served from AWS S3 bucket
+5. Excel sheet upload supports only the first sheet in the workbook
+6. The system maintains at least one admin user at all times
