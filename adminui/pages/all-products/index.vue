@@ -1,6 +1,6 @@
 <template>
   <DefaultLayout :page-text="'Products'">
-    <template v-if="products.length > 0">
+    <template v-if="products && products.length !== 0">
       <div class="table__container">
         <table>
           <thead>
@@ -24,7 +24,7 @@
                   <input
                     type="text"
                     v-model="editableTableData[rowIndex][key]"
-                    @blur="saveEdit(rowIndex, key)"
+                    @blur="saveEdit(rowIndex)"
                     @keyup.enter="saveEdit(rowIndex, key)"
                   />
                 </div>
@@ -113,10 +113,14 @@
 </template>
 
 <script>
-import axios from "axios";
 import Default from "../../layouts/Default.vue";
 
-const serverUrl = `https://server.development.payoor.store`;
+import { 
+  getAllProducts,
+  updateProductDetails,
+  uploadProductImage,
+  removeProduct 
+} from "../../api";
 
 export default {
   components: {
@@ -152,11 +156,14 @@ export default {
   },
 
   methods: {
-    async fetchProducts() {
-      try {
-        const response = await axios.get(`${serverUrl}/admin/get/products`);
+    getAllProducts,
+    updateProductDetails,
+    removeProduct,
+    uploadProductImage,
+    fetchProducts() {
+      this.getAllProducts().then((response) => {
         this.products = response.data.products;
-
+  
         this.editableTableData = this.products.map((item, index) => ({
           "S/N": index + 1,
           ...Object.fromEntries(
@@ -164,9 +171,10 @@ export default {
           ),
           _id: item._id, // Keep the _id for sending updates
         }));
-      } catch (error) {
-        console.log(error.response.data.message);
-      }
+
+      }).catch((error) => {
+        console.log(error.response.data);
+      })
     },
 
     editCell(rowIndex, colIndex) {
@@ -177,30 +185,17 @@ export default {
       return this.editingCell.row === row && this.editingCell.col === col;
     },
 
-    async saveEdit(rowIndex, colKey) {
+    saveEdit(rowIndex) {
       const editedProduct = { ...this.editableTableData[rowIndex] };
       const productId = editedProduct._id;
       delete editedProduct["S/N"];
 
-      try {
-        // Send the update request to the server
-        const response = await axios.patch(
-          `${serverUrl}/admin/update/product?id=${productId}`,
-          editedProduct
-        );
-
-        if (response.status == 200) {
-          this.fetchProducts();
-          console.log(
-            `Successfully updated row ${rowIndex + 1}, column ${colKey}`
-          );
-        }
-      } catch (error) {
+      this.updateProductDetails(productId, editedProduct).then((res) => {
+        this.fetchProducts();
+        this.editingCell = { row: null, col: null };
+      }).catch((error) => {
         console.error("Error updating product:", error);
-      }
-
-      // Clear the editing cell
-      this.editingCell = { row: null, col: null };
+      })
     },
 
     viewProduct(productId) {
@@ -231,42 +226,32 @@ export default {
       }
     },
 
-    async uploadImage() {
+    uploadImage() {
       this.hasError = false;
       this.isLoading = true;
       this.message = "";
 
-      try {
-        const formData = new FormData();
-        formData.append("file", this.selectedImage);
-
-        const response = await axios.post(
-          `${serverUrl}/admin/upload/product/image?id=${this.selectedProductId}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        this.selectedImage = null;
-        this.imagePreview = null;
-
-        const { message } = response.data;
-        this.message = message;
-
+      const formData = new FormData();
+      formData.append("file", this.selectedImage);
+      
+      this.uploadProductImage(this.selectedProductId, formData).then((response) => {
+        
+        this.message = response.data.message;
+        
         setTimeout(() => {
+          this.selectedImage = null;
+          this.imagePreview = null;
           this.isLoading = false;
           this.message = "";
           this.closeImageModal();
         }, 2000);
-      } catch (error) {
+
+      }).catch((error) => {
         this.isLoading = false;
         this.hasError = true;
         this.message = "Failed to upload product image. Please try again.";
-        console.error("Error uploading image:", error.response);
-      }
+        console.log(error.response.data);
+      });
     },
 
     openDeleteModal(productId) {
@@ -285,14 +270,8 @@ export default {
       this.isLoading = true;
       this.message = "";
 
-      try {
-        const response = await axios.delete(
-          `${serverUrl}/admin/delete/product?id=${this.selectedProductId}`
-        );
-        console.log("Product deleted successfully");
-
-        const { message } = response.data;
-        this.message = message;
+      this.removeProduct(this.selectedProductId).then((response) => {
+        this.message = response.data.message;
 
         setTimeout(() => {
           this.isLoading = false;
@@ -300,12 +279,13 @@ export default {
           this.fetchProducts();
           this.closeDeleteModal();
         }, 2000);
-      } catch (error) {
+
+      }).catch((error) => {
         this.isLoading = false;
         this.hasError = true;
         this.message = "Failed to delete product. Please try again.";
-        console.error("Error deleting product:", error.response);
-      }
+        console.log(error.response.data);
+      });
     },
   },
 

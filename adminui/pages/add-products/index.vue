@@ -54,13 +54,11 @@
 </template>
 
 <script>
-import axios from "axios";
 import Default from "../../layouts/Default.vue";
 import UploadIcon from "../../components/icons/UploadIcon.vue";
 import CircleXIcon from "../../components/icons/CircleXIcon.vue";
 import FileIcon from "../../components/icons/FileIcon.vue";
-
-const serverUrl = `https://server.development.payoor.store`;
+import { uploadExcelSheet } from "../../api";
 
 export default {
   components: {
@@ -81,12 +79,9 @@ export default {
       uploadMessage: "",
     };
   },
-  computed: {
-    showAuthBtn() {
-      return this.selectedFile !== null;
-    },
-  },
+
   methods: {
+    uploadExcelSheet,
     handleFileSelect(e) {
       const file = e.target.files[0];
       if (file) {
@@ -148,38 +143,25 @@ export default {
       reader.readAsDataURL(this.selectedFile);
     },
 
-    async uploadFile() {
+    uploadFile() {
       if (!this.fileLoaded) return;
       this.isLoading = true;
 
-      try {
-        const formData = new FormData();
-        formData.append("file", this.selectedFile);
+      const formData = new FormData();
+      formData.append("file", this.selectedFile);
 
-        const response = await axios.post(
-          `${serverUrl}/admin/upload/products/excel`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        const { message } = response.data;
-        this.uploadMessage = message;
-
+      this.uploadExcelSheet(formData).then((response) => {
+        this.uploadMessage = response.data.message;
         setTimeout(() => {
           this.redirectToProductsPage();
         }, 2000);
-      } catch (error) {
+
+      }).catch((error) => {
+        this.isLoading = false;
         this.hasError = true;
         this.uploadMessage = "Failed to upload file. Please try again.";
         console.log(error.response);
-      } finally {
-        this.isLoading = false;
-        this.selectedFile = null;
-      }
+      })
     },
 
     redirectToProductsPage() {

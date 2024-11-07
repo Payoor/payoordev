@@ -10,8 +10,8 @@
       <div class="details-wrapper">
         <div class="">
           <div class="product-image">
-            <template v-if="product.images && product.images.length !== 0">
-              <img :src="product.images[0]" alt="" />
+            <template v-if="productImages && productImages.length !== 0">
+              <img :src="productImages[0].imageUrl" alt="" />
             </template>
             <template v-else>
               <PlaceholderImageIcon class="img-placeholder" />
@@ -35,13 +35,11 @@
 </template>
 
 <script>
-import axios from "axios";
 import { formatAmount } from "../../helpers";
 import ChevronLeftIcon from "../../components/icons/ChevronLeftIcon.vue";
 import PlaceholderImageIcon from "../../components/icons/PlaceholderImageIcon.vue";
 import Default from "../../layouts/Default.vue";
-
-const serverUrl = `https://server.development.payoor.store`;
+import { getProductImages, getSingleProduct } from "../../api";
 
 export default {
   components: {
@@ -60,37 +58,24 @@ export default {
 
   methods: {
     formatAmount,
-    async getProductById() {
-      try {
-        const response = await axios.get(
-          `${serverUrl}/admin/get/product?id=${this.productId}`
-        );
-
-        this.product = response.data;
-        console.log(this.product);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async getProductImages() {
-      try {
-        const response = await axios.get(
-          `${serverUrl}/admin/product/images?id=${this.productId}`
-        );
-
-        this.productImages = response.data.images;
-        console.log(this.productImages);
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    getSingleProduct,
+    getProductImages
   },
 
   mounted() {
     this.productId = this.$route.params.id;
-    this.getProductById();
-    this.getProductImages();
+
+    this.getSingleProduct(this.productId).then((response) => {
+      this.product = response.data;
+    }).catch((error) => {
+      console.log(error.response);
+    });
+
+    this.getProductImages(this.productId).then((response) => {
+      this.productImages = response.data.images;
+    }).catch((error) => {
+      console.log(error.response)
+    })
   },
 };
 </script>
