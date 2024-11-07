@@ -1,50 +1,47 @@
 <template>
-  <div>
-    <div class="container">
-      <div class="container__content">
-        <div class="auth">
-          <h1 class="items__h1 margin-bottom-30">
-            <span>Payoor</span> <span>Products</span>
-          </h1>
+  <div class="page__container">
+    <HeaderText :page-text="'Admin Login'" />
+    <div class="form__container">
+      <form @submit.prevent="handleSubmit">
 
-          <form class="auth__form">
-            <div class="auth__form-group">
-              <label for="username" class="auth__label">Username:</label>
-              <input
-                type="text"
-                id="username"
-                class="auth__input auth__input--username"
-                placeholder="Enter your username"
-                v-model="username"
-              />
-            </div>
-            <div class="auth__form-group">
-              <label for="password" class="auth__label">Password:</label>
-              <input
-                type="password"
-                id="password"
-                class="auth__input auth__input--password"
-                placeholder="Enter your password"
-                v-model="password"
-              />
-            </div>
-            <button
-              type="submit"
-              class="auth__submit-btn btn primary"
-              :class="{ showAuthBtn, isLoading }"
-              @click.prevent="login"
-            >
-              <span>Log In</span>
-            </button>
-          </form>
+        <div class="form__group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            placeholder="Enter username"
+            v-model="username"
+          >
         </div>
-      </div>
+
+        <div class="form__group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            placeholder="Enter password"
+            v-model="password"
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="submit-btn"
+          :class="{ isLoading }"
+        >
+          <span>Login</span>
+        </button>
+
+        <Notification
+          v-if="message"
+          :message="message" 
+          :isError="hasError"
+        />
+      </form>
     </div>
   </div>
 </template>
 
 <script>
-const serverUrl = `https://chat.payoor.shop`;
+import { adminLogin } from "../api";
 
 export default {
   data() {
@@ -52,66 +49,42 @@ export default {
       username: "",
       password: "",
       isLoading: false,
-      errorMessage: "",
-    };
+      message: "",
+      hasError: false,
+    }
   },
-  computed: {
-    showAuthBtn() {
-      const { username, password } = this;
-      if (username.length && password.length === 10) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-  },
+
   methods: {
-    async login() {
-      const { username, password, showAuthBtn } = this;
+    adminLogin,
+    handleSubmit() {
+      this.isLoading = true;
+      this.message = "";
+      this.hasError = false;
 
-      if (showAuthBtn) {
-        this.isLoading = true;
-        this.errorMessage = "";
+      this.adminLogin({
+        username: this.username,
+        password: this.password,
+      }).then((res) => {
 
-        try {
-          const response = await fetch(`${serverUrl}/admin/authenticate`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
-          });
+        localStorage.setItem("adminToken", res.data.token);
+        localStorage.setItem("adminUsername", res.data.admin.username);
 
-          if (!response.ok) {
-            throw new Error("Login failed");
-          }
-
-          const data = await response.json();
-          console.log("Login successful:", data);
-
-          if (data.token) {
-            localStorage.setItem("adminToken", data.token);
-            localStorage.setItem("adminUsername", data.admin.username);
-            this.redirectToDashboard();
-          } else {
-            throw new Error("No token received from server");
-          }
-        } catch (error) {
-          console.error("Login error:", error);
-          this.errorMessage = error.message || "An error occurred during login";
-        } finally {
-          this.isLoading = false;
-        }
-      }
+        this.message = 'Login successful!'
+        setTimeout(() => {
+          this.redirectToDashboard();
+        }, 2000)
+        
+      }).catch((error) => {
+        console.log(error.response);
+        this.isLoading = false;
+        this.hasError = true;
+        this.message = error.response.data.error || "An error occurred during login";
+      })
     },
+
     redirectToDashboard() {
-      this.$router.push("/chat");
-    },
+      this.$router.push("/all-products");
+    }
   },
-  logout() {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUsername");
-    this.router.push("/");
-  },
-};
+}
 </script>

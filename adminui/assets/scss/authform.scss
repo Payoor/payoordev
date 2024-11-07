@@ -1,0 +1,43 @@
+.form__container {
+    color: rgba($white, .7);
+
+    .form__group {
+        margin-block: 2rem;
+
+        label {
+            display: block;
+            color: rgba($white, .7);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            background-color: rgb(47, 47, 47);
+            border-radius: 0.25rem;
+            color: rgba($white, .7);
+
+            &:focus {
+                outline: none;
+            }
+
+            @media screen and (min-width: 768px) {
+                width: 500px;
+            }
+        }
+    }
+
+    button {
+        background-color: $primary-color;
+        border-radius: 0.25rem;
+        color: $white;
+        opacity: .9;
+        transition: .2s;
+        cursor: pointer;
+        margin-bottom: 1rem;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

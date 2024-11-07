@@ -53,6 +53,7 @@ export default {
       '~/assets/scss/loader.scss',
       '~/assets/scss/table.scss',
       '~/assets/scss/chatbox.scss',
+      '~/assets/scss/authform.scss',
     ],
     hoistUseStatements: true
   },
