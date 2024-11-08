@@ -1,6 +1,6 @@
 <template>
   <div class="admin-sidebar">
-    <div class="header">Payoor Admin</div>
+    <div class="header">Hi, {{ adminUsername }}</div>
 
     <nav class="sidebar-items">
       <div class="item">
@@ -33,6 +33,25 @@
           </li>
         </ul>
       </div>
+
+      <div class="item">
+        <div class="item-category">Admin</div>
+        <ul>
+          <li>
+            <NuxtLink to="/admins">
+              <UserCogIcon />
+              <span>All Admins</span>
+            </NuxtLink>
+          </li>
+
+          <li>
+            <NuxtLink to="/create-admin">
+              <UserPlusIcon />
+              <span>Create Admin</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
     </nav>
   </div>
 </template>
@@ -41,12 +60,32 @@
 import CartIcon from "./icons/CartIcon.vue";
 import ChatBubbleIcon from "./icons/ChatBubbleIcon.vue";
 import AddPackageIcon from "./icons/AddPackageIcon.vue";
+import UserCogIcon from "./icons/UserCogIcon.vue";
+import UserPlusIcon from "./icons/UserPlusIcon.vue";
 
 export default {
   components: {
-    CartIcon: CartIcon,
-    ChatBubbleIcon: ChatBubbleIcon,
-    AddPackageIcon: AddPackageIcon,
+    CartIcon,
+    ChatBubbleIcon,
+    AddPackageIcon,
+    UserCogIcon,
+    UserPlusIcon,
+  },
+
+  data() {
+    return {
+      adminUsername: ""
+    }
+  },
+
+  methods: {
+    getAdminUsername() {
+      this.adminUsername = localStorage.getItem('adminUsername');
+    }
+  },
+
+  mounted() {
+    this.getAdminUsername()
   },
 };
 </script>
@@ -55,6 +94,8 @@ export default {
 .admin-sidebar {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  background-color: rgb(47, 47, 47);
 
   .header {
     padding: 1rem;
@@ -62,14 +103,13 @@ export default {
     background-color: $primary-color;
     font-size: 1.2rem;
     font-weight: bold;
+    text-transform: capitalize;
   }
 
   nav {
     flex-grow: 1;
-    padding-block: 3rem;
+    padding-block: 2rem;
     width: 100%;
-    height: 100vh;
-    background-color: rgb(47, 47, 47);
 
     .item-category {
       width: 100%;
