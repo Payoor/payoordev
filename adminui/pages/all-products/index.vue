@@ -95,7 +95,7 @@
     <Transition name="fade">
       <Modal
         v-if="showDeleteModal"
-        v-on:close-modal="showDeleteModal = false"
+        v-on:close-modal="closeDeleteModal"
         v-on:submit-form="deleteProduct"
         :modal-header="'Delete Product'"
         :confirm-text="'Yes, proceed'"
@@ -265,7 +265,7 @@ export default {
       this.message = "";
     },
 
-    async deleteProduct() {
+    deleteProduct() {
       this.hasError = false;
       this.isLoading = true;
       this.message = "";
@@ -311,55 +311,6 @@ input {
   &:focus {
     outline: none;
     border: 1px solid rgb(47, 47, 47);
-  }
-}
-
-.actions-cell {
-  position: relative;
-
-  .actions-toggle {
-    padding-inline: 1rem;
-    background-color: transparent;
-    color: rgba($white, 0.5);
-    border: none;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .dropdown {
-    position: absolute;
-    width: 150px;
-    height: auto;
-    display: grid;
-    background-color: rgb(47, 47, 47);
-    z-index: 1;
-    left: -100%;
-    top: 100%;
-    border-radius: 0.25rem;
-
-    @media screen and (min-width: 768px) {
-      left: -50%;
-    }
-
-    @media screen and (min-width: 1024px) {
-      left: -30%;
-    }
-
-    button {
-      background-color: transparent;
-      color: rgba($white, 0.5);
-      border: none;
-      font-size: 0.8rem;
-      padding: 1rem;
-      text-align: left;
-      transition: 0.2s;
-      cursor: pointer;
-
-      &:hover {
-        opacity: 0.7;
-      }
-    }
   }
 }
 

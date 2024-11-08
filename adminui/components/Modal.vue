@@ -41,7 +41,13 @@
 </template>
 
 <script>
+import CircleXIcon from "./icons/CircleXIcon.vue";
+
 export default {
+  components: {
+    CircleXIcon
+  },
+
   methods: {
     closeModal() {
       this.$emit('close-modal');
