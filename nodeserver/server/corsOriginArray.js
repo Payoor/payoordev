@@ -3,6 +3,7 @@ const corsOriginArray = [
     'https://admin.payoor.shop',
     'http://localhost:3000',
     'https://admin.development.payoor.store',
+    'https://chat.development.payoor.store',
     'http://localhost:57673'
 ]
 
