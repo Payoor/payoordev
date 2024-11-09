@@ -249,7 +249,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
 
     try {
       switch (currentPage) {
-        case 0: // Email submission
+        case 0:
           try {
             setState(() {
               email = value;
@@ -274,7 +274,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           }
           break;
 
-        case 1: // OTP verification
+        case 1:
           try {
             setState(() {
               otp = value;
@@ -284,8 +284,14 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
             _inputController.clear();
             final response = await AuthApiRoutes.verifyOtp(email, value);
 
-            if (canMoveToNextPage()) {
+            bool userExists = response.data['userExists'];
+
+            if (canMoveToNextPage() && !userExists) {
               nextPage();
+            } else {
+              await _fadeController.forward();
+
+              Navigator.pushNamed(context, '/authchat');
             }
           } catch (e) {
             setState(() {
@@ -299,7 +305,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           }
           break;
 
-        case 2: // Name
+        case 2:
           setState(() {
             name = value;
             submittedResponses[2] = true;
@@ -310,7 +316,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           }
           break;
 
-        case 3: // Phone
+        case 3:
           setState(() {
             phone = value;
             submittedResponses[3] = true;
@@ -321,7 +327,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           }
           break;
 
-        case 4: // Location
+        case 4:
           setState(() {
             location = value;
             submittedResponses[4] = true;
@@ -332,7 +338,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           }
           break;
 
-        case 5: // Shopping list
+        case 5:
           setState(() {
             shoppingList = value;
             submittedResponses[5] = true;
@@ -348,7 +354,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
     }
   }
 
-  // Add this method to handle OTP resend
   Future<void> _handleResendOtp() async {
     setState(() {
       isLoading = true;

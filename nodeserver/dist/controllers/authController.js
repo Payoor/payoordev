@@ -71,11 +71,12 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(200).json(response);
-              _context.next = 21;
+              _context.next = 22;
               break;
             case 17:
               _context.prev = 17;
               _context.t0 = _context["catch"](0);
+              console.log(_context.t0);
               errorResponse = {
                 success: false,
                 data: {
@@ -85,7 +86,7 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 21:
+            case 22:
             case "end":
               return _context.stop();
           }
@@ -100,26 +101,36 @@ var AuthController = /*#__PURE__*/function () {
     key: "verifyOtp",
     value: function () {
       var _verifyOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
-        var _req$body, email, otp, isValid, expiredResponse, response, invalidResponse, errorResponse;
+        var _req$body, email, otp, user, userExists, isValid, expiredResponse, response, invalidResponse, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
               _req$body = req.body, email = _req$body.email, otp = _req$body.otp;
               _context2.next = 4;
+              return _user["default"].findOne({
+                email: email
+              });
+            case 4:
+              user = _context2.sent;
+              userExists = false;
+              if (user) {
+                userExists = true;
+              }
+              _context2.next = 9;
               return _emailOtp["default"].findOne({
                 email: email,
                 otp: otp,
                 used: false
               });
-            case 4:
+            case 9:
               isValid = _context2.sent;
               if (!isValid) {
-                _context2.next = 15;
+                _context2.next = 20;
                 break;
               }
               if (!isValid.isExpired()) {
-                _context2.next = 9;
+                _context2.next = 14;
                 break;
               }
               expiredResponse = {
@@ -131,8 +142,8 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               return _context2.abrupt("return", res.status(400).json(expiredResponse));
-            case 9:
-              _context2.next = 11;
+            case 14:
+              _context2.next = 16;
               return _emailOtp["default"].updateOne({
                 email: email,
                 otp: otp
@@ -142,20 +153,21 @@ var AuthController = /*#__PURE__*/function () {
                   verifiedAt: new Date()
                 }
               });
-            case 11:
+            case 16:
               response = {
                 success: true,
                 data: {
                   email: email,
                   message: 'OTP verified successfully',
                   verified: true,
-                  timestamp: new Date().toISOString()
+                  timestamp: new Date().toISOString(),
+                  userExists: userExists
                 }
-              };
+              }; //console.log(response);
               res.status(200).json(response);
-              _context2.next = 17;
+              _context2.next = 22;
               break;
-            case 15:
+            case 20:
               invalidResponse = {
                 success: false,
                 data: {
@@ -165,11 +177,11 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(400).json(invalidResponse);
-            case 17:
-              _context2.next = 23;
+            case 22:
+              _context2.next = 28;
               break;
-            case 19:
-              _context2.prev = 19;
+            case 24:
+              _context2.prev = 24;
               _context2.t0 = _context2["catch"](0);
               errorResponse = {
                 success: false,
@@ -180,11 +192,11 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 23:
+            case 28:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[0, 19]]);
+        }, _callee2, null, [[0, 24]]);
       }));
       function verifyOtp(_x3, _x4) {
         return _verifyOtp.apply(this, arguments);

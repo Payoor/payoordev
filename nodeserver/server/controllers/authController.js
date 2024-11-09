@@ -45,6 +45,7 @@ class AuthController {
 
             res.status(200).json(response);
         } catch (error) {
+            console.log(error)
             const errorResponse = {
                 success: false,
                 data: {
@@ -61,6 +62,13 @@ class AuthController {
     async verifyOtp(req, res) {
         try {
             const { email, otp } = req.body;
+
+            const user = await User.findOne({ email });
+            let userExists = false;
+
+            if (user) {
+                userExists = true;
+            }
 
             const isValid = await EmailOtp.findOne({
                 email,
@@ -98,8 +106,11 @@ class AuthController {
                         message: 'OTP verified successfully',
                         verified: true,
                         timestamp: new Date().toISOString(),
+                        userExists
                     }
                 };
+
+                //console.log(response);
 
                 res.status(200).json(response);
             } else {
