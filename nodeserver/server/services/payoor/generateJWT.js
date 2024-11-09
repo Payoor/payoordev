@@ -1,28 +1,33 @@
 import jwt from 'jsonwebtoken';
 
-const User = require("../../models/user");
+const JwtToken = require("../../models/jwttoken");
+
+const JWT_SECRET = process.env.SECRET_KEY;
+const EXPIRATION_TIME = '30d';
 
 async function generateJWT({ userid }) {
     try {
-        let user = await User.findOne({ _id: userid });
+        const expiryDate = new Date();
+        expiryDate.setMonth(expiryDate.getMonth() + 1);
 
-        if (user) {
-            const user_payload = {
-                _id: user._id
-            };
+        const newToken = new JwtToken({
+            userId: userid,
+            expiry: expiryDate,
+        });
 
-            const token = jwt.sign(user_payload, process.env.SECRET_KEY, { expiresIn: '24h' });
+        await newToken.save();
 
-            user.tokens.push({ token });
-            await user.save();
+        const payload = {
+            userId: userid,
+            tokenId: newToken._id,
+        };
 
-            return token;
-        } else {
-            return false;
-        }
+        const jwtToken = jwt.sign(payload, JWT_SECRET, { expiresIn: EXPIRATION_TIME });
+
+        return jwtToken;
     } catch (error) {
-        console.error("Error generating JWT:", error);
-        throw error;
+        console.error('Error generating JWT:', error);
+        throw new Error('Could not generate JWT');
     }
 }
 

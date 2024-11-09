@@ -9,10 +9,10 @@ const server = require('http').createServer(app);
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 import path from 'path';
-import cors from 'cors';
+import cors from 'cors'; 
 import bodyParser from 'body-parser';
 import fs from 'fs';
-
+ 
 import verifyToken from './services/payoor/verifyToken';
 
 import File from './models/file';
