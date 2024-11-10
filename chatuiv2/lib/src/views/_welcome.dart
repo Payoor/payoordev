@@ -89,11 +89,11 @@ class _WelcomeState extends State<Welcome> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedOpacity(
+              /*AnimatedOpacity(
                 opacity: isInitialAnimationComplete ? 1.0 : 0.0,
                 duration: Duration(milliseconds: 500),
                 child: HeaderRow(),
-              ),
+              ),*/
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

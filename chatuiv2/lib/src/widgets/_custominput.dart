@@ -266,7 +266,7 @@ class _CustomInputState extends State<CustomInput> {
                       : AppColors.primaryColor.withOpacity(0.5),
                 ),
                 child: Icon(
-                  Icons.arrow_forward,
+                  Icons.arrow_upward,
                   color: Colors.white,
                   size: 15,
                 ),

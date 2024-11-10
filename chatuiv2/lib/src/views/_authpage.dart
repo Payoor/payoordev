@@ -9,6 +9,7 @@ import 'package:chatuiv2/src/widgets/_animatedcartloader.dart';
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_authmessages.dart';
 import 'package:chatuiv2/src/classes/_authapiroutes.dart';
+import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -282,13 +283,27 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
             });
 
             _inputController.clear();
-            final response = await AuthApiRoutes.verifyOtp(email, value);
+            dynamic response = await AuthApiRoutes.verifyOtp(email, value);
 
             bool userExists = response.data['userExists'];
 
             if (canMoveToNextPage() && !userExists) {
               nextPage();
             } else {
+              final authProv = Provider.of<AuthProv>(context, listen: false);
+              String userId = response.data['id'];
+              authProv.userId = userId;
+
+              response = await AuthApiRoutes.getJWT(userId);
+
+              if (response.success) {
+                final String userJWT = response.data['token'];
+
+                authProv.jwt = userJWT;
+
+                JwtManager.saveToken(userJWT);
+              }
+
               await _fadeController.forward();
 
               Navigator.pushNamed(context, '/authchat');
@@ -394,7 +409,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
         shoppingList: shoppingList,
       );
 
-      print(response.data['user']);
+      //print(response.data['user']);
       final authProv = Provider.of<AuthProv>(context, listen: false);
       authProv.userId = response.data['user']['id'];
 

@@ -8,11 +8,11 @@ var _visitor = _interopRequireDefault(require("../models/visitor"));
 var _user = _interopRequireDefault(require("../models/user"));
 var _message = _interopRequireDefault(require("../models/message"));
 var _emailOtp = _interopRequireDefault(require("../models/emailOtp"));
-var _messageController = _interopRequireDefault(require("./messageController"));
+var _authChatController = _interopRequireDefault(require("./authChatController"));
 var _generateOTP = _interopRequireDefault(require("../services/payoor/generateOTP"));
 var _verifyOtp2 = _interopRequireDefault(require("../services/payoor/verifyOtp"));
 var _generateJWT3 = _interopRequireDefault(require("../services/payoor/generateJWT"));
-var _getValidUser = _interopRequireDefault(require("../services/payoor/getValidUser"));
+var _getValidUser2 = _interopRequireDefault(require("../services/payoor/getValidUser"));
 var _sendOtp = _interopRequireDefault(require("../services/resend/sendOtp"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -24,6 +24,7 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var jwt = require('jsonwebtoken');
 var AuthController = /*#__PURE__*/function () {
   function AuthController() {
     _classCallCheck(this, AuthController);
@@ -161,7 +162,8 @@ var AuthController = /*#__PURE__*/function () {
                   message: 'OTP verified successfully',
                   verified: true,
                   timestamp: new Date().toISOString(),
-                  userExists: userExists
+                  userExists: userExists,
+                  id: user._id
                 }
               }; //console.log(response);
               res.status(200).json(response);
@@ -305,7 +307,7 @@ var AuthController = /*#__PURE__*/function () {
               response = {
                 success: true,
                 data: {
-                  message: 'User created successfully',
+                  message: 'JWT generated successfully',
                   token: token
                 }
               };
@@ -335,6 +337,73 @@ var AuthController = /*#__PURE__*/function () {
         return _generateJWT2.apply(this, arguments);
       }
       return generateJWT;
+    }()
+  }, {
+    key: "getValidUser",
+    value: function () {
+      var _getValidUser = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+        var _req$authData, userId, tokenId, validUser, userResponse, response, notFoundResponse, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _context5.prev = 0;
+              _req$authData = req.authData, userId = _req$authData.userId, tokenId = _req$authData.tokenId;
+              _context5.next = 4;
+              return _user["default"].findOne({
+                _id: userId
+              });
+            case 4:
+              validUser = _context5.sent;
+              if (validUser) {
+                userResponse = {
+                  _id: validUser._id,
+                  email: validUser.email,
+                  name: validUser.name,
+                  phoneNumber: validUser.phoneNumber
+                };
+                response = {
+                  success: true,
+                  data: {
+                    message: 'User found',
+                    user: userResponse
+                  }
+                }; //console.log(response);
+                res.status(200).json(response);
+              } else {
+                notFoundResponse = {
+                  success: false,
+                  data: {
+                    message: 'User not found',
+                    timestamp: new Date().toISOString()
+                  }
+                };
+                res.status(404).json(notFoundResponse);
+              }
+              _context5.next = 13;
+              break;
+            case 8:
+              _context5.prev = 8;
+              _context5.t0 = _context5["catch"](0);
+              console.log(_context5.t0);
+              errorResponse = {
+                success: false,
+                data: {
+                  message: _context5.t0.message || 'Failed to create user',
+                  error: process.env.NODE_ENV === 'development' ? _context5.t0.toString() : undefined,
+                  timestamp: new Date().toISOString()
+                }
+              };
+              res.status(500).json(errorResponse);
+            case 13:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[0, 8]]);
+      }));
+      function getValidUser(_x9, _x10) {
+        return _getValidUser.apply(this, arguments);
+      }
+      return getValidUser;
     }()
   }]);
 }();

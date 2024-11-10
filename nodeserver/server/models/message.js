@@ -1,42 +1,28 @@
 const mongoose = require('mongoose');
 
-// Define the schema for the Message model
 const messageSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  visitor: { type: mongoose.Schema.Types.ObjectId, ref: 'Visitor' },
-  content: {
+  text: {
     type: String,
     required: true
   },
-  userPhoneNumber: {
+  clienttimestamp: {
     type: String,
-  },
-  userEmail: {
-    type: String,
-  },
-  isUser: {
-    type: Boolean,
     required: true
   },
-  isAdmin: {
-    type: Boolean,
-    default: false
-  },
-  isLoggedIn: {
-    type: Boolean,
-    required: true
-  },
-  isSeen: {
-    type: Boolean,
-    default: false
-  },
-  client_timestamp: {
-    type: String,
-  },
-  server_timestamp: {
+  servertimestamp: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
+  isRead: {
+    type: Boolean,
+    default: false
+  },
+  isClient: {
+    type: Boolean,
+    default: false
+  },
+}, {
+  timestamps: false
 });
 
 const Message = mongoose.model('Message', messageSchema);

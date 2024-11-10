@@ -1,9 +1,11 @@
+const jwt = require('jsonwebtoken');
+
 import Visitor from "../models/visitor";
 import User from "../models/user";
 import Message from "../models/message";
 import EmailOtp from "../models/emailOtp";
 
-import MessageController from "./messageController";
+import MessageController from "./authChatController";
 
 import generateOTP from "../services/payoor/generateOTP";
 import verifyOtp from "../services/payoor/verifyOtp";
@@ -106,7 +108,8 @@ class AuthController {
                         message: 'OTP verified successfully',
                         verified: true,
                         timestamp: new Date().toISOString(),
-                        userExists
+                        userExists,
+                        id: user._id
                     }
                 };
 
@@ -209,12 +212,63 @@ class AuthController {
             const response = {
                 success: true,
                 data: {
-                    message: 'User created successfully',
+                    message: 'JWT generated successfully',
                     token
                 }
             };
 
             res.status(200).json(response);
+        } catch (error) {
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to create user',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
+        }
+    }
+
+    async getValidUser(req, res) {
+        try {
+            const { userId, tokenId } = req.authData;
+
+            const validUser = await User.findOne({ _id: userId });
+
+            if (validUser) {
+                const userResponse = {
+                    _id: validUser._id,
+                    email: validUser.email,
+                    name: validUser.name,
+                    phoneNumber: validUser.phoneNumber
+                };
+
+                const response = {
+                    success: true,
+                    data: {
+                        message: 'User found',
+                        user: userResponse
+                    }
+                };
+
+                //console.log(response);
+
+                res.status(200).json(response);
+            } else {
+                const notFoundResponse = {
+                    success: false,
+                    data: {
+                        message: 'User not found',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                res.status(404).json(notFoundResponse);
+            }
         } catch (error) {
             console.log(error);
             const errorResponse = {

@@ -1,5 +1,7 @@
 import express from 'express';
 
+import verifyToken from "../services/payoor/verifyToken";
+
 import AuthController from "../controllers/authController";
 
 const authRoute = express();
@@ -12,4 +14,6 @@ authRoute.post('/auth/signup', AuthController.handleSignUp);
 
 authRoute.post('/auth/genjwt', AuthController.generateJWT);
 
-export default authRoute;   
+authRoute.get('/auth/getvaliduser', verifyToken, AuthController.getValidUser);
+
+export default authRoute;

@@ -99,4 +99,27 @@ class AuthApiRoutes {
       throw Exception('Failed to get JWT: $e');
     }
   }
+
+  static Future<ServerResponse> getValidUser(String jwtToken) async {
+    try {
+      final uri = Uri.parse('${Urls.baseUrl}/auth/getvaliduser');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to get user data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to get user data: $e');
+    }
+  }
 }

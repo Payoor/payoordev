@@ -20,7 +20,7 @@ class HeaderRow extends StatelessWidget {
           Text(
             "Payoor",
             style: TextStyle(
-                fontSize: 17,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryColor),
           ),
@@ -29,7 +29,7 @@ class HeaderRow extends StatelessWidget {
             child: Icon(
               Icons.menu,
               color: AppColors.primaryColor,
-              size: 24,
+              size: 30,
             ),
           )
         ],
