@@ -10,7 +10,7 @@ app = Flask(__name__)
 load_dotenv()
 
 api_key = os.getenv('API_KEY')
-PORT = os.getenv('PORT')
+port = int(os.getenv('PORT', 8084))
 
 openai = OpenAI(api_key=api_key)
 
