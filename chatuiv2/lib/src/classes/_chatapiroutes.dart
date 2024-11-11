@@ -9,7 +9,7 @@ import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 class ChatApiRoutes {
   static Future<ServerResponse> sendUserMessage(Message message) async {
     try {
-      final uri = Uri.parse('${Urls.baseUrl}/message/user/send');
+      final uri = Uri.parse('${Urls.llmUrl}/message/user/send');
       final jwt = JwtManager.getToken();
 
       final response = await http.post(

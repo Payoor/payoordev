@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
+import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 
@@ -143,6 +144,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
               );
             }
 
+            if (message.isLoading) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: AiLoadingIndicator(),
+              );
+            }
+
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Container(
@@ -254,6 +262,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         if (mounted) {
           context.read<MessageProvider>().addMessage(message);
+
+          context.read<MessageProvider>().addMessage(Message(
+                text: '',
+                isClient: false,
+                isRead: false,
+                isLoading: true,
+              ));
         }
 
         final response = await ChatApiRoutes.sendUserMessage(message);
@@ -267,14 +282,16 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             isRead: false,
           );
 
-          print(chatResponse);
-          print('chatResponse');
+         // print(chatResponse);
+          //print('chatResponse');
 
           if (mounted) {
+            context.read<MessageProvider>().removeLastMessage(); 
             context.read<MessageProvider>().addMessage(aiMessage);
           }
         } else {
           if (mounted) {
+            context.read<MessageProvider>().removeLastMessage(); 
             final errorMessage = Message(
               text: 'Sorry, there was an error processing your message.',
               isClient: false,
@@ -291,6 +308,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             isClient: false,
             isRead: false,
           );
+          context.read<MessageProvider>().removeLastMessage(); 
           context.read<MessageProvider>().addMessage(errorMessage);
         }
 

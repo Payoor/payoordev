@@ -16,6 +16,13 @@ class MessageProvider extends ChangeNotifier {
     return messages.reversed.toList();
   }
 
+  void removeLastMessage() {
+    if (_messages.isNotEmpty) {
+      _messages.removeLast();
+      notifyListeners();
+    }
+  }
+
   void clearMessages() {
     _messages.clear();
     notifyListeners();
