@@ -43,9 +43,8 @@ For detailed explanation on how things work, check out the [documentation](https
 ### View Products
 - **Route:** `/all-products`
 - **Description:** Contains a table listing all added products with each product having an actions cell to trigger following actions:
-
   - **Upload image:** Opens a modal containing a form to upload an image for a product.
-  - **Delete product:** Opens a modal to confirm the decision to delet a product.
+  - **Delete product:** Opens a modal to confirm the decision to delete a product.
   - **View product:** Navigates to the single product page.
 
 ### View Product
