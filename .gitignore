@@ -8,3 +8,7 @@ generate-key.js
 files/
 commands.txt
 payoorai/
+# .gitignore
+.env
+*.pyc
+__pycache__/
