@@ -23887,7 +23887,7 @@ s=p}while(true)switch(s){case 0:p=4
 n=A.e5($.azb()+"/message/user/send")
 window.localStorage.getItem("jwtToken")
 k=t.N
-j=A.ay(["Content-Type","application/json"],k,k)
+j=A.ay(["Content-Type","application/json","Accept","application/json","Origin","https://chat.development.payoor.store"],k,k)
 s=7
 return A.W(A.VL(n,B.aF.ru(A.ay(["text",a.a,"clienttimestamp",a.b.Tg(),"isRead",!1],k,t.K),null),j),$async$XN)
 case 7:m=c

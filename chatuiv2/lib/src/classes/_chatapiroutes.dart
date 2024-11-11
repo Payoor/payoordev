@@ -16,6 +16,8 @@ class ChatApiRoutes {
         uri,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': 'https://chat.development.payoor.store',
           //'Authorization': 'Bearer $jwt',
         },
         body: jsonEncode({

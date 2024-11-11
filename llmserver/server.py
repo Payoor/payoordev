@@ -19,17 +19,20 @@ ALLOWED_ORIGINS = [
     'https://admin.payoor.shop',
     'https://admin.development.payoor.store',
     'https://chat.development.payoor.store',
+    'https://chat.development.payoor.store',
     'http://localhost:63882'
 ]
 
-CORS(app, resources={
-    r"/*": {  # Match all routes
-        "origins": ALLOWED_ORIGINS,
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True 
-    }
-})
+CORS(app, 
+     resources={
+        r"/*": {
+            "origins": ALLOWED_ORIGINS,
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True,
+            "expose_headers": ["Content-Range", "X-Content-Range"]
+        }
+     })
 
 GROCERY_SYSTEM_PROMPT = '''# Grocery Shopping Assistant System Prompt
 
