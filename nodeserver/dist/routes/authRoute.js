@@ -5,13 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var _express = _interopRequireDefault(require("express"));
+var _verifyToken = _interopRequireDefault(require("../services/payoor/verifyToken"));
 var _authController = _interopRequireDefault(require("../controllers/authController"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var authRoute = (0, _express["default"])();
-authRoute.get('/auth/getvaliduser', _authController["default"].getValidUser);
-authRoute.get('/auth/getunauthmsg', _authController["default"].getUnAuthenticatedMsg);
-authRoute.get('/auth/getvisitor', _authController["default"].getCurrentVisitorData);
-authRoute.post('/auth/email', _authController["default"].generateOtp);
-authRoute.post('/auth/otp', _authController["default"].verifyOtp);
-authRoute.post('/auth/name', _authController["default"].saveUserName);
+authRoute.post('/auth/email/otp', _authController["default"].generateOtp);
+authRoute.post('/auth/email/verify', _authController["default"].verifyOtp);
+authRoute.post('/auth/signup', _authController["default"].handleSignUp);
+authRoute.post('/auth/genjwt', _authController["default"].generateJWT);
+authRoute.get('/auth/getvaliduser', _verifyToken["default"], _authController["default"].getValidUser);
 var _default = exports["default"] = authRoute;

@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
+var _user = _interopRequireDefault(require("../models/user"));
 var _message = _interopRequireDefault(require("../models/message"));
 var _visitor = _interopRequireDefault(require("../models/visitor"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
@@ -16,129 +17,55 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-var MessageController = /*#__PURE__*/function () {
-  function MessageController() {
-    _classCallCheck(this, MessageController);
+var AuthChatController = /*#__PURE__*/function () {
+  function AuthChatController() {
+    _classCallCheck(this, AuthChatController);
   }
-  return _createClass(MessageController, [{
-    key: "saveVisitorMessage",
+  return _createClass(AuthChatController, [{
+    key: "sendUserMessage",
     value: function () {
-      var _saveVisitorMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-        var _req$body, message, isLoggedIn, isUser, username, timestamp, visitoridentifier, visitor, newMessage;
+      var _sendUserMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+        var response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
-              _req$body = req.body, message = _req$body.message, isLoggedIn = _req$body.isLoggedIn, isUser = _req$body.isUser, username = _req$body.username, timestamp = _req$body.timestamp, visitoridentifier = _req$body.visitoridentifier;
-              _context.next = 4;
-              return _visitor["default"].findOneAndUpdate({
-                identifier: visitoridentifier
-              }, {
-                $set: {
-                  username: username,
-                  identifier: visitoridentifier
-                }
-              }, {
-                "new": true,
-                upsert: true
-              });
-            case 4:
-              visitor = _context.sent;
-              newMessage = new _message["default"]({
-                content: message,
-                visitor: visitor._id,
-                client_timestamp: timestamp,
-                isUser: isUser,
-                isLoggedIn: isLoggedIn
-              });
-              _context.next = 8;
-              return newMessage.save();
-            case 8:
-              res.status(201).send({
-                visitorData: visitor
-              });
-              _context.next = 15;
-              break;
-            case 11:
-              _context.prev = 11;
-              _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
-              res.status(500).send({
-                error: _context.t0
-              });
-            case 15:
+              try {
+                console.log(req.body);
+                response = {
+                  success: true,
+                  data: {
+                    message: 'Success response',
+                    chatresponse: {
+                      text: "this is an AI response",
+                      isClient: false,
+                      isRead: false
+                    }
+                  }
+                };
+                res.status(200).json(response);
+              } catch (error) {
+                console.log(error);
+                errorResponse = {
+                  success: false,
+                  data: {
+                    message: error.message || 'Failed to send chat',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                  }
+                };
+                res.status(500).json(errorResponse);
+              }
+            case 1:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 11]]);
+        }, _callee);
       }));
-      function saveVisitorMessage(_x, _x2) {
-        return _saveVisitorMessage.apply(this, arguments);
+      function sendUserMessage(_x, _x2) {
+        return _sendUserMessage.apply(this, arguments);
       }
-      return saveVisitorMessage;
-    }()
-  }, {
-    key: "getVisitorMessages",
-    value: function () {
-      var _getVisitorMessages = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(visitor) {
-        var visitorMessages;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.next = 2;
-              return _message["default"].find({
-                visitor: visitor
-              }).sort({
-                client_timestamp: 1
-              });
-            case 2:
-              visitorMessages = _context2.sent;
-              return _context2.abrupt("return", visitorMessages);
-            case 4:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }));
-      function getVisitorMessages(_x3) {
-        return _getVisitorMessages.apply(this, arguments);
-      }
-      return getVisitorMessages;
-    }()
-  }, {
-    key: "saveUserMessage",
-    value: function () {
-      var _saveUserMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }));
-      function saveUserMessage(_x4, _x5) {
-        return _saveUserMessage.apply(this, arguments);
-      }
-      return saveUserMessage;
-    }()
-  }, {
-    key: "saveAdminMessage",
-    value: function () {
-      var _saveAdminMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4);
-      }));
-      function saveAdminMessage(_x6, _x7) {
-        return _saveAdminMessage.apply(this, arguments);
-      }
-      return saveAdminMessage;
+      return sendUserMessage;
     }()
   }]);
 }();
-var _default = exports["default"] = new MessageController();
+var _default = exports["default"] = new AuthChatController();

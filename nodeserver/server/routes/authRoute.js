@@ -1,19 +1,19 @@
 import express from 'express';
 
+import verifyToken from "../services/payoor/verifyToken";
+
 import AuthController from "../controllers/authController";
 
 const authRoute = express();
 
-authRoute.get('/auth/getvaliduser', AuthController.getValidUser);
+authRoute.post('/auth/email/otp', AuthController.generateOtp);
 
-authRoute.get('/auth/getunauthmsg', AuthController.getUnAuthenticatedMsg);
+authRoute.post('/auth/email/verify', AuthController.verifyOtp);
 
-authRoute.get('/auth/getvisitor', AuthController.getCurrentVisitorData);
+authRoute.post('/auth/signup', AuthController.handleSignUp);
 
-authRoute.post('/auth/email', AuthController.generateOtp);
+authRoute.post('/auth/genjwt', AuthController.generateJWT);
 
-authRoute.post('/auth/otp', AuthController.verifyOtp);
+authRoute.get('/auth/getvaliduser', verifyToken, AuthController.getValidUser);
 
-authRoute.post('/auth/name', AuthController.saveUserName);
-
-export default authRoute;  
+export default authRoute;

@@ -1,8 +1,11 @@
+const jwt = require('jsonwebtoken');
+
 import Visitor from "../models/visitor";
 import User from "../models/user";
 import Message from "../models/message";
+import EmailOtp from "../models/emailOtp";
 
-import MessageController from "./messageController";
+import MessageController from "./authChatController";
 
 import generateOTP from "../services/payoor/generateOTP";
 import verifyOtp from "../services/payoor/verifyOtp";
@@ -13,316 +16,271 @@ import sendOtp from "../services/resend/sendOtp";
 
 class AuthController {
 
-    async getCurrentVisitorData(req, res) {
-        try {
-            const { visitorId } = req.query;
-
-            const visitorData = await Visitor.findOne({ identifier: visitorId });
-
-            if (visitorData) {
-                const visitorMessages = await MessageController.getVisitorMessages(visitorData._id);
-
-                const userdetails = {
-                    username: visitorData.username,
-                    messages: visitorMessages
-                }
-
-                res.status(200).send({ userdetails });
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).send({ error });
-        }
-    }
-
-    async getUnAuthenticatedMsg(req, res) {
-        try {
-            const { visitorId } = req.query;
-
-            //const visitor = await Visitor.findOne({ identifier: visitorId })
-            const visitor = new Visitor({ identifier: visitorId })
-
-            const newPayoorMessage = new Message({
-                content: `It appears you aren't logged in please log in using your email address`,
-                visitor: visitor._id,
-                isUser: false,
-                isLoggedIn: false
-            });
-
-            await newPayoorMessage.save();
-
-            res.status(200).send({
-                username: 'Visitor',
-                payoormessage: {
-                    _id: newPayoorMessage._id,
-                    msg: newPayoorMessage.content,
-                    isUser: newPayoorMessage.isUser,
-                    isLoggedIn: newPayoorMessage.isLoggedIn
-                },
-            });
-
-        } catch (error) {
-            console.log(error)
-            res.status(500).send({ error });
-        }
-    }
-
     async generateOtp(req, res) {
         try {
-            const { message, timestamp, isUser, isLoggedIn } = req.body;
-            const { visitoridentifier } = req.query;
-
-            const email = message;
+            const { email } = req.body;
 
             const otpcode = await generateOTP();
 
-            const data = await sendOtp({
+            await EmailOtp.deleteMany({ email });
+
+            const mailResponse = await sendOtp({
                 email,
                 otp: otpcode
             });
 
-            const visitor = await Visitor.findOneAndUpdate(
-                { identifier: visitoridentifier },
-                {
-                    $set: {
-                        username: message,
-                        email: message,
-                        otp: otpcode
-                    }
-                },
-                {
-                    new: true,
-                    upsert: true
+            const newEmailOtp = new EmailOtp({
+                email,
+                otp: otpcode
+            });
+            await newEmailOtp.save();
+
+            const response = {
+                success: true,
+                data: {
+                    email,
+                    message: 'OTP sent successfully',
+                    timestamp: new Date().toISOString(),
+                    mailResponse
                 }
-            );
+            };
 
-            const newMessage = new Message({
-                content: message,
-                visitor: visitor._id,
-                client_timestamp: timestamp,
-                isUser,
-                isLoggedIn
-            });
-
-            const newPayoorMessage = new Message({
-                content: `I just sent an OTP to ${email}. Please check the email and send this OTP to me`,
-                visitor: visitor._id,
-                isUser: false,
-                isLoggedIn
-            });
-
-            await newMessage.save();
-
-            await newPayoorMessage.save();
-
-            res.status(200).send({
-                username: email,
-                payoormessage: {
-                    _id: newPayoorMessage._id,
-                    msg: newPayoorMessage.content,
-                    isUser: newPayoorMessage.isUser,
-                    isLoggedIn
-                },
-            });
+            res.status(200).json(response);
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ error });
+            console.log(error)
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to send OTP',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
         }
     }
 
     async verifyOtp(req, res) {
         try {
-            const { message, timestamp, isUser, isLoggedIn } = req.body;
-            const { visitoridentifier } = req.query;
+            const { email, otp } = req.body;
 
-            const currentVisitor = await Visitor.findOne({ identifier: visitoridentifier });
-            const visitorFromOtp = await verifyOtp({ otp: message, visitoridentifier });
+            const user = await User.findOne({ email });
+            let userExists = false;
 
-            const newMessage = new Message({
-                content: message,
-                visitor: currentVisitor._id,
-                client_timestamp: timestamp,
-                isUser,
-                isLoggedIn
+            if (user) {
+                userExists = true;
+            }
+
+            const isValid = await EmailOtp.findOne({
+                email,
+                otp,
+                used: false
             });
 
-            await newMessage.save();
+            if (isValid) {
+                if (isValid.isExpired()) {
+                    const expiredResponse = {
+                        success: false,
+                        data: {
+                            message: 'OTP has expired',
+                            timestamp: new Date().toISOString(),
+                            verified: false
+                        }
+                    };
+                    return res.status(400).json(expiredResponse);
+                }
 
-            if (visitorFromOtp) {
-                const currentUser = await User.findOneAndUpdate(
-                    { email: visitorFromOtp.email },
+                await EmailOtp.updateOne(
+                    { email, otp },
                     {
                         $set: {
-                            email: currentVisitor.email,
-                            isVerified: true,
+                            used: true,
+                            verifiedAt: new Date()
                         }
-                    },
-                    {
-                        new: true,
-                        upsert: true
                     }
                 );
 
-                const hasUsername = currentUser && currentUser.username !== 'Visitor' ? true : false;
-
-                const jwt = await generateJWT({ userid: currentUser._id });
-
-                let newPayoorMessage;
-
-                if (hasUsername) {
-                    const visitorMessages = await Message.find({ visitor: currentVisitor._id });
-                    const originalOrder = visitorMessages[0].content;
-                    let content;
-
-                    if (originalOrder) {
-                        content = `Hello, ${currentUser.username}, would you like to proceed with your original order of \n${originalOrder}`;
-                    } else {
-                        content = `Hello, ${currentUser.username}. What orders do you want to make?`;
+                const response = {
+                    success: true,
+                    data: {
+                        email,
+                        message: 'OTP verified successfully',
+                        verified: true,
+                        timestamp: new Date().toISOString(),
+                        userExists,
+                        id: user._id
                     }
+                };
 
-                    newPayoorMessage = new Message({
-                        content: content,
-                        visitor: visitorFromOtp._id,
-                        isUser: false,
-                        isLoggedIn
-                    });
-                } else {
-                    newPayoorMessage = new Message({
-                        content: `Your email has been confirmed. Please Tell me your name or how you wish to be addressed`,
-                        visitor: visitorFromOtp._id,
-                        isUser: false,
-                        isLoggedIn
-                    });
-                }
+                //console.log(response);
 
-                await newPayoorMessage.save();
-
-                res.status(200).send({
-                    username: currentVisitor.username,
-                    hasUsername,
-                    jwt: jwt && jwt.length ? jwt : "",
-                    payoormessage: {
-                        _id: newPayoorMessage._id,
-                        msg: newPayoorMessage.content,
-                        isUser: newPayoorMessage.isUser,
-                        isLoggedIn
-                    },
-                });
+                res.status(200).json(response);
             } else {
-                console.log('visitorFromOtp', visitorFromOtp)
-                res.status(500).send({ error });
-            }
+                const invalidResponse = {
+                    success: false,
+                    data: {
+                        message: 'Invalid OTP',
+                        timestamp: new Date().toISOString(),
+                        verified: false
+                    }
+                };
 
+                res.status(400).json(invalidResponse);
+            }
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ error });
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to verify OTP',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
         }
     }
 
-    async saveUserName(req, res) {
+    async handleSignUp(req, res) {
         try {
-            const { message, timestamp, isUser, isLoggedIn } = req.body;
-            const { jwt, visitoridentifier } = req.query;
+            const { name, email, phone, location, shoppingList } = req.body;
 
-            const { _id, email } = await getValidUser(jwt);
+            const existingUser = await User.findOne({ email });
 
-            if (_id && email) {
-                const currentUser = await User.findOneAndUpdate(
-                    { email },
-                    {
-                        $set: {
-                            username: message,
-                            isVerified: true,
-                        }
-                    },
-                    {
-                        new: true,
-                        upsert: true
+            if (existingUser) {
+                const duplicateResponse = {
+                    success: false,
+                    data: {
+                        message: 'User with this email already exists',
+                        timestamp: new Date().toISOString(),
                     }
-                );
+                };
 
-                const newMessage = new Message({
-                    content: message,
-                    user: currentUser._id,
-                    client_timestamp: timestamp,
-                    isUser,
-                    isLoggedIn: true
-                });
-
-                await newMessage.save();
-
-                console.log(currentUser, newMessage);
-
-                const currentVisitor = await Visitor.findOne({ identifier: visitoridentifier });
-                let newPayoorMessage;
-                let content;
-
-                if (currentVisitor) {
-                    const visitorMessages = await Message.find({ visitor: currentVisitor._id });
-                    const originalOrder = visitorMessages[0].content;
-                    content = `Hello, ${currentUser.username}, would you like to proceed with your original order of \n${originalOrder}`;
-
-                } else {
-                    content = `Hello, ${currentUser.username}. What orders do you want to make?`;
-                }
-
-                newPayoorMessage = new Message({
-                    content,
-                    user: currentUser._id,
-                    isUser: false,
-                    isLoggedIn: true
-                });
-
-                await newPayoorMessage.save();
-
-                res.status(200).send({
-                    username: currentUser.username,
-                    payoormessage: {
-                        _id: newPayoorMessage._id,
-                        msg: newPayoorMessage.content,
-                        isUser: newPayoorMessage.isUser,
-                        isLoggedIn
-                    },
-                });
+                return res.status(400).json(duplicateResponse);
             } else {
-                res.status(500).send({ error });
+                const user = new User({
+                    name,
+                    email,
+                    phoneNumber: phone,
+                    location,
+                    shoppingList,
+                    isVerified: true
+                });
+
+                await user.save();
+
+                const response = {
+                    success: true,
+                    data: {
+                        message: 'User created successfully',
+                        timestamp: new Date().toISOString(),
+                        user: {
+                            id: user._id,
+                            name: user.name,
+                            email: user.email,
+                            phoneNumber: user.phoneNumber,
+                            location: user.location,
+                            isVerified: user.isVerified
+                        }
+                    }
+                };
+
+                res.status(200).json(response);
             }
         } catch (error) {
-            console.log(error)
-            res.status(500).send({ error });
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to create user',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
+        }
+    }
+
+    async generateJWT(req, res) {
+        try {
+            const { id } = req.query;
+
+            const token = await generateJWT({ userid: id });
+
+            const response = {
+                success: true,
+                data: {
+                    message: 'JWT generated successfully',
+                    token
+                }
+            };
+
+            res.status(200).json(response);
+        } catch (error) {
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to create user',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
         }
     }
 
     async getValidUser(req, res) {
         try {
-            const { jwt } = req.query;
+            const { userId, tokenId } = req.authData;
 
-            const { _id, username, email } = await getValidUser(jwt);
+            const validUser = await User.findOne({ _id: userId });
 
-            const visitorIdentity = await Visitor.find({ email });
-            const latestVisitorIdentity = visitorIdentity[visitorIdentity.length - 1];
-            const visitorMessages = await Message.find({ visitor: latestVisitorIdentity._id })
-                .sort('-server_timestamp')
-                .select('_id visitor isUser isLoggedIn content client_timestamp server_timestamp');
-            const userMessages = await Message.find({ user: _id }).sort('server_timestamp')
-                .sort('server_timestamp')
-                .select('_id user isUser isLoggedIn content client_timestamp server_timestamp');
+            if (validUser) {
+                const userResponse = {
+                    _id: validUser._id,
+                    email: validUser.email,
+                    name: validUser.name,
+                    phoneNumber: validUser.phoneNumber
+                };
 
-            const accountMessages = [...visitorMessages, ...userMessages];
+                const response = {
+                    success: true,
+                    data: {
+                        message: 'User found',
+                        user: userResponse
+                    }
+                };
 
-            const hasUsername = username !== 'Visitor' ? true : false;
+                //console.log(response);
 
-            if (_id) {
-                res.status(200).send({
-                    username: hasUsername ? username : email,
-                    hasUsername,
-                    jwt: jwt && jwt.length ? jwt : "",
-                    accountMessages
-                });
+                res.status(200).json(response);
+            } else {
+                const notFoundResponse = {
+                    success: false,
+                    data: {
+                        message: 'User not found',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                res.status(404).json(notFoundResponse);
             }
         } catch (error) {
-            console.log(error)
-            res.status(404).send({ error });
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to create user',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
         }
     }
 }
