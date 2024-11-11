@@ -20,14 +20,11 @@
         </div>
 
         <div class="details">
-          <h2 class="name">{{ product.NAME }}</h2>
-          <p class="price">
-            <strong>Price: </strong>{{ formatAmount(product.PRICE) }}
-          </p>
-          <p class="category">
-            <strong>Category: </strong>{{ product.CATEGORY }}
-          </p>
-          <p class="unit"><strong>Unit: </strong>{{ product.UNIT }}</p>
+          <div v-for="(value, key) in filteredProductDetails" :key="key">
+            <p>
+              <strong>{{ key }}:</strong> {{ value }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -46,6 +43,16 @@ export default {
     DefaultLayout: Default,
     ChevronLeftIcon,
     PlaceholderImageIcon,
+  },
+
+  computed: {
+    filteredProductDetails() {
+      if (this.product) {
+        const { _id, images, ...rest } = this.product;
+        return rest;
+      }
+      return {};
+    }
   },
 
   data() {
