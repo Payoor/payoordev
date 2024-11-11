@@ -65,7 +65,7 @@ services:
       context: ./llmserver
       dockerfile: Dockerfile
     restart: always
-    env_file: .env              
+    env_file: ./llmserver/.env           
     environment:
       - PORT=8084          
       - FLASK_APP=server.py
