@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorObservers: [routeObserver],
-      initialRoute: '/authchat',
+      initialRoute: '/',
       title: 'Payoor',
       debugShowCheckedModeBanner: false,
       routes: {

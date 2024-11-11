@@ -37478,7 +37478,7 @@ $1(a){return new A.kb(A.b([],t.n_),$.am())},
 $S:388}
 A.IQ.prototype={
 L(a){var s=A.b([$.aAI()],t.tc)
-return new A.xD(A.ay(["/",new A.a6K(),"/auth",new A.a6L(),"/welcome",new A.a6M(),"/authchat",new A.a6N()],t.N,t.Ab),"/authchat",s,"Payoor",!1,null)}}
+return new A.xD(A.ay(["/",new A.a6K(),"/auth",new A.a6L(),"/welcome",new A.a6M(),"/authchat",new A.a6N()],t.N,t.Ab),"/",s,"Payoor",!1,null)}}
 A.a6K.prototype={
 $1(a){return B.xR},
 $S:387}
