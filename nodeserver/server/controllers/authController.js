@@ -109,11 +109,9 @@ class AuthController {
                         verified: true,
                         timestamp: new Date().toISOString(),
                         userExists,
-                        id: user._id
+                        id: user ? user._id : ""
                     }
                 };
-
-                //console.log(response);
 
                 res.status(200).json(response);
             } else {
@@ -129,6 +127,7 @@ class AuthController {
                 res.status(400).json(invalidResponse);
             }
         } catch (error) {
+            console.log(error);
             const errorResponse = {
                 success: false,
                 data: {

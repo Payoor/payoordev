@@ -163,9 +163,9 @@ var AuthController = /*#__PURE__*/function () {
                   verified: true,
                   timestamp: new Date().toISOString(),
                   userExists: userExists,
-                  id: user._id
+                  id: user ? user._id : ""
                 }
-              }; //console.log(response);
+              };
               res.status(200).json(response);
               _context2.next = 22;
               break;
@@ -180,11 +180,12 @@ var AuthController = /*#__PURE__*/function () {
               };
               res.status(400).json(invalidResponse);
             case 22:
-              _context2.next = 28;
+              _context2.next = 29;
               break;
             case 24:
               _context2.prev = 24;
               _context2.t0 = _context2["catch"](0);
+              console.log(_context2.t0);
               errorResponse = {
                 success: false,
                 data: {
@@ -194,7 +195,7 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 28:
+            case 29:
             case "end":
               return _context2.stop();
           }
