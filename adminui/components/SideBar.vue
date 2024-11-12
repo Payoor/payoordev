@@ -1,6 +1,6 @@
 <template>
   <div class="admin-sidebar">
-    <div class="header">Hi, {{ adminUsername }}</div>
+    <div class="header">Hi, {{ adminUsername ?? 'Admin' }}</div>
 
     <nav class="sidebar-items">
       <div class="item">
@@ -35,6 +35,18 @@
       </div>
 
       <div class="item">
+        <div class="item-category">Orders</div>
+        <ul>
+          <li>
+            <NuxtLink to="/orders">
+              <ContainerIcon />
+              <span>All Orders</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
         <div class="item-category">Admin</div>
         <ul>
           <li>
@@ -62,6 +74,7 @@ import ChatBubbleIcon from "./icons/ChatBubbleIcon.vue";
 import AddPackageIcon from "./icons/AddPackageIcon.vue";
 import UserCogIcon from "./icons/UserCogIcon.vue";
 import UserPlusIcon from "./icons/UserPlusIcon.vue";
+import ContainerIcon from "./icons/ContainerIcon.vue";
 
 export default {
   components: {
@@ -70,6 +83,7 @@ export default {
     AddPackageIcon,
     UserCogIcon,
     UserPlusIcon,
+    ContainerIcon
   },
 
   data() {

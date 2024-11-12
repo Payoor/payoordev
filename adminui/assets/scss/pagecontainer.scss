@@ -1,7 +1,8 @@
 .page__container {
 	width: 100%;
-	padding: 1.25rem;
-	height: 100vh;
+	padding-inline: 1.25rem;
+	padding-bottom: 6rem;
+	min-height: 100vh;
 	margin-top: 4rem;
 	
 	@media screen and (min-width: 768px) {

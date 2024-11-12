@@ -14,7 +14,6 @@
 <script>
 import ChatBubbleIcon from '../components/icons/ChatBubbleIcon.vue';
 import AddPackageIcon from '../components/icons/AddPackageIcon.vue';
-import SideBar from '../components/SideBar.vue';
 export default {
   components: {
     'ChatBubbleIcon': ChatBubbleIcon,
@@ -23,30 +22,7 @@ export default {
   props: {
     pageText: {
       type: String,
-      default: 'New layout'
-    }
-  },
-
-  data() {
-    return {
-      sidebarItems: {
-        Products: [
-          {
-            label: 'All Products',
-            href: '/products'
-          },
-          {
-            label: 'Add Products',
-            href: '/add-products'
-          },
-        ],
-        Chat: [
-          {
-            label: 'Chat Room',
-            href: '/chat'
-          },
-        ]
-      }
+      default: 'New Page'
     }
   },
 }
