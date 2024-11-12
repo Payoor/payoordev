@@ -53,6 +53,13 @@ For detailed explanation on how things work, check out the [documentation](https
     - `id`: Product ID 
 - **Description:** Displays details about the product including images.
 
-### Chat
+## Chat
 - **Route:** `/chat`
 - **Description:** Displays a chat interface where admins get to communicate with users.
+
+## Order Management
+- **Route:** `/orders`
+- **Description:** Displays a table listing all orders from customers, with each order having an action cell to trigger the folllowing action:
+    - **View order details:** Navigates to a single order page showing extra information about the order.
+    - **Edit order status:** Opens a modal to change the status of the order.
+    - **Delete order:** Opens a modal to confirm the decision to delete an order.
