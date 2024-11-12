@@ -2,6 +2,7 @@
 
 require("regenerator-runtime");
 var _path = _interopRequireDefault(require("path"));
+var _paymentRoute = _interopRequireDefault(require("./paymentRoute"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 if (process.env.NODE_ENV !== 'production') {
   require("dotenv").config();
@@ -12,6 +13,11 @@ var server = require('http').createServer(app);
 var PORT = process.env.PORT;
 var FLUTTER_WEB_APP = _path["default"].join(__dirname, '../public', 'web');
 app.use(express["static"](FLUTTER_WEB_APP));
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+app.use(_paymentRoute["default"]);
 app.get('/', function (req, res) {
   var indexPath = _path["default"].join(FLUTTER_WEB_APP, 'index.html');
   res.sendFile(indexPath);

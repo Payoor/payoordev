@@ -7,10 +7,15 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 import path from 'path';
+import paymentRoute from "./paymentRoute";
 
 const PORT = process.env.PORT;
 const FLUTTER_WEB_APP = path.join(__dirname, '../public', 'web');
 app.use(express.static(FLUTTER_WEB_APP));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
+
+app.use(paymentRoute);
 
 app.get('/', (req, res) => {
     const indexPath = path.join(FLUTTER_WEB_APP, 'index.html');
