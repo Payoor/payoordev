@@ -107,9 +107,9 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
     ));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final onboardingProv =
+      //final onboardingProv =
           Provider.of<OnboardingProv>(context, listen: false);
-      shoppingList = onboardingProv.onboardingMessage;
+      //shoppingList = onboardingProv.onboardingMessage;
       if (shoppingList.isNotEmpty) {
         submittedResponses[5] = true;
       }
@@ -136,7 +136,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           Provider.of<OnboardingProv>(context, listen: false);
       if (onboardingProv.onboardingMessage.isNotEmpty &&
           _inputController.text != onboardingProv.onboardingMessage) {
-        _inputController.text = onboardingProv.onboardingMessage;
+       // _inputController.text = onboardingProv.onboardingMessage;
       }
     }
   }
