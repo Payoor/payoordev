@@ -20,7 +20,7 @@
             </td>
             <td class="actions-cell">
               <button class="actions-toggle" @click="toggleDropdown(rowIndex)">...</button>
-              <div v-if="dropdownIndex === rowIndex" class="dropdown">
+              <div v-if="dropdownIndex === rowIndex" class="orders-dropdown">
                 <button @click="viewOrderDetails(order)">View Order Details</button>
                 <button @click="changeOrderStatus(order.orderId)">
                   Edit Order Status

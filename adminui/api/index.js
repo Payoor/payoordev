@@ -25,4 +25,6 @@ export const updateProductDetails = (productId, data) => $http.patch(`${serverUr
 
 export const uploadProductImage = (productId, data) => $http.post(`${serverUrl}/admin/upload/product/image?id=${productId}`, data, getFileHeader());
 
+export const removeProductImage = (imageId) => $http.delete(`${serverUrl}/admin/product/image?id=${imageId}`, getFileHeader());
+
 export const removeProduct = (productId) => $http.delete(`${serverUrl}/admin/delete/product?id=${productId}`, getDefaultHeader());
