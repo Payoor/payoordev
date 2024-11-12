@@ -24,6 +24,14 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   late AnimationController _animationController;
   late Animation<double> _animation;
   final TextEditingController _controller = TextEditingController();
+  int _selectedPillIndex = 0;
+  bool _isDrawerOpen = true;
+
+  final List<String> pills = [
+    'Create a shopping list',
+    'Create a diet plan',
+    'Find out grocery prices'
+  ];
 
   @override
   void initState() {
@@ -54,13 +62,72 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
   }
 
+  void _toggleDrawer() {
+    if (_isDrawerOpen) {
+      _animationController.reverse();
+    } else {
+      _animationController.forward();
+    }
+    setState(() {
+      _isDrawerOpen = !_isDrawerOpen;
+    });
+  }
+
+  Widget _buildDrawer() {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(-300 + (300 * _animationController.value), 0),
+          child: Container(
+            width: 300,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              color: AppColors.red,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 5,
+                )
+              ],
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 50),
+                ListTile(
+                  title: Text(
+                    'Menu Item 1',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    _toggleDrawer();
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    'Menu Item 2',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    _toggleDrawer();
+                    // Add navigation logic
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   InputDecoration get _inputDecoration => InputDecoration(
         counterText: "",
         filled: true,
         fillColor: AppColors.backgroundColor,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 12,
+          vertical: 23,
         ),
         border: _buildBorder(),
         enabledBorder: _buildBorder(),
@@ -79,6 +146,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             width: .5,
           ),
         ),
+        hintText: "Create a list",
         hintStyle: TextStyle(
           color: AppColors.primaryColor.withOpacity(.5),
         ),
@@ -105,6 +173,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             Expanded(
               child: _renderMessages(),
             ),
+            _buildPillsSlide(),
             _buildTextField(),
           ],
         ),
@@ -185,14 +254,57 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     );
   }
 
+  Widget _buildPillsSlide() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+          padding: EdgeInsets.only(bottom: 20),
+          child: Row(
+            children: [
+              ...List.generate(
+                pills.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: InkWell(
+                    onTap: () {
+                      // Handle pill selection
+                      _selectedPillIndex = index;
+                      setState(() {});
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.6),
+                          width: 0.5,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        pills[index],
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(.6),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+
   Widget _buildTextField() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Stack(
         children: [
           TextField(
             controller: _controller,
-            maxLines: 10,
+            maxLines: 15,
             minLines: 1,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.newline,
@@ -203,7 +315,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           ),
           Positioned(
             right: 8,
-            bottom: 8,
+            bottom: 12,
             child: SizedBox(
               width: 35,
               height: 35,
@@ -282,16 +394,16 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             isRead: false,
           );
 
-         // print(chatResponse);
+          // print(chatResponse);
           //print('chatResponse');
 
           if (mounted) {
-            context.read<MessageProvider>().removeLastMessage(); 
+            context.read<MessageProvider>().removeLastMessage();
             context.read<MessageProvider>().addMessage(aiMessage);
           }
         } else {
           if (mounted) {
-            context.read<MessageProvider>().removeLastMessage(); 
+            context.read<MessageProvider>().removeLastMessage();
             final errorMessage = Message(
               text: 'Sorry, there was an error processing your message.',
               isClient: false,
@@ -308,7 +420,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             isClient: false,
             isRead: false,
           );
-          context.read<MessageProvider>().removeLastMessage(); 
+          context.read<MessageProvider>().removeLastMessage();
           context.read<MessageProvider>().addMessage(errorMessage);
         }
 
@@ -331,13 +443,38 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         child: Center(
           child: Opacity(
             opacity: 0.3,
-            child: Image.asset(
-              'assets/payoorcart.png',
-              width: 40,
-              height: 40,
-              fit: BoxFit.contain,
-              color: Colors.black.withOpacity(0.5),
-              colorBlendMode: BlendMode.srcATop,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  constraints: BoxConstraints(maxWidth: 320),
+                  width: MediaQuery.of(context).size.width * 0.55,
+                  child: TypewriterText(
+                    text: "How may I help you?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                      fontStyle: FontStyle.italic,
+                      height: 1.2,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                AnimatedOpacity(
+                    opacity: isInitialAnimationComplete ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 500),
+                    child: Image.asset(
+                      'assets/payoorcart.png',
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.contain,
+                      color: Colors.black.withOpacity(0.5),
+                      colorBlendMode: BlendMode.srcATop,
+                    ))
+              ],
             ),
           ),
         ),
@@ -352,6 +489,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
+          _buildDrawer(),
           _buildWatermarkOverlay(),
           _buildMainContent(),
         ],

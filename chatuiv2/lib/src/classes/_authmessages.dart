@@ -6,7 +6,7 @@ class AuthMessages {
   }
 
   static String getOtpMessage() {
-    return "We just sent you an otp pls send it back to confirm your email. Please heck your spam if it doesn't appear in your inbox";
+    return "We just sent you an otp pls send it back to confirm your email. Please check your spam if it doesn't appear in your inbox";
   }
 
   static String getPhoneMessage() {

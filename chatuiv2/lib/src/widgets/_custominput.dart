@@ -133,7 +133,7 @@ class _CustomInputState extends State<CustomInput> {
       fillColor: AppColors.backgroundColor,
       contentPadding: EdgeInsets.symmetric(
         horizontal: 16,
-        vertical: widget.inputType == CustomInputType.multiline ? 12 : 8,
+        vertical: widget.inputType == CustomInputType.multiline ? 20 : 30,
       ),
       constraints: BoxConstraints(
         maxHeight: widget.inputType == CustomInputType.multiline ? 200 : 56,
