@@ -49,7 +49,7 @@
         v-if="showDeleteModal"
         v-on:close-modal="closeDeleteModal"
         v-on:submit-form="deleteImage"
-        :modal-header="'Delete Order'"
+        :modal-header="'Delete Image'"
         :confirm-text="'Yes, proceed'"
         :is-loading="isLoading"
       >
