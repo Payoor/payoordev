@@ -8,16 +8,22 @@
 
         <div class="users__list">
           <UserCard />
-          <UserCard class="active" />
+          <UserCard 
+            class="active" 
+            :is-online="true"
+          />
           <UserCard />
           <UserCard />
-          <UserCard />
+          <UserCard :is-online="true" />
         </div>
       </div>
 
       <div class="chat__box">
         <div class="topbar">
-          <UserCard class="topbar-user-indicator" />
+          <UserCard 
+            class="topbar-user-indicator"
+            :is-online="true"
+          />
         </div>
 
         <!-- conversation box -->
