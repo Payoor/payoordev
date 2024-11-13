@@ -42,9 +42,8 @@ var PaymentController = /*#__PURE__*/function () {
             case 5:
               params = JSON.stringify({
                 "email": email,
-                "amount": amount * 100,
-                // this conversion can be don either on the client side or server side
-                channels: ["bank_transfer"]
+                "amount": amount * 100 // this conversion can be done either on the client side or server side.
+                // channels: ["bank_transfer"]
               });
               options = {
                 hostname: 'api.paystack.co',
@@ -97,6 +96,63 @@ var PaymentController = /*#__PURE__*/function () {
         return _generatePaymentLink.apply(this, arguments);
       }
       return generatePaymentLink;
+    }()
+  }, {
+    key: "handlePayStackPaymentResponse",
+    value: function () {
+      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+        var crypto, paystackSignature, hash, event, paymentData, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.prev = 0;
+              crypto = require('crypto');
+              paystackSignature = req.headers['x-paystack-signature'];
+              hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY).update(JSON.stringify(req.body)).digest('hex');
+              if (!(hash !== paystackSignature)) {
+                _context2.next = 6;
+                break;
+              }
+              return _context2.abrupt("return", res.status(401).json({
+                message: 'Unauthorized request'
+              }));
+            case 6:
+              event = req.body;
+              res.status(200).json({
+                message: 'Payment received'
+              });
+              if (event.event === 'charge.success') {
+                paymentData = event.data;
+                console.log('Payment successful:', paymentData);
+                res.status(200).json({
+                  message: 'Payment successful'
+                });
+              }
+              _context2.next = 16;
+              break;
+            case 11:
+              _context2.prev = 11;
+              _context2.t0 = _context2["catch"](0);
+              console.log(_context2.t0);
+              errorResponse = {
+                success: false,
+                data: {
+                  message: _context2.t0.message || 'Error handling payment response',
+                  error: process.env.NODE_ENV === 'development' ? _context2.t0.toString() : undefined,
+                  timestamp: new Date().toISOString()
+                }
+              };
+              res.status(500).json(errorResponse);
+            case 16:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, null, [[0, 11]]);
+      }));
+      function handlePayStackPaymentResponse(_x3, _x4) {
+        return _handlePayStackPaymentResponse.apply(this, arguments);
+      }
+      return handlePayStackPaymentResponse;
     }()
   }]);
 }();

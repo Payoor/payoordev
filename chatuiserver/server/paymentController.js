@@ -19,8 +19,8 @@ class PaymentController {
 
             const params = JSON.stringify({
                 "email": email,
-                "amount": amount * 100, // this conversion can be don either on the client side or server side
-                channels: ["bank_transfer"]
+                "amount": amount * 100, // this conversion can be done either on the client side or server side.
+                // channels: ["bank_transfer"]
             });
 
             const options = {
@@ -61,6 +61,47 @@ class PaymentController {
                 success: false,
                 data: {
                     message: error.message || 'Failed to generate payment link',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
+        }
+    }
+
+    async handlePayStackPaymentResponse(req, res) {
+        try {
+
+            const crypto = require('crypto');
+            const paystackSignature = req.headers['x-paystack-signature'];
+
+            const hash = crypto
+                .createHmac('sha512', PAYSTACK_SECRET_KEY)
+                .update(JSON.stringify(req.body))
+                .digest('hex');
+
+            if (hash !== paystackSignature) {
+                return res.status(401).json({ message: 'Unauthorized request' });
+            }
+
+            const event = req.body;
+
+            res.status(200).json({ message: 'Payment received' });
+            if (event.event === 'charge.success') {
+                const paymentData = event.data;
+
+                console.log('Payment successful:', paymentData);
+
+                res.status(200).json({ message: 'Payment successful' })
+            }
+
+        } catch (error) {
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Error handling payment response',
                     error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
                     timestamp: new Date().toISOString()
                 }

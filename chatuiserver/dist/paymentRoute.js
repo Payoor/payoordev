@@ -9,4 +9,5 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var express = require('express');
 var paymentRoute = express();
 paymentRoute.post('/paystack/generate-payment-link', _paymentController["default"].generatePaymentLink);
+paymentRoute.post('/paystack/payment-response', _paymentController["default"].handlePayStackPaymentResponse);
 var _default = exports["default"] = paymentRoute;
