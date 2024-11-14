@@ -10,5 +10,7 @@ commands.txt
 payoorai/
 # .gitignore
 .env
+llmserver/env/
 *.pyc
 __pycache__/
+env
