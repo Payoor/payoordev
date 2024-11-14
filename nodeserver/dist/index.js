@@ -12,6 +12,7 @@ var _adminRoute = _interopRequireDefault(require("./routes/adminRoute"));
 var _messageRoute = _interopRequireDefault(require("./routes/messageRoute"));
 var _conversationRoute = _interopRequireDefault(require("./routes/conversationRoute"));
 var _authRoute = _interopRequireDefault(require("./routes/authRoute"));
+var _paymentRoute = _interopRequireDefault(require("./routes/paymentRoute"));
 var _corsOriginArray = _interopRequireDefault(require("./corsOriginArray"));
 var _socketInit = require("./socketInit");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
@@ -36,6 +37,7 @@ app.use(_adminRoute["default"]);
 app.use(_conversationRoute["default"]);
 app.use(_messageRoute["default"]);
 app.use(_authRoute["default"]);
+app.use(_paymentRoute["default"]);
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');

@@ -9,10 +9,10 @@ const server = require('http').createServer(app);
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 import path from 'path';
-import cors from 'cors'; 
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import fs from 'fs';
- 
+
 import verifyToken from './services/payoor/verifyToken';
 
 import File from './models/file';
@@ -21,6 +21,7 @@ import adminRoute from './routes/adminRoute';
 import messageRoute from './routes/messageRoute';
 import conversationRoute from './routes/conversationRoute';
 import authRoute from './routes/authRoute';
+import paymentRoute from './routes/paymentRoute';
 
 import corsOrginArray from './corsOriginArray';
 import { initSocket } from './socketInit';
@@ -37,6 +38,7 @@ app.use(adminRoute);
 app.use(conversationRoute);
 app.use(messageRoute);
 app.use(authRoute);
+app.use(paymentRoute);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');

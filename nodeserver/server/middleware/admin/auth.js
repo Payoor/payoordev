@@ -3,16 +3,12 @@ const Admin = require('../../models/admin'); // Adjust path as needed
 
 const authenticate = async (req, res, next) => {
     try {
-        // First check if any admin exists in the system
         const adminExists = await Admin.findOne({});
 
-        // If no admin exists, allow the request to proceed (for first admin creation)
         if (!adminExists && req.path === '/admin/create') {
             return next();
         }
 
-        // If an admin exists, or if it's not an admin creation route,
-        // proceed with normal authentication
         const token = req.header('Authorization')?.replace('Bearer ', '');
 
         if (!token) {
@@ -36,7 +32,6 @@ const authenticate = async (req, res, next) => {
     }
 };
 
-// Optional: Separate middleware to check if it's the first admin
 const isFirstAdmin = async (req, res, next) => {
     try {
         const adminExists = await Admin.findOne({});

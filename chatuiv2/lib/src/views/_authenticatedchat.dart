@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:html' as html;
 
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
@@ -10,6 +12,7 @@ import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
 import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
+import 'package:chatuiv2/src/classes/_paystackroutes.dart';
 
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
@@ -20,6 +23,7 @@ class AuthenticatedChat extends StatefulWidget {
 
 class _AuthenticatedChatState extends State<AuthenticatedChat>
     with TickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
   bool isInitialAnimationComplete = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -29,8 +33,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   final List<String> pills = [
     'Create a shopping list',
-    'Create a diet plan',
-    'Find out grocery prices'
+    'Track order',
+    'Repeat order'
   ];
 
   @override
@@ -43,13 +47,32 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     );
     _animation =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MessageProvider>().addListener(() {
+        _scrollToBottom();
+      });
+    });
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _controller.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   void _startInitialAnimation() {
@@ -188,7 +211,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         final messagesList = messages.toList().reversed.toList();
 
         return ListView.builder(
-          // Set reverse to false since we want normal order
+          controller: _scrollController,
           reverse: false,
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -202,7 +225,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.backgroundColor.withOpacity(.5),
+                    color: AppColors.black.withOpacity(.5),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -225,20 +248,23 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
               child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.transparent,
+                    color: AppColors.greyBlack.withOpacity(.5),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TypewriterText(
-                    key: ValueKey(
-                        'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
-                    text: message.text,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                    duration: Duration(milliseconds: 1500),
-                    showCursor: true,
-                  )),
+                      key: ValueKey(
+                          'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
+                      text: message.text,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                      duration: Duration(milliseconds: 1500),
+                      showCursor: true,
+                      scrollController: _scrollController,
+                      onTap: () {
+                        _handlePaymentLinkGeneration(message.text);
+                      })),
             );
           },
         );
@@ -360,6 +386,26 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
+  void _handlePaymentLinkGeneration(String items) async {
+    final response = await PayStackRoutes.generatePaymentLink(items);
+
+    if (response.success) {
+      final paymentUrl = response.data['authorization_url'];
+
+      if (paymentUrl != null) {
+        html.window.open(paymentUrl, '_blank');
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Opening payment link...'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   void _handleSend() async {
     if (_controller.text.trim().isNotEmpty) {
       try {
@@ -374,6 +420,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         if (mounted) {
           context.read<MessageProvider>().addMessage(message);
+          _scrollToBottom();
 
           context.read<MessageProvider>().addMessage(Message(
                 text: '',
@@ -381,6 +428,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 isRead: false,
                 isLoading: true,
               ));
+
+          _scrollToBottom();
         }
 
         final response = await ChatApiRoutes.sendUserMessage(message);
@@ -394,12 +443,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             isRead: false,
           );
 
-          // print(chatResponse);
-          //print('chatResponse');
-
           if (mounted) {
             context.read<MessageProvider>().removeLastMessage();
             context.read<MessageProvider>().addMessage(aiMessage);
+            //_scrollToBottom();
           }
         } else {
           if (mounted) {
@@ -422,6 +469,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           );
           context.read<MessageProvider>().removeLastMessage();
           context.read<MessageProvider>().addMessage(errorMessage);
+          _scrollToBottom();
         }
 
         if (mounted) {
@@ -442,7 +490,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         color: Colors.transparent,
         child: Center(
           child: Opacity(
-            opacity: 0.3,
+            opacity: 0.1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -451,7 +499,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                   constraints: BoxConstraints(maxWidth: 320),
                   width: MediaQuery.of(context).size.width * 0.55,
                   child: TypewriterText(
-                    text: "How may I help you?",
+                    text: "How may I help with your shopping list?",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 22,

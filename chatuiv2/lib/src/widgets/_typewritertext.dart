@@ -8,6 +8,8 @@ class TypewriterText extends StatefulWidget {
   final Duration duration;
   final bool showCursor;
   final TextAlign textAlign;
+  final ScrollController? scrollController;
+  final VoidCallback? onTap;
 
   const TypewriterText({
     super.key,
@@ -16,6 +18,8 @@ class TypewriterText extends StatefulWidget {
     this.duration = const Duration(milliseconds: 2000),
     this.showCursor = true,
     this.textAlign = TextAlign.left,
+    this.scrollController,
+    this.onTap,
   });
 
   @override
@@ -45,6 +49,10 @@ class _TypewriterTextState extends State<TypewriterText>
     ).animate(_controller)
       ..addListener(() {
         setState(() {});
+        if (widget.scrollController?.hasClients ?? false) {
+          widget.scrollController
+              ?.jumpTo(widget.scrollController!.position.maxScrollExtent);
+        }
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
@@ -101,29 +109,31 @@ class _TypewriterTextState extends State<TypewriterText>
   Widget build(BuildContext context) {
     final displayText = widget.text.substring(0, _animation.value.toInt());
 
-    return Container(
-      width: double.infinity,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Wrap(
-            children: [
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: MouseRegion(
+        cursor: widget.onTap != null
+            ? SystemMouseCursors.click
+            : SystemMouseCursors
+                .text, //PayStackRoutes.generatePaymentLink(displayText);
+        child: Wrap(
+          children: [
+            Text(
+              displayText,
+              key: _textKey,
+              style: widget.style,
+              textAlign: widget.textAlign,
+              softWrap: true,
+            ),
+            if (widget.showCursor && _showCursor && !_isTypingComplete)
               Text(
-                displayText,
-                key: _textKey,
-                style: widget.style,
-                textAlign: widget.textAlign,
-                softWrap: true,
-              ),
-              if (widget.showCursor && _showCursor && !_isTypingComplete)
-                Text(
-                  '|',
-                  style: widget.style?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                '|',
+                style: widget.style?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-            ],
-          );
-        },
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -24,8 +24,6 @@ var authenticate = /*#__PURE__*/function () {
           }
           return _context.abrupt("return", next());
         case 6:
-          // If an admin exists, or if it's not an admin creation route,
-          // proceed with normal authentication
           token = (_req$header = req.header('Authorization')) === null || _req$header === void 0 ? void 0 : _req$header.replace('Bearer ', '');
           if (token) {
             _context.next = 9;
@@ -65,8 +63,6 @@ var authenticate = /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }();
-
-// Optional: Separate middleware to check if it's the first admin
 var isFirstAdmin = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
     var adminExists;
