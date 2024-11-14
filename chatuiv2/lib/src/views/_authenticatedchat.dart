@@ -6,6 +6,7 @@ import 'dart:html' as html;
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
+import 'package:chatuiv2/src/widgets/_webviewcontainer.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 
@@ -243,6 +244,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
               );
             }
 
+            if (message.isWebView) {
+              return WebViewContainer(url: message.text);
+            }
+
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Container(
@@ -387,13 +392,37 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   }
 
   void _handlePaymentLinkGeneration(String items) async {
+    if (mounted) {
+      context.read<MessageProvider>().addMessage(Message(
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
+
+      _scrollToBottom();
+    }
+
     final response = await PayStackRoutes.generatePaymentLink(items);
 
     if (response.success) {
       final paymentUrl = response.data['authorization_url'];
 
       if (paymentUrl != null) {
-        html.window.open(paymentUrl, '_blank');
+        //html.window.open(paymentUrl, '_blank');
+
+        context.read<MessageProvider>().removeLastMessage();
+
+        if (mounted) {
+          context.read<MessageProvider>().addMessage(Message(
+                text: paymentUrl,
+                isClient: false,
+                isRead: false,
+                isWebView: true,
+              ));
+
+          _scrollToBottom();
+        }
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
