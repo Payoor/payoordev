@@ -10,4 +10,6 @@ paymentRoute.post('/paystack/generate-payment-link', verifyToken, OrderControlle
 
 paymentRoute.post('/paystack/payment-response', PaymentController.handlePayStackPaymentResponse);
 
+paymentRoute.post('/paystack/verify-payment', PaymentController.verifyPayment);
+
 export default paymentRoute;

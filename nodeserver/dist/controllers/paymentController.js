@@ -24,14 +24,14 @@ var PaymentController = /*#__PURE__*/function () {
   return _createClass(PaymentController, [{
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-        var https, email, total, amount, params, options, paystackRequest, errorResponse;
+      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+        var https, _req$body, email, total, amount, params, options, paystackRequest, errorResponse;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               https = require('https');
-              email = req.email, total = req.total;
+              _req$body = req.body, email = _req$body.email, total = _req$body.total;
               amount = total;
               if (!(!email || !amount)) {
                 _context.next = 7;
@@ -115,7 +115,7 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var crypto, paystackSignature, hash, event, paymentData, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -174,6 +174,76 @@ var PaymentController = /*#__PURE__*/function () {
         return _handlePayStackPaymentResponse.apply(this, arguments);
       }
       return handlePayStackPaymentResponse;
+    }()
+  }, {
+    key: "verifyPayment",
+    value: function () {
+      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+        var https, transactionReference, options, verificationRequest, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              try {
+                https = require('https');
+                transactionReference = req.body.transactionReference;
+                options = {
+                  hostname: 'api.paystack.co',
+                  port: 443,
+                  path: "/transaction/verify/".concat(transactionReference),
+                  method: 'GET',
+                  headers: {
+                    Authorization: "Bearer ".concat(PAYSTACK_SECRET_KEY)
+                  }
+                };
+                verificationRequest = https.request(options, function (verificationResponse) {
+                  var data = '';
+                  verificationResponse.on('data', function (chunk) {
+                    data += chunk;
+                  });
+                  var response = {
+                    success: true,
+                    data: {
+                      message: 'Payment verified!',
+                      chatresponse: {
+                        text: "this is an AI response",
+                        isClient: false,
+                        isRead: false
+                      }
+                    }
+                  };
+                  verificationResponse.on('end', function () {
+                    console.log(JSON.parse(data));
+                    res.status(200).json(response);
+                  });
+                }).on('error', function (error) {
+                  console.log(error);
+                  return res.status(400).json({
+                    message: 'Error verifying payment'
+                  });
+                });
+                verificationRequest.end();
+              } catch (error) {
+                console.log(error);
+                errorResponse = {
+                  success: false,
+                  data: {
+                    message: error.message || 'Failed to verify payment',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                  }
+                };
+                res.status(500).json(errorResponse);
+              }
+            case 1:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3);
+      }));
+      function verifyPayment(_x5, _x6) {
+        return _verifyPayment.apply(this, arguments);
+      }
+      return verifyPayment;
     }()
   }]);
 }();

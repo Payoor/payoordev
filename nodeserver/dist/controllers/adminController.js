@@ -49,7 +49,7 @@ var AdminController = /*#__PURE__*/function () {
   return _createClass(AdminController, [{
     key: "uploadExcelSheet",
     value: function () {
-      var _uploadExcelSheet = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _uploadExcelSheet = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var filepath, excelSheetData;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -94,7 +94,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProducts",
     value: function () {
-      var _getProducts = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var page, limit, skip, products, formattedProducts, totalCount;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -148,7 +148,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProduct",
     value: function () {
-      var _getProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _getProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var id, product, _id, data, images;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -204,7 +204,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "updateProduct",
     value: function () {
-      var _updateProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
         var id, updateData, options, updatedProduct, formattedProduct;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
@@ -269,7 +269,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteProduct",
     value: function () {
-      var _deleteProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+      var _deleteProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
         var id, deletedProduct;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
@@ -323,7 +323,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "uploadProductImage",
     value: function () {
-      var _uploadProductImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+      var _uploadProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
         var id, file, fileName, uploadParams, command, s3Response, imageUrl, image;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
@@ -386,7 +386,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProductImages",
     value: function () {
-      var _getProductImages = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+      var _getProductImages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
         var id, images;
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
@@ -427,7 +427,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteProductImage",
     value: function () {
-      var _deleteProductImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
+      var _deleteProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
         var id, image, key, deleteCommand, _error$$metadata;
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) switch (_context8.prev = _context8.next) {
@@ -514,7 +514,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "createAdmin",
     value: function () {
-      var _createAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
+      var _createAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
         var _req$body, username, password, existingAdmin, admin, token;
         return _regeneratorRuntime().wrap(function _callee9$(_context9) {
           while (1) switch (_context9.prev = _context9.next) {
@@ -581,7 +581,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "signInAdmin",
     value: function () {
-      var _signInAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
+      var _signInAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
         var _req$body2, username, password, admin, token;
         return _regeneratorRuntime().wrap(function _callee10$(_context10) {
           while (1) switch (_context10.prev = _context10.next) {
@@ -630,7 +630,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteAdmin",
     value: function () {
-      var _deleteAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
+      var _deleteAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
         var adminId, adminCount, adminToDelete;
         return _regeneratorRuntime().wrap(function _callee11$(_context11) {
           while (1) switch (_context11.prev = _context11.next) {
@@ -699,7 +699,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getAllAdmins",
     value: function () {
-      var _getAllAdmins = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
+      var _getAllAdmins = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
         var admins;
         return _regeneratorRuntime().wrap(function _callee12$(_context12) {
           while (1) switch (_context12.prev = _context12.next) {
@@ -745,7 +745,7 @@ function processExcelSheetData(_x25, _x26) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee13(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee13(excelSheetData, filepath) {
     var index, productData;
     return _regeneratorRuntime().wrap(function _callee13$(_context13) {
       while (1) switch (_context13.prev = _context13.next) {

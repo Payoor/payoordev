@@ -23,7 +23,7 @@ var OrderController = /*#__PURE__*/function () {
   return _createClass(OrderController, [{
     key: "createOrder",
     value: function () {
-      var _createOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+      var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
         var items, total, validUser, order;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -94,7 +94,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var orderId, order;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -143,7 +143,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrders",
     value: function () {
-      var _getOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _getOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var page, limit, skip, total, orders;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -197,7 +197,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrders",
     value: function () {
-      var _getUserOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
