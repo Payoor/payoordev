@@ -27,6 +27,9 @@ class OrderController {
 
                     console.log('validUser', validUser, req.email, req.total)
 
+                    const createdOrder = await order.save();
+                    res.locals.order = createdOrder;
+                    res.locals.user = validUser;
                     next();
                 } else {
                     res.status(500).json({

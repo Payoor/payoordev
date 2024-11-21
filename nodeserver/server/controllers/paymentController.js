@@ -1,3 +1,5 @@
+import Transaction from "../models/transaction";
+
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
 }
@@ -10,6 +12,7 @@ class PaymentController {
             const https = require('https');
 
             const { email, total } = req.body;
+            const { order, user } = res.locals;
 
             const amount = total;
 
@@ -63,7 +66,16 @@ class PaymentController {
                     console.log(response);
 
                     res.status(200).json(response);
+
+                    const transaction = new Transaction({
+                        initiatorId: user._id,
+                        orderId: order._id,
+                        amount: amount,
+                        reference: JSON.parse(data).data.reference
+                    })
+                    transaction.save();
                 })
+                
 
             }).on('error', error => {
                 console.log(error)
@@ -158,6 +170,12 @@ class PaymentController {
                     Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`
                 }
             }
+
+            const transaction = await Transaction.findOne({reference: transactionReference})
+
+            if (!transaction) {
+                return response
+            }
     
             const verificationRequest = https.request(options, verificationResponse => {
                 let data = ''
@@ -180,6 +198,11 @@ class PaymentController {
 
                 verificationResponse.on('end', () => {
                     console.log(JSON.parse(data))
+
+                    transaction.status = 'verified';
+                    transaction.paymentDate = new Date(JSON.parse(data).data.paid_at);
+                    transaction.save();
+
                     res.status(200).json(response);
                 })
     
