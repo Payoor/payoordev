@@ -174,7 +174,9 @@ class PaymentController {
             const transaction = await Transaction.findOne({reference: transactionReference})
 
             if (!transaction) {
-                return response
+                return res.status(404).json({
+                    message: 'Transaction not found.'
+                })
             }
     
             const verificationRequest = https.request(options, verificationResponse => {

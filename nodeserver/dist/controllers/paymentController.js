@@ -215,7 +215,9 @@ var PaymentController = /*#__PURE__*/function () {
                 _context3.next = 9;
                 break;
               }
-              return _context3.abrupt("return", response);
+              return _context3.abrupt("return", res.status(404).json({
+                message: 'Transaction not found.'
+              }));
             case 9:
               verificationRequest = https.request(options, function (verificationResponse) {
                 var data = '';

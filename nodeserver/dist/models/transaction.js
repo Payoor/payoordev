@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var transactionSchema = new mongoose.Schema({
   initiatorId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admin',
+    ref: 'User',
     required: true
   },
   orderId: {
@@ -18,7 +18,7 @@ var transactionSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    "enum": ['pending', 'verified', 'unverified'],
+    "enum": ['pending', 'verified'],
     "default": 'pending'
   },
   reference: {
