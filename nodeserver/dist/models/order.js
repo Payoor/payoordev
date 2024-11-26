@@ -17,7 +17,7 @@ var OrderSchema = new mongoose.Schema({
     "default": 'pending'
   },
   items: {
-    type: String
+    type: Array
   },
   total: {
     type: Number,
