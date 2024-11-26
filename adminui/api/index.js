@@ -28,3 +28,15 @@ export const uploadProductImage = (productId, data) => $http.post(`${serverUrl}/
 export const removeProductImage = (imageId) => $http.delete(`${serverUrl}/admin/product/image?id=${imageId}`, getFileHeader());
 
 export const removeProduct = (productId) => $http.delete(`${serverUrl}/admin/delete/product?id=${productId}`, getDefaultHeader());
+
+
+// Payment
+export const generatePaymentLink = (data) => $http.post(`${serverUrl}/paystack/generate-payment-link`, data, getDefaultHeader());
+
+export const verifyPayment = (data) => $http.post(`${serverUrl}/paystack/verify-payment`, data, getDefaultHeader());
+
+
+// User Management
+export const getUsers = () => $http.get(`${serverUrl}/admin/get/users`, getDefaultHeader());
+
+export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${userId}`, getDefaultHeader());

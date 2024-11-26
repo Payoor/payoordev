@@ -23,6 +23,18 @@
       </div>
 
       <div class="item">
+        <div class="item-category">Users</div>
+        <ul>
+          <li>
+            <NuxtLink to="/users">
+              <UsersIcon />
+              <span>All Users</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
         <div class="item-category">Chat</div>
         <ul>
           <li>
@@ -75,6 +87,7 @@ import AddPackageIcon from "./icons/AddPackageIcon.vue";
 import UserCogIcon from "./icons/UserCogIcon.vue";
 import UserPlusIcon from "./icons/UserPlusIcon.vue";
 import ContainerIcon from "./icons/ContainerIcon.vue";
+import UsersIcon from "./icons/UsersIcon.vue";
 
 export default {
   components: {
@@ -83,7 +96,8 @@ export default {
     AddPackageIcon,
     UserCogIcon,
     UserPlusIcon,
-    ContainerIcon
+    ContainerIcon,
+    UsersIcon
   },
 
   data() {

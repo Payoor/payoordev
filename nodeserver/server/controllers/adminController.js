@@ -4,6 +4,7 @@ const XLSX = require('xlsx');
 import Product from "../models/product";
 import Image from "../models/image";
 import Admin from "../models/admin";
+import User from "../models/user";
 
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
@@ -348,6 +349,67 @@ class AdminController {
                 error: 'Failed to fetch admins',
                 details: error.message
             });
+        }
+    }
+
+    async getUsers(req, res) {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+
+            const skip = (page - 1) * limit;
+
+            const users = await User.find({}, '_id email name phoneNumber').skip(skip).limit(limit).lean();
+            const totalCount = await User.countDocuments();
+
+            res.status(200).send({
+                message: "Users retrieved",
+                page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalCount,
+                users: users
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ message: error.message });
+        }
+    }
+
+    async getUser(req, res) {
+        try {
+            const { id } = req.query;
+
+            if (!id) {
+                return res.status(400).send({ message: "User ID is required" });
+            }
+
+            const user = await User.findById(id).lean();
+
+            if (!user) {
+                return res.status(404).send({ message: "User not found" });
+            }
+
+            const userResponse = {
+                name: user.name,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                isVerified: user.isVerified,
+                hasBeenWelcomed: user.hasBeenWelcomed,
+            };
+
+            const response = {
+                success: true,
+                data: {
+                    message: 'User found',
+                    user: userResponse
+                }
+            };
+
+            res.status(200).send(response);
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ message: error.message });
         }
     }
 }

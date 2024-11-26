@@ -51,4 +51,6 @@ adminRoute["delete"]('/admin/delete/product', authenticate, _adminController["de
 adminRoute.post('/admin/upload/product/image', authenticate, uploadFileWithMulter().single('file'), _adminController["default"].uploadProductImage);
 adminRoute.get('/admin/product/images', authenticate, _adminController["default"].getProductImages);
 adminRoute["delete"]('/admin/product/image', authenticate, _adminController["default"].deleteProductImage);
+adminRoute.get('/admin/get/users', authenticate, _adminController["default"].getUsers);
+adminRoute.get('/admin/get/user', authenticate, _adminController["default"].getUser);
 var _default = exports["default"] = adminRoute;

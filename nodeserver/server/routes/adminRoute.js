@@ -55,5 +55,8 @@ adminRoute.get('/admin/product/images', authenticate, AdminController.getProduct
 
 adminRoute.delete('/admin/product/image', authenticate, AdminController.deleteProductImage);
 
+adminRoute.get('/admin/get/users', authenticate, AdminController.getUsers);
+
+adminRoute.get('/admin/get/user', authenticate, AdminController.getUser);
 
 export default adminRoute;
