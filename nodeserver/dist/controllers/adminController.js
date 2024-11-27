@@ -8,6 +8,7 @@ var _product = _interopRequireDefault(require("../models/product"));
 var _image = _interopRequireDefault(require("../models/image"));
 var _admin = _interopRequireDefault(require("../models/admin"));
 var _user = _interopRequireDefault(require("../models/user"));
+var _transaction = _interopRequireDefault(require("../models/transaction"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -843,6 +844,119 @@ var AdminController = /*#__PURE__*/function () {
       }
       return getUser;
     }()
+  }, {
+    key: "getTransactions",
+    value: function () {
+      var _getTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(req, res) {
+        var page, limit, skip, tansactions, totalCount;
+        return _regeneratorRuntime().wrap(function _callee15$(_context15) {
+          while (1) switch (_context15.prev = _context15.next) {
+            case 0:
+              _context15.prev = 0;
+              page = parseInt(req.query.page) || 1;
+              limit = parseInt(req.query.limit) || 10;
+              skip = (page - 1) * limit;
+              _context15.next = 6;
+              return _transaction["default"].find({}, {
+                __v: 0,
+                updatedAt: 0
+              }).sort({
+                createdAt: -1
+              }).skip(skip).limit(limit).lean();
+            case 6:
+              tansactions = _context15.sent;
+              _context15.next = 9;
+              return _transaction["default"].countDocuments();
+            case 9:
+              totalCount = _context15.sent;
+              res.status(200).send({
+                message: "Tansactions retrieved",
+                page: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalCount: totalCount,
+                tansactions: tansactions
+              });
+              _context15.next = 17;
+              break;
+            case 13:
+              _context15.prev = 13;
+              _context15.t0 = _context15["catch"](0);
+              console.log(_context15.t0);
+              res.status(500).send({
+                message: _context15.t0.message
+              });
+            case 17:
+            case "end":
+              return _context15.stop();
+          }
+        }, _callee15, null, [[0, 13]]);
+      }));
+      function getTransactions(_x29, _x30) {
+        return _getTransactions.apply(this, arguments);
+      }
+      return getTransactions;
+    }()
+  }, {
+    key: "getTransaction",
+    value: function () {
+      var _getTransaction = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee16(req, res) {
+        var transactionId, transaction;
+        return _regeneratorRuntime().wrap(function _callee16$(_context16) {
+          while (1) switch (_context16.prev = _context16.next) {
+            case 0:
+              _context16.prev = 0;
+              transactionId = req.query.id;
+              if (transactionId) {
+                _context16.next = 4;
+                break;
+              }
+              return _context16.abrupt("return", res.status(400).send({
+                message: "Transaction ID is required"
+              }));
+            case 4:
+              _context16.next = 6;
+              return _transaction["default"].findById(transactionId, {
+                __v: 0,
+                updatedAt: 0
+              }).lean();
+            case 6:
+              transaction = _context16.sent;
+              if (transaction) {
+                _context16.next = 9;
+                break;
+              }
+              return _context16.abrupt("return", res.status(404).json({
+                success: false,
+                message: 'Transaction not found'
+              }));
+            case 9:
+              res.status(200).send({
+                success: true,
+                data: {
+                  message: 'Transaction found',
+                  transaction: transaction
+                }
+              });
+              _context16.next = 16;
+              break;
+            case 12:
+              _context16.prev = 12;
+              _context16.t0 = _context16["catch"](0);
+              console.log(_context16.t0);
+              res.status(500).send({
+                message: _context16.t0.message
+              });
+            case 16:
+            case "end":
+              return _context16.stop();
+          }
+        }, _callee16, null, [[0, 12]]);
+      }));
+      function getTransaction(_x31, _x32) {
+        return _getTransaction.apply(this, arguments);
+      }
+      return getTransaction;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -854,36 +968,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x29, _x30) {
+function processExcelSheetData(_x33, _x34) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee17(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee15$(_context15) {
-      while (1) switch (_context15.prev = _context15.next) {
+    return _regeneratorRuntime().wrap(function _callee17$(_context17) {
+      while (1) switch (_context17.prev = _context17.next) {
         case 0:
-          _context15.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context17.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context15.t1 = _context15.t0()).done) {
-            _context15.next = 8;
+          if ((_context17.t1 = _context17.t0()).done) {
+            _context17.next = 8;
             break;
           }
-          index = _context15.t1.value;
+          index = _context17.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context15.next = 6;
+          _context17.next = 6;
           return productData.save();
         case 6:
-          _context15.next = 1;
+          _context17.next = 1;
           break;
         case 8:
         case "end":
-          return _context15.stop();
+          return _context17.stop();
       }
-    }, _callee15);
+    }, _callee17);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }

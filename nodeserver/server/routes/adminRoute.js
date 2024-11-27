@@ -64,4 +64,8 @@ adminRoute.get('/admin/get/orders', authenticate, OrderController.getOrders);
 
 adminRoute.get('/admin/get/order', authenticate, OrderController.getOrder);
 
+adminRoute.get('/admin/get/transactions', authenticate, AdminController.getTransactions);
+
+adminRoute.get('/admin/get/transaction', authenticate, AdminController.getTransaction);
+
 export default adminRoute;

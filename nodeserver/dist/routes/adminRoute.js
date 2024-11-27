@@ -56,4 +56,6 @@ adminRoute.get('/admin/get/users', authenticate, _adminController["default"].get
 adminRoute.get('/admin/get/user', authenticate, _adminController["default"].getUser);
 adminRoute.get('/admin/get/orders', authenticate, _orderController["default"].getOrders);
 adminRoute.get('/admin/get/order', authenticate, _orderController["default"].getOrder);
+adminRoute.get('/admin/get/transactions', authenticate, _adminController["default"].getTransactions);
+adminRoute.get('/admin/get/transaction', authenticate, _adminController["default"].getTransaction);
 var _default = exports["default"] = adminRoute;
