@@ -7,3 +7,12 @@ export const formatAmount = (amount) => {
 
   return formatter.format(amount);
 }
+
+export const timestampToDateString = (timestamp) => {
+  return new Date(timestamp).toLocaleString('en-gb', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
