@@ -40,3 +40,9 @@ export const verifyPayment = (data) => $http.post(`${serverUrl}/paystack/verify-
 export const getUsers = () => $http.get(`${serverUrl}/admin/get/users`, getDefaultHeader());
 
 export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${userId}`, getDefaultHeader());
+
+
+// Order Management
+export const getOrders = () => $http.get(`${serverUrl}/admin/get/orders`, getDefaultHeader());
+
+export const getOrder = (orderId) => $http.get(`${serverUrl}/admin/get/order?id=${orderId}`, getDefaultHeader());
