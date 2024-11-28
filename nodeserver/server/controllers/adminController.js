@@ -421,7 +421,7 @@ class AdminController {
 
             const skip = (page - 1) * limit;
 
-            const tansactions = await Transaction.find({}, {__v: 0, updatedAt: 0})
+            const transactions = await Transaction.find({}, {__v: 0, updatedAt: 0})
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -429,11 +429,11 @@ class AdminController {
             const totalCount = await Transaction.countDocuments();
 
             res.status(200).send({
-                message: "Tansactions retrieved",
+                message: "Transactions retrieved",
                 page,
                 totalPages: Math.ceil(totalCount / limit),
                 totalCount,
-                tansactions: tansactions
+                transactions: transactions
             });
         } catch (error) {
             console.log(error);

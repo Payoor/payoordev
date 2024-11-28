@@ -848,7 +848,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "getTransactions",
     value: function () {
       var _getTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(req, res) {
-        var page, limit, skip, tansactions, totalCount;
+        var page, limit, skip, transactions, totalCount;
         return _regeneratorRuntime().wrap(function _callee15$(_context15) {
           while (1) switch (_context15.prev = _context15.next) {
             case 0:
@@ -864,17 +864,17 @@ var AdminController = /*#__PURE__*/function () {
                 createdAt: -1
               }).skip(skip).limit(limit).lean();
             case 6:
-              tansactions = _context15.sent;
+              transactions = _context15.sent;
               _context15.next = 9;
               return _transaction["default"].countDocuments();
             case 9:
               totalCount = _context15.sent;
               res.status(200).send({
-                message: "Tansactions retrieved",
+                message: "Transactions retrieved",
                 page: page,
                 totalPages: Math.ceil(totalCount / limit),
                 totalCount: totalCount,
-                tansactions: tansactions
+                transactions: transactions
               });
               _context15.next = 17;
               break;

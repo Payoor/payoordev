@@ -176,6 +176,7 @@ var OrderController = /*#__PURE__*/function () {
             case 9:
               orders = _context3.sent;
               res.status(200).json({
+                message: 'Orders retrieved',
                 page: page,
                 totalPages: Math.ceil(total / limit),
                 totalCount: total,
@@ -229,6 +230,7 @@ var OrderController = /*#__PURE__*/function () {
               orders = _context4.sent;
               total = orders.length;
               res.status(200).json({
+                message: 'Orders retrieved',
                 page: page,
                 totalPages: Math.ceil(total / limit),
                 totalCount: total,

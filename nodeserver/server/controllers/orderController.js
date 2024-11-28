@@ -112,6 +112,7 @@ class OrderController {
                 .limit(limit);
 
             res.status(200).json({
+                message: 'Orders retrieved',
                 page,
                 totalPages: Math.ceil(total / limit),
                 totalCount: total,
@@ -144,6 +145,7 @@ class OrderController {
             const total = orders.length;
 
             res.status(200).json({
+                message: 'Orders retrieved',
                 page,
                 totalPages: Math.ceil(total / limit),
                 totalCount: total,

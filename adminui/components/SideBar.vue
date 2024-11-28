@@ -23,6 +23,30 @@
       </div>
 
       <div class="item">
+        <div class="item-category">Orders</div>
+        <ul>
+          <li>
+            <NuxtLink to="/orders">
+              <ContainerIcon />
+              <span>All Orders</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
+        <div class="item-category">Transactions</div>
+        <ul>
+          <li>
+            <NuxtLink to="/transactions">
+              <CreditCardIcon />
+              <span>All Transactions</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div class="item">
         <div class="item-category">Users</div>
         <ul>
           <li>
@@ -41,18 +65,6 @@
             <NuxtLink to="/chat">
               <ChatBubbleIcon />
               <span>Chat Room</span>
-            </NuxtLink>
-          </li>
-        </ul>
-      </div>
-
-      <div class="item">
-        <div class="item-category">Orders</div>
-        <ul>
-          <li>
-            <NuxtLink to="/orders">
-              <ContainerIcon />
-              <span>All Orders</span>
             </NuxtLink>
           </li>
         </ul>
@@ -88,6 +100,7 @@ import UserCogIcon from "./icons/UserCogIcon.vue";
 import UserPlusIcon from "./icons/UserPlusIcon.vue";
 import ContainerIcon from "./icons/ContainerIcon.vue";
 import UsersIcon from "./icons/UsersIcon.vue";
+import CreditCardIcon from "./icons/CreditCardIcon.vue";
 
 export default {
   components: {
@@ -97,7 +110,8 @@ export default {
     UserCogIcon,
     UserPlusIcon,
     ContainerIcon,
-    UsersIcon
+    UsersIcon,
+    CreditCardIcon,
   },
 
   data() {
@@ -138,6 +152,7 @@ export default {
     flex-grow: 1;
     padding-block: 2rem;
     width: 100%;
+    overflow-y: auto;
 
     .item-category {
       width: 100%;

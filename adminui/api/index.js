@@ -46,3 +46,9 @@ export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${u
 export const getOrders = () => $http.get(`${serverUrl}/admin/get/orders`, getDefaultHeader());
 
 export const getOrder = (orderId) => $http.get(`${serverUrl}/admin/get/order?id=${orderId}`, getDefaultHeader());
+
+
+// Transaction Management
+export const getTransactions = () => $http.get(`${serverUrl}/admin/get/transactions`, getDefaultHeader());
+
+export const getTransaction = (transactionId) => $http.get(`${serverUrl}/admin/get/transaction?id=${transactionId}`, getDefaultHeader());
