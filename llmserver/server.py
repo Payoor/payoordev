@@ -1,22 +1,18 @@
+from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
-from openai import OpenAI
-
-from flask import Flask, jsonify, request
+from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
-import nigerian_groceries
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
-app = Flask(__name__)
-
+from data_upload import DataUpload
+from data_prepare import DataPrepare
+from data_use import DataUse
 load_dotenv()
 
-#print(nigerian_groceries)
-
-api_key = os.getenv('API_KEY')
+app = Flask(__name__)
 port = int(os.getenv('PORT', 8084))
-
-openai = OpenAI(api_key=api_key)
 
 ALLOWED_ORIGINS = [
     'https://chat.payoor.shop',
@@ -32,109 +28,111 @@ CORS(app,
         r"/*": {
             "origins": ALLOWED_ORIGINS,
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
+            "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
             "supports_credentials": True,
             "expose_headers": ["Content-Range", "X-Content-Range"]
         }
      })
 
-GROCERY_SYSTEM_PROMPT = """
-    You are a helpful shopping assistant that processes user-provided lists and checks availability. Follow these strict interaction rules:
+dtupload = DataUpload()
+data_prep = DataPrepare()
+data_use = DataUse()
 
-    1. WAIT for the user to provide their list first - never create lists for them.
+UPLOAD_FOLDER = 'uploads'
 
-    2. Check each item against the available items in 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-""" + str(nigerian_groceries.nigeria_groceries) + """ 
-    Clearly indicate which items are available
-    Create a price in naira for each available item
-    Format responses in an organized, easy-to-read manner
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-    3. For unavailable items:
 
-        Explicitly identify which items are not available
-        Ask if the user would like alternative suggestions
-        Only provide alternatives if user confirms
+"""
+put these in a cron job
 
-    4. After availability and pricing are discussed:
-
-       Calculate total price for available items
-       Ask if user would like to proceed with payment
-
-        Important guidelines:
-
-        Always let the user drive the list creation
-        Never assume items or add to their list
-        Be explicit about availability status for each item
-        Keep responses structured and clear
-        Always confirm before proceeding to payment
-
-        Follow this sample interaction format stricty and make strictly sure everything totals 500 naira:
-        User: [Provides list]
-        You: "I've checked availability for your items:
-        Available:
-
-        [Item 1] - [Price]
-        [Item 2] - [Price]
-
-        Not Available:
-
-        [Item 3]
-        [Item 4]
-
-        Total: Total of Available items 
-
-        Tell me if you'd like to see alternatives to unavailable items or you can simply tap this message to make payment for the available items
+items, message = data_prep.get_items_without_description()
+description_templates = data_prep.turn_details_to_plain_text(items)
+plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
 """
 
-@app.route('/')
-def home():
-    return 'Welcome to the Python Server!'
+@app.route('/admin/upload/products/excel', methods=['POST'])
+def upload_excel():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        if file and dtupload.allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            file.save(filepath)
+
+            try:
+                cleaned_records = dtupload.excel_to_dict(filepath)
+                final_data = dtupload.process_excel_data(cleaned_records)
+                plain_text = dtupload.convert_to_plaintext(final_data)
+                
+                dtupload.save_to_mongodb_database(plain_text)
+            
+            except Exception as e:
+                print(e)
+
+                return jsonify({'error': f'Server error: {str(e)}'}), 500
+        return jsonify({
+                    'message': 'File processing completed',
+                }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500 
 
 @app.route('/message/user/send', methods=['POST'])
-def get_user_message():
-    if not request.is_json:
-        return jsonify({
-            "error": "Content-Type must be application/json"
-        }), 400
+def query_data():
+    try:
+        data = request.json
+        user_query = data.get('text', '').lower()
+        current_items = data.get('currentItems', '')
 
-    data = request.get_json()
+        success, raw_results, formatted, results_texts = data_use.query_products_from_chroma(user_query)
+        raw_results_item_ids = raw_results["ids"][0]
 
-    message = data.get('text')
+        found_items_by_id = data_use.get_items_from_mongodb_by_id(raw_results_item_ids)
 
-    if not message:
-        return jsonify({
-            "error": "text field is required and cannot be empty"
-        }), 400
+        query_relevance = data_use.judge_query_relevance(user_query, formatted)
 
-    messages = [
-        {"role": "system", "content": GROCERY_SYSTEM_PROMPT},
-        {"role": "user", "content": message}
-    ]
+        generated_suggested_prompts = data_use.generate_suggested_prompt(results_texts)
 
-    ai_response = openai.chat.completions.create(
-        model = "gpt-4o-mini",
-        messages = messages
-    )
+        #print(generated_suggested_prompts)
 
-    response_content = ai_response.choices[0].message.content
-    
-    response_data = {
-        "success": True,
-        "data": {
-            "message": "Success response",
-            "chatresponse": {
-                "text": response_content,
-                "isClient": False,
-                "isRead": False
+        suggested_prompts = data_use.clean_up_generated_prompts_list(generated_suggested_prompts)
+        #print(suggested_prompts)
+
+        data = {
+                "message": "Success response",
+                "chatresponse": {
+                    "text": query_relevance,
+                    "results": found_items_by_id,
+                    "suggested_prompts": suggested_prompts,
+                    "isClient": False,
+                    "isRead": False
+                }
             }
-        }
-    }
-    
-    response = jsonify(response_data)
-    response.status_code = 200
-    return response
 
+        print(data)
+
+        response_data = {
+            "success": True,
+            "data": data
+        }
+        
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
 
 if __name__ == '__main__':
     app.run(

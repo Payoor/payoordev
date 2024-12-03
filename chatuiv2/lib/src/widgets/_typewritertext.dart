@@ -10,6 +10,7 @@ class TypewriterText extends StatefulWidget {
   final TextAlign textAlign;
   final ScrollController? scrollController;
   final VoidCallback? onTap;
+  final VoidCallback? onComplete;
 
   const TypewriterText({
     super.key,
@@ -20,6 +21,7 @@ class TypewriterText extends StatefulWidget {
     this.textAlign = TextAlign.left,
     this.scrollController,
     this.onTap,
+    this.onComplete,
   });
 
   @override
@@ -61,6 +63,7 @@ class _TypewriterTextState extends State<TypewriterText>
             _showCursor = false;
           });
           _cursorTimer?.cancel();
+          widget.onComplete?.call();  // Call onComplete callback when typing is done
         }
       });
 
@@ -114,8 +117,7 @@ class _TypewriterTextState extends State<TypewriterText>
       child: MouseRegion(
         cursor: widget.onTap != null
             ? SystemMouseCursors.click
-            : SystemMouseCursors
-                .text, //PayStackRoutes.generatePaymentLink(displayText);
+            : SystemMouseCursors.text,
         child: Wrap(
           children: [
             Text(

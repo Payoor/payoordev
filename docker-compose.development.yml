@@ -13,7 +13,8 @@ services:
       - nodeserver
       - adminui
       - chatuiserver
-      - llmserver    # Added python server to depends_on
+      - llmserver
+      - socketserver
     networks:
       - payoor_development_network      
 
@@ -71,7 +72,17 @@ services:
       - FLASK_APP=server.py
       - FLASK_ENV=development
     networks:
-      - payoor_development_network 
+      - payoor_development_network
+
+  socketserver:
+    container_name: socketserver-development
+    restart: always
+    build: ./socketserver
+    environment:
+      - PORT=8085
+      - NODE_ENV=development
+    networks:
+      - payoor_development_network    
 
 networks:
   payoor_development_network:

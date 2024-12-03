@@ -1,14 +1,32 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-    filepath: { type: String, required: true, unique: true },
-    data: { type: mongoose.Schema.Types.Mixed, default: {} },
+    product_name: {
+        type: String
+    },
+    data: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
     images: {
         type: [String],
         default: []
-    }
-}, { timestamps: true });
+    },
+    generatedDescription: {
+        type: String,
+        default: ""
+    },
+    generatedCategories: {
+        type: [String],
+        default: []
+    },
+    vector_created: false
+}, {
+    timestamps: true
+});
 
+productSchema.index({ 'data.NAME': 'text' });
 
+productSchema.index({ 'data.AVAILABILITY': 1, 'data.UNIT': 1 });
 
 module.exports = mongoose.model('Product', productSchema);
