@@ -1,3 +1,5 @@
+import Transaction from "../models/transaction";
+
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
 }
@@ -9,7 +11,8 @@ class PaymentController {
         try {
             const https = require('https');
 
-            const { email, total } = req;
+            const { email, total } = req.body;
+            const { order, user } = res.locals;
 
             const amount = total;
 
@@ -63,7 +66,16 @@ class PaymentController {
                     console.log(response);
 
                     res.status(200).json(response);
+
+                    const transaction = new Transaction({
+                        initiatorId: user._id,
+                        orderId: order._id,
+                        amount: amount,
+                        reference: JSON.parse(data).data.reference
+                    })
+                    transaction.save();
                 })
+                
 
             }).on('error', error => {
                 console.log(error)
@@ -140,6 +152,84 @@ class PaymentController {
 
             return res.status(500).json(errorResponse);
         }
+    }
+
+    async verifyPayment(req, res) {
+
+        try {
+            
+            const https = require('https');
+            const { transactionReference } = req.body;
+    
+            const options = {
+                hostname: 'api.paystack.co',
+                port: 443,
+                path: `/transaction/verify/${transactionReference}`,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`
+                }
+            }
+
+            const transaction = await Transaction.findOne({reference: transactionReference})
+
+            if (!transaction) {
+                return res.status(404).json({
+                    message: 'Transaction not found.'
+                })
+            }
+    
+            const verificationRequest = https.request(options, verificationResponse => {
+                let data = ''
+    
+                verificationResponse.on('data', (chunk) => {
+                    data += chunk
+                });
+    
+                const response = {
+                    success: true,
+                    data: {
+                        message: 'Payment verified!',
+                        chatresponse: {
+                            text: "this is an AI response",
+                            isClient: false,
+                            isRead: false,
+                        }
+                    }
+                };
+
+                verificationResponse.on('end', () => {
+                    console.log(JSON.parse(data))
+
+                    transaction.status = 'verified';
+                    transaction.paymentDate = new Date(JSON.parse(data).data.paid_at);
+                    transaction.save();
+
+                    res.status(200).json(response);
+                })
+    
+            }).on('error', error => {
+                console.log(error)
+                return res.status(400).json({
+                    message: 'Error verifying payment'
+                });
+            })
+    
+            verificationRequest.end();
+        } catch (error) {
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to verify payment',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
+        }
+        
     }
 }
 

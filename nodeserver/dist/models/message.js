@@ -18,9 +18,10 @@ var messageSchema = new mongoose.Schema({
     type: Boolean,
     "default": false
   },
-  isClient: {
-    type: Boolean,
-    "default": false
+  sender: {
+    type: String,
+    "enum": ['user', 'admin', 'llm'],
+    "default": 'user'
   }
 }, {
   timestamps: false

@@ -7,6 +7,8 @@ exports["default"] = void 0;
 var _product = _interopRequireDefault(require("../models/product"));
 var _image = _interopRequireDefault(require("../models/image"));
 var _admin = _interopRequireDefault(require("../models/admin"));
+var _user = _interopRequireDefault(require("../models/user"));
+var _transaction = _interopRequireDefault(require("../models/transaction"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -49,7 +51,7 @@ var AdminController = /*#__PURE__*/function () {
   return _createClass(AdminController, [{
     key: "uploadExcelSheet",
     value: function () {
-      var _uploadExcelSheet = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _uploadExcelSheet = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var filepath, excelSheetData;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -94,7 +96,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProducts",
     value: function () {
-      var _getProducts = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var page, limit, skip, products, formattedProducts, totalCount;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -148,7 +150,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProduct",
     value: function () {
-      var _getProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _getProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var id, product, _id, data, images;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -204,7 +206,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "updateProduct",
     value: function () {
-      var _updateProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
         var id, updateData, options, updatedProduct, formattedProduct;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
@@ -269,7 +271,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteProduct",
     value: function () {
-      var _deleteProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+      var _deleteProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
         var id, deletedProduct;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
@@ -323,7 +325,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "uploadProductImage",
     value: function () {
-      var _uploadProductImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+      var _uploadProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
         var id, file, fileName, uploadParams, command, s3Response, imageUrl, image;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
@@ -386,7 +388,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProductImages",
     value: function () {
-      var _getProductImages = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+      var _getProductImages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
         var id, images;
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
@@ -427,7 +429,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteProductImage",
     value: function () {
-      var _deleteProductImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
+      var _deleteProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
         var id, image, key, deleteCommand, _error$$metadata;
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) switch (_context8.prev = _context8.next) {
@@ -514,7 +516,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "createAdmin",
     value: function () {
-      var _createAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
+      var _createAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
         var _req$body, username, password, existingAdmin, admin, token;
         return _regeneratorRuntime().wrap(function _callee9$(_context9) {
           while (1) switch (_context9.prev = _context9.next) {
@@ -581,7 +583,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "signInAdmin",
     value: function () {
-      var _signInAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
+      var _signInAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
         var _req$body2, username, password, admin, token;
         return _regeneratorRuntime().wrap(function _callee10$(_context10) {
           while (1) switch (_context10.prev = _context10.next) {
@@ -630,7 +632,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteAdmin",
     value: function () {
-      var _deleteAdmin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
+      var _deleteAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
         var adminId, adminCount, adminToDelete;
         return _regeneratorRuntime().wrap(function _callee11$(_context11) {
           while (1) switch (_context11.prev = _context11.next) {
@@ -699,7 +701,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getAllAdmins",
     value: function () {
-      var _getAllAdmins = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
+      var _getAllAdmins = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
         var admins;
         return _regeneratorRuntime().wrap(function _callee12$(_context12) {
           while (1) switch (_context12.prev = _context12.next) {
@@ -730,6 +732,231 @@ var AdminController = /*#__PURE__*/function () {
       }
       return getAllAdmins;
     }()
+  }, {
+    key: "getUsers",
+    value: function () {
+      var _getUsers = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee13(req, res) {
+        var page, limit, skip, users, totalCount;
+        return _regeneratorRuntime().wrap(function _callee13$(_context13) {
+          while (1) switch (_context13.prev = _context13.next) {
+            case 0:
+              _context13.prev = 0;
+              page = parseInt(req.query.page) || 1;
+              limit = parseInt(req.query.limit) || 10;
+              skip = (page - 1) * limit;
+              _context13.next = 6;
+              return _user["default"].find({}, '_id email name phoneNumber').skip(skip).limit(limit).lean();
+            case 6:
+              users = _context13.sent;
+              _context13.next = 9;
+              return _user["default"].countDocuments();
+            case 9:
+              totalCount = _context13.sent;
+              res.status(200).send({
+                message: "Users retrieved",
+                page: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalCount: totalCount,
+                users: users
+              });
+              _context13.next = 17;
+              break;
+            case 13:
+              _context13.prev = 13;
+              _context13.t0 = _context13["catch"](0);
+              console.log(_context13.t0);
+              res.status(500).send({
+                message: _context13.t0.message
+              });
+            case 17:
+            case "end":
+              return _context13.stop();
+          }
+        }, _callee13, null, [[0, 13]]);
+      }));
+      function getUsers(_x25, _x26) {
+        return _getUsers.apply(this, arguments);
+      }
+      return getUsers;
+    }()
+  }, {
+    key: "getUser",
+    value: function () {
+      var _getUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(req, res) {
+        var id, user, userResponse, response;
+        return _regeneratorRuntime().wrap(function _callee14$(_context14) {
+          while (1) switch (_context14.prev = _context14.next) {
+            case 0:
+              _context14.prev = 0;
+              id = req.query.id;
+              if (id) {
+                _context14.next = 4;
+                break;
+              }
+              return _context14.abrupt("return", res.status(400).send({
+                message: "User ID is required"
+              }));
+            case 4:
+              _context14.next = 6;
+              return _user["default"].findById(id).lean();
+            case 6:
+              user = _context14.sent;
+              if (user) {
+                _context14.next = 9;
+                break;
+              }
+              return _context14.abrupt("return", res.status(404).send({
+                message: "User not found"
+              }));
+            case 9:
+              userResponse = {
+                name: user.name,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                isVerified: user.isVerified,
+                hasBeenWelcomed: user.hasBeenWelcomed
+              };
+              response = {
+                success: true,
+                data: {
+                  message: 'User found',
+                  user: userResponse
+                }
+              };
+              res.status(200).send(response);
+              _context14.next = 18;
+              break;
+            case 14:
+              _context14.prev = 14;
+              _context14.t0 = _context14["catch"](0);
+              console.log(_context14.t0);
+              res.status(500).send({
+                message: _context14.t0.message
+              });
+            case 18:
+            case "end":
+              return _context14.stop();
+          }
+        }, _callee14, null, [[0, 14]]);
+      }));
+      function getUser(_x27, _x28) {
+        return _getUser.apply(this, arguments);
+      }
+      return getUser;
+    }()
+  }, {
+    key: "getTransactions",
+    value: function () {
+      var _getTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(req, res) {
+        var page, limit, skip, transactions, totalCount;
+        return _regeneratorRuntime().wrap(function _callee15$(_context15) {
+          while (1) switch (_context15.prev = _context15.next) {
+            case 0:
+              _context15.prev = 0;
+              page = parseInt(req.query.page) || 1;
+              limit = parseInt(req.query.limit) || 10;
+              skip = (page - 1) * limit;
+              _context15.next = 6;
+              return _transaction["default"].find({}, {
+                __v: 0,
+                updatedAt: 0
+              }).sort({
+                createdAt: -1
+              }).skip(skip).limit(limit).lean();
+            case 6:
+              transactions = _context15.sent;
+              _context15.next = 9;
+              return _transaction["default"].countDocuments();
+            case 9:
+              totalCount = _context15.sent;
+              res.status(200).send({
+                message: "Transactions retrieved",
+                page: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalCount: totalCount,
+                transactions: transactions
+              });
+              _context15.next = 17;
+              break;
+            case 13:
+              _context15.prev = 13;
+              _context15.t0 = _context15["catch"](0);
+              console.log(_context15.t0);
+              res.status(500).send({
+                message: _context15.t0.message
+              });
+            case 17:
+            case "end":
+              return _context15.stop();
+          }
+        }, _callee15, null, [[0, 13]]);
+      }));
+      function getTransactions(_x29, _x30) {
+        return _getTransactions.apply(this, arguments);
+      }
+      return getTransactions;
+    }()
+  }, {
+    key: "getTransaction",
+    value: function () {
+      var _getTransaction = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee16(req, res) {
+        var transactionId, transaction;
+        return _regeneratorRuntime().wrap(function _callee16$(_context16) {
+          while (1) switch (_context16.prev = _context16.next) {
+            case 0:
+              _context16.prev = 0;
+              transactionId = req.query.id;
+              if (transactionId) {
+                _context16.next = 4;
+                break;
+              }
+              return _context16.abrupt("return", res.status(400).send({
+                message: "Transaction ID is required"
+              }));
+            case 4:
+              _context16.next = 6;
+              return _transaction["default"].findById(transactionId, {
+                __v: 0,
+                updatedAt: 0
+              }).lean();
+            case 6:
+              transaction = _context16.sent;
+              if (transaction) {
+                _context16.next = 9;
+                break;
+              }
+              return _context16.abrupt("return", res.status(404).json({
+                success: false,
+                message: 'Transaction not found'
+              }));
+            case 9:
+              res.status(200).send({
+                success: true,
+                data: {
+                  message: 'Transaction found',
+                  transaction: transaction
+                }
+              });
+              _context16.next = 16;
+              break;
+            case 12:
+              _context16.prev = 12;
+              _context16.t0 = _context16["catch"](0);
+              console.log(_context16.t0);
+              res.status(500).send({
+                message: _context16.t0.message
+              });
+            case 16:
+            case "end":
+              return _context16.stop();
+          }
+        }, _callee16, null, [[0, 12]]);
+      }));
+      function getTransaction(_x31, _x32) {
+        return _getTransaction.apply(this, arguments);
+      }
+      return getTransaction;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -741,36 +968,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x25, _x26) {
+function processExcelSheetData(_x33, _x34) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee13(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee17(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee13$(_context13) {
-      while (1) switch (_context13.prev = _context13.next) {
+    return _regeneratorRuntime().wrap(function _callee17$(_context17) {
+      while (1) switch (_context17.prev = _context17.next) {
         case 0:
-          _context13.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context17.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context13.t1 = _context13.t0()).done) {
-            _context13.next = 8;
+          if ((_context17.t1 = _context17.t0()).done) {
+            _context17.next = 8;
             break;
           }
-          index = _context13.t1.value;
+          index = _context17.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context13.next = 6;
+          _context17.next = 6;
           return productData.save();
         case 6:
-          _context13.next = 1;
+          _context17.next = 1;
           break;
         case 8:
         case "end":
-          return _context13.stop();
+          return _context17.stop();
       }
-    }, _callee13);
+    }, _callee17);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }

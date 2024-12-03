@@ -23,8 +23,8 @@ var OrderController = /*#__PURE__*/function () {
   return _createClass(OrderController, [{
     key: "createOrder",
     value: function () {
-      var _createOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var items, total, validUser, order;
+      var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+        var items, total, validUser, order, createdOrder;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -32,7 +32,7 @@ var OrderController = /*#__PURE__*/function () {
               items = req.body.items;
               total = 500;
               if (!req.user) {
-                _context.next = 10;
+                _context.next = 25;
                 break;
               }
               _context.next = 6;
@@ -41,38 +41,49 @@ var OrderController = /*#__PURE__*/function () {
               });
             case 6:
               validUser = _context.sent;
-              if (validUser) {
-                order = new _order["default"]({
-                  userId: validUser._id,
-                  total: total,
-                  items: items
-                });
-                console.log('order', order);
-                req.total = total;
-                req.items = items;
-                req.email = validUser.email;
-                console.log('validUser', validUser, req.email, req.total);
-                next();
-              } else {
-                res.status(500).json({
-                  success: false,
-                  message: 'Error creating order',
-                  error: error.message
-                });
+              if (!validUser) {
+                _context.next = 22;
+                break;
               }
-              _context.next = 11;
+              order = new _order["default"]({
+                userId: validUser._id,
+                total: total,
+                items: items
+              });
+              console.log('order', order);
+              req.total = total;
+              req.items = items;
+              req.email = validUser.email;
+              console.log('validUser', validUser, req.email, req.total);
+              _context.next = 16;
+              return order.save();
+            case 16:
+              createdOrder = _context.sent;
+              res.locals.order = createdOrder;
+              res.locals.user = validUser;
+              next();
+              _context.next = 23;
               break;
-            case 10:
+            case 22:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order',
                 error: error.message
               });
-            case 11:
-              _context.next = 17;
+            case 23:
+              _context.next = 26;
               break;
-            case 13:
-              _context.prev = 13;
+            case 25:
+              res.status(500).json({
+                success: false,
+                message: 'Error creating order',
+                error: error.message
+              });
+            case 26:
+              _context.next = 32;
+              break;
+            case 28:
+              _context.prev = 28;
               _context.t0 = _context["catch"](0);
               console.log(_context.t0);
               res.status(500).json({
@@ -80,11 +91,11 @@ var OrderController = /*#__PURE__*/function () {
                 message: 'Error creating order',
                 error: _context.t0.message
               });
-            case 17:
+            case 32:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 13]]);
+        }, _callee, null, [[0, 28]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);
@@ -94,13 +105,13 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var orderId, order;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
-              orderId = req.params.id;
+              orderId = req.query.id;
               _context2.next = 4;
               return _order["default"].findById(orderId).populate('userId', 'name email');
             case 4:
@@ -143,7 +154,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrders",
     value: function () {
-      var _getOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _getOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var page, limit, skip, total, orders;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -157,20 +168,20 @@ var OrderController = /*#__PURE__*/function () {
             case 6:
               total = _context3.sent;
               _context3.next = 9;
-              return _order["default"].find().populate('userId', 'name email').sort({
+              return _order["default"].find({}, {
+                __v: 0
+              }).sort({
                 createdAt: -1
               }).skip(skip).limit(limit);
             case 9:
               orders = _context3.sent;
               res.status(200).json({
-                success: true,
-                data: orders,
-                pagination: {
-                  currentPage: page,
-                  totalPages: Math.ceil(total / limit),
-                  totalItems: total,
-                  itemsPerPage: limit
-                }
+                message: 'Orders retrieved',
+                page: page,
+                totalPages: Math.ceil(total / limit),
+                totalCount: total,
+                itemsPerPage: limit,
+                orders: orders
               });
               _context3.next = 17;
               break;
@@ -197,14 +208,51 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrders",
     value: function () {
-      var _getUserOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+        var userId, page, limit, skip, orders, total;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
+              _context4.prev = 0;
+              userId = req.query.id;
+              page = parseInt(req.query.page) || 1;
+              limit = parseInt(req.query.limit) || 10;
+              skip = (page - 1) * limit;
+              _context4.next = 7;
+              return _order["default"].find({
+                userId: userId
+              }, {
+                __v: 0
+              }).sort({
+                createdAt: -1
+              }).skip(skip).limit(limit);
+            case 7:
+              orders = _context4.sent;
+              total = orders.length;
+              res.status(200).json({
+                message: 'Orders retrieved',
+                page: page,
+                totalPages: Math.ceil(total / limit),
+                totalCount: total,
+                itemsPerPage: limit,
+                orders: orders
+              });
+              _context4.next = 16;
+              break;
+            case 12:
+              _context4.prev = 12;
+              _context4.t0 = _context4["catch"](0);
+              console.log(_context4.t0);
+              res.status(500).json({
+                success: false,
+                message: 'Error fetching orders',
+                error: _context4.t0.message
+              });
+            case 16:
             case "end":
               return _context4.stop();
           }
-        }, _callee4);
+        }, _callee4, null, [[0, 12]]);
       }));
       function getUserOrders(_x8, _x9) {
         return _getUserOrders.apply(this, arguments);

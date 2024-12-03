@@ -12,4 +12,5 @@ var express = require('express');
 var paymentRoute = express();
 paymentRoute.post('/paystack/generate-payment-link', _verifyJWT["default"], _orderController["default"].createOrder, _paymentController["default"].generatePaymentLink);
 paymentRoute.post('/paystack/payment-response', _paymentController["default"].handlePayStackPaymentResponse);
+paymentRoute.post('/paystack/verify-payment', _paymentController["default"].verifyPayment);
 var _default = exports["default"] = paymentRoute;

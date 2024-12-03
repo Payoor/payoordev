@@ -8,14 +8,23 @@
     </div>
     <div class="product-details-container">
       <div>
-        <h2>Order Summary</h2>
+        <h2>Details</h2>
         <section>
-          <div v-for="(value, key) in order" :key="key">
-            <template v-if="key !== 'items'">
+          <div v-for="(value, key) in filteredOrderDetails" :key="key">
+            <template v-if="key !== 'items' && key !== 'userId'">
               <p>
-                <strong>{{ key }}:</strong> {{ value }}
+                <strong>{{ key }}:</strong> {{ isDate(value) ? timestampToDateString(value) : value }}
               </p>
             </template>
+          </div>
+        </section>
+
+        <h2>User Details</h2>
+        <section>
+          <div v-for="(value, key) in order.userId" :key="key">
+            <p>
+              <strong>{{ key }}:</strong> {{ value }}
+            </p>
           </div>
         </section>
 
@@ -44,19 +53,15 @@
             </div>
           </div>
         </section>
-
-        <h2>Conversations</h2>
-        <!-- Render chat between admin and customer  -->
-        <section>
-          <p>No available conversations</p>
-        </section>
       </div>
     </div>
   </DefaultLayout>
 </template>
 
 <script>
+import { getOrder } from "../../api";
 import ChevronLeftIcon from "../../components/icons/ChevronLeftIcon.vue";
+import { timestampToDateString } from "../../helpers";
 import Default from "../../layouts/Default.vue";
 
 export default {
@@ -65,47 +70,45 @@ export default {
     ChevronLeftIcon,
   },
 
+  computed: {
+    filteredOrderDetails() {
+      if (this.order) {
+        const { _id, __v, ...rest } = this.order;
+        return rest;
+      }
+      return {};
+    },
+  },
+
   data() {
     return {
-      order: {
-        orderId: "ORD-00123",
-        customerName: "John Doe",
-        orderDate: "2023-11-12T10:30:00Z",
-        deliveryDate: "2023-11-13T15:00:00Z",
-        status: "Delivered",
-        totalAmount: 45.75,
-        paymentMethod: "Credit Card",
-        items: [
-          {
-            productId: "PROD-0001",
-            productName: "Organic Apples",
-            quantity: 2,
-            unitPrice: 3.5,
-            totalPrice: 7.0,
-            images: [
-              "https://res.cloudinary.com/dxiprgbcc/image/upload/v1731384424/pexels-pixabay-533280_e6wj1f.jpg",
-            ],
-          },
-          {
-            productId: "PROD-0002",
-            productName: "Whole Milk",
-            quantity: 1,
-            unitPrice: 2.5,
-            totalPrice: 2.5,
-            images: [
-              "https://res.cloudinary.com/dxiprgbcc/image/upload/v1731384424/pexels-pixabay-533280_e6wj1f.jpg",
-            ],
-          },
-        ],
-        deliveryAddress: "123 Main St, Springfield, USA",
-        trackingNumber: "TRACK-56789",
-      },
-      // orderId: undefined,
+      order: {},
+      orderId: undefined,
     };
   },
 
+  methods: {
+    getOrder,
+    timestampToDateString,
+    isDate(value) {
+      if (typeof value !== "string") return false;
+
+      // Check if the string can be converted to a valid Date
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    },
+  },
+
   mounted() {
-    // this.orderId = this.$route.params.id;
+    this.orderId = this.$route.params.id;
+
+    this.getOrder(this.orderId)
+      .then((response) => {
+        this.order = response.data.data;
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
   },
 };
 </script>

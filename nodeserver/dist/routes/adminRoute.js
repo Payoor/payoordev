@@ -8,6 +8,7 @@ var _express = _interopRequireDefault(require("express"));
 var _multer = _interopRequireDefault(require("multer"));
 var _fs = _interopRequireDefault(require("fs"));
 var _adminController = _interopRequireDefault(require("../controllers/adminController"));
+var _orderController = _interopRequireDefault(require("../controllers/orderController"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var _require = require('../middleware/admin/auth'),
   authenticate = _require.authenticate,
@@ -51,4 +52,10 @@ adminRoute["delete"]('/admin/delete/product', authenticate, _adminController["de
 adminRoute.post('/admin/upload/product/image', authenticate, uploadFileWithMulter().single('file'), _adminController["default"].uploadProductImage);
 adminRoute.get('/admin/product/images', authenticate, _adminController["default"].getProductImages);
 adminRoute["delete"]('/admin/product/image', authenticate, _adminController["default"].deleteProductImage);
+adminRoute.get('/admin/get/users', authenticate, _adminController["default"].getUsers);
+adminRoute.get('/admin/get/user', authenticate, _adminController["default"].getUser);
+adminRoute.get('/admin/get/orders', authenticate, _orderController["default"].getOrders);
+adminRoute.get('/admin/get/order', authenticate, _orderController["default"].getOrder);
+adminRoute.get('/admin/get/transactions', authenticate, _adminController["default"].getTransactions);
+adminRoute.get('/admin/get/transaction', authenticate, _adminController["default"].getTransaction);
 var _default = exports["default"] = adminRoute;

@@ -3,6 +3,7 @@ import multer from "multer";
 import fs from "fs";
 
 import AdminController from "../controllers/adminController";
+import OrderController from '../controllers/orderController';
 
 const { authenticate, isFirstAdmin } = require('../middleware/admin/auth');
 
@@ -55,5 +56,16 @@ adminRoute.get('/admin/product/images', authenticate, AdminController.getProduct
 
 adminRoute.delete('/admin/product/image', authenticate, AdminController.deleteProductImage);
 
+adminRoute.get('/admin/get/users', authenticate, AdminController.getUsers);
+
+adminRoute.get('/admin/get/user', authenticate, AdminController.getUser);
+
+adminRoute.get('/admin/get/orders', authenticate, OrderController.getOrders);
+
+adminRoute.get('/admin/get/order', authenticate, OrderController.getOrder);
+
+adminRoute.get('/admin/get/transactions', authenticate, AdminController.getTransactions);
+
+adminRoute.get('/admin/get/transaction', authenticate, AdminController.getTransaction);
 
 export default adminRoute;

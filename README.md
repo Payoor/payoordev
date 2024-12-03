@@ -362,6 +362,159 @@ All endpoints may return these common error responses:
     }
     ```
 
+## Order Management
+### Get Orders
+Retrieves a paginated list of orders.
+
+- **URL:** `/admin/get/orders`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `page` (optional, default: 1)
+  - `limit` (optional, default: 10)
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Orders retrieved",
+      "page": number,
+      "totalPages": number,
+      "totalCount": number,
+      "orders": [
+        {
+          "_id": "string",
+          ...orderData
+        }
+      ]
+    }
+    ```
+
+### Get Single Order
+Retrieves details of a specific order.
+
+- **URL:** `/admin/get/order`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Order ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "_id": "string",
+      ...orderData,
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "Order not found"
+    }
+    ```
+
+## Transaction Management
+### Get Transactions
+Retrieves a paginated list of transactions.
+
+- **URL:** `/admin/get/transactions`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `page` (optional, default: 1)
+  - `limit` (optional, default: 10)
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Transactions retrieved",
+      "page": number,
+      "totalPages": number,
+      "totalCount": number,
+      "transactions": [
+        {
+          "_id": "string",
+          ...transactionData
+        }
+      ]
+    }
+    ```
+
+### Get Single Transaction
+Retrieves details of a specific transaction.
+
+- **URL:** `/admin/get/transaction`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Transaction ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "_id": "string",
+      ...transactionData,
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "Transaction not found"
+    }
+    ```
+
+## User Management
+### Get Users
+Retrieves a paginated list of users.
+
+- **URL:** `/admin/get/users`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `page` (optional, default: 1)
+  - `limit` (optional, default: 10)
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Users retrieved",
+      "page": number,
+      "totalPages": number,
+      "totalCount": number,
+      "users": [
+        {
+          "_id": "string",
+          ...userData
+        }
+      ]
+    }
+    ```
+
+### Get Single User
+Retrieves details of a specific user.
+
+- **URL:** `/admin/get/user`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: User ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "_id": "string",
+      ...userData,
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+
 ## Notes for Frontend Implementation
 
 1. All authenticated requests must include the Bearer token in the Authorization header
