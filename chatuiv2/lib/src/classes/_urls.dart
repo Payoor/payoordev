@@ -14,7 +14,7 @@ class Urls {
 
       print(location);
 
-      if (location.contains('localhost') || location.contains('0.0.0.0')) {
+      if (location.contains('localhost')) {
         return 'http://localhost:3031';
       }
       if (location.contains('staging')) {

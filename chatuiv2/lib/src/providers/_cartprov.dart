@@ -9,6 +9,31 @@ class CartProvider with ChangeNotifier {
 
   int get itemCount => _items.length;
 
+  Map<String, dynamic> createCartPayload() {
+    final cartPayload = {
+      'items': _items.map((id, item) => MapEntry(id, {
+            'name': item.name,
+            'units': item.units.map((unit, details) => MapEntry(
+                unit, {'price': details.price, 'quantity': details.quantity}))
+          })),
+      'totalAmount': totalAmount
+    };
+    return cartPayload;
+  }
+
+  void printCartItems() {
+    _items.forEach((id, item) {
+      print('\nItem ID: $id');
+      print('Name: ${item.name}');
+      item.units.forEach((unit, details) {
+        print('Unit: $unit');
+        print('Price: ${details.price}');
+        print('Quantity: ${details.quantity}');
+      });
+    });
+    print('\nTotal Amount: $totalAmount');
+  }
+
   void addItem({
     required String id,
     required String name,

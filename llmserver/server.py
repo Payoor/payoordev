@@ -9,10 +9,12 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 from data_upload import DataUpload
 from data_prepare import DataPrepare
 from data_use import DataUse
+from cart_module import CartModule
+
 load_dotenv()
 
 app = Flask(__name__)
-port = int(os.getenv('PORT', 8084))
+port = int(os.getenv('PORT', 8084)) 
 
 ALLOWED_ORIGINS = [
     'https://chat.payoor.shop',
@@ -37,6 +39,7 @@ CORS(app,
 dtupload = DataUpload()
 data_prep = DataPrepare()
 data_use = DataUse()
+cart_module = CartModule()
 
 UPLOAD_FOLDER = 'uploads'
 
@@ -86,6 +89,44 @@ def upload_excel():
                     'message': 'File processing completed',
                 }), 200
     except Exception as e:
+        return jsonify({"error": str(e)}), 500 
+
+@app.route('/message/user/cartdetails', methods=['POST'])
+def query_cart():
+    try:
+        data = request.json
+        user_cart = data.get('cart')
+
+        print(user_cart)
+
+        response_data = {
+            "success": True,
+            "data": 'data'
+        }
+
+        cart_summary = cart_module.generate_cart_summary(user_cart)
+
+        data = {
+                "message": "Success response",
+                "chatresponse": {
+                    "text": cart_summary,
+                    "isClient": False,
+                    "isRead": False
+                }
+            }
+
+        print(data)
+
+        response_data = {
+            "success": True,
+            "data": data
+        }
+        
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500 
 
 @app.route('/message/user/send', methods=['POST'])

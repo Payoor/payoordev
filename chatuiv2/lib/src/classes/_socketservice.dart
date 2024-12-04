@@ -7,10 +7,10 @@ class SocketService {
   static bool isConnected = false;
   static final String socketUrl = Urls.socketUrl;
 
-  static void connectToServer() {
+  static void connectToSocketServer() {
     socket = IO.io(socketUrl, {
       'transports': ['websocket'],
-      'autoConnect': false,
+      'autoConnect': true,
     });
 
     socket!.connect();
@@ -18,6 +18,11 @@ class SocketService {
     socket!.onConnect((_) {
       isConnected = true;
       print('Connected to socket server');
+    });
+
+    socket!.on('transaction.success', (data) {
+      print('Payment successful: $data');
+      // Handle your payment success data here
     });
   }
 

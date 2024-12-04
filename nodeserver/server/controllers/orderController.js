@@ -5,36 +5,47 @@ class OrderController {
 
     async createOrder(req, res, next) {
         try {
-            const { items } = req.body;
+            const { order } = req.body;
+            const { user } = req;
 
-            const total = 500;
+            const total = order.totalAmount;
+            const order_items = order.items
+            const items = [];
 
-            if (req.user) {
-                const validUser = await User.findOne({ _id: req.user.userId });
+            Object.entries(order_items).forEach(([id, item]) => {
+                const product_data = {
+                    product_id: id,
+                    product_name: item.name,
+                    product_units: item.units
+                }
+
+                items.push(product_data);
+            });
+
+            if (user) {
+                const validUser = await User.findOne({ _id: user.userId });
 
                 if (validUser) {
+
                     const order = new Order({
                         userId: validUser._id,
                         total,
                         items
                     });
 
-                    console.log('order', order);
-
                     req.total = total;
                     req.items = items;
                     req.email = validUser.email;
+                    req.orderId = order._id;
+                    req.userId = validUser._id;
 
-                    console.log('validUser', validUser, req.email, req.total)
+                    await order.save();
 
-                    const createdOrder = await order.save();
-                    res.locals.order = createdOrder;
-                    res.locals.user = validUser;
                     next();
                 } else {
                     res.status(500).json({
                         success: false,
-                        message: 'Error creating order',
+                        message: 'Error creating order invalid user',
                         error: error.message
                     });
                 }
@@ -45,19 +56,6 @@ class OrderController {
                     error: error.message
                 });
             }
-
-            /*const order = new Order({
-                userId,
-                total
-            });
-
-            await order.save();
-
-            res.status(200).json({
-                success: true,
-                data: order,
-                message: 'Order created successfully'
-            });*/
 
         } catch (error) {
             console.log(error);
@@ -137,7 +135,7 @@ class OrderController {
             const limit = parseInt(req.query.limit) || 10;
             const skip = (page - 1) * limit;
 
-            const orders = await Order.find({userId: userId}, { __v: 0 })
+            const orders = await Order.find({ userId: userId }, { __v: 0 })
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);

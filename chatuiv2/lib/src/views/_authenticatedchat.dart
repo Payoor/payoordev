@@ -17,6 +17,7 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
 import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
 import 'package:chatuiv2/src/classes/_paystackroutes.dart';
+import 'package:chatuiv2/src/classes/_socketservice.dart';
 
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
@@ -35,14 +36,11 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   int _selectedPillIndex = 0;
   bool _isDrawerOpen = true;
   bool _showProducts = false;
+  bool _payStackViewOpen = false;
 
   final List<Map> pills = [
-    {
-      "label": "Cart",
-      "action": () {
-        print("Cart action triggered");
-      }
-    },
+    {"label": "Cart", "action": "View Cart"},
+    {"label": "Pay", "action": "Proceed to payment"},
   ];
 
   @override
@@ -69,6 +67,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     _controller.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void initializeSocket() {
+    SocketService.connectToSocketServer();
   }
 
   void _scrollToBottom() {
@@ -251,7 +253,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
               );
             }
 
-            if (message.isPayStackView) {
+            if (message.isPayStackView && _payStackViewOpen) {
               return Container(
                 height: MediaQuery.of(context).size.height * 0.7,
                 child: PayStackViewContainer(url: message.text),
@@ -287,9 +289,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                           duration: Duration(milliseconds: 1500),
                           showCursor: true,
                           scrollController: _scrollController,
-                          onTap: () {
-                            _handlePaymentLinkGeneration(message.text);
-                          },
+                          onTap: () {},
                           onComplete: () {
                             setState(() {
                               _showProducts = true;
@@ -344,72 +344,92 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       suggested_prompts.length,
                       (index) => Consumer<CartProvider>(
                         builder: (context, cart, child) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: InkWell(
-                              onTap: () {
-                                final action =
-                                    suggested_prompts[index]['action'];
-                                if (action != null && action is Function) {
-                                  action();
-                                } else {
-                                  _selectedPillIndex = index;
-                                  setState(() {});
-                                }
-                              },
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.6),
-                                        width: 0.5,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      suggested_prompts[index]['label'] ?? '',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(.6),
-                                      ),
-                                    ),
-                                  ),
-                                  if (suggested_prompts[index]['label'] ==
-                                          'Cart' &&
-                                      cart.itemCount > 0)
-                                    Positioned(
-                                      top: -8,
-                                      right: -8,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: Colors
-                                              .red, // or any color you prefer
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Consumer<CartProvider>(
-                                          builder: (context, cart, child) =>
-                                              Text(
-                                            '${cart.itemCount}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
+                          return suggested_prompts[index]['label'] == "Cart" &&
+                                      cart.itemCount == 0 ||
+                                  suggested_prompts[index]['label'] == "Pay" &&
+                                      cart.itemCount == 0
+                              ? SizedBox()
+                              : Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: InkWell(
+                                    onTap: () {
+                                      final action =
+                                          suggested_prompts[index]['action'];
+                                      if (action != null &&
+                                          action == "View Cart") {
+                                        _handleCartQuery();
+                                      } else if (action != null &&
+                                          action == "Proceed to payment") {
+                                        print('handle payment');
+                                        //_handlePayment();
+                                        _handlePaymentLinkGeneration();
+                                      } else {
+                                        _selectedPillIndex = index;
+                                        print(suggested_prompts[index]['text']);
+                                        setState(() {});
+                                      }
+                                    },
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            border: Border.all(
+                                              color:
+                                                  Colors.white.withOpacity(0.6),
+                                              width: 0.5,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            suggested_prompts[index]['label'] ??
+                                                '',
+                                            style: TextStyle(
+                                              color:
+                                                  Colors.white.withOpacity(.6),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                        if (suggested_prompts[index]['label'] ==
+                                                'Cart' &&
+                                            cart.itemCount > 0)
+                                          Positioned(
+                                            top: -8,
+                                            right: -8,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: Colors
+                                                    .red, // or any color you prefer
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Consumer<CartProvider>(
+                                                builder:
+                                                    (context, cart, child) =>
+                                                        Text(
+                                                  '${cart.itemCount}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                ],
-                              ),
-                            ),
-                          );
+                                  ),
+                                );
                         },
                       ),
                     ),
@@ -486,7 +506,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
-  void _handlePaymentLinkGeneration(String items) async {
+  void _handlePaymentLinkGeneration() async {
+    final cartData =
+        Provider.of<CartProvider>(context, listen: false).createCartPayload();
     if (mounted) {
       context.read<MessageProvider>().addMessage(Message(
             text: '',
@@ -498,13 +520,20 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       _scrollToBottom();
     }
 
-    final response = await PayStackRoutes.generatePaymentLink(items);
+    final response = await PayStackRoutes.generatePaymentLink(cartData);
 
     if (response.success) {
       final paymentUrl = response.data['authorization_url'];
+      //final transactionReference = response.data['transaction_reference'];
 
       if (paymentUrl != null) {
         context.read<MessageProvider>().removeLastMessage();
+
+        setState(() {
+          _payStackViewOpen = true;
+        });
+
+        initializeSocket();
 
         if (mounted) {
           context.read<MessageProvider>().addMessage(Message(
@@ -643,6 +672,55 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       }
     }
   }
+
+  void _handleCartQuery() async {
+    try {
+      final cartData =
+          Provider.of<CartProvider>(context, listen: false).createCartPayload();
+
+      context.read<MessageProvider>().addMessage(Message(
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
+      _scrollToBottom();
+
+      final response = await ChatApiRoutes.getCartDetails(cartData);
+
+      if (response?.data != null && response.data['chatresponse'] != null) {
+        final chatResponse = response.data['chatresponse'];
+
+        Message aiMessage;
+
+        aiMessage = Message(
+          text: chatResponse['text'] ?? 'Sorry, I could not process that.',
+          isClient: false,
+          isRead: false,
+        );
+
+        if (mounted) {
+          context.read<MessageProvider>().removeLastMessage();
+          context.read<MessageProvider>().addMessage(aiMessage);
+          _scrollToBottom();
+        }
+      } else {
+        if (mounted) {
+          context.read<MessageProvider>().removeLastMessage();
+          final errorMessage = Message(
+            text: 'Sorry, there was an error processing your message.',
+            isClient: false,
+            isRead: false,
+          );
+          context.read<MessageProvider>().addMessage(errorMessage);
+        }
+      }
+    } catch (e) {
+      print('Error handling cart query: $e');
+    }
+  }
+
+  void _handlePayment() async {}
 
   Widget _buildWatermarkOverlay() {
     return Positioned.fill(

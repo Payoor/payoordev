@@ -6,3 +6,4 @@ const corsOriginArray = [
 ]
 
 export default corsOriginArray;
+ 

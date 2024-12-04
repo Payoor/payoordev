@@ -31,7 +31,7 @@ const corsOptions = {
   origin: corsOrginArray,
   optionsSuccessStatus: 200,
 };
-
+ 
 app.use(cors(corsOptions));
 app.use(express.json());
 

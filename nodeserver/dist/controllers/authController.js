@@ -32,7 +32,7 @@ var AuthController = /*#__PURE__*/function () {
   return _createClass(AuthController, [{
     key: "generateOtp",
     value: function () {
-      var _generateOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _generateOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var email, otpcode, mailResponse, newEmailOtp, response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -101,7 +101,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "verifyOtp",
     value: function () {
-      var _verifyOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _verifyOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var _req$body, email, otp, user, userExists, isValid, expiredResponse, response, invalidResponse, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -209,7 +209,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "handleSignUp",
     value: function () {
-      var _handleSignUp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _handleSignUp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var _req$body2, name, email, phone, location, shoppingList, existingUser, duplicateResponse, user, response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -292,7 +292,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "generateJWT",
     value: function () {
-      var _generateJWT2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _generateJWT2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
         var id, token, response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
@@ -342,7 +342,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "getValidUser",
     value: function () {
-      var _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+      var _getValidUser = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
         var _req$authData, userId, tokenId, validUser, userResponse, response, notFoundResponse, errorResponse;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {

@@ -11,8 +11,8 @@ class PaymentController {
         try {
             const https = require('https');
 
-            const { email, total } = req.body;
-            const { order, user } = res.locals;
+            const { email, total, orderId, userId } = req;
+            //const { order, user } = res.locals;
 
             const amount = total;
 
@@ -60,22 +60,27 @@ class PaymentController {
                 };
 
                 paystackResponse.on('end', () => {
+                    const transaction_reference = JSON.parse(data).data.reference;
 
                     response.data.authorization_url = JSON.parse(data).data.authorization_url;
+                    response.data.transaction_reference = transaction_reference;
+                    response.data.access_code = JSON.parse(data).data.access_code;
 
                     console.log(response);
+
 
                     res.status(200).json(response);
 
                     const transaction = new Transaction({
-                        initiatorId: user._id,
-                        orderId: order._id,
+                        initiatorId: userId,
+                        orderId: orderId,
                         amount: amount,
-                        reference: JSON.parse(data).data.reference
-                    })
+                        reference: transaction_reference
+                    });
+
                     transaction.save();
                 })
-                
+
 
             }).on('error', error => {
                 console.log(error)
@@ -157,10 +162,10 @@ class PaymentController {
     async verifyPayment(req, res) {
 
         try {
-            
+
             const https = require('https');
             const { transactionReference } = req.body;
-    
+
             const options = {
                 hostname: 'api.paystack.co',
                 port: 443,
@@ -171,21 +176,21 @@ class PaymentController {
                 }
             }
 
-            const transaction = await Transaction.findOne({reference: transactionReference})
+            const transaction = await Transaction.findOne({ reference: transactionReference })
 
             if (!transaction) {
                 return res.status(404).json({
                     message: 'Transaction not found.'
                 })
             }
-    
+
             const verificationRequest = https.request(options, verificationResponse => {
                 let data = ''
-    
+
                 verificationResponse.on('data', (chunk) => {
                     data += chunk
                 });
-    
+
                 const response = {
                     success: true,
                     data: {
@@ -207,14 +212,14 @@ class PaymentController {
 
                     res.status(200).json(response);
                 })
-    
+
             }).on('error', error => {
                 console.log(error)
                 return res.status(400).json({
                     message: 'Error verifying payment'
                 });
             })
-    
+
             verificationRequest.end();
         } catch (error) {
             console.log(error);
@@ -229,7 +234,7 @@ class PaymentController {
 
             res.status(500).json(errorResponse);
         }
-        
+
     }
 }
 
