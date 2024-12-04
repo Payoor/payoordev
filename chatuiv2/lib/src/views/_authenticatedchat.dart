@@ -6,14 +6,18 @@ import 'dart:html' as html;
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
-import 'package:chatuiv2/src/widgets/_webviewcontainer.dart';
+import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
+import 'package:chatuiv2/src/widgets/_productdisplay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
+import 'package:chatuiv2/src/providers/_resultlistprov.dart';
+import 'package:chatuiv2/src/providers/_cartprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
 import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
 import 'package:chatuiv2/src/classes/_paystackroutes.dart';
+import 'package:chatuiv2/src/classes/_socketservice.dart';
 
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
@@ -31,11 +35,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   final TextEditingController _controller = TextEditingController();
   int _selectedPillIndex = 0;
   bool _isDrawerOpen = true;
+  bool _showProducts = false;
+  bool _payStackViewOpen = false;
 
-  final List<String> pills = [
-    'Create a shopping list',
-    'Track order',
-    'Repeat order'
+  final List<Map> pills = [
+    {"label": "Cart", "action": "View Cart"},
+    {"label": "Pay", "action": "Proceed to payment"},
   ];
 
   @override
@@ -62,6 +67,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     _controller.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void initializeSocket() {
+    SocketService.connectToSocketServer();
   }
 
   void _scrollToBottom() {
@@ -244,32 +253,62 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
               );
             }
 
-            if (message.isWebView) {
-              return WebViewContainer(url: message.text);
+            if (message.isPayStackView && _payStackViewOpen) {
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: PayStackViewContainer(url: message.text),
+              );
             }
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Container(
-                  padding: const EdgeInsets.all(8),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity, // Takes full width
                   decoration: BoxDecoration(
-                    color: AppColors.greyBlack.withOpacity(.5),
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: TypewriterText(
-                      key: ValueKey(
-                          'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
-                      text: message.text,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withOpacity(0.8),
-                      ),
-                      duration: Duration(milliseconds: 1500),
-                      showCursor: true,
-                      scrollController: _scrollController,
-                      onTap: () {
-                        _handlePaymentLinkGeneration(message.text);
-                      })),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.greyBlack.withOpacity(.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TypewriterText(
+                          key: ValueKey(
+                              'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
+                          text: message.text,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                          duration: Duration(milliseconds: 1500),
+                          showCursor: true,
+                          scrollController: _scrollController,
+                          onTap: () {},
+                          onComplete: () {
+                            setState(() {
+                              _showProducts = true;
+                            });
+                          },
+                        )),
+                  ),
+                ),
+                if (message.isProductsDisplay &&
+                    _showProducts &&
+                    message.results.isNotEmpty &&
+                    index == messagesList.length - 1) ...[
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: ProductDisplay())),
+                ]
+              ],
             );
           },
         );
@@ -289,42 +328,118 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(
-          padding: EdgeInsets.only(bottom: 20),
-          child: Row(
-            children: [
-              ...List.generate(
-                pills.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: InkWell(
-                    onTap: () {
-                      // Handle pill selection
-                      _selectedPillIndex = index;
-                      setState(() {});
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.6),
-                          width: 0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        pills[index],
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(.6),
-                        ),
+        padding: EdgeInsets.only(bottom: 20, top: 20),
+        child: Row(
+          children: [
+            Consumer<ResultListProvider>(
+              builder: (context, resultList, child) {
+                final suggested_prompts = [
+                  ...pills,
+                  ...resultList.suggested_prompts
+                ];
+
+                return Row(
+                  children: [
+                    ...List.generate(
+                      suggested_prompts.length,
+                      (index) => Consumer<CartProvider>(
+                        builder: (context, cart, child) {
+                          return suggested_prompts[index]['label'] == "Cart" &&
+                                      cart.itemCount == 0 ||
+                                  suggested_prompts[index]['label'] == "Pay" &&
+                                      cart.itemCount == 0
+                              ? SizedBox()
+                              : Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: InkWell(
+                                    onTap: () {
+                                      final action =
+                                          suggested_prompts[index]['action'];
+                                      if (action != null &&
+                                          action == "View Cart") {
+                                        _handleCartQuery();
+                                      } else if (action != null &&
+                                          action == "Proceed to payment") {
+                                        print('handle payment');
+                                        //_handlePayment();
+                                        _handlePaymentLinkGeneration();
+                                      } else {
+                                        _selectedPillIndex = index;
+                                        print(suggested_prompts[index]['text']);
+                                        setState(() {});
+                                      }
+                                    },
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            border: Border.all(
+                                              color:
+                                                  Colors.white.withOpacity(0.6),
+                                              width: 0.5,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            suggested_prompts[index]['label'] ??
+                                                '',
+                                            style: TextStyle(
+                                              color:
+                                                  Colors.white.withOpacity(.6),
+                                            ),
+                                          ),
+                                        ),
+                                        if (suggested_prompts[index]['label'] ==
+                                                'Cart' &&
+                                            cart.itemCount > 0)
+                                          Positioned(
+                                            top: -8,
+                                            right: -8,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: Colors
+                                                    .red, // or any color you prefer
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Consumer<CartProvider>(
+                                                builder:
+                                                    (context, cart, child) =>
+                                                        Text(
+                                                  '${cart.itemCount}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                        },
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ],
-          )),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -391,7 +506,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
-  void _handlePaymentLinkGeneration(String items) async {
+  void _handlePaymentLinkGeneration() async {
+    final cartData =
+        Provider.of<CartProvider>(context, listen: false).createCartPayload();
     if (mounted) {
       context.read<MessageProvider>().addMessage(Message(
             text: '',
@@ -403,22 +520,27 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       _scrollToBottom();
     }
 
-    final response = await PayStackRoutes.generatePaymentLink(items);
+    final response = await PayStackRoutes.generatePaymentLink(cartData);
 
     if (response.success) {
       final paymentUrl = response.data['authorization_url'];
+      //final transactionReference = response.data['transaction_reference'];
 
       if (paymentUrl != null) {
-        //html.window.open(paymentUrl, '_blank');
-
         context.read<MessageProvider>().removeLastMessage();
+
+        setState(() {
+          _payStackViewOpen = true;
+        });
+
+        initializeSocket();
 
         if (mounted) {
           context.read<MessageProvider>().addMessage(Message(
                 text: paymentUrl,
                 isClient: false,
                 isRead: false,
-                isWebView: true,
+                isPayStackView: true,
               ));
 
           _scrollToBottom();
@@ -448,6 +570,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         _controller.clear();
 
         if (mounted) {
+          setState(() {
+            _showProducts = false;
+          });
+
           context.read<MessageProvider>().addMessage(message);
           _scrollToBottom();
 
@@ -457,7 +583,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 isRead: false,
                 isLoading: true,
               ));
-
           _scrollToBottom();
         }
 
@@ -465,12 +590,47 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         if (response?.data != null && response.data['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
+          print(chatResponse);
 
-          final aiMessage = Message(
-            text: chatResponse['text'] ?? 'Sorry, I could not process that.',
-            isClient: false,
-            isRead: false,
-          );
+          Message aiMessage;
+          if (chatResponse['results'] != null) {
+            List<Map<String, dynamic>> parsedResults = [];
+            List<Map<String, dynamic>> suggestedPrompts = [];
+
+            if (chatResponse['results'] is List) {
+              parsedResults = (chatResponse['results'] as List).map((item) {
+                return Map<String, dynamic>.from(item);
+              }).toList();
+            }
+
+            if (chatResponse['suggested_prompts'] is List) {
+              suggestedPrompts =
+                  (chatResponse['suggested_prompts'] as List).map((item) {
+                return Map<String, dynamic>.from(item);
+              }).toList();
+            }
+
+            context.read<ResultListProvider>().updateResults(
+                total: parsedResults.length,
+                results: parsedResults,
+                suggested_prompts: suggestedPrompts);
+
+            final results = context.read<ResultListProvider>().results;
+
+            aiMessage = Message(
+              text: chatResponse['text'] ?? 'Sorry, I could not process that.',
+              results: results,
+              isProductsDisplay: true,
+              isClient: false,
+              isRead: false,
+            );
+          } else {
+            aiMessage = Message(
+              text: chatResponse['text'] ?? 'Sorry, I could not process that.',
+              isClient: false,
+              isRead: false,
+            );
+          }
 
           if (mounted) {
             context.read<MessageProvider>().removeLastMessage();
@@ -512,6 +672,55 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       }
     }
   }
+
+  void _handleCartQuery() async {
+    try {
+      final cartData =
+          Provider.of<CartProvider>(context, listen: false).createCartPayload();
+
+      context.read<MessageProvider>().addMessage(Message(
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
+      _scrollToBottom();
+
+      final response = await ChatApiRoutes.getCartDetails(cartData);
+
+      if (response?.data != null && response.data['chatresponse'] != null) {
+        final chatResponse = response.data['chatresponse'];
+
+        Message aiMessage;
+
+        aiMessage = Message(
+          text: chatResponse['text'] ?? 'Sorry, I could not process that.',
+          isClient: false,
+          isRead: false,
+        );
+
+        if (mounted) {
+          context.read<MessageProvider>().removeLastMessage();
+          context.read<MessageProvider>().addMessage(aiMessage);
+          _scrollToBottom();
+        }
+      } else {
+        if (mounted) {
+          context.read<MessageProvider>().removeLastMessage();
+          final errorMessage = Message(
+            text: 'Sorry, there was an error processing your message.',
+            isClient: false,
+            isRead: false,
+          );
+          context.read<MessageProvider>().addMessage(errorMessage);
+        }
+      }
+    } catch (e) {
+      print('Error handling cart query: $e');
+    }
+  }
+
+  void _handlePayment() async {}
 
   Widget _buildWatermarkOverlay() {
     return Positioned.fill(

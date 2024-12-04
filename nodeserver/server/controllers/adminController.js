@@ -49,7 +49,7 @@ class AdminController {
     async getProducts(req, res) {
         try {
             const page = parseInt(req.query.page) || 1;
-            const limit = parseInt(req.query.limit) || 10;
+            const limit = parseInt(req.query.limit) || 20;
 
             const skip = (page - 1) * limit;
 
@@ -57,6 +57,8 @@ class AdminController {
             const formattedProducts = products.map(({ _id, data }) => ({ _id, ...data }));
 
             const totalCount = await Product.countDocuments();
+
+            console.log(totalCount);
 
             res.status(200).send({
                 message: "Products retrieved",

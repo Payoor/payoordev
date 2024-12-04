@@ -14,7 +14,7 @@ function verifyOtp(_x) {
   return _verifyOtp.apply(this, arguments);
 }
 function _verifyOtp() {
-  _verifyOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+  _verifyOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
     var otp, visitoridentifier, visitor;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

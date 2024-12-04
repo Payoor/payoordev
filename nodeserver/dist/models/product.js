@@ -2,10 +2,8 @@
 
 var mongoose = require('mongoose');
 var productSchema = new mongoose.Schema({
-  filepath: {
-    type: String,
-    required: true,
-    unique: true
+  product_name: {
+    type: String
   },
   data: {
     type: mongoose.Schema.Types.Mixed,
@@ -14,8 +12,24 @@ var productSchema = new mongoose.Schema({
   images: {
     type: [String],
     "default": []
-  }
+  },
+  generatedDescription: {
+    type: String,
+    "default": ""
+  },
+  generatedCategories: {
+    type: [String],
+    "default": []
+  },
+  vector_created: false
 }, {
   timestamps: true
+});
+productSchema.index({
+  'data.NAME': 'text'
+});
+productSchema.index({
+  'data.AVAILABILITY': 1,
+  'data.UNIT': 1
 });
 module.exports = mongoose.model('Product', productSchema);

@@ -26,25 +26,24 @@ var PaymentController = /*#__PURE__*/function () {
   return _createClass(PaymentController, [{
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-        var https, _req$body, email, total, _res$locals, order, user, amount, params, options, paystackRequest, errorResponse;
+      var _generatePaymentLink = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+        var https, email, total, orderId, userId, amount, params, options, paystackRequest, errorResponse;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               https = require('https');
-              _req$body = req.body, email = _req$body.email, total = _req$body.total;
-              _res$locals = res.locals, order = _res$locals.order, user = _res$locals.user;
+              email = req.email, total = req.total, orderId = req.orderId, userId = req.userId; //const { order, user } = res.locals;
               amount = total;
               if (!(!email || !amount)) {
-                _context.next = 8;
+                _context.next = 7;
                 break;
               }
               console.log('email and amount are required');
               return _context.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 8:
+            case 7:
               params = JSON.stringify({
                 "email": email,
                 "amount": amount * 100 // this conversion can be done either on the client side or server side.
@@ -77,14 +76,17 @@ var PaymentController = /*#__PURE__*/function () {
                   }
                 };
                 paystackResponse.on('end', function () {
+                  var transaction_reference = JSON.parse(data).data.reference;
                   response.data.authorization_url = JSON.parse(data).data.authorization_url;
+                  response.data.transaction_reference = transaction_reference;
+                  response.data.access_code = JSON.parse(data).data.access_code;
                   console.log(response);
                   res.status(200).json(response);
                   var transaction = new _transaction["default"]({
-                    initiatorId: user._id,
-                    orderId: order._id,
+                    initiatorId: userId,
+                    orderId: orderId,
                     amount: amount,
-                    reference: JSON.parse(data).data.reference
+                    reference: transaction_reference
                   });
                   transaction.save();
                 });
@@ -96,10 +98,10 @@ var PaymentController = /*#__PURE__*/function () {
               });
               paystackRequest.write(params);
               paystackRequest.end();
-              _context.next = 20;
+              _context.next = 19;
               break;
-            case 15:
-              _context.prev = 15;
+            case 14:
+              _context.prev = 14;
               _context.t0 = _context["catch"](0);
               console.log(_context.t0);
               errorResponse = {
@@ -111,11 +113,11 @@ var PaymentController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 20:
+            case 19:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 15]]);
+        }, _callee, null, [[0, 14]]);
       }));
       function generatePaymentLink(_x, _x2) {
         return _generatePaymentLink.apply(this, arguments);
@@ -125,7 +127,7 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _handlePayStackPaymentResponse = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var crypto, paystackSignature, hash, event, paymentData, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -188,7 +190,7 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "verifyPayment",
     value: function () {
-      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _verifyPayment = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var https, transactionReference, options, transaction, verificationRequest, errorResponse;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {

@@ -31,7 +31,7 @@ const corsOptions = {
   origin: corsOrginArray,
   optionsSuccessStatus: 200,
 };
-
+ 
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -62,14 +62,6 @@ app.use(express.urlencoded({
 }));
 
 const PORT = process.env.PORT;
-/*const FLUTTER_WEB_APP = path.join(__dirname, '../public', 'web');
-app.use(express.static(FLUTTER_WEB_APP));
-
-app.get('/', (req, res) => {
-  const indexPath = path.join(FLUTTER_WEB_APP, 'index.html');
-
-  res.sendFile(indexPath);
-});*/
 
 const uploadDir = path.resolve(__dirname, '..', '.', 'uploads');
 

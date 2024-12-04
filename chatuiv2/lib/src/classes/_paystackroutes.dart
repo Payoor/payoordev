@@ -6,7 +6,7 @@ import 'package:chatuiv2/src/classes/_urls.dart';
 import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 
 class PayStackRoutes {
-  static Future<ServerResponse> generatePaymentLink(String? items) async {
+  static Future<ServerResponse> generatePaymentLink(Map<String, dynamic> items) async {
     try {
       final uri = Uri.parse('${Urls.baseUrl}/paystack/generate-payment-link');
 
@@ -29,7 +29,7 @@ class PayStackRoutes {
           'Authorization':
               'Bearer $jwt', 
         },
-        body: jsonEncode({"items": items}),
+        body: jsonEncode({"order": items}),
       );
 
       if (response.statusCode == 200) {

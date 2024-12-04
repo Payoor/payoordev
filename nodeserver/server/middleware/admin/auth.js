@@ -35,6 +35,7 @@ const authenticate = async (req, res, next) => {
 const isFirstAdmin = async (req, res, next) => {
     try {
         const adminExists = await Admin.findOne({});
+        
         if (adminExists) {
             return res.status(403).json({
                 error: 'Initial admin already exists. New admins must be created by an authenticated admin.'

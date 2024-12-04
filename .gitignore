@@ -14,3 +14,9 @@ llmserver/env/
 *.pyc
 __pycache__/
 env
+playground.py
+llmserver/venv/
+llmserver/.DS_Store
+llmserver/myenv/
+package-lock.json
+llmserver/chroma_persistent_storage/

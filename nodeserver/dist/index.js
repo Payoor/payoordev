@@ -61,15 +61,6 @@ app.use(express.urlencoded({
   }
 }));
 var PORT = process.env.PORT;
-/*const FLUTTER_WEB_APP = path.join(__dirname, '../public', 'web');
-app.use(express.static(FLUTTER_WEB_APP));
-
-app.get('/', (req, res) => {
-  const indexPath = path.join(FLUTTER_WEB_APP, 'index.html');
-
-  res.sendFile(indexPath);
-});*/
-
 var uploadDir = _path["default"].resolve(__dirname, '..', '.', 'uploads');
 
 // Ensure the upload directory exists
@@ -96,7 +87,7 @@ app.post('/upload', _verifyToken["default"], function (req, res) {
     var filePath = _path["default"].join(uploadDir, uniqueFilename);
     var fileUrl = "uploads/".concat(uniqueFilename);
     _fs["default"].writeFile(filePath, buffer, /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(err) {
+      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(err) {
         var newFile;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {

@@ -12,20 +12,59 @@ class ChatApiRoutes {
       final uri = Uri.parse('${Urls.llmUrl}/message/user/send');
       final jwt = JwtManager.getToken();
 
+      //print(jwt);
+      //print(message.text);
+
       final response = await http.post(
         uri,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Origin': 'https://chat.development.payoor.store',
+          'Session-ID': jwt.toString(),
           //'Authorization': 'Bearer $jwt',
         },
         body: jsonEncode({
           'text': message.text,
+          'currentItems': [
+            {"name": "Rice", "description": "White long grain"},
+            {"name": "Chicken", "description": "Fresh whole chicken"},
+            {"name": "Eggs", "description": "Large brown eggs"},
+            {"name": "Beans", "description": "Black beans"}
+          ],
           'clienttimestamp': message.clienttimestamp.toIso8601String(),
           'isRead': message.isRead,
         }),
       );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to send message. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to send message: $e');
+    }
+  }
+
+  static Future<ServerResponse> getCartDetails(
+      Map<String, dynamic> cartData) async {
+    try {
+      final uri = Uri.parse('${Urls.llmUrl}/message/user/cartdetails');
+      final jwt = JwtManager.getToken();
+
+      final response = await http.post(uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Origin': 'https://chat.development.payoor.store',
+            'Session-ID': jwt.toString(),
+            //'Authorization': 'Bearer $jwt',
+          },
+          body: jsonEncode({'cart': cartData}));
+
+      print('test the function');
 
       if (response.statusCode == 200) {
         return ServerResponse.fromJson(jsonDecode(response.body));

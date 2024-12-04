@@ -9,12 +9,16 @@ import 'package:chatuiv2/src/views/_authloading.dart';
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
 import 'package:chatuiv2/src/providers/_messageprov.dart';
+import 'package:chatuiv2/src/providers/_resultlistprov.dart';
+import 'package:chatuiv2/src/providers/_cartprov.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => OnboardingProv()),
     ChangeNotifierProvider(create: (_) => AuthProv()),
-    ChangeNotifierProvider(create: (_) => MessageProvider())
+    ChangeNotifierProvider(create: (_) => MessageProvider()),
+    ChangeNotifierProvider(create: (_) => ResultListProvider()),
+    ChangeNotifierProvider(create: (_) => CartProvider())
   ], child: MyApp()));
 }
 
