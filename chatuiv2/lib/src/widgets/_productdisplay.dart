@@ -81,23 +81,20 @@ class _ProductDisplayState extends State<ProductDisplay> {
 
                       productId = results[index]["_id"];
 
-                      productName = results[index]['data']?.isNotEmpty == true
-                          ? results[index]['data'][0]["NAME"] ??
-                              "Name not provided"
-                          : "Name not provided";
+                      productName = results[index]['product_name'];
 
                       try {
                         productData = results[index]['data']
                             .map<Map<String, dynamic>>((item) => {
-                                  'id': item.hashCode,
-                                  'name': item['NAME'],
+                                  'id': productId,
+                                  'name': productName,
                                   'price': double.tryParse(
-                                          item['PRICE PER UNIT']
+                                          item['price']
                                               .toString()
                                               .replaceAll(',', '')) ??
                                       0.0,
-                                  'unit': item['UNIT'],
-                                  'inStock': item['AVAILABILITY'] == 'YES'
+                                  'unit': item['unit'],
+                                  'inStock': item['availability'] == 'YES'
                                 })
                             .toList();
                       } catch (e) {

@@ -1,11 +1,27 @@
 import os
 from pymongo import MongoClient, UpdateOne
 from bson.objectid import ObjectId
+from dotenv import load_dotenv
 
-mongo_url = os.getenv('MONGO_URL')
+load_dotenv()
 
-client = MongoClient(mongo_url)
-dbname = str(os.getenv('DB_NAME'))
+class MongoDB:
+    def __init__(self):
+        self.mongo_url = os.getenv('MONGO_URL')
+        self.dbname = os.getenv('DB_NAME')
+        
+        try:
+            self.client = MongoClient(self.mongo_url)
+            self.db = self.client[self.dbname]
+            self.productCollection = self.db['products']
+            
+            # Test connection
+            self.client.server_info()
+            print(f"Successfully connected to MongoDB: {self.dbname}")
+            
+        except Exception as e:
+            print(f"MongoDB Connection Error: {e}")
+            raise
 
-db = client[dbname] 
-productCollection = db['products']
+db = MongoDB()
+productCollection = db.productCollection

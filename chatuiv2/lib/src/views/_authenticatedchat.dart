@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
+import 'dart:async';
 
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
@@ -37,6 +38,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool _isDrawerOpen = true;
   bool _showProducts = false;
   bool _payStackViewOpen = false;
+  late StreamSubscription _subscription;
 
   final List<Map> pills = [
     {"label": "Cart", "action": "View Cart"},
@@ -58,6 +60,23 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       context.read<MessageProvider>().addListener(() {
         _scrollToBottom();
       });
+    });
+
+    _subscription = SocketService.transactionStream.listen((data) {
+      print(data);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment successful!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      setState(() {
+        _payStackViewOpen = false;
+      });
+
+      SocketService.disconnectFromSocketServer();
     });
   }
 
@@ -104,6 +123,18 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     setState(() {
       _isDrawerOpen = !_isDrawerOpen;
     });
+  }
+
+  void closePaystackView() {
+    setState(() {
+      _payStackViewOpen = false;
+    });
+
+    SocketService.disconnectFromSocketServer();
+  }
+
+  void getOrderDetails() {
+    
   }
 
   Widget _buildDrawer() {
@@ -256,7 +287,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             if (message.isPayStackView && _payStackViewOpen) {
               return Container(
                 height: MediaQuery.of(context).size.height * 0.7,
-                child: PayStackViewContainer(url: message.text),
+                child: PayStackViewContainer(url: message.paymentUrl),
               );
             }
 
@@ -523,7 +554,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     final response = await PayStackRoutes.generatePaymentLink(cartData);
 
     if (response.success) {
-      final paymentUrl = response.data['authorization_url'];
+      final String? paymentUrl = response.data['authorization_url'];
       //final transactionReference = response.data['transaction_reference'];
 
       if (paymentUrl != null) {
@@ -537,7 +568,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         if (mounted) {
           context.read<MessageProvider>().addMessage(Message(
-                text: paymentUrl,
+                text: "",
+                paymentUrl: paymentUrl,
                 isClient: false,
                 isRead: false,
                 isPayStackView: true,

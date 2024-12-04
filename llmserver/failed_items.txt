@@ -1,0 +1,419 @@
+Failed Items:
+Product: Rice (long grain)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Rice (short grain)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Rice - Tropical Sun Golden Sella Basmati
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - oloyin
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - White
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - white
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken Lap- meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken Lap - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken wings - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken wings- meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Turkey  - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Goat meat (male)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Goat meat (female)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Kote 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Titus
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Hake 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Sawa
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Croaker
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - CatFish
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Crayfish 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Vegetable oil (Kings)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Vegetable oil (power oil)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Palm Oil - Local
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino original
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino jollof
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino Jollof
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper soup - Payoor special 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Grinded red pepper 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Grinded cameroun pepper 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper - Ata Rodo
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper - Tatase 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Yam
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Iris Potato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Sweet potato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: EGG
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Onions - Red
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Garri - yellow
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Garri - 1jebu 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Salt - Mr chef
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Curry Powder - Spice Supreme 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Curry Powder - Durcos 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Thyme - Spice supreme
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Plantain
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Noodles Indomie
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+
+Failed Items (2024-12-04 14:30:32.286089):
+Product: Rice (long grain)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Rice (short grain)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Rice - Tropical Sun Golden Sella Basmati
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - oloyin
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - White
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - white
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken Lap- meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken Lap - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken wings - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken wings- meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Turkey  - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Goat meat (male)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Goat meat (female)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Kote 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Titus
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Hake 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Sawa
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Croaker
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - CatFish
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Crayfish 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Vegetable oil (Kings)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Vegetable oil (power oil)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Palm Oil - Local
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino original
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino jollof
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino Jollof
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper soup - Payoor special 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Grinded red pepper 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Grinded cameroun pepper 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper - Ata Rodo
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper - Tatase 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Yam
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Iris Potato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Sweet potato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: EGG
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Onions - Red
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Garri - yellow
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Garri - 1jebu 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Salt - Mr chef
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Curry Powder - Spice Supreme 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Curry Powder - Durcos 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Thyme - Spice supreme
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Plantain
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Noodles Indomie
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+
+Failed Items (2024-12-04 14:42:05.046720):
+Product: Rice (long grain)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Rice (short grain)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Rice - Tropical Sun Golden Sella Basmati
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - oloyin
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - White
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Beans - white
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken Lap- meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken Lap - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken wings - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Chicken wings- meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Turkey  - meat
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Goat meat (male)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Goat meat (female)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Kote 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Titus
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Hake 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Sawa
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - Croaker
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Fish - CatFish
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Crayfish 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Vegetable oil (Kings)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Vegetable oil (power oil)
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Palm Oil - Local
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino original
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino jollof
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Tomato paste - Gino Jollof
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper soup - Payoor special 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Grinded red pepper 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Grinded cameroun pepper 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper - Ata Rodo
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Pepper - Tatase 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Yam
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Iris Potato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Sweet potato
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: EGG
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Onions - Red
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Garri - yellow
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Garri - 1jebu 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Salt - Mr chef
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Curry Powder - Spice Supreme 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Curry Powder - Durcos 
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Thyme - Spice supreme
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Plantain
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------
+Product: Noodles Indomie
+Reason: cannot index parallel arrays [UNIT] [AVAILABILITY], full error: {'index': 0, 'code': 171, 'errmsg': 'cannot index parallel arrays [UNIT] [AVAILABILITY]'}
+--------------------------------------------------

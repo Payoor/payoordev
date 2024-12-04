@@ -39,7 +39,7 @@ class PaymentController {
                     console.log(event.data)
                     io.emit('transaction.success', {
                         reference: paymentData.reference,
-                        amount: paymentData.amount,
+                        amount: paymentData.amount, 
                         status: 'success'
                     });
                     console.log('transfer successful:', paymentData);

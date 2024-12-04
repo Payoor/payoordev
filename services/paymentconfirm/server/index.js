@@ -27,6 +27,7 @@ app.use(express.json());
 
 initSocket(io);
 
+
 io.on('connection', (socket) => {
     console.log('A user connected');
 
@@ -40,12 +41,21 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
-});
+}); 
+
+setTimeout(() => {
+    console.log('hey emit')
+    io.emit('transaction.success', {
+        reference: 'paymentData.reference',
+        amount: 'paymentData.amount',
+        status: 'success'
+    });
+}, 3000); 
 
 app.post('/paystack/payment-response', PaymentController.handlePayStackPaymentResponse);
 
 // Start server
-const PORT = process.env.PORT || 3031;
+const PORT = process.env.PORT || 3031; 
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

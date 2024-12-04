@@ -50,6 +50,8 @@ adminRoute.patch('/admin/update/product', authenticate, AdminController.updatePr
 
 adminRoute.delete('/admin/delete/product', authenticate, AdminController.deleteProduct);
 
+adminRoute.delete('/admin/delete/all/products', authenticate, AdminController.deleteAllProducts);
+
 adminRoute.post('/admin/upload/product/image', authenticate, uploadFileWithMulter().single('file'), AdminController.uploadProductImage);
 
 adminRoute.get('/admin/product/images', authenticate, AdminController.getProductImages);

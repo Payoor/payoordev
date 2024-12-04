@@ -29,14 +29,17 @@ class DataPrepare:
         description_templates = []
 
         for item in items:
-            description_template = ""
-            
+            #print(item)
+            description_template = f"{item['product_name']}\n"
+            description_template += "=" * len(item['product_name']) + "\n\n"
+
             for unit_data in item['data']:
-                description_template += "-----------------\n"
-                for key, value in unit_data.items():
-                    if value is not None and value != '':
-                        description_template += f"{key}: {value}\n"
-                description_template += "-----------------\n"
+                if isinstance(unit_data, dict):
+                    if all(key in unit_data for key in ['unit', 'price', 'availability']):
+                        description_template += f"• {unit_data['unit']}\n"
+                        description_template += f"  Price: {unit_data['price']}\n"
+                        description_template += f"  Available: {unit_data['availability']}\n"
+                        description_template += "\n"
 
             description_templates.append({
                 "_id": item["_id"],
@@ -55,21 +58,27 @@ class DataPrepare:
                     For example:
 
                     input:
-                        -----------------
-                        NAME: Rice (long grain)
-                        UNIT: De rica
-                        PRICE PER UNIT: 1,919.00
-                        AVAILABILITY: YES
-                        -----------------
-                        -----------------
-                        NAME: Rice (long grain)
-                        UNIT: half paint
-                        PRICE PER UNIT: 4,960.00
-                        AVAILABILITY: YES
-                        -----------------
+                        Vegetable oil (Kings)
+                        =====================
+
+                        • 2Litres
+                        Price: 9999
+                        Available: YES
+
+                        • 5Litres
+                        Price: 22100.00
+                        Available: YES
+
+                        • 10Litres
+                        Price: 44379.00
+                        Available: YES
+
+                        • 25Litres
+                        Price: 105559.00
+                        Available: YES
 
                         Output:
-                        Long-grain rice is available in De rica for ₦1,919 and half paint for ₦4,960. Both sizes are in stock.
+                        Kings vegetable oil is available in the following sizes: 2 litres for ₦9,999, 5 litres for ₦22,100, 10 litres for ₦44,379, and 25 litres for ₦105,559. All sizes are in stock.
 
                 """),
                 ("user", unprocessed_descriptions)
@@ -98,6 +107,8 @@ class DataPrepare:
                "_id": item["_id"],
                "natural_language_description": self.generate_description(item["description_template"]),
            }
+
+           print(product_data)
            
            items_array.append(product_data)
        except Exception as e:

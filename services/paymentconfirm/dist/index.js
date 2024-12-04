@@ -35,6 +35,14 @@ io.on('connection', function (socket) {
     console.log('User disconnected');
   });
 });
+setTimeout(function () {
+  console.log('hey emit');
+  io.emit('transaction.success', {
+    reference: 'paymentData.reference',
+    amount: 'paymentData.amount',
+    status: 'success'
+  });
+}, 3000);
 app.post('/paystack/payment-response', _paymentController["default"].handlePayStackPaymentResponse);
 
 // Start server

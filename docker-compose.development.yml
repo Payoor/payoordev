@@ -74,10 +74,10 @@ services:
     networks:
       - payoor_development_network
 
-  socketserver:
-    container_name: socketserver-development
+  payment:
+    container_name: payment
     restart: always
-    build: ./socketserver
+    build: ./services/paymentconfirm
     environment:
       - PORT=8085
       - NODE_ENV=development

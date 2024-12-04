@@ -6,7 +6,8 @@ class Message {
   final bool isClient;
   final bool isPayStackView;
   final bool isProductsDisplay;
-  final List<Map<String, dynamic>> results; 
+  final List<Map<String, dynamic>> results;
+  final String? paymentUrl;  // Added non-required paymentUrl
 
   Message({
     required this.text,
@@ -17,6 +18,7 @@ class Message {
     this.isPayStackView = false,
     this.isProductsDisplay = false,
     this.results = const [],
+    this.paymentUrl,  // Optional parameter
   }) : clienttimestamp = clienttimestamp ?? DateTime.now();
 
   factory Message.fromMap(Map<String, dynamic> map) {
@@ -46,6 +48,7 @@ class Message {
           ? DateTime.parse(map['clienttimestamp'])
           : DateTime.now(),
       results: parsedProducts,
+      paymentUrl: map['paymentUrl'],  // Added to fromMap constructor
     );
   }
 }

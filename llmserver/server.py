@@ -3,8 +3,14 @@ import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
+import logging
 
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from data_upload import DataUpload
 from data_prepare import DataPrepare
@@ -57,6 +63,19 @@ description_templates = data_prep.turn_details_to_plain_text(items)
 plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
 """
 
+def schedule_data_update():
+    items, message = data_prep.get_items_without_description()
+    description_templates = data_prep.turn_details_to_plain_text(items)
+    #print(description_templates)
+    plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
+    print(plain_text_descriptions)
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=schedule_data_update, trigger="interval", hours=5)
+scheduler.start()
+
+#schedule_data_update()
+
 @app.route('/admin/upload/products/excel', methods=['POST'])
 def upload_excel():
     try:
@@ -64,32 +83,55 @@ def upload_excel():
             return jsonify({'error': 'No file part'}), 400
 
         file = request.files['file']
-
         if file.filename == '':
             return jsonify({'error': 'No selected file'}), 400
 
         if file and dtupload.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-            file.save(filepath)
+            
+            try:
+                file.save(filepath)
+            except IOError as e:
+                return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
 
             try:
                 cleaned_records = dtupload.excel_to_dict(filepath)
                 final_data = dtupload.process_excel_data(cleaned_records)
                 plain_text = dtupload.convert_to_plaintext(final_data)
                 
-                dtupload.save_to_mongodb_database(plain_text)
-            
+                success, message = dtupload.save_to_mongodb_database(plain_text)
+                
+                if success:
+                    return jsonify({
+                        'message': 'File processing completed',
+                        'details': message
+                    }), 200
+                else:
+                    return jsonify({
+                        'error': 'Database operation failed',
+                        'details': message
+                    }), 500
+                
             except Exception as e:
-                print(e)
-
-                return jsonify({'error': f'Server error: {str(e)}'}), 500
-        return jsonify({
-                    'message': 'File processing completed',
-                }), 200
+                return jsonify({
+                    'error': 'Processing error',
+                    'details': str(e)
+                }), 500
+            
+            finally:
+                try:
+                    os.remove(filepath)
+                except:
+                    print("clean up failed")
+                    
+        return jsonify({'error': 'Invalid file type'}), 400
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 500 
+        return jsonify({
+            "error": "Server error",
+            "details": str(e)
+        }), 500
 
 @app.route('/message/user/cartdetails', methods=['POST'])
 def query_cart():
@@ -125,6 +167,14 @@ def query_cart():
         response = jsonify(response_data)
         response.status_code = 200
         return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
+
+@app.route('/message/user/getorderdetails', methods=['GET'])
+def query_order_details():
+    try:
+        pass
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500 

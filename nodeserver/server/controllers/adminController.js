@@ -29,6 +29,33 @@ const s3Client = new S3Client({
 
 class AdminController {
 
+    async deleteAllProducts(req, res) {
+        try {
+            const result = await Product.deleteMany({});
+
+            if (result.deletedCount === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "No products found to delete"
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: `Successfully deleted ${result.deletedCount} products`,
+                deletedCount: result.deletedCount
+            });
+        } catch (error) {
+            console.error('Error in deleteAllProducts:', error);
+
+            return res.status(500).json({
+                success: false,
+                message: "Error deleting products",
+                error: error.message
+            });
+        }
+    }
+
     async uploadExcelSheet(req, res) {
         try {
             if (!req.file) {
@@ -54,7 +81,8 @@ class AdminController {
             const skip = (page - 1) * limit;
 
             const products = await Product.find().skip(skip).limit(limit).lean();
-            const formattedProducts = products.map(({ _id, data }) => ({ _id, ...data }));
+
+            const formattedProducts = products.map(({ _id, product_name, data }) => ({ _id, product_name, ...data }));
 
             const totalCount = await Product.countDocuments();
 
@@ -65,7 +93,7 @@ class AdminController {
                 page,
                 totalPages: Math.ceil(totalCount / limit),
                 totalCount,
-                products: formattedProducts
+                products: products
             });
         } catch (error) {
             console.log(error);
@@ -423,11 +451,11 @@ class AdminController {
 
             const skip = (page - 1) * limit;
 
-            const transactions = await Transaction.find({}, {__v: 0, updatedAt: 0})
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean();
+            const transactions = await Transaction.find({}, { __v: 0, updatedAt: 0 })
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean();
             const totalCount = await Transaction.countDocuments();
 
             res.status(200).send({
@@ -451,7 +479,7 @@ class AdminController {
                 return res.status(400).send({ message: "Transaction ID is required" });
             }
 
-            const transaction = await Transaction.findById(transactionId, {__v: 0, updatedAt: 0}).lean();
+            const transaction = await Transaction.findById(transactionId, { __v: 0, updatedAt: 0 }).lean();
 
             if (!transaction) {
                 return res.status(404).json({

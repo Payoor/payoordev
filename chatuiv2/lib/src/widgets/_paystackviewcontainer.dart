@@ -4,10 +4,8 @@ import 'dart:ui' as ui;
 
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
 
-import 'package:chatuiv2/src/classes/_socketservice.dart';
-
 class PayStackViewContainer extends StatefulWidget {
-  final String url;
+  final String? url;
   final double height;
   final double width;
 
@@ -29,12 +27,6 @@ class _PayStackViewContainerState extends State<PayStackViewContainer> {
   void initState() {
     super.initState();
     _registerViewFactory();
-
-    // Connect socket after frame is rendered
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      SocketService.connectToServer();
-      print('Socket connected after page load');
-    });
   }
 
   void _registerViewFactory() {
