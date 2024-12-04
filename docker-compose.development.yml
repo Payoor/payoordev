@@ -14,7 +14,7 @@ services:
       - adminui
       - chatuiserver
       - llmserver
-      - socketserver
+      - payment
     networks:
       - payoor_development_network      
 
