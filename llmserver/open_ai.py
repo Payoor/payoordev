@@ -10,6 +10,9 @@ from openai import OpenAI
 
 load_dotenv()
 
+os.environ.pop('HTTP_PROXY', None)
+os.environ.pop('HTTPS_PROXY', None)
+
 openai_key = os.getenv('OPENAI_API_KEY')
-openai_client = OpenAI(api_key=openai_key)
+openai_client = OpenAI(api_key=openai_key, base_url="https://api.openai.com/v1")
 model = ChatOpenAI(model="gpt-4o")
