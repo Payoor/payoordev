@@ -14,8 +14,8 @@ class MongoDB:
             self.client = MongoClient(self.mongo_url)
             self.db = self.client[self.dbname]
             self.productCollection = self.db['products']
+            self.orderCollection = self.db['orders']
             
-            # Test connection
             self.client.server_info()
             print(f"Successfully connected to MongoDB: {self.dbname}")
             
@@ -25,3 +25,4 @@ class MongoDB:
 
 db = MongoDB()
 productCollection = db.productCollection
+orderCollection = db.orderCollection

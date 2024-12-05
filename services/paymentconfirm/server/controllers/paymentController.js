@@ -33,6 +33,12 @@ class PaymentController {
             switch (event.event) {
                 case 'charge.success':
                     console.log('charge successful:', paymentData);
+                    io.emit('transaction.success', {
+                        reference: paymentData.reference,
+                        amount: paymentData.amount, 
+                        status: 'success'
+                    });
+                    
                     break;
 
                 case 'transfer.success':
