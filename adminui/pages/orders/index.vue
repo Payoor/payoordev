@@ -4,12 +4,14 @@
       <table>
         <thead>
           <tr>
+            <th>S/N</th>
             <th v-for="header in getTableHeaders" :key="header">{{ header }}</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(order, rowIndex) in orders" :key="order.orderId">
+            <td>{{ getIndex(rowIndex) }}</td>
             <td v-for="header in getTableHeaders" :key="header">
               <template v-if="header === 'items'">
                 {{ order[header].length }} items
@@ -28,6 +30,12 @@
           </tr>
         </tbody>
       </table>
+      <Pagination
+        :totalPages="totalPages"
+        :perPage="limit"
+        :currentPage="currentPage"
+        @pagechanged="onPageChange"
+      />
     </div>
 
     <!-- <Transition name="fade">
@@ -76,6 +84,9 @@ export default {
       selectedOrderId: null,
       isLoading: false,
       message: "",
+      totalPages: 0,
+      currentPage: 1,
+      limit: 1
     };
   },
 
@@ -83,11 +94,12 @@ export default {
     getOrders,
     timestampToDateString,
     fetchOrders() {
-      this.getOrders()
+      this.getOrders(this.currentPage, this.limit)
         .then((response) => {
           this.orders = response.data.orders;
+          this.totalPages = response.data.totalPages;
+          this.currentPage = response.data.page;
           this.orders = this.orders.map((order, index) => ({
-            "S/N": index + 1,
             ...Object.fromEntries(
               Object.entries(order).filter(([key]) => key !== "_id")
             ),
@@ -97,6 +109,9 @@ export default {
         .catch((error) => {
           console.log(error.response.data);
         });
+    },
+    getIndex(index) {
+      return this.currentPage * this.limit - this.limit + index + 1;
     },
     toggleDropdown(index) {
       this.dropdownIndex = this.dropdownIndex === index ? null : index;
@@ -123,6 +138,10 @@ export default {
       const date = new Date(value);
       return !isNaN(date.getTime());
     },
+    onPageChange(page) {
+      this.currentPage = page;
+      this.fetchOrders();
+    }
   },
 
   mounted() {

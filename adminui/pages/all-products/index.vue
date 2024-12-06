@@ -5,6 +5,7 @@
         <table>
           <thead>
             <tr>
+              <th>S/N</th>
               <th v-for="(header, idx) in getTableHeaders" :key="idx">
                 {{ header.toLowerCase() }}
               </th>
@@ -13,7 +14,7 @@
           </thead>
           <tbody>
             <tr v-for="(data, rowIndex) in editableTableData" :key="rowIndex">
-              <td>{{ data["S/N"] }}</td>
+              <td>{{ getIndex(rowIndex) }}</td>
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
@@ -50,6 +51,12 @@
           </tbody>
         </table>
       </div>
+      <Pagination
+        :totalPages="totalPages"
+        :perPage="limit"
+        :currentPage="currentPage"
+        @pagechanged="onPageChange"
+      />
     </template>
 
     <template v-else>
@@ -131,7 +138,6 @@ export default {
     getTableHeaders() {
       return this.products.length
         ? [
-            "S/N",
             ...Object.keys(this.products[0]).filter((key) => key !== "_id"),
           ]
         : [];
@@ -152,6 +158,9 @@ export default {
       isLoading: false,
       message: "",
       hasError: false,
+      totalPages: 0,
+      currentPage: 1,
+      limit: 10
     };
   },
 
@@ -161,11 +170,12 @@ export default {
     removeProduct,
     uploadProductImage,
     fetchProducts() {
-      this.getAllProducts().then((response) => {
+      this.getAllProducts(this.currentPage, this.limit).then((response) => {
         this.products = response.data.products;
+        this.currentPage = response.data.page;
+        this.totalPages = response.data.totalPages;
   
         this.editableTableData = this.products.map((item, index) => ({
-          "S/N": index + 1,
           ...Object.fromEntries(
             Object.entries(item).filter(([key]) => key !== "_id")
           ),
@@ -175,6 +185,10 @@ export default {
       }).catch((error) => {
         console.log(error.response.data);
       })
+    },
+
+    getIndex(index) {
+      return this.currentPage * this.limit - this.limit + index + 1;
     },
 
     editCell(rowIndex, colIndex) {
@@ -287,6 +301,11 @@ export default {
         console.log(error.response.data);
       });
     },
+
+    onPageChange(page) {
+      this.currentPage = page;
+      this.fetchProducts();
+    }
   },
 
   mounted() {

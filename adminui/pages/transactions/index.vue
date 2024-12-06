@@ -4,12 +4,14 @@
       <table>
         <thead>
           <tr>
+            <th>S/N</th>
             <th v-for="header in getTableHeaders" :key="header">{{ header }}</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(transaction, rowIndex) in transactions" :key="transaction._id">
+            <td>{{ getIndex(rowIndex) }}</td>
             <td v-for="header in getTableHeaders" :key="header">
               <template v-if="header === 'amount'">
                 {{ getObjectValue(transaction[header]) }}
@@ -34,6 +36,12 @@
           </tr>
         </tbody>
       </table>
+      <Pagination
+        :totalPages="totalPages"
+        :perPage="limit"
+        :currentPage="currentPage"
+        @pagechanged="onPageChange"
+      />
     </div>
   </DefaultLayout>
 </template>
@@ -64,6 +72,9 @@ export default {
       selectedOrderId: null,
       isLoading: false,
       message: "",
+      totalPages: 0,
+      currentPage: 1,
+      limit: 1
     };
   },
 
@@ -71,12 +82,13 @@ export default {
     getTransactions,
     timestampToDateString,
     fetchTransactions() {
-      this.getTransactions()
+      this.getTransactions(this.currentPage, this.limit)
         .then((response) => {
           console.log(response.data)
           this.transactions = response.data.transactions;
+          this.currentPage = response.data.page;
+          this.totalPages = response.data.totalPages;
           this.transactions = this.transactions.map((transaction, index) => ({
-            "S/N": index + 1,
             ...Object.fromEntries(
               Object.entries(transaction).filter(([key]) => key !== "_id")
             ),
@@ -86,6 +98,9 @@ export default {
         .catch((error) => {
           console.log(error.response.data);
         });
+    },
+    getIndex(index) {
+      return this.currentPage * this.limit - this.limit + index + 1;
     },
     toggleDropdown(index) {
       this.dropdownIndex = this.dropdownIndex === index ? null : index;
@@ -111,6 +126,10 @@ export default {
     getObjectValue(value) {
       return value?.$numberDecimal || "Unknown";
     },
+    onPageChange(page) {
+      this.currentPage = page;
+      this.fetchTransactions();
+    }
   },
 
   mounted() {
