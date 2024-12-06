@@ -62,12 +62,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       });
     });
 
-    /*final String orderReference = "1c4nosyo0c";
-    confirmOrderDetails(orderReference);*/
-
     _subscription = SocketService.transactionStream.listen((data) {
+      if (data["reference"] == null) return;
       final String orderReference = data["reference"];
-      //h21w5i80v9
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,11 +76,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         );
 
         closePaystackView(context);
-
         SocketService.disconnectFromSocketServer();
 
-        confirmOrderDetails(orderReference);
+        Future(() => confirmOrderDetails(orderReference));
       }
+    }, onError: (error) {
+      print('Socket error: $error');
     });
   }
 
@@ -659,7 +657,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         final response = await ChatApiRoutes.sendUserMessage(message);
 
-        if (response?.data != null && response.data['chatresponse'] != null) {
+        if (response?.data?['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
           //print(chatResponse);
 
