@@ -6,6 +6,9 @@ from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import logging
+import schedule
+import time
+from threading import Timer
 
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
@@ -65,6 +68,9 @@ description_templates = data_prep.turn_details_to_plain_text(items)
 plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
 """
 
+def run_once():
+   Timer(120.0, schedule_data_update).start()
+
 def schedule_data_update():
     items, message = data_prep.get_items_without_description()
     description_templates = data_prep.turn_details_to_plain_text(items)
@@ -72,11 +78,13 @@ def schedule_data_update():
     plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
     print(plain_text_descriptions)
 
-scheduler = BackgroundScheduler()
+"""scheduler = BackgroundScheduler()
 scheduler.add_job(func=schedule_data_update, trigger="interval", hours=5)
-scheduler.start()
+scheduler.start()"""
 
 #schedule_data_update()
+
+run_once()
 
 @app.route('/admin/upload/products/excel', methods=['POST'])
 def upload_excel():
