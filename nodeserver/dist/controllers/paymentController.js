@@ -81,6 +81,7 @@ var PaymentController = /*#__PURE__*/function () {
                   return _regeneratorRuntime().wrap(function _callee$(_context) {
                     while (1) switch (_context.prev = _context.next) {
                       case 0:
+                        console.log('data here', data);
                         transaction_reference = JSON.parse(data).data.reference;
                         response.data.authorization_url = JSON.parse(data).data.authorization_url;
                         response.data.transaction_reference = transaction_reference;
@@ -94,7 +95,7 @@ var PaymentController = /*#__PURE__*/function () {
                           reference: transaction_reference
                         });
                         transaction.save();
-                        _context.next = 10;
+                        _context.next = 11;
                         return _order["default"].findOneAndUpdate({
                           _id: orderId
                         }, {
@@ -105,9 +106,9 @@ var PaymentController = /*#__PURE__*/function () {
                           "new": true,
                           runValidators: true
                         });
-                      case 10:
-                        order_update = _context.sent;
                       case 11:
+                        order_update = _context.sent;
+                      case 12:
                       case "end":
                         return _context.stop();
                     }

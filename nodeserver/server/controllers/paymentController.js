@@ -61,6 +61,7 @@ class PaymentController {
                 };
 
                 paystackResponse.on('end', async () => {
+                    console.log('data here', data);
                     const transaction_reference = JSON.parse(data).data.reference;
 
                     response.data.authorization_url = JSON.parse(data).data.authorization_url;
