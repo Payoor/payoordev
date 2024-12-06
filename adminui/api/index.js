@@ -45,10 +45,14 @@ export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${u
 // Order Management
 export const getOrders = (page, limit) => $http.get(`${serverUrl}/admin/get/orders?page=${page}&limit=${limit}`, getDefaultHeader());
 
+export const getUserOrders = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-orders?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
+
 export const getOrder = (orderId) => $http.get(`${serverUrl}/admin/get/order?id=${orderId}`, getDefaultHeader());
 
 
 // Transaction Management
 export const getTransactions = (page, limit) => $http.get(`${serverUrl}/admin/get/transactions?page=${page}&limit=${limit}`, getDefaultHeader());
+
+export const getUserTransactions = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-transactions?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
 export const getTransaction = (transactionId) => $http.get(`${serverUrl}/admin/get/transaction?id=${transactionId}`, getDefaultHeader());

@@ -7,40 +7,74 @@
         </div>
 
         <div class="users__list">
-          <UserCard />
           <UserCard 
-            class="active" 
-            :is-online="true"
+            v-for="user in users"
+            :user="user"
+            :key="user._id"
+            :class="{ active: activeUser && activeUser._id === user._id }"
+            @selectuser="selectUser(user)"
           />
-          <UserCard />
-          <UserCard />
-          <UserCard :is-online="true" />
         </div>
       </div>
 
       <div class="chat__box">
         <div class="topbar">
-          <UserCard 
-            class="topbar-user-indicator"
-            :is-online="true"
-          />
+          <button
+            v-for="tab in ['Chats', 'Orders', 'Transactions']"
+            :key="tab"
+            :class="{ active: activeTab === tab }"
+            :disabled="!activeUser"
+            @click="switchTab(tab)"
+          >
+            {{ tab }}
+          </button>
         </div>
 
-        <!-- conversation box -->
-        <div class="chats">
-          <MessageBubble 
-            :sender-type="senderType.ADMIN" 
-            :message="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus eligendi fugiat possimus asperiores eveniet sed dolorem commodi excepturi'"
-          />
+        <!-- Chats Tab -->
+        <template v-if="activeTab === 'Chats'">
+          <!-- conversation box -->
+          <div class="chats" v-if="activeUser">
+            <MessageBubble 
+              :sender-type="senderType.ADMIN" 
+              :message="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus eligendi fugiat possimus asperiores eveniet sed dolorem commodi excepturi'"
+            />
 
-          <MessageBubble 
-            :sender-type="senderType.USER" 
-            :message="'veniam alias consectetur incidunt corrupti voluptates, culpa iure, quam exercitationem, vero maxime.'"
-          />
-        </div>
-        <!--  -->
+            <MessageBubble 
+              :sender-type="senderType.USER" 
+              :message="'veniam alias consectetur incidunt corrupti voluptates, culpa iure, quam exercitationem, vero maxime.'"
+            />
+          </div>
+        </template>
 
-        <div class="chat__input">
+        <!-- Orders Tab -->
+        <template v-if="activeTab === 'Orders'">
+          <div class="orders">
+            <h2>Orders</h2>
+            <template v-if="userOrders">
+              <OrderCard 
+                v-for="(orders, index) in userOrders" 
+                :key="index"
+                :orders="orders"
+              />
+            </template>
+          </div>
+        </template>
+
+        <!-- Transactions Tab -->
+        <template v-if="activeTab === 'Transactions'">
+          <div class="transactions">
+            <h2>Transactions</h2>
+            <template v-if="userTransactions">
+              <TransactionCard 
+                v-for="(transactions, index) in userTransactions" 
+                :key="index"
+                :transactions="transactions"
+              />
+            </template>
+          </div>
+        </template>
+
+        <div class="chat__input" v-if="activeTab === 'Chats' && activeUser">
           <div class="message__box">
             <textarea
               ref="textarea"
@@ -63,11 +97,77 @@
 import { reactive, ref } from "vue";
 import Default from "../../layouts/Default.vue";
 import SendIcon from "../../components/icons/SendIcon.vue";
+import { getUsers, getUserTransactions, getUserOrders } from "../../api";
 
 export default {
   components: {
     DefaultLayout: Default,
     SendIcon,
+  },
+
+  data() {
+    return {
+      users: [],
+      selectedUserId: undefined,
+      activeTab: 'Chats',
+      activeUser: null,
+      userTransactions: null,
+      userOrders: null,
+    }
+  },
+
+  methods: {
+    getUsers,
+    getUserTransactions,
+    getUserOrders,
+    fetchUsers() {
+      this.getUsers()
+        .then((response) => {
+          this.users = response.data.users;
+          // console.log(this.users);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    },
+
+    fetchUserTransactions() {
+      this.getUserTransactions(this.activeUser._id).then((res) => {
+        this.userTransactions = res.data.transactions;
+      }).catch(error => console.log(error.response.data))
+    },
+
+    fetchUserOrders() {
+      this.getUserOrders(this.activeUser._id).then((res) => {
+        this.userOrders = res.data.orders;
+      }).catch(error => console.log(error.response.data))
+    },
+
+    selectUser(user) {
+      this.activeUser = user;
+      this.switchTab(this.activeTab ?? "Chats");
+    },
+
+    switchTab(tab) {
+      this.activeTab = tab;
+      switch (this.activeTab) {
+        case "Chats":
+          return;
+      
+        case "Orders":
+          return this.fetchUserOrders();
+
+        case "Transactions":
+          return this.fetchUserTransactions();
+        
+        default:
+          return;
+      }
+    },
+  },
+
+  mounted() {
+    this.fetchUsers();
   },
 
   setup() {
@@ -111,3 +211,68 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+  .topbar {
+    display: flex;
+    gap: 0.25rem;
+
+    button {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.25rem;
+      background-color: rgb(66, 66, 66);
+      color: rgba($white, 0.7);
+      font-family: 'Poppins';
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: .2s;
+
+      &.active {
+        background-color: $primary-color;
+        color: $white;
+      }
+    }
+  }
+
+  .orders, .transactions {
+    margin-top: 60px;
+    flex-grow: 1;
+  	overflow-y: auto;
+    padding: 1rem;
+    color: rgba($white, 0.7);
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .transaction-item, .order-item {
+    border: 2px solid rgb(47, 47, 47);
+    border-radius: 0.5rem;
+    background-color: rgb(32, 32, 32);
+    padding: 1rem;
+    position: relative;
+
+    .status {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      font-weight: bold;
+      padding: 0.2rem 1rem;
+      border-radius: 0.75rem;
+
+      &.verified {
+        background-color: rgba($primary-color, 0.3);
+        color: $primary-color;
+        border: 1px solid $primary-color;
+      }
+
+      &.pending {
+        background-color: rgba(255, 215, 0, 0.3);
+        color: gold;
+        border: 1px solid gold;
+      }
+    }
+  }
+</style>

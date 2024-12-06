@@ -1,19 +1,29 @@
 <template>
-  <div class="user-card">
+  <div class="user-card" @click="$emit('selectuser', user)">
     <div class="avatar">
-      <span>A</span>
+      <span>{{ getInitial }}</span>
       <div :class="{isOnline}"></div>
     </div>
-    <div class="username">Abiodun</div>
+    <div class="username">{{ user.name }}</div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
+    user: {
+      type: Object
+    },
     isOnline: {
       type: Boolean,
       default: false
+    }
+  },
+
+  computed: {
+    getInitial() {
+      const fullName = this.user.name;
+      return fullName.charAt(0).toUpperCase();
     }
   }
 }
@@ -22,13 +32,20 @@ export default {
 <style lang="scss" scoped>
 .user-card {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   border-bottom: 1px solid rgb(47, 47, 47);
   padding: 1rem 0.5rem;
   align-items: center;
   color: rgba($white, 0.7);
   transition: 0.2s;
   cursor: pointer;
+
+  .username {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8rem;
+  }
 
   .avatar {
     width: 35px;

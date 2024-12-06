@@ -126,6 +126,7 @@ export default {
     getObjectValue(value) {
       return value?.$numberDecimal || "Unknown";
     },
+    
     onPageChange(page) {
       this.currentPage = page;
       this.fetchTransactions();

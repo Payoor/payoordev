@@ -16,3 +16,11 @@ export const timestampToDateString = (timestamp) => {
     day: 'numeric'
   })
 }
+
+export const isDate = (value) => {
+  if (typeof value !== "string") return false;
+
+  // Check if the string can be converted to a valid Date
+  const date = new Date(value);
+  return !isNaN(date.getTime());
+}
