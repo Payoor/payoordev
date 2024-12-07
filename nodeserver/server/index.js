@@ -29,11 +29,17 @@ import { initSocket } from './socketInit';
 
 const corsOptions = {
   origin: corsOriginArray,
-  methods: ['POST', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  methods: ['POST', 'OPTIONS', 'GET'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
+  ],
   credentials: true
 };
- 
+
 app.use(cors(corsOptions));
 app.use(express.json());
 

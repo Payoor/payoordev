@@ -30,7 +30,7 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var corsOptions = {
   origin: _corsOriginArray["default"],
-  methods: ['POST', 'OPTIONS'],
+  methods: ['POST', 'OPTIONS', 'GET'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true
 };
