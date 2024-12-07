@@ -8,59 +8,23 @@
         class="order-item"
       >
         <div v-for="(value, key) in orders" :key="key">
-          <template v-if="key === 'total'">
-            <p>
-              <strong>{{ key }}: </strong>
-              {{ formatAmount(value) }}
-            </p>
-          </template>
-          <template v-else>
-            <p v-if="key !== 'status'">
-              <strong>{{ key }}:</strong>
-              {{ isDate(value) ? timestampToDateString(value) : value }}
-            </p>
-          </template>
-          <template v-if="key === 'status'">
-            <div :class="['status', value]">
-              <p>{{ value }}</p>
+          <template v-if="key === 'items'">
+            <h3>Items</h3>
+            <div class="item-list">
+              <div 
+                v-for="value, key in value.items"
+                :key="key"
+              >
+                <p>
+                  <strong>{{ key }}: </strong>
+                  {{ value }}
+                </p>
+              </div>
             </div>
           </template>
-        </div>
-      </div>
-
-      <div
-        v-for="(orders, index) in userOrders"
-        :key="index"
-        class="order-item"
-      >
-        <div v-for="(value, key) in orders" :key="key">
+          
           <template v-if="key === 'total'">
-            <p>
-              <strong>{{ key }}: </strong>
-              {{ formatAmount(value) }}
-            </p>
-          </template>
-          <template v-else>
-            <p v-if="key !== 'status'">
-              <strong>{{ key }}:</strong>
-              {{ isDate(value) ? timestampToDateString(value) : value }}
-            </p>
-          </template>
-          <template v-if="key === 'status'">
-            <div :class="['status', value]">
-              <p>{{ value }}</p>
-            </div>
-          </template>
-        </div>
-      </div>
-
-      <div
-        v-for="(orders, index) in userOrders"
-        :key="index"
-        class="order-item"
-      >
-        <div v-for="(value, key) in orders" :key="key">
-          <template v-if="key === 'total'">
+            <h3>Details</h3>
             <p>
               <strong>{{ key }}: </strong>
               {{ formatAmount(value) }}
@@ -176,6 +140,10 @@ export default {
     padding: 1rem;
     position: relative;
 
+    .item-list {
+      margin-bottom: 1rem;
+    }
+
     .status {
       position: relative;
       right: 0;
@@ -193,7 +161,6 @@ export default {
         margin: 0;
       }
 
-      &.verified,
       &.completed {
         background-color: rgba($primary-color, 0.3);
         color: $primary-color;

@@ -57,6 +57,12 @@
                 :orders="orders"
               />
             </template>
+
+            <template v-if="!hasOrders">
+              <div class="empty-state">
+                <em>No Orders</em>
+              </div>
+            </template>
           </div>
         </template>
 
@@ -64,12 +70,18 @@
         <template v-if="activeTab === 'Transactions'">
           <div class="transactions">
             <h2>Transactions</h2>
-            <template v-if="userTransactions">
+            <template v-if="hasTransactions">
               <TransactionCard 
                 v-for="(transactions, index) in userTransactions" 
                 :key="index"
                 :transactions="transactions"
               />
+            </template>
+
+            <template v-if="!hasTransactions">
+              <div class="empty-state">
+                <em>No Transactions</em>
+              </div>
             </template>
           </div>
         </template>
@@ -113,6 +125,8 @@ export default {
       activeUser: null,
       userTransactions: null,
       userOrders: null,
+      hasOrders: false,
+      hasTransactions: false,
     }
   },
 
@@ -134,12 +148,14 @@ export default {
     fetchUserTransactions() {
       this.getUserTransactions(this.activeUser._id).then((res) => {
         this.userTransactions = res.data.transactions;
+        this.hasTransactions = this.userTransactions.length > 0 ? true : false;
       }).catch(error => console.log(error.response.data))
     },
 
     fetchUserOrders() {
       this.getUserOrders(this.activeUser._id).then((res) => {
         this.userOrders = res.data.orders;
+        this.hasOrders = this.userOrders.length > 0 ? true : false;
       }).catch(error => console.log(error.response.data))
     },
 
@@ -212,7 +228,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .topbar {
     display: flex;
     gap: 0.25rem;
@@ -235,66 +251,23 @@ export default {
     }
   }
 
-  .orders, .transactions {
+  .transactions, .orders {
     margin-top: 60px;
     flex-grow: 1;
-  	overflow-y: auto;
+    overflow-y: auto;
     padding: 1rem;
     color: rgba($white, 0.7);
     font-size: 0.8rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-
-    .transaction-item, .order-item {
+    
+    .empty-state {
       border: 2px solid rgb(47, 47, 47);
       border-radius: 0.5rem;
       background-color: rgb(32, 32, 32);
-      padding: 1rem;
-      position: relative;
-  
-      .status {
-        position: relative;
-        right: 0;
-        margin-bottom: 0.5rem;
-        font-size: 0.7rem;
-        font-weight: bold;
-        padding: 0.2rem 1rem;
-        border-radius: 0.75rem;
-        width: fit-content;
-
-        @media screen and (min-width: 768px) {
-          position: absolute;
-          bottom: 1rem;
-          right: 1rem;
-          margin: 0;
-        }
-  
-        &.verified, &.completed {
-          background-color: rgba($primary-color, 0.3);
-          color: $primary-color;
-          border: 1px solid $primary-color;
-        }
-  
-        &.pending {
-          background-color: rgba(255, 215, 0, 0.3);
-          color: gold;
-          border: 1px solid gold;
-        }
-  
-        &.processing {
-          background-color: rgba(138, 43, 226, 0.3);
-          color: blueviolet;
-          border: 1px solid blueviolet;
-        }
-  
-        &.cancelled {
-          background-color: rgba(128, 128, 128, 0.3);
-          color: gray;
-          border: 1px solid gray;
-        }
-      }
+      padding: 2rem 1rem;
+      text-align: center;
     }
   }
-
 </style>
