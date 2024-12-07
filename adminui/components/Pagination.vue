@@ -171,6 +171,8 @@ export default {
           cursor: pointer;
           transition: .2s;
           border-radius: 0.25rem;
+          color: $white;
+          background-color: $primary-color;
     
           svg {
             height: 15px;
@@ -179,14 +181,9 @@ export default {
           .next-icon {
             rotate: 180deg;
           }
-    
-          &.active {
-            background-color: $primary-color;
-            color: #ffffff;
-          }
       
           &:disabled {
-            color: $white;
+            background-color: rgb(47, 47, 47);
             cursor: not-allowed;
           }
         }
