@@ -15,7 +15,7 @@ export const removeAdmin = (adminId) => $http.delete(`${serverUrl}/admin/${admin
 // Product Manangement
 export const uploadExcelSheet = (data) => $http.post(`${serverUrl}/admin/upload/products/excel`, data, getFileHeader());
 
-export const getAllProducts = () => $http.get(`${serverUrl}/admin/get/products`, getDefaultHeader());
+export const getAllProducts = (page, limit) => $http.get(`${serverUrl}/admin/get/products?page=${page}&limit=${limit}`, getDefaultHeader());
 
 export const getSingleProduct = (productId) => $http.get(`${serverUrl}/admin/get/product?id=${productId}`, getDefaultHeader());
 
@@ -37,18 +37,22 @@ export const verifyPayment = (data) => $http.post(`${serverUrl}/paystack/verify-
 
 
 // User Management
-export const getUsers = () => $http.get(`${serverUrl}/admin/get/users`, getDefaultHeader());
+export const getUsers = (page, limit) => $http.get(`${serverUrl}/admin/get/users?page=${page}&limit=${limit}`, getDefaultHeader());
 
 export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${userId}`, getDefaultHeader());
 
 
 // Order Management
-export const getOrders = () => $http.get(`${serverUrl}/admin/get/orders`, getDefaultHeader());
+export const getOrders = (page, limit) => $http.get(`${serverUrl}/admin/get/orders?page=${page}&limit=${limit}`, getDefaultHeader());
+
+export const getUserOrders = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-orders?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
 export const getOrder = (orderId) => $http.get(`${serverUrl}/admin/get/order?id=${orderId}`, getDefaultHeader());
 
 
 // Transaction Management
-export const getTransactions = () => $http.get(`${serverUrl}/admin/get/transactions`, getDefaultHeader());
+export const getTransactions = (page, limit) => $http.get(`${serverUrl}/admin/get/transactions?page=${page}&limit=${limit}`, getDefaultHeader());
+
+export const getUserTransactions = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-transactions?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
 export const getTransaction = (transactionId) => $http.get(`${serverUrl}/admin/get/transaction?id=${transactionId}`, getDefaultHeader());
