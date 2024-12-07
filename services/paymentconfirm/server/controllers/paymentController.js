@@ -11,6 +11,7 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 class PaymentController {
     async handlePayStackPaymentResponse(req, res) {
+        console.log('called paystack route');
         try {
             const crypto = require('crypto');
             const paystackSignature = req.headers['x-paystack-signature'];

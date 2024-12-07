@@ -33,18 +33,19 @@ var PaymentController = /*#__PURE__*/function () {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
+              console.log('called paystack route');
+              _context.prev = 1;
               crypto = require('crypto');
               paystackSignature = req.headers['x-paystack-signature'];
               hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY).update(JSON.stringify(req.body)).digest('hex');
               if (!(hash !== paystackSignature)) {
-                _context.next = 6;
+                _context.next = 7;
                 break;
               }
               return _context.abrupt("return", res.status(401).json({
                 message: 'Unauthorized request'
               }));
-            case 6:
+            case 7:
               event = req.body;
               paymentData = event.data;
               io = (0, _socketio_util.getIO)();
@@ -56,17 +57,17 @@ var PaymentController = /*#__PURE__*/function () {
                 status: 'success'
               });
               _context.t0 = event.event;
-              _context.next = _context.t0 === 'charge.success' ? 15 : _context.t0 === 'transfer.success' ? 18 : _context.t0 === 'charge.failed' ? 22 : 23;
+              _context.next = _context.t0 === 'charge.success' ? 16 : _context.t0 === 'transfer.success' ? 19 : _context.t0 === 'charge.failed' ? 23 : 24;
               break;
-            case 15:
+            case 16:
               console.log('charge successful:', paymentData);
               io.emit('transaction.success', {
                 reference: paymentData.reference,
                 amount: paymentData.amount,
                 status: 'success'
               });
-              return _context.abrupt("break", 24);
-            case 18:
+              return _context.abrupt("break", 25);
+            case 19:
               console.log(event.data);
               io.emit('transaction.success', {
                 reference: paymentData.reference,
@@ -74,18 +75,18 @@ var PaymentController = /*#__PURE__*/function () {
                 status: 'success'
               });
               console.log('transfer successful:', paymentData);
-              return _context.abrupt("break", 24);
-            case 22:
-              return _context.abrupt("break", 24);
+              return _context.abrupt("break", 25);
             case 23:
-              console.log('Unhandled event type:', event.event);
+              return _context.abrupt("break", 25);
             case 24:
+              console.log('Unhandled event type:', event.event);
+            case 25:
               return _context.abrupt("return", res.status(200).json({
                 message: 'Webhook processed successfully'
               }));
-            case 27:
-              _context.prev = 27;
-              _context.t1 = _context["catch"](0);
+            case 28:
+              _context.prev = 28;
+              _context.t1 = _context["catch"](1);
               console.error('Webhook processing error:', _context.t1);
               errorResponse = {
                 success: false,
@@ -96,11 +97,11 @@ var PaymentController = /*#__PURE__*/function () {
                 }
               };
               return _context.abrupt("return", res.status(500).json(errorResponse));
-            case 32:
+            case 33:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 27]]);
+        }, _callee, null, [[1, 28]]);
       }));
       function handlePayStackPaymentResponse(_x, _x2) {
         return _handlePayStackPaymentResponse.apply(this, arguments);
