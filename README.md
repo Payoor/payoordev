@@ -363,7 +363,7 @@ All endpoints may return these common error responses:
     ```
 
 ## Order Management
-### Get Orders
+### Get Orders (ADMIN)
 Retrieves a paginated list of orders.
 
 - **URL:** `/admin/get/orders`
@@ -389,7 +389,33 @@ Retrieves a paginated list of orders.
     }
     ```
 
-### Get Single Order
+### Get Orders (USER)
+Retrieves a paginated list of orders.
+
+- **URL:** `/user/get/orders`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `page` (optional, default: 1)
+  - `limit` (optional, default: 10)
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Orders retrieved",
+      "page": number,
+      "totalPages": number,
+      "totalCount": number,
+      "orders": [
+        {
+          "_id": "string",
+          ...orderData
+        }
+      ]
+    }
+    ```
+
+### Get Single Order (ADMIN)
 Retrieves details of a specific order.
 
 - **URL:** `/admin/get/order`
@@ -413,8 +439,32 @@ Retrieves details of a specific order.
     }
     ```
 
+### Get Single Order (USER)
+Retrieves details of a specific order.
+
+- **URL:** `/user/get/order`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Order ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "_id": "string",
+      ...orderData,
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "Order not found"
+    }
+    ```
+
 ## Transaction Management
-### Get Transactions
+### Get Transactions (ADMIN)
 Retrieves a paginated list of transactions.
 
 - **URL:** `/admin/get/transactions`
@@ -440,10 +490,60 @@ Retrieves a paginated list of transactions.
     }
     ```
 
-### Get Single Transaction
+### Get Transactions (USER)
+Retrieves a paginated list of transactions.
+
+- **URL:** `/user/get/transactions`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `page` (optional, default: 1)
+  - `limit` (optional, default: 10)
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Transactions retrieved",
+      "page": number,
+      "totalPages": number,
+      "totalCount": number,
+      "transactions": [
+        {
+          "_id": "string",
+          ...transactionData
+        }
+      ]
+    }
+    ```
+
+### Get Single Transaction (ADMIN)
 Retrieves details of a specific transaction.
 
 - **URL:** `/admin/get/transaction`
+- **Method:** `GET`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Transaction ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "_id": "string",
+      ...transactionData,
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404
+    ```json
+    {
+      "message": "Transaction not found"
+    }
+    ```
+
+### Get Single Transaction (USER)
+Retrieves details of a specific transaction.
+
+- **URL:** `/user/get/transaction`
 - **Method:** `GET`
 - **Auth Required:** Yes
 - **Query Params:**

@@ -76,21 +76,44 @@ var PaymentController = /*#__PURE__*/function () {
                     }
                   }
                 };
-                paystackResponse.on('end', function () {
-                  var transaction_reference = JSON.parse(data).data.reference;
-                  response.data.authorization_url = JSON.parse(data).data.authorization_url;
-                  response.data.transaction_reference = transaction_reference;
-                  response.data.access_code = JSON.parse(data).data.access_code;
-                  console.log(response);
-                  res.status(200).json(response);
-                  var transaction = new _transaction["default"]({
-                    initiatorId: userId,
-                    orderId: orderId,
-                    amount: amount,
-                    reference: transaction_reference
-                  });
-                  transaction.save();
-                });
+                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+                  var transaction_reference, transaction, order_update;
+                  return _regeneratorRuntime().wrap(function _callee$(_context) {
+                    while (1) switch (_context.prev = _context.next) {
+                      case 0:
+                        console.log('data here', data);
+                        transaction_reference = JSON.parse(data).data.reference;
+                        response.data.authorization_url = JSON.parse(data).data.authorization_url;
+                        response.data.transaction_reference = transaction_reference;
+                        response.data.access_code = JSON.parse(data).data.access_code;
+                        console.log(response);
+                        res.status(200).json(response);
+                        transaction = new _transaction["default"]({
+                          initiatorId: userId,
+                          orderId: orderId,
+                          amount: amount,
+                          reference: transaction_reference
+                        });
+                        transaction.save();
+                        _context.next = 11;
+                        return _order["default"].findOneAndUpdate({
+                          _id: orderId
+                        }, {
+                          $set: {
+                            reference: transaction_reference
+                          }
+                        }, {
+                          "new": true,
+                          runValidators: true
+                        });
+                      case 11:
+                        order_update = _context.sent;
+                      case 12:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }, _callee);
+                })));
               }).on('error', function (error) {
                 console.log(error);
                 return res.status(400).json({

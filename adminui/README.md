@@ -61,5 +61,15 @@ For detailed explanation on how things work, check out the [documentation](https
 - **Route:** `/orders`
 - **Description:** Displays a table listing all orders from customers, with each order having an action cell to trigger the folllowing action:
     - **View order details:** Navigates to a single order page showing extra information about the order.
-    - **Edit order status:** Opens a modal to change the status of the order.
-    - **Delete order:** Opens a modal to confirm the decision to delete an order.
+  
+## Transaction Management
+- **Route:** `/transactions`
+- **Description:** Displays a table listing all orders from customers.
+  
+## User Order Management
+- **Route:** `/client/orders`
+- **Description:** Displays a list of the authenticated user's orders.
+
+## User Transaction Management
+- **Route:** `/client/transactions`
+- **Description:** Displays a list of the authenticated user's transactions.
