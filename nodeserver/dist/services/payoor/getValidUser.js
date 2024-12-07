@@ -15,7 +15,7 @@ function getValidUser(_x) {
   return _getValidUser.apply(this, arguments);
 }
 function _getValidUser() {
-  _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(jwt) {
+  _getValidUser = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(jwt) {
     var payload, validUser;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
