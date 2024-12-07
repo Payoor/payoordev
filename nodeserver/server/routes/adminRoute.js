@@ -62,11 +62,15 @@ adminRoute.get('/admin/get/users', authenticate, AdminController.getUsers);
 
 adminRoute.get('/admin/get/user', authenticate, AdminController.getUser);
 
-adminRoute.get('/admin/get/orders', authenticate, OrderController.getOrders);
+adminRoute.get('/admin/get/orders', authenticate, AdminController.getOrders);
 
-adminRoute.get('/admin/get/order', authenticate, OrderController.getOrder);
+adminRoute.get('/admin/get/user-orders', authenticate, AdminController.getUserOrders);
+
+adminRoute.get('/admin/get/order', authenticate, AdminController.getOrder);
 
 adminRoute.get('/admin/get/transactions', authenticate, AdminController.getTransactions);
+
+adminRoute.get('/admin/get/user-transactions', authenticate, AdminController.getUserTransactions);
 
 adminRoute.get('/admin/get/transaction', authenticate, AdminController.getTransaction);
 

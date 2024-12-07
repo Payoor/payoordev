@@ -55,8 +55,10 @@ adminRoute.get('/admin/product/images', authenticate, _adminController["default"
 adminRoute["delete"]('/admin/product/image', authenticate, _adminController["default"].deleteProductImage);
 adminRoute.get('/admin/get/users', authenticate, _adminController["default"].getUsers);
 adminRoute.get('/admin/get/user', authenticate, _adminController["default"].getUser);
-adminRoute.get('/admin/get/orders', authenticate, _orderController["default"].getOrders);
-adminRoute.get('/admin/get/order', authenticate, _orderController["default"].getOrder);
+adminRoute.get('/admin/get/orders', authenticate, _adminController["default"].getOrders);
+adminRoute.get('/admin/get/user-orders', authenticate, _adminController["default"].getUserOrders);
+adminRoute.get('/admin/get/order', authenticate, _adminController["default"].getOrder);
 adminRoute.get('/admin/get/transactions', authenticate, _adminController["default"].getTransactions);
+adminRoute.get('/admin/get/user-transactions', authenticate, _adminController["default"].getUserTransactions);
 adminRoute.get('/admin/get/transaction', authenticate, _adminController["default"].getTransaction);
 var _default = exports["default"] = adminRoute;
