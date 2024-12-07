@@ -15,7 +15,6 @@ class AuthLoading extends StatefulWidget {
 }
 
 class _AuthLoadingState extends State<AuthLoading> {
-  Future<String?>? _authFuture;
   String? _error = null;
   bool _isLoading = true;
 
@@ -28,36 +27,39 @@ class _AuthLoadingState extends State<AuthLoading> {
   }
 
   Future<void> _checkForUser() async {
-    final String? jwtToken = JwtManager.getToken();
+    try {
+      final String? jwtToken = JwtManager.getToken();
 
-    if (jwtToken == null) {
+      if (jwtToken == null) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            user = null;
+          });
+        }
+
+        return;
+      }
+
+      if (jwtToken.isNotEmpty) {
+        final response = await AuthApiRoutes.getValidUser(jwtToken);
+
+        final userData = response.data['user'];
+
+        if (userData != null) {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              user = userData;
+            });
+          }
+        }
+      }
+    } catch (error) {
       if (mounted) {
         setState(() {
           _isLoading = false;
-        });
-      }
-
-      return;
-    }
-
-    if (jwtToken.isNotEmpty) {
-      final response = await AuthApiRoutes.getValidUser(jwtToken);
-
-      final userData = response.data['user'];
-
-      if (userData != null) {
-        if (mounted) {
-          setState(() {
-            user = userData;
-            _isLoading = false;
-            _error = null;
-          });
-        }
-      } else {
-        setState(() {
           user = null;
-          _isLoading = false;
-          _error = null;
         });
       }
     }
@@ -67,7 +69,14 @@ class _AuthLoadingState extends State<AuthLoading> {
     return Scaffold(
         backgroundColor: AppColors.primaryColorDark,
         resizeToAvoidBottomInset: false,
-        body: SafeArea(child: Container()));
+        body: SafeArea(
+            child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Container(
+                    child: Text(
+                  "loading...",
+                  style: TextStyle(fontSize: 15.0, color: Colors.white),
+                )))));
   }
 
   Widget _buildError() {
@@ -94,15 +103,11 @@ class _AuthLoadingState extends State<AuthLoading> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isLoading && user == null) {
-      return LandingScreen();
-    }
-
-    if (_isLoading && user == null) {
+    if (_isLoading) {
       return _buildLoadingIndicator();
     }
 
-    if (!_isLoading && user != null) {
+    if (user != null) {
       return AuthenticatedChat();
     }
 
@@ -110,10 +115,7 @@ class _AuthLoadingState extends State<AuthLoading> {
       return _buildError();
     }
 
-    return Scaffold(
-        backgroundColor: AppColors.primaryColorDark,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(child: Container()));
+    return LandingScreen();
   }
 
   @override
