@@ -29,7 +29,7 @@ var OrderController = /*#__PURE__*/function () {
   return _createClass(OrderController, [{
     key: "createOrder",
     value: function () {
-      var _createOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+      var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
         var order, user, total, order_items, items, validUser, _order;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -122,7 +122,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var orderId, order;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -169,10 +169,10 @@ var OrderController = /*#__PURE__*/function () {
       return getOrder;
     }()
   }, {
-    key: "getOrders",
+    key: "getUserOrders",
     value: function () {
-      var _getOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
-        var page, limit, skip, total, orders;
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+        var page, limit, skip, orders, total;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -181,70 +181,15 @@ var OrderController = /*#__PURE__*/function () {
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
               _context3.next = 6;
-              return _order2["default"].countDocuments();
-            case 6:
-              total = _context3.sent;
-              _context3.next = 9;
-              return _order2["default"].find({}, {
-                __v: 0
-              }).sort({
-                createdAt: -1
-              }).skip(skip).limit(limit);
-            case 9:
-              orders = _context3.sent;
-              res.status(200).json({
-                message: 'Orders retrieved',
-                page: page,
-                totalPages: Math.ceil(total / limit),
-                totalCount: total,
-                itemsPerPage: limit,
-                orders: orders
-              });
-              _context3.next = 17;
-              break;
-            case 13:
-              _context3.prev = 13;
-              _context3.t0 = _context3["catch"](0);
-              console.log(_context3.t0);
-              res.status(500).json({
-                success: false,
-                message: 'Error fetching orders',
-                error: _context3.t0.message
-              });
-            case 17:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3, null, [[0, 13]]);
-      }));
-      function getOrders(_x6, _x7) {
-        return _getOrders.apply(this, arguments);
-      }
-      return getOrders;
-    }()
-  }, {
-    key: "getUserOrders",
-    value: function () {
-      var _getUserOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
-        var userId, page, limit, skip, orders, total;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _context4.prev = 0;
-              userId = req.query.id;
-              page = parseInt(req.query.page) || 1;
-              limit = parseInt(req.query.limit) || 10;
-              skip = (page - 1) * limit;
-              _context4.next = 7;
               return _order2["default"].find({
-                userId: userId
+                userId: req.user.userId
               }, {
                 __v: 0
               }).sort({
                 createdAt: -1
               }).skip(skip).limit(limit);
-            case 7:
-              orders = _context4.sent;
+            case 6:
+              orders = _context3.sent;
               total = orders.length;
               res.status(200).json({
                 message: 'Orders retrieved',
@@ -254,24 +199,24 @@ var OrderController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 orders: orders
               });
-              _context4.next = 16;
+              _context3.next = 15;
               break;
-            case 12:
-              _context4.prev = 12;
-              _context4.t0 = _context4["catch"](0);
-              console.log(_context4.t0);
+            case 11:
+              _context3.prev = 11;
+              _context3.t0 = _context3["catch"](0);
+              console.log(_context3.t0);
               res.status(500).json({
                 success: false,
                 message: 'Error fetching orders',
-                error: _context4.t0.message
+                error: _context3.t0.message
               });
-            case 16:
+            case 15:
             case "end":
-              return _context4.stop();
+              return _context3.stop();
           }
-        }, _callee4, null, [[0, 12]]);
+        }, _callee3, null, [[0, 11]]);
       }));
-      function getUserOrders(_x8, _x9) {
+      function getUserOrders(_x6, _x7) {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;

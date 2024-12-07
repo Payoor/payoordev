@@ -23,6 +23,7 @@ import conversationRoute from './routes/conversationRoute';
 import authRoute from './routes/authRoute';
 import paymentRoute from './routes/paymentRoute';
 import orderRoute from './routes/orderRoute';
+import transactionRoute from './routes/transactionRoute';
 
 import corsOrginArray from './corsOriginArray';
 import { initSocket } from './socketInit';
@@ -41,6 +42,7 @@ app.use(messageRoute);
 app.use(authRoute);
 app.use(paymentRoute);
 app.use(orderRoute);
+app.use(transactionRoute);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');

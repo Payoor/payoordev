@@ -17,7 +17,7 @@ function trackUnread(_x) {
   return _trackUnread.apply(this, arguments);
 }
 function _trackUnread() {
-  _trackUnread = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(messageId) {
+  _trackUnread = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(messageId) {
     var io, messageItem, user, messageObjectId, updatedUser;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

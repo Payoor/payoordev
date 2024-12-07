@@ -14,6 +14,7 @@ var _conversationRoute = _interopRequireDefault(require("./routes/conversationRo
 var _authRoute = _interopRequireDefault(require("./routes/authRoute"));
 var _paymentRoute = _interopRequireDefault(require("./routes/paymentRoute"));
 var _orderRoute = _interopRequireDefault(require("./routes/orderRoute"));
+var _transactionRoute = _interopRequireDefault(require("./routes/transactionRoute"));
 var _corsOriginArray = _interopRequireDefault(require("./corsOriginArray"));
 var _socketInit = require("./socketInit");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
@@ -40,6 +41,7 @@ app.use(_messageRoute["default"]);
 app.use(_authRoute["default"]);
 app.use(_paymentRoute["default"]);
 app.use(_orderRoute["default"]);
+app.use(_transactionRoute["default"]);
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -87,7 +89,7 @@ app.post('/upload', _verifyToken["default"], function (req, res) {
     var filePath = _path["default"].join(uploadDir, uniqueFilename);
     var fileUrl = "uploads/".concat(uniqueFilename);
     _fs["default"].writeFile(filePath, buffer, /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(err) {
+      var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(err) {
         var newFile;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
