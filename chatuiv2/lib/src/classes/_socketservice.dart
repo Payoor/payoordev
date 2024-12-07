@@ -15,29 +15,38 @@ class SocketService {
       _transactionController.stream;
 
   static void connectToSocketServer() {
-    socket = IO.io(socketUrl, {
-      'transports': ['websocket'],
-      'autoConnect': true,
-    });
+    if (isConnected || socket != null) return;
 
-    socket!.connect();
+    try {
+      socket = IO.io(socketUrl, {
+        'transports': ['websocket'],
+        'autoConnect': true,
+      });
 
-    socket!.onConnect((_) {
-      isConnected = true;
-      print('Connected to socket server');
-    });
+      socket?.connect();
 
-    socket!.on('transaction.success', (data) {
-      print('Payment successful: $data');
+      socket?.onConnect((_) {
+        isConnected = true;
+        print('Connected to socket server');
+      });
 
-      _transactionController.add(data);
-    });
+      socket?.on('transaction.success', (data) {
+        if (!_transactionController.isClosed) {
+          _transactionController.add(data);
+        }
+      });
+    } catch (e) {
+      print('Socket connection error: $e');
+      disconnectFromSocketServer();
+    }
   }
 
   static void disconnectFromSocketServer() {
     socket?.disconnect();
     socket = null;
     isConnected = false;
-    _transactionController.close();
+    if (!_transactionController.isClosed) {
+      _transactionController.close();
+    }
   }
 }

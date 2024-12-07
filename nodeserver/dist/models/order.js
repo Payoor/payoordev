@@ -23,6 +23,9 @@ var OrderSchema = new mongoose.Schema({
     type: Number,
     required: true,
     "default": 0
+  },
+  reference: {
+    type: String
   }
 });
 module.exports = mongoose.model('Order', OrderSchema);

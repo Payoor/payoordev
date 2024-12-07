@@ -31,7 +31,9 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var corsOptions = {
   origin: _corsOriginArray["default"],
-  optionsSuccessStatus: 200
+  methods: ['POST', 'OPTIONS', 'GET'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: true
 };
 app.use((0, _cors["default"])(corsOptions));
 app.use(express.json());
@@ -42,15 +44,6 @@ app.use(_authRoute["default"]);
 app.use(_paymentRoute["default"]);
 app.use(_orderRoute["default"]);
 app.use(_transactionRoute["default"]);
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'POST');
-    return res.status(200).json({});
-  }
-  next();
-});
 app.use(express.json({
   limit: '50mb'
 }));

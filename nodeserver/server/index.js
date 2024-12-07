@@ -25,14 +25,22 @@ import paymentRoute from './routes/paymentRoute';
 import orderRoute from './routes/orderRoute';
 import transactionRoute from './routes/transactionRoute';
 
-import corsOrginArray from './corsOriginArray';
+import corsOriginArray from './corsOriginArray';
 import { initSocket } from './socketInit';
 
 const corsOptions = {
-  origin: corsOrginArray,
-  optionsSuccessStatus: 200,
+  origin: corsOriginArray,
+  methods: ['POST', 'OPTIONS', 'GET'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
+  ],
+  credentials: true
 };
- 
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -43,16 +51,6 @@ app.use(authRoute);
 app.use(paymentRoute);
 app.use(orderRoute);
 app.use(transactionRoute);
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'POST');
-    return res.status(200).json({});
-  }
-  next();
-});
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({

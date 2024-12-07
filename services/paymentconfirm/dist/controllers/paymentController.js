@@ -49,12 +49,17 @@ var PaymentController = /*#__PURE__*/function () {
               paymentData = event.data;
               io = (0, _socketio_util.getIO)();
               _context.t0 = event.event;
-              _context.next = _context.t0 === 'charge.success' ? 12 : _context.t0 === 'transfer.success' ? 14 : _context.t0 === 'charge.failed' ? 18 : 19;
+              _context.next = _context.t0 === 'charge.success' ? 12 : _context.t0 === 'transfer.success' ? 15 : _context.t0 === 'charge.failed' ? 19 : 20;
               break;
             case 12:
               console.log('charge successful:', paymentData);
-              return _context.abrupt("break", 20);
-            case 14:
+              io.emit('transaction.success', {
+                reference: paymentData.reference,
+                amount: paymentData.amount,
+                status: 'success'
+              });
+              return _context.abrupt("break", 21);
+            case 15:
               console.log(event.data);
               io.emit('transaction.success', {
                 reference: paymentData.reference,
@@ -62,17 +67,17 @@ var PaymentController = /*#__PURE__*/function () {
                 status: 'success'
               });
               console.log('transfer successful:', paymentData);
-              return _context.abrupt("break", 20);
-            case 18:
-              return _context.abrupt("break", 20);
+              return _context.abrupt("break", 21);
             case 19:
-              console.log('Unhandled event type:', event.event);
+              return _context.abrupt("break", 21);
             case 20:
+              console.log('Unhandled event type:', event.event);
+            case 21:
               return _context.abrupt("return", res.status(200).json({
                 message: 'Webhook processed successfully'
               }));
-            case 23:
-              _context.prev = 23;
+            case 24:
+              _context.prev = 24;
               _context.t1 = _context["catch"](0);
               console.error('Webhook processing error:', _context.t1);
               errorResponse = {
@@ -84,11 +89,11 @@ var PaymentController = /*#__PURE__*/function () {
                 }
               };
               return _context.abrupt("return", res.status(500).json(errorResponse));
-            case 28:
+            case 29:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 23]]);
+        }, _callee, null, [[0, 24]]);
       }));
       function handlePayStackPaymentResponse(_x, _x2) {
         return _handlePayStackPaymentResponse.apply(this, arguments);

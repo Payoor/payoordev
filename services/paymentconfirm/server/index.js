@@ -43,14 +43,14 @@ io.on('connection', (socket) => {
     });
 }); 
 
-setTimeout(() => {
+/*setTimeout(() => {
     console.log('hey emit')
     io.emit('transaction.success', {
         reference: 'paymentData.reference',
         amount: 'paymentData.amount',
         status: 'success'
     });
-}, 3000); 
+}, 3000); */
 
 app.post('/paystack/payment-response', PaymentController.handlePayStackPaymentResponse);
 

@@ -63,20 +63,25 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
 
     _subscription = SocketService.transactionStream.listen((data) {
-      print(data);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment successful!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (data["reference"] == null) return;
+      final String orderReference = data["reference"];
 
-      setState(() {
-        _payStackViewOpen = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Payment successful!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
 
-      SocketService.disconnectFromSocketServer();
+        closePaystackView(context);
+        SocketService.disconnectFromSocketServer();
+
+        Future(() => confirmOrderDetails(orderReference));
+      }
+    }, onError: (error) {
+      print('Socket error: $error');
     });
   }
 
@@ -125,16 +130,48 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
   }
 
-  void closePaystackView() {
+  void closePaystackView(BuildContext context) {
     setState(() {
       _payStackViewOpen = false;
     });
 
+    Provider.of<CartProvider>(context, listen: false).clear();
+
     SocketService.disconnectFromSocketServer();
   }
 
-  void getOrderDetails() {
-    
+  void confirmOrderDetails(order_reference) async {
+    if (mounted) {
+      setState(() {
+        _showProducts = false;
+      });
+
+      context.read<MessageProvider>().addMessage(Message(
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
+      _scrollToBottom();
+    }
+
+    final response = await ChatApiRoutes.getOrderDetails(order_reference);
+
+    if (response?.data != null && response.data['chatresponse'] != null) {
+      final chatResponse = response.data['chatresponse'];
+
+      Message aiMessage;
+
+      aiMessage = Message(
+        text: chatResponse['text'] ?? 'Sorry, I could not process that.',
+        isClient: false,
+        isRead: false,
+      );
+
+      context.read<MessageProvider>().removeLastMessage();
+      context.read<MessageProvider>().addMessage(aiMessage);
+      _scrollToBottom();
+    }
   }
 
   Widget _buildDrawer() {
@@ -568,7 +605,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         if (mounted) {
           context.read<MessageProvider>().addMessage(Message(
-                text: "",
+                text: "Creating Payment link",
                 paymentUrl: paymentUrl,
                 isClient: false,
                 isRead: false,
@@ -620,9 +657,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         final response = await ChatApiRoutes.sendUserMessage(message);
 
-        if (response?.data != null && response.data['chatresponse'] != null) {
+        if (response?.data?['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
-          print(chatResponse);
+          //print(chatResponse);
 
           Message aiMessage;
           if (chatResponse['results'] != null) {

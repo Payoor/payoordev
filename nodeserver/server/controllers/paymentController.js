@@ -1,4 +1,5 @@
 import Transaction from "../models/transaction";
+import Order from "../models/order";
 
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
@@ -59,7 +60,8 @@ class PaymentController {
                     }
                 };
 
-                paystackResponse.on('end', () => {
+                paystackResponse.on('end', async () => {
+                    console.log('data here', data);
                     const transaction_reference = JSON.parse(data).data.reference;
 
                     response.data.authorization_url = JSON.parse(data).data.authorization_url;
@@ -79,6 +81,19 @@ class PaymentController {
                     });
 
                     transaction.save();
+
+                    const order_update = await Order.findOneAndUpdate(
+                        { _id: orderId },
+                        {
+                            $set: {
+                                reference: transaction_reference
+                            }
+                        },
+                        {
+                            new: true,
+                            runValidators: true
+                        }
+                    );
                 })
 
 

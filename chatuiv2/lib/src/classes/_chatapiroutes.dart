@@ -64,8 +64,6 @@ class ChatApiRoutes {
           },
           body: jsonEncode({'cart': cartData}));
 
-      print('test the function');
-
       if (response.statusCode == 200) {
         return ServerResponse.fromJson(jsonDecode(response.body));
       } else {
@@ -74,6 +72,29 @@ class ChatApiRoutes {
       }
     } catch (e) {
       throw Exception('Failed to send message: $e');
+    }
+  }
+
+  static Future<ServerResponse> getOrderDetails(String orderReference) async {
+    try {
+      final uri = Uri.parse('${Urls.llmUrl}/message/user/getorderdetails')
+          .replace(queryParameters: {'orderReference': orderReference});
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to send message. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error getting order details: $error');
     }
   }
 }

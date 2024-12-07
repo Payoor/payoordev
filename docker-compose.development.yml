@@ -35,6 +35,9 @@ services:
     environment:
       - PORT=8080
       - NODE_ENV=development
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
       - payoordb
     networks:

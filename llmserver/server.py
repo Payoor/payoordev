@@ -6,6 +6,9 @@ from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import logging
+import schedule
+import time
+from threading import Timer
 
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
@@ -16,6 +19,7 @@ from data_upload import DataUpload
 from data_prepare import DataPrepare
 from data_use import DataUse
 from cart_module import CartModule
+from order_module import OrderModule
 
 load_dotenv()
 
@@ -46,6 +50,7 @@ dtupload = DataUpload()
 data_prep = DataPrepare()
 data_use = DataUse()
 cart_module = CartModule()
+order_module = OrderModule()
 
 UPLOAD_FOLDER = 'uploads'
 
@@ -63,6 +68,9 @@ description_templates = data_prep.turn_details_to_plain_text(items)
 plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
 """
 
+def run_once():
+   Timer(120.0, schedule_data_update).start()
+
 def schedule_data_update():
     items, message = data_prep.get_items_without_description()
     description_templates = data_prep.turn_details_to_plain_text(items)
@@ -70,11 +78,13 @@ def schedule_data_update():
     plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
     print(plain_text_descriptions)
 
-scheduler = BackgroundScheduler()
+"""scheduler = BackgroundScheduler()
 scheduler.add_job(func=schedule_data_update, trigger="interval", hours=5)
-scheduler.start()
+scheduler.start()"""
 
 #schedule_data_update()
+
+run_once()
 
 @app.route('/admin/upload/products/excel', methods=['POST'])
 def upload_excel():
@@ -174,10 +184,36 @@ def query_cart():
 @app.route('/message/user/getorderdetails', methods=['GET'])
 def query_order_details():
     try:
-        pass
+        order_reference = request.args.get('orderReference')
+        if not order_reference:
+            return jsonify({"error": "orderReference is required"}), 400
+
+        current_order = order_module.get_order_by_reference(order_reference)
+
+        order_summary_naturallanguage = order_module.get_order_summary_natural_language(current_order)
+
+        #print(order_summary_naturallanguage)
+
+        data = {
+                "message": "Success response",
+                "chatresponse": {
+                    "text": order_summary_naturallanguage
+                }
+            }
+
+        #print(data)
+
+        response_data = {
+            "success": True,
+            "data": data
+        }
+        
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
     except Exception as e:
         print(e)
-        return jsonify({"error": str(e)}), 500 
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/message/user/send', methods=['POST'])
 def query_data():
@@ -211,7 +247,7 @@ def query_data():
                 }
             }
 
-        print(data)
+        #print(data)
 
         response_data = {
             "success": True,
