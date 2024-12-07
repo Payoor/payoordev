@@ -30,22 +30,32 @@ class PaymentController {
 
             const io = getIO();
 
+            console.log(io, 'connected')
+
+            console.log(event)
+
+            io.emit('transaction.success', {
+                reference: paymentData.reference,
+                amount: paymentData.amount,
+                status: 'success'
+            });
+
             switch (event.event) {
                 case 'charge.success':
                     console.log('charge successful:', paymentData);
                     io.emit('transaction.success', {
                         reference: paymentData.reference,
-                        amount: paymentData.amount, 
+                        amount: paymentData.amount,
                         status: 'success'
                     });
-                    
+
                     break;
 
                 case 'transfer.success':
                     console.log(event.data)
                     io.emit('transaction.success', {
                         reference: paymentData.reference,
-                        amount: paymentData.amount, 
+                        amount: paymentData.amount,
                         status: 'success'
                     });
                     console.log('transfer successful:', paymentData);
