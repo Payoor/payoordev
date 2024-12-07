@@ -11,7 +11,9 @@ if (process.env.NODE_ENV !== 'production') {
 var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http, {
+  transports: ['websocket', 'polling']
+});
 var path = require('path');
 var corsOptions = {
   origin: _corsOriginArray["default"],

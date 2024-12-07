@@ -7579,7 +7579,7 @@ aMU(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c=null,b="query"
 if($.av9||$.B1!=null)return
 try{r=$.aF9()
 q=t.N
-p=A.a1(["transports",A.b(["websocket"],t.s),"autoConnect",!0],q,t.K)
+p=A.a1(["transports",A.b(["websocket","polling"],t.s),"autoConnect",!0],q,t.K)
 o=A.dh(r)
 n=o.ge4()+"://"+o.gjQ(o)+":"+o.gny(o)
 m=o.gdE(o)

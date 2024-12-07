@@ -19,7 +19,7 @@ class SocketService {
 
     try {
       socket = IO.io(socketUrl, {
-        'transports': ['websocket'],
+        'transports': ['websocket', 'polling'],
         'autoConnect': true,
       });
 
