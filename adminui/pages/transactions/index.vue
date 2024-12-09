@@ -74,7 +74,7 @@ export default {
       message: "",
       totalPages: 0,
       currentPage: 1,
-      limit: 1
+      limit: 10
     };
   },
 
