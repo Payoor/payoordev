@@ -138,7 +138,7 @@ class AdminController {
 
             const updatedProduct = await Product.findByIdAndUpdate(
                 id,
-                { $set: { data: updateData } },
+                { $set: updateData },
                 options
             ).lean();
 
@@ -453,6 +453,7 @@ class AdminController {
             const skip = (page - 1) * limit;
 
             const transactions = await Transaction.find({}, { __v: 0, updatedAt: 0 })
+                .populate('initiatorId', 'name -_id')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
@@ -539,9 +540,10 @@ class AdminController {
             const total = await Order.countDocuments();
 
             const orders = await Order.find({}, { __v: 0 })
+                .populate('userId', 'name -_id')
                 .sort({ createdAt: -1 })
                 .skip(skip)
-                .limit(limit);
+                .limit(limit);        
 
             res.status(200).json({
                 message: 'Orders retrieved',
