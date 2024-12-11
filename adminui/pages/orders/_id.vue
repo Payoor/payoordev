@@ -11,9 +11,14 @@
         <h2>Details</h2>
         <section>
           <div v-for="(value, key) in filteredOrderDetails" :key="key">
-            <template v-if="key !== 'items' && key !== 'userId'">
+            <template v-if="key !== 'items' && key !== 'userId' && key !== 'total'">
               <p>
                 <strong>{{ key }}:</strong> {{ isDate(value) ? timestampToDateString(value) : value }}
+              </p>
+            </template>
+            <template v-if="key === 'total'">
+              <p>
+                <strong>{{ key }}:</strong> {{ formatAmount(value) }}
               </p>
             </template>
           </div>
@@ -44,10 +49,22 @@
             </div>
             <div>
               <div v-for="(itemValue, itemKey) in item" :key="itemKey">
-                <template v-if="itemKey !== 'images'">
+                <template v-if="itemKey !== 'images' && itemKey !== 'product_units'">
                   <p>
                     <strong>{{ itemKey }}:</strong> {{ itemValue }}
                   </p>
+                </template>
+                <template v-if="itemKey === 'product_units'">
+                  <div class="product-units">
+                    <div 
+                      v-for="item, key in itemValue"
+                      :key="key"
+                    >
+                      <p><strong>{{ key }}</strong></p>
+                      <p>Price: {{ formatAmount(item.price) }}</p>
+                      <p>Quantity: {{ item.quantity }}</p>
+                    </div>
+                  </div>
                 </template>
               </div>
             </div>
@@ -61,7 +78,7 @@
 <script>
 import { getOrder } from "../../api";
 import ChevronLeftIcon from "../../components/icons/ChevronLeftIcon.vue";
-import { timestampToDateString } from "../../helpers";
+import { formatAmount, timestampToDateString } from "../../helpers";
 import Default from "../../layouts/Default.vue";
 
 export default {
@@ -90,6 +107,7 @@ export default {
   methods: {
     getOrder,
     timestampToDateString,
+    formatAmount,
     isDate(value) {
       if (typeof value !== "string") return false;
 
@@ -169,6 +187,19 @@ export default {
         width: 100px;
         height: auto;
         margin-right: 1rem;
+      }
+
+      .product-units {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-block: 1rem;
+
+        div {
+          background-color: rgb(47, 47, 47);
+          padding: 0.8rem;
+          border-radius: 0.25rem;
+        }
       }
     }
   }

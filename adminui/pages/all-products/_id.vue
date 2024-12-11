@@ -35,10 +35,28 @@
 
         <h2>Details</h2>
         <div class="details">
-          <div v-for="(value, key) in filteredProductDetails" :key="key">
-            <p>
-              <strong>{{ key }}:</strong> {{ value }}
-            </p>
+          <div class="table__container">
+            <table>
+              <thead>
+                <tr>
+                  <th v-for="value, key in tableHeaders" :key="key">
+                    {{ key }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(value, key) in filteredProductDetails" :key="key">
+                  <td v-for="(item, key) in value">
+                    <template v-if="key === 'price'">
+                      {{ formatAmount(item) }}
+                    </template>
+                    <template v-else>
+                      {{ item }}
+                    </template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -85,6 +103,7 @@ export default {
     filteredProductDetails() {
       if (this.product) {
         const { _id, images, ...rest } = this.product;
+        this.tableHeaders = rest[0];
         return rest;
       }
       return {};
@@ -94,6 +113,7 @@ export default {
   data() {
     return {
       product: {},
+      tableHeaders: [],
       productId: undefined,
       productImages: [],
       isLoading: false,
@@ -156,9 +176,10 @@ export default {
 
   mounted() {
     this.productId = this.$route.params.id;
-
+    this.isLoading = true;
     this.getSingleProduct(this.productId)
       .then((response) => {
+        this.isLoading = false;
         this.product = response.data;
       })
       .catch((error) => {
@@ -281,9 +302,14 @@ export default {
       align-self: center;
       display: grid;
       gap: 1rem;
+      padding: 0 1rem;
 
       p {
         font-size: 0.85rem;
+      }
+
+      .table__container {
+        margin-top: 0 !important;
       }
     }
   }
