@@ -13,24 +13,61 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(data, rowIndex) in editableTableData" :key="rowIndex">
+            <tr 
+              v-for="(data, rowIndex) in editableTableData" 
+              :key="rowIndex"
+            >
               <td>{{ getIndex(rowIndex) }}</td>
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
-                v-if="key !== 'S/N' && key !== '_id'"
+                v-if="key !== '_id'"
                 @click="editCell(rowIndex, colIndex)"
               >
-                <div v-if="isEditingCell(rowIndex, colIndex)">
-                  <input
-                    type="text"
-                    v-model="editableTableData[rowIndex][key]"
-                    @blur="saveEdit(rowIndex)"
-                    @keyup.enter="saveEdit(rowIndex, key)"
-                  />
-                </div>
-                <div v-else>{{ value }}</div>
+                <template v-if="key !== 'data'">
+                  <div v-if="isEditingCell(rowIndex, colIndex)">
+                    <input
+                      type="text"
+                      v-model="editableTableData[rowIndex][key]"
+                      @blur="saveEdit(rowIndex)"
+                      @keyup.enter="saveEdit(rowIndex)"
+                    />
+                  </div>
+                  <div v-else>{{ value }}</div>
+                </template>
+
+                <template v-else>
+                  <table class="embedded-table">
+                    <thead>
+                      <tr>
+                        <th v-for="header in getEmbeddedTableHeaders(data.data)" :key="header">
+                          {{ header.toLowerCase() }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(row, subRowIndex) in data.data" :key="subRowIndex">
+                        <td
+                          v-for="(cellValue, cellKey, cellIndex) in row"
+                          :key="cellIndex"
+                          @click="editEmbeddedCell(rowIndex, subRowIndex, cellKey)"
+                        >
+                          <div v-if="isEditingEmbeddedCell(rowIndex, subRowIndex, cellKey)">
+                            <input
+                              type="text"
+                              v-model="editableTableData[rowIndex].data[subRowIndex][cellKey]"
+                              @blur="saveEdit(rowIndex)"
+                              @keyup.enter="saveEdit(rowIndex)"
+                            />
+                          </div>
+                          <div v-else>{{ cellValue }}</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </template>
               </td>
+
 
               <td class="actions-cell">
                 <button
@@ -149,6 +186,7 @@ export default {
       products: [],
       editableTableData: [],
       editingCell: { row: null, col: null },
+      editingEmbeddedCell: null,
       dropdownIndex: null,
       showImageModal: false,
       showDeleteModal: false,
@@ -197,6 +235,24 @@ export default {
 
     isEditingCell(row, col) {
       return this.editingCell.row === row && this.editingCell.col === col;
+    },
+
+    getEmbeddedTableHeaders(data) {
+      return data.length ? Object.keys(data[0]) : [];
+    },
+
+    editEmbeddedCell(parentRowIndex, subRowIndex, key) {
+      this.editingCell = { row: parentRowIndex, col: null };
+      this.editingEmbeddedCell = { parentRow: parentRowIndex, row: subRowIndex, key };
+    },
+
+    isEditingEmbeddedCell(parentRowIndex, subRowIndex, key) {
+      return (
+        this.editingEmbeddedCell &&
+        this.editingEmbeddedCell.parentRow === parentRowIndex &&
+        this.editingEmbeddedCell.row === subRowIndex &&
+        this.editingEmbeddedCell.key === key
+      );
     },
 
     saveEdit(rowIndex) {
