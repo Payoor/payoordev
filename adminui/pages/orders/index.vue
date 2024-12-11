@@ -5,7 +5,14 @@
         <thead>
           <tr>
             <th>S/N</th>
-            <th v-for="header in getTableHeaders" :key="header">{{ header }}</th>
+            <th v-for="header in getTableHeaders" :key="header">
+              <template v-if="header === 'userId'">
+                user
+              </template>
+              <template v-else>
+                {{ header }}
+              </template>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -13,10 +20,16 @@
           <tr v-for="(order, rowIndex) in orders" :key="order.orderId">
             <td>{{ getIndex(rowIndex) }}</td>
             <td v-for="header in getTableHeaders" :key="header">
-              <template v-if="header === 'items'">
-                {{ order[header].length }} items
+              <template v-if="header === 'total'">
+                {{ formatAmount(order[header]) }}
               </template>
-              <template v-else>
+              <template v-if="header === 'items'">
+                {{ order[header].length }} {{ order[header].length > 1 ? 'items' : 'item' }}
+              </template>
+              <template v-if="header === 'userId'">
+                {{ order[header].name }}
+              </template>
+              <template v-if="header !== 'total' && header !== 'items' && header !== 'userId'">
                 {{ isDate(order[header]) ? timestampToDateString(order[header]) : order[header] || "N/A" }}
               </template>
             </td>
@@ -60,7 +73,7 @@
 
 <script>
 import { getOrders } from "../../api";
-import { timestampToDateString } from "../../helpers";
+import { formatAmount, timestampToDateString } from "../../helpers";
 import Default from "../../layouts/Default.vue";
 
 export default {
@@ -93,6 +106,7 @@ export default {
   methods: {
     getOrders,
     timestampToDateString,
+    formatAmount,
     fetchOrders() {
       this.getOrders(this.currentPage, this.limit)
         .then((response) => {

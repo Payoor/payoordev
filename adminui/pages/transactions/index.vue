@@ -5,7 +5,14 @@
         <thead>
           <tr>
             <th>S/N</th>
-            <th v-for="header in getTableHeaders" :key="header">{{ header }}</th>
+            <th v-for="header in getTableHeaders" :key="header">
+              <template v-if="header === 'initiatorId'">
+                initiator
+              </template>
+              <template v-else>
+                {{ header }}
+              </template>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -21,6 +28,9 @@
               </template>
               <template v-if="isDate(transaction[header])">
                 {{ isDate(transaction[header]) ? timestampToDateString(transaction[header]) : "N/A"}}
+              </template>
+              <template v-if="isObject(transaction[header])">
+                {{ transaction[header].name }}
               </template>
               <template v-if="!isObject(transaction[header]) && !isDate(transaction[header])">
                 {{ transaction[header] ?? "N/A" }}
@@ -48,7 +58,7 @@
 
 <script>
 import { getTransactions } from "../../api";
-import { timestampToDateString } from "../../helpers";
+import { formatAmount, timestampToDateString } from "../../helpers";
 import Default from "../../layouts/Default.vue";
 
 export default {
@@ -81,6 +91,7 @@ export default {
   methods: {
     getTransactions,
     timestampToDateString,
+    formatAmount,
     fetchTransactions() {
       this.getTransactions(this.currentPage, this.limit)
         .then((response) => {
@@ -124,7 +135,7 @@ export default {
     },
 
     getObjectValue(value) {
-      return value?.$numberDecimal || "Unknown";
+      return formatAmount(value?.$numberDecimal) || "Unknown";
     },
     
     onPageChange(page) {
