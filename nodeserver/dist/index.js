@@ -31,7 +31,7 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var corsOptions = {
   origin: _corsOriginArray["default"],
-  methods: ['POST', 'OPTIONS', 'GET'],
+  methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true
 };
@@ -82,7 +82,7 @@ app.post('/upload', _verifyToken["default"], function (req, res) {
     var filePath = _path["default"].join(uploadDir, uniqueFilename);
     var fileUrl = "uploads/".concat(uniqueFilename);
     _fs["default"].writeFile(filePath, buffer, /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(err) {
+      var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(err) {
         var newFile;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {

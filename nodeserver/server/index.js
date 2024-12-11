@@ -30,7 +30,7 @@ import { initSocket } from './socketInit';
 
 const corsOptions = {
   origin: corsOriginArray,
-  methods: ['POST', 'OPTIONS', 'GET'],
+  methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
   allowedHeaders: [
     'Origin',
     'X-Requested-With',
