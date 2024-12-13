@@ -10,7 +10,7 @@ class DataPrepare:
            query = {
                "$or": [
                    {"generatedDescription": ""},
-                   {"generatedDescription": {"$exists": False}}
+                   {"generatedDescription": {"$exists": True}}
                ]
            }
            items = list(productCollection.find(query).limit(limit))
