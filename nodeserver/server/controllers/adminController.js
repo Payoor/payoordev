@@ -125,7 +125,6 @@ class AdminController {
         }
     }
 
-
     async updateProduct(req, res) {
         try {
             const { id } = req.query;

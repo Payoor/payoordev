@@ -14,7 +14,7 @@ function toggleOnlineState(_x) {
   return _toggleOnlineState.apply(this, arguments);
 }
 function _toggleOnlineState() {
-  _toggleOnlineState = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(id) {
+  _toggleOnlineState = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(id) {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:

@@ -5,3 +5,4 @@ Product.collection.dropIndex('filepath_1', (err, result) => {
         console.log('Index dropped:', result);
     }
 });
+

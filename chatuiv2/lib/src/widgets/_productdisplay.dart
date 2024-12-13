@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/widgets/_productcard.dart';
-import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
-
-import 'package:chatuiv2/src/classes/_appcolors.dart';
-import 'package:chatuiv2/src/classes/_product.dart';
 
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 
@@ -15,8 +11,6 @@ class ProductDisplay extends StatefulWidget {
 }
 
 class _ProductDisplayState extends State<ProductDisplay> {
-  bool _isDetailsVisible = false;
-  int? _selectedProductIndex;
   final List<bool> _visibleItems = [];
   late List<Map<String, dynamic>> productData;
   late String productId;
@@ -57,91 +51,60 @@ class _ProductDisplayState extends State<ProductDisplay> {
           _animateItems();
         }
 
-        return Stack(
-          children: [
-            GridView.builder(
-              padding: const EdgeInsets.all(0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1 / 1.3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemCount: results.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    if (results.isEmpty) return;
+        return GridView.builder(
+          padding: const EdgeInsets.all(0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1 / 1.5,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: results.length,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            if (results.isEmpty) return const SizedBox();
 
-                    setState(() {
-                      _selectedProductIndex = index;
-                      _isDetailsVisible = true;
+            final product = results[index];
+            final String productName = product['product_name'];
+            final String productId = product['_id'];
 
-                      productId = results[index]["_id"];
+            List<Map<String, dynamic>> productData = [];
 
-                      productName = results[index]['product_name'];
+            try {
+              productData = product['data']
+                  .map<Map<String, dynamic>>((item) => {
+                        'id': productId,
+                        'name': productName,
+                        'price': double.tryParse(
+                                item['price'].toString().replaceAll(',', '')) ??
+                            0.0,
+                        'unit': item['unit'],
+                        'inStock': item['availability'] == 'YES'
+                      })
+                  .toList();
+            } catch (e) {
+              productData = [];
+            }
 
-                      try {
-                        productData = results[index]['data']
-                            .map<Map<String, dynamic>>((item) => {
-                                  'id': productId,
-                                  'name': productName,
-                                  'price': double.tryParse(
-                                          item['price']
-                                              .toString()
-                                              .replaceAll(',', '')) ??
-                                      0.0,
-                                  'unit': item['unit'],
-                                  'inStock': item['availability'] == 'YES'
-                                })
-                            .toList();
-                      } catch (e) {
-                        productData = [];
-                      }
-                    });
-                  },
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 500),
-                    opacity:
-                        _visibleItems.length > index && _visibleItems[index]
-                            ? 1.0
-                            : 0.0,
-                    curve: Curves.easeIn,
-                    child: ProductCard(),
-                  ),
-                );
-              },
-            ),
-            if (_isDetailsVisible)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: MediaQuery.of(context).size.height * 0.65,
-                child: GestureDetector(
-                  onVerticalDragEnd: (details) {
-                    if (details.primaryVelocity! > 0) {
-                      setState(() {
-                        _isDetailsVisible = false;
-                        _selectedProductIndex = null;
-                      });
-                    }
-                  },
-                  child: ProductSizeSelector(
+            return GestureDetector(
+              onTap: () {
+                context.read<ResultListProvider>().setCurrentProduct(
                     productData: productData,
                     productId: productId,
-                    productName: productName,
-                    closeWidget: () {
-                      setState(() {
-                        _isDetailsVisible = false;
-                      });
-                    },
-                  ),
-                ),
-              )
-          ],
+                    productName: productName);
+              },
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 500),
+                opacity: _visibleItems.length > index && _visibleItems[index]
+                    ? 1.0
+                    : 0.0,
+                curve: Curves.easeIn,
+                child:
+                    ProductCard(productName: productName, productId: productId),
+              ),
+            );
+          },
         );
       },
     );

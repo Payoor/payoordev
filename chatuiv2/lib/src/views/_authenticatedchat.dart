@@ -9,6 +9,9 @@ import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
 import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
 import 'package:chatuiv2/src/widgets/_productdisplay.dart';
+import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
+import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
+import 'package:chatuiv2/src/widgets/_ordersdisplay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
@@ -39,9 +42,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool _showProducts = false;
   bool _payStackViewOpen = false;
   late StreamSubscription _subscription;
+  bool _cartviewOpen = false;
+  bool _userOrdersOpen = false;
 
   final List<Map> pills = [
     {"label": "Cart", "action": "View Cart"},
+    {"label": "Orders", "action": "Proceed to orders view"},
     {"label": "Pay", "action": "Proceed to payment"},
   ];
 
@@ -128,6 +134,18 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     setState(() {
       _isDrawerOpen = !_isDrawerOpen;
     });
+  }
+
+  void _toggleUserOrders() {
+    setState(() {
+      _userOrdersOpen = !_userOrdersOpen;
+    });
+  }
+
+  void closeProductSizeSelector() {
+    print('view cart items');
+    context.read<ResultListProvider>().setCurrentProduct(
+        productData: <Map<String, dynamic>>[], productId: "", productName: "");
   }
 
   void closePaystackView(BuildContext context) {
@@ -291,96 +309,114 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         return ListView.builder(
           controller: _scrollController,
           reverse: false,
-          physics: const BouncingScrollPhysics(),
+          // Change physics to prevent overscroll bounce which can contribute to jumpiness
+          physics: const ClampingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 10),
+          // Add these properties to help stabilize the list
           itemCount: messagesList.length,
+          cacheExtent: 9999, // Increase cache to prevent rebuilds
           itemBuilder: (context, index) {
             final message = messagesList[messagesList.length - 1 - index];
 
-            if (message.isClient) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.black.withOpacity(.5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    message.text,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              );
-            }
-
-            if (message.isLoading) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: AiLoadingIndicator(),
-              );
-            }
-
-            if (message.isPayStackView && _payStackViewOpen) {
-              return Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: PayStackViewContainer(url: message.paymentUrl),
-              );
-            }
-
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity, // Takes full width
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.greyBlack.withOpacity(.5),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: TypewriterText(
-                          key: ValueKey(
-                              'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
-                          text: message.text,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                          duration: Duration(milliseconds: 1500),
-                          showCursor: true,
-                          scrollController: _scrollController,
-                          onTap: () {},
-                          onComplete: () {
-                            setState(() {
-                              _showProducts = true;
-                            });
-                          },
-                        )),
-                  ),
-                ),
-                if (message.isProductsDisplay &&
-                    _showProducts &&
-                    message.results.isNotEmpty &&
-                    index == messagesList.length - 1) ...[
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4),
-                      child: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: ProductDisplay())),
-                ]
-              ],
+            // Wrap each message type in a container with constraints
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: 50, // Set a minimum height
+                maxHeight: message.isPayStackView && _payStackViewOpen
+                    ? MediaQuery.of(context).size.height * 0.7
+                    : double.infinity,
+              ),
+              child: _buildMessageContent(message, index, messagesList),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildMessageContent(
+      Message message, int index, List<Message> messagesList) {
+    if (message.isClient) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.black.withOpacity(.5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            message.text,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
+    if (message.isLoading) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: AiLoadingIndicator(),
+      );
+    }
+
+    if (message.isPayStackView && _payStackViewOpen) {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: PayStackViewContainer(url: message.paymentUrl),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min, // Add this
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.greyBlack.withOpacity(.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TypewriterText(
+                key: ValueKey(
+                    'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
+                text: message.text,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withOpacity(0.8),
+                ),
+                duration: Duration(milliseconds: 1500),
+                showCursor: true,
+                scrollController: _scrollController,
+                onTap: () {},
+                onComplete: () {
+                  setState(() {
+                    _showProducts = true;
+                  });
+                },
+              ),
+            ),
+          ),
+        ),
+        if (message.isProductsDisplay &&
+            _showProducts &&
+            message.results.isNotEmpty &&
+            index == messagesList.length - 1)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Container(
+                padding: const EdgeInsets.all(8), child: ProductDisplay()),
+          ),
+      ],
     );
   }
 
@@ -426,12 +462,19 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                           suggested_prompts[index]['action'];
                                       if (action != null &&
                                           action == "View Cart") {
-                                        _handleCartQuery();
+                                        closeProductSizeSelector();
+                                        //_handleCartQuery();
+                                        setState(() {
+                                          _cartviewOpen = true;
+                                        });
                                       } else if (action != null &&
                                           action == "Proceed to payment") {
                                         print('handle payment');
                                         //_handlePayment();
                                         _handlePaymentLinkGeneration();
+                                      } else if (action != null &&
+                                          action == "Proceed to orders view") {
+                                        _toggleUserOrders();
                                       } else {
                                         _selectedPillIndex = index;
                                         print(suggested_prompts[index]['text']);
@@ -747,6 +790,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       final cartData =
           Provider.of<CartProvider>(context, listen: false).createCartPayload();
 
+      print(cartData);
+
       context.read<MessageProvider>().addMessage(Message(
             text: '',
             isClient: false,
@@ -847,6 +892,53 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           _buildDrawer(),
           _buildWatermarkOverlay(),
           _buildMainContent(),
+          if (_userOrdersOpen)
+            Positioned(child: OrderDisplay(onBackTap: (context) {
+              _toggleUserOrders();
+            })),
+          if (_cartviewOpen)
+            Positioned(child: CartDisplay(onBackTap: (context) {
+              setState(() {
+                _cartviewOpen = false;
+              });
+            })),
+            
+          Consumer<ResultListProvider>(
+              builder: (context, resultListProvider, child) {
+            List<Map<String, dynamic>> _current_product_data =
+                resultListProvider.current_product_data;
+            String _current_product_name =
+                resultListProvider.current_product_name;
+            String _current_product_id = resultListProvider.current_product_id;
+
+            return Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: resultListProvider.current_product_id.isEmpty
+                    ? 0
+                    : MediaQuery.of(context).size.height,
+                child: resultListProvider.current_product_id.isEmpty
+                    ? const SizedBox.shrink()
+                    : SingleChildScrollView(
+                        child: Container(
+                            constraints: BoxConstraints(
+                              minHeight:
+                                  MediaQuery.of(context).size.height * 0.8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ProductSizeSelector(
+                              productData: _current_product_data,
+                              productId: _current_product_id,
+                              productName: _current_product_name,
+                              closeWidget: () {
+                                closeProductSizeSelector();
+                              },
+                            ))));
+          })
         ],
       ),
     );

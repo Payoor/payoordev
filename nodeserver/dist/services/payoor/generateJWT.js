@@ -17,7 +17,7 @@ function generateJWT(_x) {
   return _generateJWT.apply(this, arguments);
 }
 function _generateJWT() {
-  _generateJWT = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+  _generateJWT = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
     var userid, expiryDate, newToken, payload, jwtToken;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

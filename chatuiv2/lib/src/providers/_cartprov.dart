@@ -46,7 +46,8 @@ class CartProvider with ChangeNotifier {
       if (existingItem.units.containsKey(unit)) {
         existingItem.units[unit]!.quantity++;
       } else {
-        existingItem.units[unit] = UnitDetails(price: price, quantity: 1);
+        existingItem.units[unit] =
+            UnitDetails(price: price, quantity: 1, unit: unit);
       }
     } else {
       _items.putIfAbsent(
@@ -55,7 +56,7 @@ class CartProvider with ChangeNotifier {
           id: id,
           name: name,
           units: {
-            unit: UnitDetails(price: price),
+            unit: UnitDetails(price: price, unit: unit),
           },
         ),
       );
@@ -80,6 +81,20 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
+  void increaseItem({
+    required String id,
+    required String unit,
+  }) {
+    if (!_items.containsKey(id)) return;
+
+    final existingItem = _items[id]!;
+
+    if (existingItem.units.containsKey(unit)) {
+      existingItem.units[unit]!.quantity++;
+      notifyListeners();
+    }
+  }
+
   void decreaseItem({
     required String id,
     required String unit,
@@ -98,6 +113,25 @@ class CartProvider with ChangeNotifier {
           _items.remove(id);
         }
       }
+      notifyListeners();
+    }
+  }
+
+  void deleteUnit({
+    required String id,
+    required String unit,
+  }) {
+    if (!_items.containsKey(id)) return;
+
+    final existingItem = _items[id]!;
+
+    if (existingItem.units.containsKey(unit)) {
+      existingItem.units.remove(unit);
+
+      if (existingItem.units.isEmpty) {
+        _items.remove(id);
+      }
+
       notifyListeners();
     }
   }

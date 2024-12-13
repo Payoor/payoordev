@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
+import 'package:chatuiv2/src/classes/_productroutes.dart';
+import 'package:chatuiv2/src/classes/_serverresponse.dart';
 
 class ProductCard extends StatefulWidget {
-  const ProductCard({super.key});
+  final String productName;
+  final String productId;
+
+  const ProductCard({
+    super.key,
+    required this.productName,
+    required this.productId,
+  });
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -16,33 +25,56 @@ class _ProductCardState extends State<ProductCard> {
       //padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            
             color: Colors.transparent,
             child: Stack(
               children: [
                 ClipRRect(
-                  // This will handle the border radius for the image
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     width: double.infinity,
                     height: 150,
-                    //color: Colors.grey[200],
-                    child: Image.network(
-                      'https://tse1.mm.bing.net/th?id=OIP.UqqTa19Z7fiHZa_-uLllVwHaE8&pid=Api',
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.image,
-                          size: 40,
-                          color: Colors.grey,
+                    child: FutureBuilder<ServerResponse>(
+                      future: ProductRoute.getProductImage(
+                          widget.productId), // Make sure productId is available
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snapshot.hasError || !snapshot.hasData) {
+                          return const Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          );
+                        }
+
+                        // Assuming your ServerResponse data contains imageUrl
+                        return Image.network(
+                          snapshot.data!.data[
+                              'images'][0]["imageUrl"], // Adjust based on your data structure
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.image,
+                              size: 40,
+                              color: Colors.grey,
+                            );
+                          },
                         );
                       },
                     ),
@@ -74,9 +106,24 @@ class _ProductCardState extends State<ProductCard> {
               ],
             ),
           ),
-
-          SizedBox(height: 20,),
-
+          Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.productName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    maxLines: 2,
+                  )
+                ],
+              )),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -104,7 +151,6 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
                 Text(
                   "Options",
                   style: TextStyle(
@@ -113,7 +159,6 @@ class _ProductCardState extends State<ProductCard> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(width: 8),
                 InkWell(
                   onTap: () {
                     // Handle plus
@@ -132,6 +177,9 @@ class _ProductCardState extends State<ProductCard> {
                 ),
               ],
             ),
+          ),
+          SizedBox(
+            height: 10,
           )
         ],
       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
-import 'package:chatuiv2/src/classes/_cartitem.dart';
 
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 
@@ -33,7 +32,7 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
           borderRadius: BorderRadius.circular(8),
           color: Colors.white,
         ),
-        height: MediaQuery.of(context).size.height * 0.65,
+        //height: MediaQuery.of(context).size.height * 0.65,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(

@@ -1,3 +1,5 @@
+import moment from "moment";
+
 import Order from "../models/order";
 import User from "../models/user";
 
@@ -107,15 +109,25 @@ class OrderController {
                 .skip(skip)
                 .limit(limit);
 
+            const formattedOrders = orders.map(order => ({
+                ...order.toObject(),
+                createdAt: moment(order.createdAt).format('MMM D, YYYY • h:mm A')
+            }));
+
             const total = orders.length;
 
-            res.status(200).json({
+            const data = {
                 message: 'Orders retrieved',
                 page,
                 totalPages: Math.ceil(total / limit),
                 totalCount: total,
                 itemsPerPage: limit,
-                orders: orders,
+                orders: formattedOrders,
+            }
+
+            res.status(200).json({
+                success: true,
+                data
             });
 
         } catch (error) {

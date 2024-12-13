@@ -215,6 +215,33 @@ def query_order_details():
         print(e)
         return jsonify({"error": str(e)}), 500
 
+@app.route('/product/images', methods=['GET'])
+def get_product_images():
+    try:
+        product_id = request.args.get('product_id')
+
+        if not product_id:
+            return jsonify({"error": "Product ID is required"}), 400
+
+        images = data_use.get_product_images(product_id)
+
+        data = {
+            "message": "Success response",
+            "images": images if len(images) > 0 else [{"imageUrl": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.ug7mcOMWDCGNYWMVONgcgwHaE8%26pid%3DApi&f=1&ipt=1d65f51ac9670f196a7f095b3d1d343b800dbd6095143d4ecd8acc2d36080b97&ipo=images"}]
+        }
+
+        response_data = {
+            "success": True,
+            "data": data
+        }
+
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
+
 @app.route('/message/user/send', methods=['POST'])
 def query_data():
     try:

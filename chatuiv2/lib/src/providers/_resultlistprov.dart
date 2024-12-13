@@ -1,21 +1,37 @@
 import 'package:flutter/material.dart';
 
 class ResultListProvider extends ChangeNotifier {
-  int _total;
-  List<Map<String, dynamic>> _results;
-  List<Map<String, dynamic>> _suggested_prompts; 
+  int _total = 0;
+  List<Map<String, dynamic>> _results = [];
+  List<Map<String, dynamic>> _suggested_prompts = [];
+  List<Map<String, dynamic>> _current_product_data = [];
+  String _current_product_name = "";
+  String _current_product_id = "";
 
   ResultListProvider({
     int total = 0,
     List<Map<String, dynamic>> results = const [],
     List<Map<String, dynamic>> suggested_prompts = const [],
-  }) : _total = total,
-       _results = results,
-       _suggested_prompts = suggested_prompts;
+  }) {
+    _total = total;
+    _results = results;
+    _suggested_prompts = suggested_prompts;
+  }
 
   int get total => _total;
   List<Map<String, dynamic>> get results => _results;
-  List<Map<String, dynamic>> get suggested_prompts => _suggested_prompts; 
+  List<Map<String, dynamic>> get suggested_prompts => _suggested_prompts;
+  String get current_product_name => _current_product_name;
+  String get current_product_id => _current_product_id;
+  List<Map<String, dynamic>> get current_product_data => _current_product_data;
+
+  void setCurrentProduct(
+      {required productData, required productId, required productName}) {
+    _current_product_data = productData;
+    _current_product_id = productId;
+    _current_product_name = productName;
+    notifyListeners();
+  }
 
   void updateResults({
     required int total,
@@ -34,7 +50,7 @@ class ResultListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSuggestedPrompts(List<Map<String, dynamic>> prompts) { 
+  void updateSuggestedPrompts(List<Map<String, dynamic>> prompts) {
     _suggested_prompts = prompts;
     notifyListeners();
   }

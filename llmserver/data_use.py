@@ -1,8 +1,28 @@
 from chroma_db import chromaProductCollection
-from mongoose import UpdateOne, ObjectId, productCollection
+from mongoose import UpdateOne, ObjectId, productCollection, imageCollection
 from open_ai import model, ChatPromptTemplate, MessagesPlaceholder, StrOutputParser, RunnableLambda
 
 class DataUse:
+    def get_product_images(self, product_id):
+        try:
+            product_object_id = ObjectId(product_id)
+
+            images = imageCollection.find({"product": product_object_id})
+
+            image_list = []
+            for image in images:
+                image_list.append({
+                    "id": str(image["_id"]),
+                    "imageUrl": image["imageUrl"],
+                    "productId": str(image["product"])
+                })
+            
+            return image_list
+            
+        except Exception as e:
+            print(f"Error fetching images: {e}")
+            raise Exception("Failed to fetch product images")
+
     def get_items_from_mongodb_by_id(self, id_array):
         try:
             items = list(productCollection.find({
