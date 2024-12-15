@@ -68,7 +68,7 @@ class PaymentController {
                     response.data.transaction_reference = transaction_reference;
                     response.data.access_code = JSON.parse(data).data.access_code;
 
-                    console.log(response);
+                    //console.log(response);
 
 
                     res.status(200).json(response);

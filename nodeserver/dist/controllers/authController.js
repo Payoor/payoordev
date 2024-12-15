@@ -355,7 +355,8 @@ var AuthController = /*#__PURE__*/function () {
               });
             case 4:
               validUser = _context5.sent;
-              console.log(validUser);
+              //console.log(validUser)
+
               if (validUser) {
                 userResponse = {
                   _id: validUser._id,
@@ -382,10 +383,10 @@ var AuthController = /*#__PURE__*/function () {
                 };
                 res.status(404).json(notFoundResponse);
               }
-              _context5.next = 14;
+              _context5.next = 13;
               break;
-            case 9:
-              _context5.prev = 9;
+            case 8:
+              _context5.prev = 8;
               _context5.t0 = _context5["catch"](0);
               console.log(_context5.t0);
               errorResponse = {
@@ -397,11 +398,11 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 14:
+            case 13:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 9]]);
+        }, _callee5, null, [[0, 8]]);
       }));
       function getValidUser(_x9, _x10) {
         return _getValidUser.apply(this, arguments);

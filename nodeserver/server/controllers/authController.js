@@ -238,7 +238,7 @@ class AuthController {
 
             const validUser = await User.findOne({ _id: userId });
 
-            console.log(validUser)
+            //console.log(validUser)
 
             if (validUser) {
                 const userResponse = {

@@ -86,7 +86,9 @@ var PaymentController = /*#__PURE__*/function () {
                         response.data.authorization_url = JSON.parse(data).data.authorization_url;
                         response.data.transaction_reference = transaction_reference;
                         response.data.access_code = JSON.parse(data).data.access_code;
-                        console.log(response);
+
+                        //console.log(response);
+
                         res.status(200).json(response);
                         transaction = new _transaction["default"]({
                           initiatorId: userId,
@@ -95,7 +97,7 @@ var PaymentController = /*#__PURE__*/function () {
                           reference: transaction_reference
                         });
                         transaction.save();
-                        _context.next = 11;
+                        _context.next = 10;
                         return _order["default"].findOneAndUpdate({
                           _id: orderId
                         }, {
@@ -106,9 +108,9 @@ var PaymentController = /*#__PURE__*/function () {
                           "new": true,
                           runValidators: true
                         });
-                      case 11:
+                      case 10:
                         order_update = _context.sent;
-                      case 12:
+                      case 11:
                       case "end":
                         return _context.stop();
                     }
