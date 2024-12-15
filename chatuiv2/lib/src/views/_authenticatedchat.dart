@@ -12,16 +12,20 @@ import 'package:chatuiv2/src/widgets/_productdisplay.dart';
 import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
 import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
 import 'package:chatuiv2/src/widgets/_ordersdisplay.dart';
+import 'package:chatuiv2/src/widgets/_userdetailslist.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
+import 'package:chatuiv2/src/providers/_authprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
 import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
 import 'package:chatuiv2/src/classes/_paystackroutes.dart';
 import 'package:chatuiv2/src/classes/_socketservice.dart';
+
+import 'package:chatuiv2/src/utils/_yeswords.dart';
 
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
@@ -42,8 +46,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool _showProducts = false;
   bool _payStackViewOpen = false;
   late StreamSubscription _subscription;
-  bool _cartviewOpen = false;
   bool _userOrdersOpen = false;
+  bool _showCart = false;
+  bool _confirmingAddress = false;
 
   final List<Map> pills = [
     {"label": "Cart", "action": "View Cart"},
@@ -362,12 +367,15 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
     if (message.isPayStackView && _payStackViewOpen) {
       return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7,
-        child: PayStackViewContainer(url: message.paymentUrl),
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: PayStackViewContainer(
+            url: message.paymentUrl ?? ''), // Add null check
       );
     }
 
     return Column(
+      key: ValueKey(
+          'message_content_${message.clienttimestamp?.millisecondsSinceEpoch}'),
       mainAxisSize: MainAxisSize.min, // Add this
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +396,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
               ),
               child: TypewriterText(
                 key: ValueKey(
-                    'message_${message.clienttimestamp.millisecondsSinceEpoch}'),
+                    'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
                 text: message.text,
                 style: TextStyle(
                   fontSize: 16,
@@ -400,13 +408,62 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 onTap: () {},
                 onComplete: () {
                   setState(() {
-                    _showProducts = true;
+                    _showProducts = message.isProductsDisplay;
+                    _showCart = message.isCartView;
                   });
                 },
               ),
             ),
           ),
         ),
+        if (message.isAdressPhoneNumber)
+          UserDetailsList(
+            triggerFunction: () {
+              _handlePaymentLinkGeneration();
+            },
+          ),
+        if (message.isCartView && _showCart && index == messagesList.length - 1)
+          Column(
+            children: [
+              CartDisplay(),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.greyBlack.withOpacity(.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TypewriterText(
+                      key: ValueKey(
+                          'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
+                      text: "Tap the Pay button to proceed with payment",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                      duration: Duration(milliseconds: 1500),
+                      showCursor: true,
+                      scrollController: _scrollController,
+                      onTap: () {},
+                      onComplete: () {
+                        setState(() {
+                          _showProducts = message.isProductsDisplay;
+                          _showCart = message.isCartView;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         if (message.isProductsDisplay &&
             _showProducts &&
             message.results.isNotEmpty &&
@@ -463,15 +520,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                       if (action != null &&
                                           action == "View Cart") {
                                         closeProductSizeSelector();
-                                        //_handleCartQuery();
-                                        setState(() {
-                                          _cartviewOpen = true;
-                                        });
+                                        _handleCartQuery();
                                       } else if (action != null &&
                                           action == "Proceed to payment") {
                                         print('handle payment');
                                         //_handlePayment();
                                         _handlePaymentLinkGeneration();
+                                        //_confirmAddress();
                                       } else if (action != null &&
                                           action == "Proceed to orders view") {
                                         _toggleUserOrders();
@@ -614,6 +669,37 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   void _handleSubmit(String value) {
     if (value.trim().isNotEmpty) {
       _handleSend();
+    }
+  }
+
+  void _confirmAddress() async {
+    final userData = context.read<AuthProv>().userData;
+
+    if (mounted) {
+      context.read<MessageProvider>().addMessage(Message(
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
+
+      _scrollToBottom();
+
+      context.read<MessageProvider>().removeLastMessage();
+
+      setState(() {
+        _confirmingAddress = true;
+      });
+
+      context.read<MessageProvider>().addMessage(Message(
+            text:
+                "Pls confirm that ${userData!['userAddress']} is still your delivery address by tapping the button below or simply inputing the address you prefer",
+            isClient: false,
+            isRead: false,
+            isAdressPhoneNumber: true,
+          ));
+
+      _scrollToBottom();
     }
   }
 
@@ -787,11 +873,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   void _handleCartQuery() async {
     try {
-      final cartData =
-          Provider.of<CartProvider>(context, listen: false).createCartPayload();
-
-      print(cartData);
-
       context.read<MessageProvider>().addMessage(Message(
             text: '',
             isClient: false,
@@ -800,34 +881,19 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           ));
       _scrollToBottom();
 
-      final response = await ChatApiRoutes.getCartDetails(cartData);
+      Message aiMessage;
 
-      if (response?.data != null && response.data['chatresponse'] != null) {
-        final chatResponse = response.data['chatresponse'];
+      aiMessage = Message(
+        text: "This is what your cart looks like at the moment",
+        isCartView: true,
+        isClient: false,
+        isRead: false,
+      );
 
-        Message aiMessage;
-
-        aiMessage = Message(
-          text: chatResponse['text'] ?? 'Sorry, I could not process that.',
-          isClient: false,
-          isRead: false,
-        );
-
-        if (mounted) {
-          context.read<MessageProvider>().removeLastMessage();
-          context.read<MessageProvider>().addMessage(aiMessage);
-          _scrollToBottom();
-        }
-      } else {
-        if (mounted) {
-          context.read<MessageProvider>().removeLastMessage();
-          final errorMessage = Message(
-            text: 'Sorry, there was an error processing your message.',
-            isClient: false,
-            isRead: false,
-          );
-          context.read<MessageProvider>().addMessage(errorMessage);
-        }
+      if (mounted) {
+        context.read<MessageProvider>().removeLastMessage();
+        context.read<MessageProvider>().addMessage(aiMessage);
+        _scrollToBottom();
       }
     } catch (e) {
       print('Error handling cart query: $e');
@@ -896,13 +962,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             Positioned(child: OrderDisplay(onBackTap: (context) {
               _toggleUserOrders();
             })),
-          if (_cartviewOpen)
-            Positioned(child: CartDisplay(onBackTap: (context) {
-              setState(() {
-                _cartviewOpen = false;
-              });
-            })),
-            
           Consumer<ResultListProvider>(
               builder: (context, resultListProvider, child) {
             List<Map<String, dynamic>> _current_product_data =

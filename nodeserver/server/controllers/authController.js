@@ -238,12 +238,15 @@ class AuthController {
 
             const validUser = await User.findOne({ _id: userId });
 
+            console.log(validUser)
+
             if (validUser) {
                 const userResponse = {
                     _id: validUser._id,
                     email: validUser.email,
                     name: validUser.name,
-                    phoneNumber: validUser.phoneNumber
+                    phoneNumber: validUser.phoneNumber,
+                    userAddress: validUser.location
                 };
 
                 const response = {

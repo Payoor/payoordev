@@ -55,3 +55,5 @@ class ResultListProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+

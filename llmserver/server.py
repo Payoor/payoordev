@@ -158,6 +158,8 @@ def query_cart():
 
         cart_summary = cart_module.generate_cart_summary(user_cart)
 
+        print(cart_summary)
+
         data = {
                 "message": "Success response",
                 "chatresponse": {

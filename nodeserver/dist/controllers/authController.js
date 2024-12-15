@@ -355,12 +355,14 @@ var AuthController = /*#__PURE__*/function () {
               });
             case 4:
               validUser = _context5.sent;
+              console.log(validUser);
               if (validUser) {
                 userResponse = {
                   _id: validUser._id,
                   email: validUser.email,
                   name: validUser.name,
-                  phoneNumber: validUser.phoneNumber
+                  phoneNumber: validUser.phoneNumber,
+                  userAddress: validUser.location
                 };
                 response = {
                   success: true,
@@ -380,10 +382,10 @@ var AuthController = /*#__PURE__*/function () {
                 };
                 res.status(404).json(notFoundResponse);
               }
-              _context5.next = 13;
+              _context5.next = 14;
               break;
-            case 8:
-              _context5.prev = 8;
+            case 9:
+              _context5.prev = 9;
               _context5.t0 = _context5["catch"](0);
               console.log(_context5.t0);
               errorResponse = {
@@ -395,11 +397,11 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 13:
+            case 14:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 8]]);
+        }, _callee5, null, [[0, 9]]);
       }));
       function getValidUser(_x9, _x10) {
         return _getValidUser.apply(this, arguments);

@@ -18,7 +18,7 @@ class OrderController {
                 const product_data = {
                     product_id: id,
                     product_name: item.name,
-                    product_units: item.units
+                    product_units: sanitizeUnitKeys(item.units)
                 }
 
                 items.push(product_data);
@@ -35,11 +35,14 @@ class OrderController {
                         items
                     });
 
+                    //console.log(items)
+
                     req.total = total;
                     req.items = items;
                     req.email = validUser.email;
                     req.orderId = order._id;
                     req.userId = validUser._id;
+
 
                     await order.save();
 
@@ -151,5 +154,17 @@ function getTotalAmount(text) {
         return null;
     }
 }
+
+function sanitizeUnitKeys(units) {
+    const sanitizedUnits = {};
+
+    Object.entries(units).forEach(([key, value]) => {
+        const sanitizedKey = key.replace(/\./g, '_');
+        sanitizedUnits[sanitizedKey] = value;
+    });
+
+    return sanitizedUnits;
+}
+
 
 export default new OrderController();

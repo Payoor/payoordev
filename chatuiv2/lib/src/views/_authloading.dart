@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/views/_landingscreen.dart';
 import 'package:chatuiv2/src/views/_authenticatedchat.dart';
@@ -6,6 +7,8 @@ import 'package:chatuiv2/src/views/_authenticatedchat.dart';
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 import 'package:chatuiv2/src/classes/_authapiroutes.dart';
+
+import 'package:chatuiv2/src/providers/_authprov.dart';
 
 class AuthLoading extends StatefulWidget {
   const AuthLoading({super.key});
@@ -45,6 +48,8 @@ class _AuthLoadingState extends State<AuthLoading> {
         final response = await AuthApiRoutes.getValidUser(jwtToken);
 
         final userData = response.data['user'];
+
+        Provider.of<AuthProv>(context, listen: false).userData = userData;
 
         if (userData != null) {
           if (mounted) {

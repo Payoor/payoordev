@@ -51,7 +51,7 @@ var OrderController = /*#__PURE__*/function () {
                 var product_data = {
                   product_id: id,
                   product_name: item.name,
-                  product_units: item.units
+                  product_units: sanitizeUnitKeys(item.units)
                 };
                 items.push(product_data);
               });
@@ -73,7 +73,7 @@ var OrderController = /*#__PURE__*/function () {
                 userId: validUser._id,
                 total: total,
                 items: items
-              });
+              }); //console.log(items)
               req.total = total;
               req.items = items;
               req.email = validUser.email;
@@ -244,5 +244,16 @@ function getTotalAmount(text) {
   } else {
     return null;
   }
+}
+function sanitizeUnitKeys(units) {
+  var sanitizedUnits = {};
+  Object.entries(units).forEach(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+      key = _ref4[0],
+      value = _ref4[1];
+    var sanitizedKey = key.replace(/\./g, '_');
+    sanitizedUnits[sanitizedKey] = value;
+  });
+  return sanitizedUnits;
 }
 var _default = exports["default"] = new OrderController();

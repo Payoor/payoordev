@@ -35,7 +35,7 @@ class _TypewriterTextState extends State<TypewriterText>
   bool _showCursor = true;
   bool _isTypingComplete = false;
   Timer? _cursorTimer;
-  final GlobalKey _textKey = GlobalKey();
+  //final GlobalKey _textKey = GlobalKey();
 
   @override
   void initState() {
@@ -63,7 +63,8 @@ class _TypewriterTextState extends State<TypewriterText>
             _showCursor = false;
           });
           _cursorTimer?.cancel();
-          widget.onComplete?.call();  // Call onComplete callback when typing is done
+          widget.onComplete
+              ?.call(); // Call onComplete callback when typing is done
         }
       });
 
@@ -122,7 +123,8 @@ class _TypewriterTextState extends State<TypewriterText>
           children: [
             Text(
               displayText,
-              key: _textKey,
+              //key: _textKey,
+              key: widget.key != null ? ValueKey('${widget.key}_text') : null,
               style: widget.style,
               textAlign: widget.textAlign,
               softWrap: true,
