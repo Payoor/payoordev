@@ -6,12 +6,12 @@ import 'package:chatuiv2/src/classes/_urls.dart';
 import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 
 class PayStackRoutes {
-  static Future<ServerResponse> generatePaymentLink(Map<String, dynamic> items) async {
+  static Future<ServerResponse> generatePaymentLink(Map<String, dynamic> items,
+      String deliveryAddress, double deliveryFee, double serviceCharge) async {
     try {
       final uri = Uri.parse('${Urls.baseUrl}/paystack/generate-payment-link');
 
-      final jwt = await JwtManager
-          .getToken();
+      final jwt = await JwtManager.getToken();
 
       if (jwt == null) {
         throw Exception('JWT token is null or expired');
@@ -24,12 +24,15 @@ class PayStackRoutes {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin':
-              'https://chat.development.payoor.store', 
-          'Authorization':
-              'Bearer $jwt', 
+          'Origin': 'https://chat.development.payoor.store',
+          'Authorization': 'Bearer $jwt',
         },
-        body: jsonEncode({"order": items}),
+        body: jsonEncode({
+          "order": items,
+          "order_address": deliveryAddress,
+          "delivery_fee": deliveryFee,
+          "service_charge": serviceCharge
+        }),
       );
 
       if (response.statusCode == 200) {

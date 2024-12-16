@@ -23,6 +23,18 @@ const OrderSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
+    order_address: {
+        type: String,
+        required: true
+    },
+    delivery_fee: {
+        type: Number,
+        required: true
+    },
+    service_charge: {
+        type: Number,
+        required: true
+    },
     reference: {
         type: String,
     }

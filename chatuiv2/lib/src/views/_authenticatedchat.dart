@@ -40,7 +40,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool isInitialAnimationComplete = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
+
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
   int _selectedPillIndex = 0;
   bool _isDrawerOpen = true;
   bool _showProducts = false;
@@ -48,7 +51,16 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   late StreamSubscription _subscription;
   bool _userOrdersOpen = false;
   bool _showCart = false;
-  bool _confirmingAddress = false;
+  bool _paying = false;
+
+  double _deliveryFee = 3700;
+  double _serviceCharge = 3700;
+  String _deliveryAddress = "";
+
+  final List<String> _chatInputModes = ['address_confirmation'];
+
+  String _currentChatInputMode = "";
+  double _totalCartAmount = 0;
 
   final List<Map> pills = [
     {"label": "Cart", "action": "View Cart"},
@@ -89,7 +101,16 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         closePaystackView(context);
         SocketService.disconnectFromSocketServer();
 
-        Future(() => confirmOrderDetails(orderReference));
+        Future(() {
+          if (mounted) {
+            confirmOrderDetails(orderReference);
+            setState(() {
+              _paying = false;
+              _currentChatInputMode = "";
+              _deliveryAddress = "";
+            });
+          }
+        });
       }
     }, onError: (error) {
       print('Socket error: $error');
@@ -100,6 +121,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   void dispose() {
     _scrollController.dispose();
     _controller.dispose();
+    _focusNode.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -416,12 +438,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             ),
           ),
         ),
-        if (message.isAdressPhoneNumber)
-          UserDetailsList(
-            triggerFunction: () {
-              _handlePaymentLinkGeneration();
-            },
-          ),
         if (message.isCartView && _showCart && index == messagesList.length - 1)
           Column(
             children: [
@@ -443,7 +459,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                     child: TypewriterText(
                       key: ValueKey(
                           'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                      text: "Tap the Pay button to proceed with payment",
+                      text: "Service Fee: ₦ $_serviceCharge\n"
+                          "Delivery Fee: ₦ $_deliveryFee\n"
+                          "Total: ₦ ${_serviceCharge + _deliveryFee + _totalCartAmount}\n"
+                          "Please confirm your current delivery address",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withOpacity(0.8),
@@ -520,13 +539,15 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                       if (action != null &&
                                           action == "View Cart") {
                                         closeProductSizeSelector();
-                                        _handleCartQuery();
+                                        _handleCartQuery(cart);
                                       } else if (action != null &&
                                           action == "Proceed to payment") {
                                         print('handle payment');
                                         //_handlePayment();
-                                        _handlePaymentLinkGeneration();
+                                        //_handlePaymentLinkGeneration();
                                         //_confirmAddress();
+                                        _handleCartQuery(cart);
+                                        _handleAddressConfirmation();
                                       } else if (action != null &&
                                           action == "Proceed to orders view") {
                                         _toggleUserOrders();
@@ -672,38 +693,35 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
-  void _confirmAddress() async {
+  void _setInputText(String newText) {
+    _controller.text = newText;
+
+    _controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+
+    _focusNode.requestFocus();
+  }
+
+  void _handleAddressConfirmation() async {
     final userData = context.read<AuthProv>().userData;
 
     if (mounted) {
-      context.read<MessageProvider>().addMessage(Message(
-            text: '',
-            isClient: false,
-            isRead: false,
-            isLoading: true,
-          ));
-
-      _scrollToBottom();
-
-      context.read<MessageProvider>().removeLastMessage();
-
       setState(() {
-        _confirmingAddress = true;
+        _currentChatInputMode = _chatInputModes[0];
       });
 
-      context.read<MessageProvider>().addMessage(Message(
-            text:
-                "Pls confirm that ${userData!['userAddress']} is still your delivery address by tapping the button below or simply inputing the address you prefer",
-            isClient: false,
-            isRead: false,
-            isAdressPhoneNumber: true,
-          ));
-
-      _scrollToBottom();
+      _setInputText(userData!['userAddress']);
     }
   }
 
   void _handlePaymentLinkGeneration() async {
+    setState(() {
+      _paying = true;
+      _currentChatInputMode = "";
+    });
+
     final cartData =
         Provider.of<CartProvider>(context, listen: false).createCartPayload();
     if (mounted) {
@@ -717,7 +735,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       _scrollToBottom();
     }
 
-    final response = await PayStackRoutes.generatePaymentLink(cartData);
+    final response = await PayStackRoutes.generatePaymentLink(
+        cartData, _deliveryAddress, _deliveryFee, _serviceCharge);
 
     if (response.success) {
       final String? paymentUrl = response.data['authorization_url'];
@@ -757,6 +776,30 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   void _handleSend() async {
     if (_controller.text.trim().isNotEmpty) {
+      if (_chatInputModes.isNotEmpty &&
+          _currentChatInputMode == _chatInputModes[0]) {
+        final messageText = _controller.text.trim();
+
+        setState(() {
+          _deliveryAddress = messageText;
+        });
+
+        final message = Message(
+          text: messageText,
+          isClient: true,
+          isRead: false,
+        );
+
+        _controller.clear();
+
+        context.read<MessageProvider>().addMessage(message);
+        _scrollToBottom();
+
+        _handlePaymentLinkGeneration();
+
+        return;
+      }
+
       try {
         final messageText = _controller.text.trim();
         final message = Message(
@@ -871,14 +914,27 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
-  void _handleCartQuery() async {
+  void _handleCartQuery(CartProvider cartProvider) async {
     try {
+      double totalAmount = 0.0;
+
+      for (var item in cartProvider.items.values) {
+        for (var unit in item.units.values) {
+          totalAmount += unit.price * unit.quantity;
+        }
+      }
+
+      setState(() {
+        _totalCartAmount = totalAmount;
+      });
+
       context.read<MessageProvider>().addMessage(Message(
             text: '',
             isClient: false,
             isRead: false,
             isLoading: true,
           ));
+
       _scrollToBottom();
 
       Message aiMessage;
@@ -899,8 +955,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       print('Error handling cart query: $e');
     }
   }
-
-  void _handlePayment() async {}
 
   Widget _buildWatermarkOverlay() {
     return Positioned.fill(

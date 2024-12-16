@@ -34,12 +34,12 @@ var OrderController = /*#__PURE__*/function () {
     key: "createOrder",
     value: function () {
       var _createOrder = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var order, user, total, order_items, items, validUser, _order;
+        var _req$body, order, order_address, delivery_fee, service_charge, user, total, order_items, items, validUser, _order;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              order = req.body.order;
+              _req$body = req.body, order = _req$body.order, order_address = _req$body.order_address, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge;
               user = req.user;
               total = order.totalAmount;
               order_items = order.items;
@@ -56,7 +56,7 @@ var OrderController = /*#__PURE__*/function () {
                 items.push(product_data);
               });
               if (!user) {
-                _context.next = 26;
+                _context.next = 27;
                 break;
               }
               _context.next = 10;
@@ -66,13 +66,16 @@ var OrderController = /*#__PURE__*/function () {
             case 10:
               validUser = _context.sent;
               if (!validUser) {
-                _context.next = 23;
+                _context.next = 24;
                 break;
               }
               _order = new _order2["default"]({
                 userId: validUser._id,
                 total: total,
-                items: items
+                items: items,
+                order_address: order_address,
+                delivery_fee: delivery_fee,
+                service_charge: service_charge
               }); //console.log(items)
               req.total = total;
               req.items = items;
@@ -82,29 +85,30 @@ var OrderController = /*#__PURE__*/function () {
               _context.next = 20;
               return _order.save();
             case 20:
+              console.log(_order);
               next();
-              _context.next = 24;
+              _context.next = 25;
               break;
-            case 23:
+            case 24:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order invalid user',
                 error: error.message
               });
-            case 24:
-              _context.next = 27;
+            case 25:
+              _context.next = 28;
               break;
-            case 26:
+            case 27:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order',
                 error: error.message
               });
-            case 27:
-              _context.next = 33;
+            case 28:
+              _context.next = 34;
               break;
-            case 29:
-              _context.prev = 29;
+            case 30:
+              _context.prev = 30;
               _context.t0 = _context["catch"](0);
               console.log(_context.t0);
               res.status(500).json({
@@ -112,11 +116,11 @@ var OrderController = /*#__PURE__*/function () {
                 message: 'Error creating order',
                 error: _context.t0.message
               });
-            case 33:
+            case 34:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 29]]);
+        }, _callee, null, [[0, 30]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);

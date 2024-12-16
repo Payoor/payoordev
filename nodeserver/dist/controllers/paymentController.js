@@ -28,26 +28,35 @@ var PaymentController = /*#__PURE__*/function () {
     key: "generatePaymentLink",
     value: function () {
       var _generatePaymentLink = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
-        var https, email, total, orderId, userId, amount, params, options, paystackRequest, errorResponse;
+        var https, email, total, orderId, userId, _req$body, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
               https = require('https');
-              email = req.email, total = req.total, orderId = req.orderId, userId = req.userId; //const { order, user } = res.locals;
+              email = req.email, total = req.total, orderId = req.orderId, userId = req.userId;
+              _req$body = req.body, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge; //const { order, user } = res.locals;
               amount = total;
+              console.log('amount', amount);
               if (!(!email || !amount)) {
-                _context2.next = 7;
+                _context2.next = 9;
                 break;
               }
               console.log('email and amount are required');
               return _context2.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 7:
+            case 9:
+              if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
+                _context2.next = 11;
+                break;
+              }
+              throw new Error('All amounts must be numbers');
+            case 11:
+              amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
               params = JSON.stringify({
                 "email": email,
-                "amount": amount * 100 // this conversion can be done either on the client side or server side.
+                "amount": Math.round(amountTotal * 100) // this conversion can be done either on the client side or server side.
                 // channels: ["bank_transfer"]
               });
               options = {
@@ -124,10 +133,10 @@ var PaymentController = /*#__PURE__*/function () {
               });
               paystackRequest.write(params);
               paystackRequest.end();
-              _context2.next = 19;
+              _context2.next = 24;
               break;
-            case 14:
-              _context2.prev = 14;
+            case 19:
+              _context2.prev = 19;
               _context2.t0 = _context2["catch"](0);
               console.log(_context2.t0);
               errorResponse = {
@@ -139,11 +148,11 @@ var PaymentController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 19:
+            case 24:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[0, 14]]);
+        }, _callee2, null, [[0, 19]]);
       }));
       function generatePaymentLink(_x, _x2) {
         return _generatePaymentLink.apply(this, arguments);

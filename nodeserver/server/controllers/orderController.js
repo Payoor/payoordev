@@ -7,7 +7,7 @@ class OrderController {
 
     async createOrder(req, res, next) {
         try {
-            const { order } = req.body;
+            const { order, order_address, delivery_fee, service_charge } = req.body;
             const { user } = req;
 
             const total = order.totalAmount;
@@ -32,7 +32,10 @@ class OrderController {
                     const order = new Order({
                         userId: validUser._id,
                         total,
-                        items
+                        items,
+                        order_address,
+                        delivery_fee,
+                        service_charge
                     });
 
                     //console.log(items)
@@ -45,6 +48,8 @@ class OrderController {
 
 
                     await order.save();
+
+                    console.log(order);
 
                     next();
                 } else {

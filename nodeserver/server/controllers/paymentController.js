@@ -13,9 +13,12 @@ class PaymentController {
             const https = require('https');
 
             const { email, total, orderId, userId } = req;
+            const { delivery_fee, service_charge } = req.body;
             //const { order, user } = res.locals;
 
             const amount = total;
+
+            console.log('amount', amount);
 
             if (!email || !amount) {
                 console.log('email and amount are required')
@@ -24,9 +27,15 @@ class PaymentController {
                 })
             }
 
+            if (typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number') {
+                throw new Error('All amounts must be numbers');
+            }
+
+            const amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
+
             const params = JSON.stringify({
                 "email": email,
-                "amount": amount * 100, // this conversion can be done either on the client side or server side.
+                "amount": Math.round(amountTotal * 100), // this conversion can be done either on the client side or server side.
                 // channels: ["bank_transfer"]
             });
 
