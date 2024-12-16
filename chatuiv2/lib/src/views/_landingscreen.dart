@@ -7,6 +7,7 @@ import 'package:chatuiv2/src/widgets/_onboardingslider.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_review.dart';
+import 'package:chatuiv2/src/classes/_shopinfoitem.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 
@@ -55,6 +56,27 @@ class _LandingScreenState extends State<LandingScreen> {
       name: 'Mike Johnson',
       content:
           'Payoor has saved me so much time on grocery shopping. It\'s a game-changer!',
+    ),
+  ];
+
+  final List<ShopInfoItem> shopInfo = [
+    ShopInfoItem(
+      header: 'Every meal deserves a great story',
+      description:
+          'We take away the hassle of market runs and deliver everything you need for your home cooked meals, whenever you want it.',
+      color: Color(0xFFA8D1F0),
+    ),
+    ShopInfoItem(
+      header: 'Best prices, great quality',
+      description:
+          'We offer unbeatable prices and the best quality you can find anywhere.',
+      color: Color(0xFFF0E7A8),
+    ),
+    ShopInfoItem(
+      header: 'Packaged with love and care',
+      description:
+          'We ensure that all your order come in the cleanest and pristine condition possible.. we take extra effort to make your items extra clean and ready to use right off the box',
+      color: Color(0xFFF0BAA8),
     ),
   ];
 
@@ -202,6 +224,64 @@ class _LandingScreenState extends State<LandingScreen> {
                                 reviews: reviews,
                                 slideDuration: const Duration(seconds: 5),
                               ),
+                              Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 25, left: 15, right: 15, bottom: 15),
+                                  child: Column(
+                                    children: [
+                                      ...shopInfo
+                                          .map((item) => Column(
+                                                children: [
+                                                  Container(
+                                                    width: double.infinity,
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            20),
+                                                    decoration: BoxDecoration(
+                                                      color: item.color,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          item.header,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                AppColors.black,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 13),
+                                                        Text(
+                                                          item.description,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 14,
+                                                            color:
+                                                                AppColors.black,
+                                                            height: 1.5,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                      height:
+                                                          25), // Space between containers
+                                                ],
+                                              ))
+                                          .toList(),
+                                    ],
+                                  ))
                             ],
                           )))));
         }));
