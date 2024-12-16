@@ -36,23 +36,22 @@ var PaymentController = /*#__PURE__*/function () {
               https = require('https');
               email = req.email, total = req.total, orderId = req.orderId, userId = req.userId;
               _req$body = req.body, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge; //const { order, user } = res.locals;
-              amount = total;
-              console.log('amount', amount);
+              amount = total; //console.log('amount', amount);
               if (!(!email || !amount)) {
-                _context2.next = 9;
+                _context2.next = 8;
                 break;
               }
               console.log('email and amount are required');
               return _context2.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 9:
+            case 8:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context2.next = 11;
+                _context2.next = 10;
                 break;
               }
               throw new Error('All amounts must be numbers');
-            case 11:
+            case 10:
               amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
               params = JSON.stringify({
                 "email": email,
@@ -133,10 +132,10 @@ var PaymentController = /*#__PURE__*/function () {
               });
               paystackRequest.write(params);
               paystackRequest.end();
-              _context2.next = 24;
+              _context2.next = 23;
               break;
-            case 19:
-              _context2.prev = 19;
+            case 18:
+              _context2.prev = 18;
               _context2.t0 = _context2["catch"](0);
               console.log(_context2.t0);
               errorResponse = {
@@ -148,11 +147,11 @@ var PaymentController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 24:
+            case 23:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[0, 19]]);
+        }, _callee2, null, [[0, 18]]);
       }));
       function generatePaymentLink(_x, _x2) {
         return _generatePaymentLink.apply(this, arguments);

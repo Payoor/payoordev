@@ -56,7 +56,7 @@ var OrderController = /*#__PURE__*/function () {
                 items.push(product_data);
               });
               if (!user) {
-                _context.next = 27;
+                _context.next = 26;
                 break;
               }
               _context.next = 10;
@@ -66,7 +66,7 @@ var OrderController = /*#__PURE__*/function () {
             case 10:
               validUser = _context.sent;
               if (!validUser) {
-                _context.next = 24;
+                _context.next = 23;
                 break;
               }
               _order = new _order2["default"]({
@@ -85,30 +85,31 @@ var OrderController = /*#__PURE__*/function () {
               _context.next = 20;
               return _order.save();
             case 20:
-              console.log(_order);
+              //console.log(order);
+
               next();
-              _context.next = 25;
+              _context.next = 24;
               break;
-            case 24:
+            case 23:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order invalid user',
                 error: error.message
               });
-            case 25:
-              _context.next = 28;
+            case 24:
+              _context.next = 27;
               break;
-            case 27:
+            case 26:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order',
                 error: error.message
               });
-            case 28:
-              _context.next = 34;
+            case 27:
+              _context.next = 33;
               break;
-            case 30:
-              _context.prev = 30;
+            case 29:
+              _context.prev = 29;
               _context.t0 = _context["catch"](0);
               console.log(_context.t0);
               res.status(500).json({
@@ -116,11 +117,11 @@ var OrderController = /*#__PURE__*/function () {
                 message: 'Error creating order',
                 error: _context.t0.message
               });
-            case 34:
+            case 33:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 30]]);
+        }, _callee, null, [[0, 29]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);

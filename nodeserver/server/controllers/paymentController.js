@@ -18,7 +18,7 @@ class PaymentController {
 
             const amount = total;
 
-            console.log('amount', amount);
+            //console.log('amount', amount);
 
             if (!email || !amount) {
                 console.log('email and amount are required')

@@ -439,49 +439,52 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           ),
         ),
         if (message.isCartView && _showCart && index == messagesList.length - 1)
-          Column(
-            children: [
-              CartDisplay(),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
+          Consumer<CartProvider>(
+            builder: (context, cartProvider, child) {
+              return Column(
+                children: [
+                  CartDisplay(),
+                  Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.greyBlack.withOpacity(.5),
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: TypewriterText(
-                      key: ValueKey(
-                          'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                      text: "Service Fee: ₦ $_serviceCharge\n"
-                          "Delivery Fee: ₦ $_deliveryFee\n"
-                          "Total: ₦ ${_serviceCharge + _deliveryFee + _totalCartAmount}\n"
-                          "Please confirm your current delivery address",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withOpacity(0.8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.greyBlack.withOpacity(.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TypewriterText(
+                          key: ValueKey(
+                              'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
+                          text: "Service Fee: ₦ $_serviceCharge\n"
+                              "Delivery Fee: ₦ $_deliveryFee\n"
+                              "Total: ₦ ${_serviceCharge + _deliveryFee + cartProvider.totalAmount}\n" /*"Please confirm your current delivery address"*/,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                          duration: Duration(milliseconds: 1500),
+                          showCursor: true,
+                          scrollController: _scrollController,
+                          onTap: () {},
+                          onComplete: () {
+                            setState(() {
+                              _showProducts = message.isProductsDisplay;
+                              _showCart = message.isCartView;
+                            });
+                          },
+                        ),
                       ),
-                      duration: Duration(milliseconds: 1500),
-                      showCursor: true,
-                      scrollController: _scrollController,
-                      onTap: () {},
-                      onComplete: () {
-                        setState(() {
-                          _showProducts = message.isProductsDisplay;
-                          _showCart = message.isCartView;
-                        });
-                      },
                     ),
-                  ),
-                ),
-              )
-            ],
+                  )
+                ],
+              );
+            },
           ),
         if (message.isProductsDisplay &&
             _showProducts &&
@@ -546,7 +549,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                         //_handlePayment();
                                         //_handlePaymentLinkGeneration();
                                         //_confirmAddress();
-                                        _handleCartQuery(cart);
+                                        // _handleCartQuery(cart);
                                         _handleAddressConfirmation();
                                       } else if (action != null &&
                                           action == "Proceed to orders view") {
@@ -694,18 +697,28 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   }
 
   void _setInputText(String newText) {
-    _controller.text = newText;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
 
-    _controller.value = TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newText.length),
-    );
-
-    _focusNode.requestFocus();
+      _focusNode.requestFocus();
+    });
   }
 
   void _handleAddressConfirmation() async {
     final userData = context.read<AuthProv>().userData;
+
+    if (mounted) {
+      context.read<MessageProvider>().addMessage(Message(
+            text: "Please confirm your current delivery address",
+            isClient: false,
+            isRead: false,
+          ));
+
+      _scrollToBottom();
+    }
 
     if (mounted) {
       setState(() {
@@ -916,18 +929,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   void _handleCartQuery(CartProvider cartProvider) async {
     try {
-      double totalAmount = 0.0;
-
-      for (var item in cartProvider.items.values) {
-        for (var unit in item.units.values) {
-          totalAmount += unit.price * unit.quantity;
-        }
-      }
-
-      setState(() {
-        _totalCartAmount = totalAmount;
-      });
-
       context.read<MessageProvider>().addMessage(Message(
             text: '',
             isClient: false,
