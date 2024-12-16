@@ -54,7 +54,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool _paying = false;
 
   double _deliveryFee = 3700;
-  double _serviceCharge = 3700;
+  double _serviceCharge = 0;
   String _deliveryAddress = "";
 
   final List<String> _chatInputModes = ['address_confirmation'];
@@ -461,9 +461,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                         child: TypewriterText(
                           key: ValueKey(
                               'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                          text: "Service Fee: ₦ $_serviceCharge\n"
+                          text: "Service Fee: ₦ ${cartProvider.serviceCharge}\n"
                               "Delivery Fee: ₦ $_deliveryFee\n"
-                              "Total: ₦ ${_serviceCharge + _deliveryFee + cartProvider.totalAmount}\n" /*"Please confirm your current delivery address"*/,
+                              "Total: ₦ ${cartProvider.serviceCharge + _deliveryFee + cartProvider.totalAmount}\n" /*"Please confirm your current delivery address"*/,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white.withOpacity(0.8),

@@ -81,6 +81,14 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
+  double get serviceCharge {
+    const double SERVICE_CHARGE_PERCENTAGE = 0.075;
+
+    double charge = totalAmount * SERVICE_CHARGE_PERCENTAGE;
+
+    return double.parse(charge.toStringAsFixed(2));
+  }
+
   void increaseItem({
     required String id,
     required String unit,
