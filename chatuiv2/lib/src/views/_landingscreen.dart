@@ -34,28 +34,15 @@ class _LandingScreenState extends State<LandingScreen> {
 
   final List<Review> reviews = [
     Review(
-      imageUrl: 'assets/dude.jpg',
-      name: 'John Doe',
+      imageUrl: 'assets/dude.jpeg',
+      name: 'Efe Tobore',
       content:
-          'Payoor has revolutionized my shopping experience. It\'s so convenient!',
+          'Payoor is fast and reliable. The user experience is in a league of its own',
     ),
     Review(
-      imageUrl: 'assets/dude2.jpg',
-      name: 'Jane Smith',
-      content:
-          'I love how easy it is to manage my payments with Payoor. Highly recommended!',
-    ),
-    Review(
-      imageUrl: 'assets/gal.jpg',
-      name: 'Mike Johnson',
-      content:
-          'Payoor has saved me so much time on grocery shopping. It\'s a game-changer!',
-    ),
-    Review(
-      imageUrl: 'assets/gal2.jpg',
-      name: 'Mike Johnson',
-      content:
-          'Payoor has saved me so much time on grocery shopping. It\'s a game-changer!',
+      imageUrl: 'assets/dude2.jpeg',
+      name: 'Imam Adetona',
+      content: "It's seamless and clean",
     ),
   ];
 

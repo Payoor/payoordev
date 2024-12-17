@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'dart:async';
 
+import 'package:chatuiv2/src/views/_landingscreen.dart';
+
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
@@ -18,6 +20,7 @@ import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
+import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
@@ -71,6 +74,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   @override
   void initState() {
     super.initState();
+
     _startInitialAnimation();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -84,6 +88,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         _scrollToBottom();
       });
     });
+
+    _handleOnboardingMessage();
 
     _subscription = SocketService.transactionStream.listen((data) {
       if (data["reference"] == null) return;
@@ -152,6 +158,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
   }
 
+  void _handleOnboardingMessage() {
+    final onboardingProv = Provider.of<OnboardingProv>(context, listen: false);
+    String message = onboardingProv.onboardingMessage;
+
+    _setInputText(message);
+  }
+
   void _toggleDrawer() {
     if (_isDrawerOpen) {
       _animationController.reverse();
@@ -170,7 +183,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   }
 
   void closeProductSizeSelector() {
-    print('view cart items');
+    //print('view cart items');
     context.read<ResultListProvider>().setCurrentProduct(
         productData: <Map<String, dynamic>>[], productId: "", productName: "");
   }
@@ -308,22 +321,66 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     );
   }
 
-  Widget _buildMainContent() {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildAnimatedHeader(),
-            Expanded(
-              child: _renderMessages(),
+  Widget _buildLoadingIndicator() {
+    return Scaffold(
+      backgroundColor: AppColors.primaryColorDark,
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(color: Colors.white),
+                SizedBox(height: 16),
+                Text(
+                  "Loading...",
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            _buildPillsSlide(),
-            _buildTextField(),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMainContent() {
+    return Consumer<AuthProv>(
+      builder: (context, authProv, child) {
+        if (authProv.userData != null) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildAnimatedHeader(),
+                  Expanded(
+                    child: _renderMessages(),
+                  ),
+                  _buildPillsSlide(),
+                  _buildTextField(),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (authProv.error) {
+          return LandingScreen();
+        }
+
+        if (authProv.isLoading) {
+          return _buildLoadingIndicator();
+        }
+
+        return LandingScreen();
+      },
     );
   }
 
@@ -336,7 +393,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         return ListView.builder(
           controller: _scrollController,
           reverse: false,
-          // Change physics to prevent overscroll bounce which can contribute to jumpiness
           physics: const ClampingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 10),
           // Add these properties to help stabilize the list
@@ -545,7 +601,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                         _handleCartQuery(cart);
                                       } else if (action != null &&
                                           action == "Proceed to payment") {
-                                        print('handle payment');
+                                        //print('handle payment');
                                         //_handlePayment();
                                         //_handlePaymentLinkGeneration();
                                         //_confirmAddress();
@@ -556,7 +612,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                         _toggleUserOrders();
                                       } else {
                                         _selectedPillIndex = index;
-                                        print(suggested_prompts[index]['text']);
+                                        //print(suggested_prompts[index]['text']);
                                         setState(() {});
                                       }
                                     },
@@ -636,57 +692,60 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   Widget _buildTextField() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
-      child: Stack(
-        children: [
-          TextField(
-            controller: _controller,
-            maxLines: 15,
-            minLines: 1,
-            keyboardType: TextInputType.multiline,
-            textInputAction: TextInputAction.newline,
-            decoration: _inputDecoration,
-            style: const TextStyle(color: Colors.white),
-            cursorColor: Colors.white,
-            onSubmitted: _handleSubmit,
-          ),
-          Positioned(
-            right: 8,
-            bottom: 12,
-            child: SizedBox(
-              width: 35,
-              height: 35,
-              child: ValueListenableBuilder<TextEditingValue>(
-                valueListenable: _controller,
-                builder: (context, value, child) {
-                  final opacity = value.text.trim().isNotEmpty ? 1.0 : 0.4;
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(opacity),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Material(
-                      color: AppColors.primaryColor.withOpacity(opacity),
-                      shape: const CircleBorder(),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(100),
-                        onTap: _handleSend,
-                        child: Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Icon(
-                            Icons.arrow_upward,
-                            color: Colors.white.withOpacity(opacity),
-                            size: 19,
+      child: IgnorePointer(
+          ignoring: false,
+          child: Stack(
+            children: [
+              TextField(
+                controller: _controller,
+                maxLines: 15,
+                minLines: 1,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                decoration: _inputDecoration,
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                onSubmitted: _handleSubmit,
+                enableInteractiveSelection: true,
+              ),
+              Positioned(
+                right: 8,
+                bottom: 12,
+                child: SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _controller,
+                    builder: (context, value, child) {
+                      final opacity = value.text.trim().isNotEmpty ? 1.0 : 0.4;
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(opacity),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Material(
+                          color: AppColors.primaryColor.withOpacity(opacity),
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(100),
+                            onTap: _handleSend,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Icon(
+                                Icons.arrow_upward,
+                                color: Colors.white.withOpacity(opacity),
+                                size: 19,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
+            ],
+          )),
     );
   }
 
@@ -844,7 +903,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         if (response?.data?['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
-          //print(chatResponse);
 
           Message aiMessage;
           if (chatResponse['results'] != null) {
