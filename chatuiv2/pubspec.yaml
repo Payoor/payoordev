@@ -51,6 +51,7 @@ dependencies:
   url_launcher_web: ^2.0.19
   webview_flutter: ^4.4.2
   webview_flutter_web: ^0.2.2+3
+  flutter_svg: ^2.0.9 
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +85,7 @@ flutter:
     - assets/gal.jpg
     - assets/gal2.jpg
     - assets/payoorcart.png
+    - assets/twitter.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

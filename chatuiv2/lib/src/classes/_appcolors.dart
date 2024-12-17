@@ -15,6 +15,8 @@ class AppColors {
   static const Color white2 = Color.fromARGB(230, 255, 255, 255);
   static const Color backgroundColor = Color(0xFF121212);
   static const Color blue1 = Color(0xFFC8EEF4);
+  static const Color twitterColor = Colors.black;
+  static const Color instagramColor = Colors.purple;
 
   static const Color primaryColorDark = Color(0xFF001F14);
 }
