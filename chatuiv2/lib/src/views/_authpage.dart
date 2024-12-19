@@ -302,11 +302,15 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                 authProv.jwt = userJWT;
 
                 JwtManager.saveToken(userJWT);
+
+                authProv.checkForUser();
+
+                await _fadeController.forward();
+
+                Navigator.pushNamed(context, '/authchat');
+              } else {
+                Navigator.pushNamed(context, '/');
               }
-
-              await _fadeController.forward();
-
-              Navigator.pushNamed(context, '/authchat');
             }
           } catch (e) {
             setState(() {
@@ -413,6 +417,8 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
       final authProv = Provider.of<AuthProv>(context, listen: false);
       authProv.userId = response.data['user']['id'];
       authProv.userData = response.data['user'];
+
+      print(authProv.userData);
 
       if (response.success) {
         await _fadeController.forward();
