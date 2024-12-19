@@ -18,12 +18,15 @@ import { initSocket } from './utils/socketio_util';
 
 import PaymentController from './controllers/paymentController';
 
-const corsOptions = {
-    origin: corsOrginArray,
-    optionsSuccessStatus: 200,
-};
+if (process.env.NODE_ENV !== 'production') {
+    const corsOptions = {
+        origin: corsOrginArray,
+        optionsSuccessStatus: 200,
+    };
 
-app.use(cors(corsOptions));
+    app.use(cors(corsOptions));
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
@@ -43,7 +46,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
-}); 
+});
 
 /*setTimeout(() => {
     console.log('hey emit')
@@ -57,7 +60,7 @@ io.on('connection', (socket) => {
 app.post('/paystack/payment-response', PaymentController.handlePayStackPaymentResponse);
 
 // Start server
-const PORT = process.env.PORT || 3031; 
+const PORT = process.env.PORT || 3031;
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

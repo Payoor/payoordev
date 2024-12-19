@@ -15,11 +15,13 @@ var io = require('socket.io')(http, {
   transports: ['websocket', 'polling']
 });
 var path = require('path');
-var corsOptions = {
-  origin: _corsOriginArray["default"],
-  optionsSuccessStatus: 200
-};
-app.use((0, _cors["default"])(corsOptions));
+if (process.env.NODE_ENV !== 'production') {
+  var corsOptions = {
+    origin: _corsOriginArray["default"],
+    optionsSuccessStatus: 200
+  };
+  app.use((0, _cors["default"])(corsOptions));
+}
 app.use(express["static"](path.join(__dirname, 'public')));
 app.use(express.json());
 (0, _socketio_util.initSocket)(io);

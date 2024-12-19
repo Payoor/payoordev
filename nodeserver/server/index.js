@@ -28,20 +28,22 @@ import transactionRoute from './routes/transactionRoute';
 import corsOriginArray from './corsOriginArray';
 import { initSocket } from './socketInit';
 
-const corsOptions = {
-  origin: corsOriginArray,
-  methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization'
-  ],
-  credentials: true
-};
-
-app.use(cors(corsOptions));
+if (process.env.NODE_ENV !== 'production') {
+  const corsOptions = {
+    origin: corsOriginArray,
+    methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization'
+    ],
+    credentials: true
+  };
+  
+  app.use(cors(corsOptions));
+}
 app.use(express.json());
 
 app.use(adminRoute);

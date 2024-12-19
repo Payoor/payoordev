@@ -26,25 +26,26 @@ load_dotenv()
 app = Flask(__name__)
 port = int(os.getenv('PORT', 8084)) 
 
-ALLOWED_ORIGINS = [
-    'https://chat.payoor.store',
-    'https://admin.payoor.store',
-    'https://admin.development.payoor.store',
-    'https://chat.development.payoor.store',
-    'https://chat.development.payoor.store',
-    'http://localhost:63882'
-]
+if os.getenv('FLASK_ENV') != 'production':
+    ALLOWED_ORIGINS = [
+        'https://chat.payoor.store',
+        'https://admin.payoor.store',
+        'https://admin.development.payoor.store',
+        'https://chat.development.payoor.store',
+        'https://chat.development.payoor.store',
+        'http://localhost:63882'
+    ]
 
-CORS(app, 
-     resources={
-        r"/*": {
-            "origins": ALLOWED_ORIGINS,
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
-            "supports_credentials": True,
-            "expose_headers": ["Content-Range", "X-Content-Range"]
-        }
-     })
+    CORS(app,
+        resources={
+            r"/*": {
+                "origins": ALLOWED_ORIGINS,
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
+                "supports_credentials": True,
+                "expose_headers": ["Content-Range", "X-Content-Range"]
+            }
+        })
 
 dtupload = DataUpload()
 data_prep = DataPrepare()

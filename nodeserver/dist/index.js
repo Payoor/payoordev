@@ -29,13 +29,15 @@ var app = express();
 var server = require('http').createServer(app);
 var mongoose = require('mongoose');
 var crypto = require('crypto');
-var corsOptions = {
-  origin: _corsOriginArray["default"],
-  methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-  credentials: true
-};
-app.use((0, _cors["default"])(corsOptions));
+if (process.env.NODE_ENV !== 'production') {
+  var corsOptions = {
+    origin: _corsOriginArray["default"],
+    methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+    credentials: true
+  };
+  app.use((0, _cors["default"])(corsOptions));
+}
 app.use(express.json());
 app.use(_adminRoute["default"]);
 app.use(_conversationRoute["default"]);
