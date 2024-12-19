@@ -8,6 +8,8 @@ class Urls {
 
   static final String llmUrl = _determineLLMUrl();
 
+  static final String chatUrlOrigin = _determineOrigin();
+
   static String _determineSocketUrl() {
     if (kIsWeb) {
       var location = html.window.location.href;
@@ -66,5 +68,21 @@ class Urls {
       return 'https://llmserver.payoor.store';
     }
     return 'http://localhost:8084';
+  }
+
+  static String _determineOrigin() {
+    if (kIsWeb) {
+      var location = html.window.location.href;
+
+      if (location.contains('localhost')) {
+        return 'http://localhost:63882';
+      }
+
+      if (location.contains('development')) {
+        return 'https://chat.development.payoor.store';
+      }
+    }
+
+    return 'https://chat.payoor.store';
   }
 }
