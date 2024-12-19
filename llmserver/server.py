@@ -256,21 +256,21 @@ def query_data():
 
         found_items_by_id = data_use.get_items_from_mongodb_by_id(raw_results_item_ids)
 
-        query_relevance = data_use.judge_query_relevance(user_query, formatted)
+        '''query_relevance = data_use.judge_query_relevance(user_query, formatted)'''
 
-        generated_suggested_prompts = data_use.generate_suggested_prompt(results_texts)
+        #generated_suggested_prompts = data_use.generate_suggested_prompt(results_texts)
 
         #print(generated_suggested_prompts)
 
-        suggested_prompts = data_use.clean_up_generated_prompts_list(generated_suggested_prompts)
+        #suggested_prompts = data_use.clean_up_generated_prompts_list(generated_suggested_prompts)
         #print(suggested_prompts)
 
         data = {
                 "message": "Success response",
                 "chatresponse": {
-                    "text": query_relevance,
+                    "text": "I found some items that might be relevant to your query",
                     "results": found_items_by_id,
-                    "suggested_prompts": suggested_prompts,
+                    "suggested_prompts": [],
                     "isClient": False,
                     "isRead": False
                 }
