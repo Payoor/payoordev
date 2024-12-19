@@ -27,8 +27,8 @@ app = Flask(__name__)
 port = int(os.getenv('PORT', 8084)) 
 
 ALLOWED_ORIGINS = [
-    'https://chat.payoor.shop',
-    'https://admin.payoor.shop',
+    'https://chat.payoor.store',
+    'https://admin.payoor.store',
     'https://admin.development.payoor.store',
     'https://chat.development.payoor.store',
     'https://chat.development.payoor.store',
