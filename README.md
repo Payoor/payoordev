@@ -615,6 +615,32 @@ Retrieves details of a specific user.
     }
     ```
 
+
+## Sockect Events
+### Events:
+- **`connect`**: Emitted by the client when a successful connection to the server is established.
+- **`disconnect`**: Emitted by the client when the connection to the server is closed.
+- **`createRoom`**: Emitted by the user on initial connection to create a dedicated chat room for the user.
+- **`joinRoom`**: Emitted by the admin when they join a specific user's chat room.
+- **`leaveRoom`**: Emitted by the admin when they leave a user's chat room.
+- **`sendMessage`**: Emitted by both the user and the admin when sending a message.
+- **`userTyping`**: Emitted by the user when they start typing a message.
+- **`userStopTyping`**: Emitted by the user when they stop typing a message.
+- **`adminTyping`**: Emitted by the admin when they start typing a message.
+- **`adminStopTyping`**: Emitted by the admin when they stop typing a message.
+- **`updateUserList`**: Emitted by the server to update the list of connected users for all connected clients.
+
+- **Data Structure:**
+  - sendMessage data:
+    - **`text`**: The message content.
+    - **`clienttimestamp`**: Timestamp of the message.
+    - **`sender`**: "user" or "admin".
+    - **`userId`**: The ID of the user the message is intended for.
+
+  - leaveRoom data:
+    - **`currentRoom`**: The ID of the current room, which is also the ID of the user who created the room.
+
+
 ## Notes for Frontend Implementation
 
 1. All authenticated requests must include the Bearer token in the Authorization header

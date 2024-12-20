@@ -56,6 +56,29 @@ For detailed explanation on how things work, check out the [documentation](https
 ## Chat
 - **Route:** `/chat`
 - **Description:** Displays a chat interface where admins get to communicate with users.
+  
+  ### Events Emitted (User Side):
+  - **`sendMessage`** (Emitted on message send): This event is emitted when the user sends a message. The message data includes the text, timestamp, sender ("user"), and the user's ID (userId).
+  - **`userTyping`** (Emitted on typing start): This event is emitted when the user starts typing a message. It lets the admin know that the user is typing.
+  - **`userStopTyping`** (Emitted on typing stop): This event is emitted when the user stops typing a message. It informs the admin that the user is no longer typing.
+  
+  ### Events Listened to (User Side):
+  - **`receiveMessage`** (Received from server): This event is received whenever a new message arrives from the admin. It updates the chat window with the received message.
+  - **`adminTyping`** (Received from server): This event is received when the admin starts typing a message. It updates the user interface to show an indicator that the admin is typing.
+  - **`adminStopTyping`** (Received from server): This event is received when the admin stops typing a message. It removes the typing indicator from the user interface.
+
+  ### Events Emitted (Admin Side):
+  - **`joinRoom`** (Emitted on selecting a user): This event is emitted when the admin joins the chat room associated with a specific user's ID.
+  - **`leaveRoom`** (Emitted on leaving a chat): This event is emitted when the admin leaves a user's chat room.
+  - **`sendMessage`** (Emitted on message send): This event is emitted when the admin sends a message. The message data includes the text, timestamp, sender ("admin"), and the user's ID (userId).
+  - **`adminTyping`** (Emitted on typing start): This event is emitted when the admin starts typing a message. It lets the user know that the admin is typing.
+  - **`adminStopTyping`** (Emitted on typing stop): This event is emitted when the admin stops typing a message. It informs the user that the admin is no longer typing.
+  
+  ### Events Listened to (Admin Side):
+  - **`updateUserList`** (Emitted on connection): This event is received whenever the list of connected users updates. It updates the user interface with the list of online users.
+  - **`receiveMessage`** (Received from users): This event is received whenever a new message arrives from the user. It updates the chat window with the received message.
+  - **`userTyping`** (Received from users): This event is received when a user starts typing a message. It updates the admin interface to show an indicator that the user is typing.
+  - **`userStopTyping`** (Received from users): This event is received when a user stops typing a message. It removes the typing indicator from the admin interface.
 
 ## Order Management
 - **Route:** `/orders`
