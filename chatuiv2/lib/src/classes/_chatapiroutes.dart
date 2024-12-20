@@ -20,7 +20,7 @@ class ChatApiRoutes {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin': 'https://chat.development.payoor.store',
+          'Origin': Urls.chatUrlOrigin,
           'Session-ID': jwt.toString(),
           //'Authorization': 'Bearer $jwt',
         },

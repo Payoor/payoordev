@@ -542,7 +542,7 @@ class AdminController {
                 .populate('userId', 'name -_id')
                 .sort({ createdAt: -1 })
                 .skip(skip)
-                .limit(limit);        
+                .limit(limit);
 
             res.status(200).json({
                 message: 'Orders retrieved',
@@ -622,6 +622,22 @@ class AdminController {
                 message: 'Error fetching order',
                 error: error.message
             });
+        }
+    }
+
+    async deleteOneUser(req, res) {
+        try {
+            const { userId } = req.query;
+
+            const deletedUser = await User.findByIdAndDelete(userId);
+
+            if (!deletedUser) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            res.status(200).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error deleting user', error: error.message });
         }
     }
 }

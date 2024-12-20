@@ -18,113 +18,96 @@ class AuthLoading extends StatefulWidget {
 }
 
 class _AuthLoadingState extends State<AuthLoading> {
-  String? _error = null;
-  bool _isLoading = true;
-
-  dynamic user = null;
-
   @override
   void initState() {
     super.initState();
-    _checkForUser();
-  }
-
-  Future<void> _checkForUser() async {
-    try {
-      final String? jwtToken = JwtManager.getToken();
-
-      if (jwtToken == null) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-            user = null;
-          });
-        }
-
-        return;
-      }
-
-      if (jwtToken.isNotEmpty) {
-        final response = await AuthApiRoutes.getValidUser(jwtToken);
-
-        final userData = response.data['user'];
-
-        Provider.of<AuthProv>(context, listen: false).userData = userData;
-
-        if (userData != null) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-              user = userData;
-            });
-          }
-        }
-      }
-    } catch (error) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          user = null;
-        });
-      }
-    }
+    Future.microtask(
+      () => context.read<AuthProv>().checkForUser(),
+    );
   }
 
   Widget _buildLoadingIndicator() {
     return Scaffold(
-        backgroundColor: AppColors.primaryColorDark,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-            child: Padding(
-                padding: EdgeInsets.all(20),
-                child: Container(
-                    child: Text(
-                  "loading...",
-                  style: TextStyle(fontSize: 15.0, color: Colors.white),
-                )))));
+      backgroundColor: AppColors.primaryColorDark,
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(
+                    color: Colors.white),
+                SizedBox(height: 16),
+                Text(
+                  "Loading...",
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildError() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 48),
-          const SizedBox(height: 16),
-          Text(
-            'Error: $_error',
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.center,
+    return Scaffold(
+      backgroundColor: AppColors.primaryColorDark,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              const SizedBox(height: 16),
+              const Text(
+                'Error: There was an error. Please try again',
+                style: TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.read<AuthProv>().checkForUser(),
+                child: const Text('Retry'),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _checkForUser,
-            child: const Text('Retry'),
-          ),
-        ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    return Consumer<AuthProv>(
+      builder: (context, authProv, child) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _buildPage(authProv),
+        );
+      },
+    );
+  }
+
+  Widget _buildPage(AuthProv authProv) {
+    if (authProv.isLoading) {
       return _buildLoadingIndicator();
     }
 
-    if (user != null) {
-      return AuthenticatedChat();
+    if (authProv.error) {
+      return LandingScreen();
     }
 
-    if (_error != null) {
-      return _buildError();
+    if (authProv.userData != null) {
+      return const AuthenticatedChat();
     }
 
-    return LandingScreen();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    return const LandingScreen();
   }
 }

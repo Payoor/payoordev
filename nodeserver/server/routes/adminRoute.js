@@ -62,6 +62,8 @@ adminRoute.get('/admin/get/users', authenticate, AdminController.getUsers);
 
 adminRoute.get('/admin/get/user', authenticate, AdminController.getUser);
 
+adminRoute.delete('/admin/delete/user/', authenticate, AdminController.deleteOneUser);
+
 adminRoute.get('/admin/get/orders', authenticate, AdminController.getOrders);
 
 adminRoute.get('/admin/get/user-orders', authenticate, AdminController.getUserOrders);

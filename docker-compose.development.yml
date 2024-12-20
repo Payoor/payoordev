@@ -73,7 +73,7 @@ services:
     environment:
       - PORT=8084          
       - FLASK_APP=server.py
-      - FLASK_ENV=development
+      - FLASK_ENV=production
     networks:
       - payoor_development_network
 

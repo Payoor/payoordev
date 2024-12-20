@@ -55,6 +55,7 @@ adminRoute.get('/admin/product/images', authenticate, _adminController["default"
 adminRoute["delete"]('/admin/product/image', authenticate, _adminController["default"].deleteProductImage);
 adminRoute.get('/admin/get/users', authenticate, _adminController["default"].getUsers);
 adminRoute.get('/admin/get/user', authenticate, _adminController["default"].getUser);
+adminRoute["delete"]('/admin/delete/user/', authenticate, _adminController["default"].deleteOneUser);
 adminRoute.get('/admin/get/orders', authenticate, _adminController["default"].getOrders);
 adminRoute.get('/admin/get/user-orders', authenticate, _adminController["default"].getUserOrders);
 adminRoute.get('/admin/get/order', authenticate, _adminController["default"].getOrder);

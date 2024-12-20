@@ -23,6 +23,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
   int _totalPages = 0;
   int _totalCount = 0;
   int _itemsPerPage = 0;
+  bool _isLoading = true;
   List<dynamic> _orders = [];
 
   @override
@@ -41,14 +42,17 @@ class _OrderDisplayState extends State<OrderDisplay> {
           _totalCount = response.data['totalCount'];
           _itemsPerPage = response.data['itemsPerPage'];
           _orders = response.data['orders'];
+          _isLoading = false;
         });
       }
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       print(e);
     }
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -73,7 +77,6 @@ class _OrderDisplayState extends State<OrderDisplay> {
                 ),
               ),
             ),
-           
             Positioned(
               top: 80,
               left: 0,
@@ -87,10 +90,38 @@ class _OrderDisplayState extends State<OrderDisplay> {
                       Row(
                         children: [],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 50,
                       ),
-                      ..._orders.map((order) => OrderItem(order)).toList(),
+                      if (_isLoading) ...[
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ] else if (_orders.isEmpty) ...[
+                        const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.assignment_outlined,
+                                size: 64,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'No orders made yet',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ] else ...[
+                        ..._orders.map((order) => OrderItem(order)).toList(),
+                      ],
                     ],
                   ),
                 ),

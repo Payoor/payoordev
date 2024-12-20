@@ -1215,6 +1215,51 @@ var AdminController = /*#__PURE__*/function () {
       }
       return getOrder;
     }()
+  }, {
+    key: "deleteOneUser",
+    value: function () {
+      var _deleteOneUser = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee22(req, res) {
+        var userId, deletedUser;
+        return _regeneratorRuntime().wrap(function _callee22$(_context22) {
+          while (1) switch (_context22.prev = _context22.next) {
+            case 0:
+              _context22.prev = 0;
+              userId = req.query.userId;
+              _context22.next = 4;
+              return _user["default"].findByIdAndDelete(userId);
+            case 4:
+              deletedUser = _context22.sent;
+              if (deletedUser) {
+                _context22.next = 7;
+                break;
+              }
+              return _context22.abrupt("return", res.status(404).json({
+                message: 'User not found'
+              }));
+            case 7:
+              res.status(200).json({
+                message: 'User deleted successfully'
+              });
+              _context22.next = 13;
+              break;
+            case 10:
+              _context22.prev = 10;
+              _context22.t0 = _context22["catch"](0);
+              res.status(500).json({
+                message: 'Error deleting user',
+                error: _context22.t0.message
+              });
+            case 13:
+            case "end":
+              return _context22.stop();
+          }
+        }, _callee22, null, [[0, 10]]);
+      }));
+      function deleteOneUser(_x43, _x44) {
+        return _deleteOneUser.apply(this, arguments);
+      }
+      return deleteOneUser;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -1226,36 +1271,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x43, _x44) {
+function processExcelSheetData(_x45, _x46) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee22(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee23(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee22$(_context22) {
-      while (1) switch (_context22.prev = _context22.next) {
+    return _regeneratorRuntime().wrap(function _callee23$(_context23) {
+      while (1) switch (_context23.prev = _context23.next) {
         case 0:
-          _context22.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context23.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context22.t1 = _context22.t0()).done) {
-            _context22.next = 8;
+          if ((_context23.t1 = _context23.t0()).done) {
+            _context23.next = 8;
             break;
           }
-          index = _context22.t1.value;
+          index = _context23.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context22.next = 6;
+          _context23.next = 6;
           return productData.save();
         case 6:
-          _context22.next = 1;
+          _context23.next = 1;
           break;
         case 8:
         case "end":
-          return _context22.stop();
+          return _context23.stop();
       }
-    }, _callee22);
+    }, _callee23);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }

@@ -180,6 +180,7 @@ class AuthController {
                             email: user.email,
                             phoneNumber: user.phoneNumber,
                             location: user.location,
+                            userAddress: user.location,
                             isVerified: user.isVerified
                         }
                     }

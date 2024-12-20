@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:html' as html;
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:chatuiv2/src/widgets/_onboardinput.dart';
 import 'package:chatuiv2/src/widgets/_createlistbtn.dart';
@@ -8,6 +10,7 @@ import 'package:chatuiv2/src/widgets/_onboardingslider.dart';
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_review.dart';
 import 'package:chatuiv2/src/classes/_shopinfoitem.dart';
+import 'package:chatuiv2/src/classes/_socialmediapainters.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 
@@ -23,6 +26,8 @@ class _LandingScreenState extends State<LandingScreen> {
   final ScrollController _scrollController = ScrollController();
 
   String listInput = "";
+  final String twitterUrl = 'https://x.com/Mypayoor';
+  final String instagramUrl = 'https://www.instagram.com/mypayoor/';
 
   final TextEditingController _multilineController = TextEditingController();
 
@@ -34,28 +39,15 @@ class _LandingScreenState extends State<LandingScreen> {
 
   final List<Review> reviews = [
     Review(
-      imageUrl: 'assets/dude.jpg',
-      name: 'John Doe',
+      imageUrl: 'assets/dude.jpeg',
+      name: 'Efe Tobore',
       content:
-          'Payoor has revolutionized my shopping experience. It\'s so convenient!',
+          'Payoor is fast and reliable. The user experience is in a league of its own',
     ),
     Review(
-      imageUrl: 'assets/dude2.jpg',
-      name: 'Jane Smith',
-      content:
-          'I love how easy it is to manage my payments with Payoor. Highly recommended!',
-    ),
-    Review(
-      imageUrl: 'assets/gal.jpg',
-      name: 'Mike Johnson',
-      content:
-          'Payoor has saved me so much time on grocery shopping. It\'s a game-changer!',
-    ),
-    Review(
-      imageUrl: 'assets/gal2.jpg',
-      name: 'Mike Johnson',
-      content:
-          'Payoor has saved me so much time on grocery shopping. It\'s a game-changer!',
+      imageUrl: 'assets/dude2.jpeg',
+      name: 'Imam Adetona',
+      content: "It's seamless and clean",
     ),
   ];
 
@@ -90,6 +82,10 @@ class _LandingScreenState extends State<LandingScreen> {
 
   void handleInputBlur() {
     print('Input lost focus');
+  }
+
+  void launchUrl(String url) {
+    html.window.location.href = url; // Opens in same tab for mobile web
   }
 
   void handleInputFocus() {
@@ -206,6 +202,54 @@ class _LandingScreenState extends State<LandingScreen> {
                                         },
                                       ),
                                     ),
+                                    Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 15,
+                                            left: 15,
+                                            right: 15,
+                                            bottom: 15),
+                                        child: Container(
+                                            child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () =>
+                                                  launchUrl(twitterUrl),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(12.0),
+                                                color: Colors.transparent,
+                                                child: SvgPicture.asset(
+                                                  'assets/twitter.svg',
+                                                  width: 24.0,
+                                                  height: 24.0,
+                                                  colorFilter: ColorFilter.mode(
+                                                    AppColors.twitterColor,
+                                                    BlendMode.srcIn,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 16),
+                                            GestureDetector(
+                                              onTap: () =>
+                                                  launchUrl(instagramUrl),
+                                              child: Container(
+                                                padding: const EdgeInsets.all(
+                                                    12.0), // Enlarged padding for better touch
+                                                color: Colors
+                                                    .transparent, // For touch area without visual change
+                                                child: CustomPaint(
+                                                  size: Size(24.0, 24.0),
+                                                  painter: InstagramPainter(
+                                                      color: AppColors
+                                                          .instagramColor),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ))),
                                     Center(
                                       child: Image.asset(
                                         'assets/bike.png',
