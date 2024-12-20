@@ -1,6 +1,4 @@
-import User from "../models/user";
 import Message from "../models/message";
-import Visitor from "../models/visitor";
 
 class AuthChatController {
 
@@ -33,6 +31,32 @@ class AuthChatController {
             };
 
             res.status(500).json(errorResponse);
+        }
+    }
+
+    async getRoomMessages(req, res) {
+        try {
+            const { roomId } = req.query;
+
+            const messages = await Message.find({roomId: roomId});
+
+            const data = {
+                message: 'Messages retrieved',
+                messages: messages,
+            }
+
+            res.status(200).json({
+                success: true,
+                data
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching messages',
+                error: error.message
+            });
         }
     }
 }

@@ -15,7 +15,7 @@ function saveUserName(_x, _x2) {
   return _saveUserName.apply(this, arguments);
 }
 function _saveUserName() {
-  _saveUserName = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(username, jwt) {
+  _saveUserName = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(username, jwt) {
     var payload, updatedUser;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

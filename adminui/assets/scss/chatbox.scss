@@ -74,6 +74,7 @@
 				display: flex;
 				padding: 0.5rem 0;
 				gap: 1rem;
+				// align-items: center;
 
 				textarea {
 					resize: none;
@@ -84,7 +85,7 @@
 					border: none;
 					background-color: rgb(66, 66, 66);
 					color: rgba($white, 0.7);
-					padding: 0.5rem;
+					padding: 1rem 0.5rem;
 
 					&:focus {
 						outline: none;

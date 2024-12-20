@@ -26,7 +26,7 @@ import orderRoute from './routes/orderRoute';
 import transactionRoute from './routes/transactionRoute';
 
 import corsOriginArray from './corsOriginArray';
-import { initSocket } from './socketInit';
+import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 
 const corsOptions = {
   origin: corsOriginArray,

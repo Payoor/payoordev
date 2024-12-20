@@ -6,6 +6,14 @@ export const getDefaultHeader = () => {
   }
 };
 
+export const getUserHeader = () => {
+  return {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('payoor_user_token'),
+    }
+  }
+};
+
 export const getFileHeader = () => {
   return {
     headers: {

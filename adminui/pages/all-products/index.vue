@@ -69,19 +69,21 @@
               </td>
 
 
-              <td class="actions-cell">
-                <button
-                  class="actions-toggle"
-                  @click="toggleDropdown(rowIndex)"
-                >
-                  ...
-                </button>
-                <div v-if="dropdownIndex === rowIndex" class="dropdown">
-                  <button @click="viewProduct(data._id)">View Product</button>
-                  <button @click="openImageModal(data._id)">Add Image</button>
-                  <button @click="openDeleteModal(data._id)">
-                    Delete Product
+              <td>
+                <div class="actions-cell">
+                  <button
+                    class="actions-toggle"
+                    @click="toggleDropdown(rowIndex)"
+                  >
+                    ...
                   </button>
+                  <div v-if="dropdownIndex === rowIndex" class="dropdown">
+                    <button @click="viewProduct(data._id)">View Product</button>
+                    <button @click="openImageModal(data._id)">Add Image</button>
+                    <button @click="openDeleteModal(data._id)">
+                      Delete Product
+                    </button>
+                  </div>
                 </div>
               </td>
             </tr>

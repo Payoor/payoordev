@@ -29,7 +29,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .user-card {
   display: flex;
   gap: 0.5rem;

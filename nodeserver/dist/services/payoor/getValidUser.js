@@ -15,7 +15,7 @@ function getValidUser(_x) {
   return _getValidUser.apply(this, arguments);
 }
 function _getValidUser() {
-  _getValidUser = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(jwt) {
+  _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(jwt) {
     var payload, validUser;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
@@ -32,7 +32,7 @@ function _getValidUser() {
         case 3:
           _context.prev = 3;
           payload = (0, _getPayloadFromToken["default"])(jwt);
-          if (!(!payload || !payload._id)) {
+          if (!(!payload || !payload.userId)) {
             _context.next = 8;
             break;
           }
@@ -44,7 +44,7 @@ function _getValidUser() {
         case 8:
           _context.next = 10;
           return _user["default"].findOne({
-            _id: payload._id
+            _id: payload.userId
           });
         case 10:
           validUser = _context.sent;

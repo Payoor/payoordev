@@ -24,3 +24,15 @@ export const isDate = (value) => {
   const date = new Date(value);
   return !isNaN(date.getTime());
 }
+
+export const formatTime = (timestamp) => {
+  const date = new Date(timestamp);
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const period = hours >= 12 ? 'pm' : 'am';
+
+  // Convert hours to 12-hour format
+  const formattedHours = hours % 12 || 12;
+
+  return `${formattedHours}:${minutes}${period}`;
+}

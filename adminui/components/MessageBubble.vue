@@ -1,21 +1,36 @@
 <template>
-  <div :class="['message-bubble', senderType == 'admin' ? 'sender' : 'receiver']">
+  <div :class="['message-bubble', isSender ? 'sender' : 'receiver']">
     <div class="text">
-      <p>{{message}}</p>
-      <p class="timestamp">7:28 am</p>
+      <div class="message-content">{{message.text}}</div>
+      <p class="timestamp">{{ formatTime(message.clienttimestamp) }}</p>
     </div>
   </div>
 </template>
 
 <script>
+import { formatTime } from '../helpers';
+
 export default {
   props: {
-    senderType: {
-      type: String
+    viewerType: {
+      type: String,
+      required: true,
     },
     message: {
-      type: String
-    }
+      type: Object,
+      required: true,
+    },
+  },
+
+  computed: {
+    isSender() {
+      // Determine if the message was sent by the current viewer
+      return this.message.sender === this.viewerType;
+    },
+  },
+
+  methods: {
+    formatTime
   }
 }
 </script>
@@ -37,6 +52,11 @@ export default {
       color: $white;
       background-color: $primary-color;
 
+      .message-content {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
       .timestamp {
         text-align: right;
         font-size: 0.65rem;
@@ -52,6 +72,11 @@ export default {
     .text {
       border-radius: 1rem 1rem 1rem 0;
       background-color: rgb(47, 47, 47);
+
+      .message-content {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
 
       .timestamp {
         font-size: 0.65rem;
