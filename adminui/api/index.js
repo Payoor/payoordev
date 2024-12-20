@@ -1,6 +1,12 @@
-import { getDefaultHeader, getFileHeader, serverUrl } from "./config";
+import { getDefaultHeader, getFileHeader, getUserHeader, serverUrl } from "./config";
 import $http from './http'
 
+
+export const userSignUp = (data) => $http.post(`${serverUrl}/auth/signup`, data);
+
+export const generateUserJWT = (userId) => $http.post(`${serverUrl}/auth/genjwt?id=${userId}`);
+
+export const getUserDetails = () => $http.get(`${serverUrl}/auth/getvaliduser`, getUserHeader());
 
 // Admin Management
 export const adminLogin = (data) => $http.post(`${serverUrl}/admin/login`, data);
@@ -56,3 +62,7 @@ export const getTransactions = (page, limit) => $http.get(`${serverUrl}/admin/ge
 export const getUserTransactions = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-transactions?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
 export const getTransaction = (transactionId) => $http.get(`${serverUrl}/admin/get/transaction?id=${transactionId}`, getDefaultHeader());
+
+
+// Messages management
+export const getConversation = (userId) => $http.get(`${serverUrl}/messages?roomId=${userId}`, getDefaultHeader());

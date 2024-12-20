@@ -19,7 +19,7 @@
             border: 1px solid rgb(47, 47, 47);
             text-align: left;
             padding: 0.5rem;
-            color: rgba($white, .5)
+            color: rgba($white, .5);
         }
 
         tbody {
@@ -44,7 +44,7 @@
                         background-color: rgb(47, 47, 47);
                         z-index: 2;
                         left: -100%;
-                        bottom: 0;
+                        top: 100%;
                         border-radius: 0.25rem;
             
                         @media screen and (min-width: 768px) {

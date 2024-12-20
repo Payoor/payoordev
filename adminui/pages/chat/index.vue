@@ -7,13 +7,16 @@
         </div>
 
         <div class="users__list">
-          <UserCard 
-            v-for="user in users"
-            :user="user"
-            :key="user._id"
-            :class="{ active: activeUser && activeUser._id === user._id }"
-            @selectuser="selectUser(user)"
-          />
+          <template v-if="state.users.length !== 0">
+            <UserCard 
+              v-for="user, index in state.users"
+              :user="user.user"
+              :key="index"
+              :is-online="user.isOnline"
+              :class="{ active: activeUser && activeUser._id === user.user._id }"
+              @selectuser="selectUser(user.user)"
+            />
+          </template>
         </div>
       </div>
 
@@ -33,16 +36,23 @@
         <!-- Chats Tab -->
         <template v-if="activeTab === 'Chats'">
           <!-- conversation box -->
-          <div class="chats" v-if="activeUser">
-            <MessageBubble 
-              :sender-type="senderType.ADMIN" 
-              :message="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus eligendi fugiat possimus asperiores eveniet sed dolorem commodi excepturi'"
-            />
-
-            <MessageBubble 
-              :sender-type="senderType.USER" 
-              :message="'veniam alias consectetur incidunt corrupti voluptates, culpa iure, quam exercitationem, vero maxime.'"
-            />
+          <div class="chats" v-if="activeUser" ref="chatContainer">
+            <div v-for="(msg, index) in state.messages" :key="index">
+              <template v-if="shouldDisplayDate(index)">
+                <div class="message-date">
+                  <p>{{ formatDate(msg.clienttimestamp) }}</p>
+                </div> 
+              </template>
+                      
+              <MessageBubble
+                v-if="msg._id"
+                :viewer-type="'admin'"
+                :message="msg"
+              />
+            </div>
+            <div v-if="state.isUserTyping" class="typing-indicator">
+              <em>user is typing...</em>
+            </div>
           </div>
         </template>
 
@@ -91,11 +101,16 @@
             <textarea
               ref="textarea"
               @input="autoGrow"
+              @keydown="handleTyping"
+              @keydown.enter="handleKeyDown"
+              @blur="handleStopTyping"
               v-model="state.textareaMsg"
+              :style="{ maxHeight: state.maxHeight + 'px' }"
               placeholder="Start typing..."
+              rows="1"
             ></textarea>
 
-            <button>
+            <button @click="sendMessage">
               <SendIcon />
             </button>
           </div>
@@ -106,10 +121,13 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted, onUnmounted, computed } from "vue";
 import Default from "../../layouts/Default.vue";
 import SendIcon from "../../components/icons/SendIcon.vue";
-import { getUsers, getUserTransactions, getUserOrders } from "../../api";
+import { getUserTransactions, getUserOrders, getConversation } from "../../api";
+import io from "socket.io-client";
+import { onUpdated } from "vue";
+import { serverUrl } from "../../api/config";
 
 export default {
   components: {
@@ -117,112 +135,253 @@ export default {
     SendIcon,
   },
 
-  data() {
-    return {
-      users: [],
-      selectedUserId: undefined,
-      activeTab: 'Chats',
-      activeUser: null,
-      userTransactions: null,
-      userOrders: null,
-      hasOrders: false,
-      hasTransactions: false,
-    }
-  },
-
-  methods: {
-    getUsers,
-    getUserTransactions,
-    getUserOrders,
-    fetchUsers() {
-      this.getUsers()
-        .then((response) => {
-          this.users = response.data.users;
-          // console.log(this.users);
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
-    },
-
-    fetchUserTransactions() {
-      this.getUserTransactions(this.activeUser._id).then((res) => {
-        this.userTransactions = res.data.transactions;
-        this.hasTransactions = this.userTransactions.length > 0 ? true : false;
-      }).catch(error => console.log(error.response.data))
-    },
-
-    fetchUserOrders() {
-      this.getUserOrders(this.activeUser._id).then((res) => {
-        this.userOrders = res.data.orders;
-        this.hasOrders = this.userOrders.length > 0 ? true : false;
-      }).catch(error => console.log(error.response.data))
-    },
-
-    selectUser(user) {
-      this.activeUser = user;
-      this.switchTab(this.activeTab ?? "Chats");
-    },
-
-    switchTab(tab) {
-      this.activeTab = tab;
-      switch (this.activeTab) {
-        case "Chats":
-          return;
-      
-        case "Orders":
-          return this.fetchUserOrders();
-
-        case "Transactions":
-          return this.fetchUserTransactions();
-        
-        default:
-          return;
-      }
-    },
-  },
-
-  mounted() {
-    this.fetchUsers();
-  },
-
   setup() {
     const textarea = ref(null);
+    const chatContainer = ref(null);
+    const activeTab = ref('Chats');
+    const activeUser = ref(null);
+    const userTransactions = ref(null);
+    const userOrders = ref(null);
+    const hasOrders = ref(false);
+    const hasTransactions = ref(false);
     const state = reactive({
-      maxHeight: 200,
+      maxHeight: 150,
       textareaMsg: "",
-      clickedUser: {},
       users: [],
       messages: [], // Stores messages
-      isTyping: false, // Tracks typing status
+      isUserTyping: false, // Tracks typing status
       typingUser: "", // Tracks who is typing
-      // token: null,
-      // socket: null,
+      token: null,
+      socket: null,
+      currentRoom: null,
     });
 
-    const senderType = {
-      USER: "user",
-      ADMIN: "admin",
+    const prevMessageDate = computed(() => {
+      let prevDate = null;
+      if (state.messages.length > 0) {
+        for (let i = state.messages.length - 1; i >= 0; i--) {
+          if (state.messages[i].clienttimestamp) {
+            prevDate = state.messages[i].clienttimestamp;
+            break;
+          }
+        }
+      }
+      return prevDate;
+    })
+
+    const shouldDisplayDate = (index) => {
+      if (index === 0) {
+        return true; // Always show the date for the first message
+      }
+      const currentDate = new Date(state.messages[index].clienttimestamp).toDateString();
+      const previousDate = new Date(state.messages[index - 1].clienttimestamp).toDateString();
+      return currentDate !== previousDate; // Show the date if it is different from the previous message's date
     };
+
+    const formatDate = (date) => {
+      const messageDate = new Date(date);
+      const now = new Date();
+
+      const isToday = messageDate.toDateString() === now.toDateString();
+      const yesterday = new Date(now);
+      yesterday.setDate(now.getDate() - 1);
+      const isYesterday = messageDate.toDateString() === yesterday.toDateString();
+
+      if (isToday) {
+        return "Today";
+      } else if (isYesterday) {
+        return "Yesterday";
+      } else {
+        return messageDate.toLocaleDateString();
+      }
+    }
 
     const autoGrow = () => {
       const el = textarea.value;
       el.style.height = "auto";
       el.style.height = el.scrollHeight + "px";
 
-      if (el.scrollHeight > 200) {
-        el.style.height = "200px";
+      if (el.scrollHeight > 150) {
+        el.style.height = "150px";
         el.style.overflowY = "auto";
       } else {
         el.style.overflowY = "scroll";
       }
+
+      if (state.textareaMsg.length < 1) {
+        handleStopTyping()
+      }
     };
 
+    const scrollToBottom = () => {
+      if (chatContainer.value) {
+        chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+      }
+    };
+
+    const fetchUserTransactions = () => {
+      if (activeUser.value) {
+        getUserTransactions(activeUser.value._id)
+          .then((res) => {
+            userTransactions.value = res.data.transactions;
+            hasTransactions.value = userTransactions.value.length > 0;
+          })
+          .catch((error) => console.log(error.response.data));
+      }
+    };
+
+    const fetchUserOrders = () => {
+      if (activeUser.value) {
+        getUserOrders(activeUser.value._id)
+          .then((res) => {
+            userOrders.value = res.data.orders;
+            hasOrders.value = userOrders.value.length > 0;
+          })
+          .catch((error) => console.log(error.response.data));
+      }
+    };
+
+    const selectUser = async(user) => {
+      if (state.currentRoom) {
+        // Leave the previous room
+        state.socket.emit("leaveRoom", state.currentRoom);
+        console.log('Admin left room: ' + state.currentRoom)
+      }
+      activeUser.value = user;
+      state.currentRoom = `${user._id}`;
+
+      const conversation = await getConversation(user._id);
+      state.messages = conversation.data.data.messages;
+
+      state.socket.emit("joinRoom", {userId: user._id});
+
+      switchTab(activeTab.value || 'Chats');
+    };
+
+    const switchTab = (tab) => {
+      activeTab.value = tab;
+      switch (activeTab.value) {
+        case 'Chats':
+          return;
+        case 'Orders':
+          return fetchUserOrders();
+        case 'Transactions':
+          return fetchUserTransactions();
+        default:
+          return;
+      }
+    };
+
+    const sendMessage = () => {
+      if (state.textareaMsg.trim() === "") return;
+
+      const message = {
+        text: state.textareaMsg,
+        clienttimestamp: new Date().toISOString(),
+        sender: "admin",
+        userId: activeUser.value._id
+      };
+
+      state.socket.emit("sendMessage", message);
+      state.messages.push(message);
+
+      scrollToBottom();
+
+      //reset the textarea field
+      const textAreaEl = textarea.value;
+      textAreaEl.style.height = 'auto';
+      state.textareaMsg = ""; // Clear the input
+      handleStopTyping();
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    };
+
+    const handleTyping = () => {
+      state.socket.emit("adminTyping", state.currentRoom);
+    };
+
+    const handleStopTyping = () => {
+      state.socket.emit("adminStopTyping", state.currentRoom);
+    };
+
+    onMounted(() => {
+      state.token = localStorage.getItem("adminToken");
+
+      state.socket = io(serverUrl, {
+        transports: ["websocket"],
+        extraHeaders: { Authorization: `Bearer ${state.token}` },
+        auth: { token: state.token, admin: true },
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        timeout: 10000,
+      });
+
+      state.socket.connect();
+
+      // Listen for change in user list 
+      state.socket.on("updateUserList", (data) => {
+        state.users = data;
+      });
+
+      // Listen for incoming messages
+      state.socket.on("receiveMessage", (message) => {
+        if (state.currentRoom) {
+          state.messages.push(message);
+        }
+        scrollToBottom();
+      });
+
+      // Listen for typing events
+      state.socket.on("userTyping", () => {
+        state.isUserTyping = true;
+      });
+
+      state.socket.on("userStopTyping", () => {
+        state.isUserTyping = false;
+      });
+
+      scrollToBottom();
+    });
+
+    onUpdated(() => {
+      scrollToBottom();
+    });
+
+    onUnmounted(() => {
+      if (state.socket) {
+        state.socket.disconnect();
+      }
+    });
+
     return {
-      textarea,
       state,
+      textarea,
+      chatContainer,
+      activeTab,
+      activeUser,
+      userTransactions,
+      userOrders,
+      hasOrders,
+      hasTransactions,
+      prevMessageDate,
+      shouldDisplayDate,
+      formatDate,
       autoGrow,
-      senderType,
+      fetchUserTransactions,
+      fetchUserOrders,
+      selectUser,
+      switchTab,
+      sendMessage,
+      handleKeyDown,
+      handleTyping,
+      handleStopTyping,
     };
   },
 };
@@ -248,6 +407,26 @@ export default {
         background-color: $primary-color;
         color: $white;
       }
+    }
+  }
+
+  .chats{
+    .message-date {
+      display: flex;
+      justify-content: center;
+      margin-block: 1rem; 
+      p {
+        text-align: center;
+        color: rgba($white, 0.5);
+        font-size: 12px;
+        background-color: rgb(40, 40, 40);
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+      }
+    }
+
+    .typing-indicator {
+      color: $white;
     }
   }
 

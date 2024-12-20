@@ -11,12 +11,12 @@ async function getValidUser(jwt) {
     try {
         const payload = getPayloadFromToken(jwt);
 
-        if (!payload || !payload._id) {
+        if (!payload || !payload.userId) {
             console.error('Invalid token payload');
             return { _id: null, phoneNumber: null };
         }
 
-        const validUser = await User.findOne({ _id: payload._id });
+        const validUser = await User.findOne({ _id: payload.userId });
 
         if (!validUser) {
             console.error('User not found');
