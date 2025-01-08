@@ -78,16 +78,17 @@ class AdminController {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 20;
-
             const skip = (page - 1) * limit;
+            const search = req.query.search || "";
 
-            const products = await Product.find().skip(skip).limit(limit).lean();
+            const query = {};
+            if (search) {
+                query.product_name = { $regex: search, $options: "i" };
+            }
 
-            const formattedProducts = products.map(({ _id, product_name, data }) => ({ _id, product_name, ...data }));
+            const products = await Product.find(query).skip(skip).limit(limit).lean();
 
             const totalCount = await Product.countDocuments();
-
-            console.log(totalCount);
 
             res.status(200).send({
                 message: "Products retrieved",
@@ -389,8 +390,14 @@ class AdminController {
             const limit = parseInt(req.query.limit) || 10;
 
             const skip = (page - 1) * limit;
+            const search = req.query.search || "";
 
-            const users = await User.find({}, '_id email name phoneNumber').skip(skip).limit(limit).lean();
+            const query = {};
+            if (search) {
+                query.name = { $regex: search, $options: "i" }
+            }
+
+            const users = await User.find(query, '_id email name phoneNumber').skip(skip).limit(limit).lean();
             const totalCount = await User.countDocuments();
 
             res.status(200).send({
@@ -448,10 +455,28 @@ class AdminController {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
-
             const skip = (page - 1) * limit;
+            const search = req.query.search || "";
+            const status = req.query.status || "";
 
-            const transactions = await Transaction.find({}, { __v: 0, updatedAt: 0 })
+            const query = {};
+            if (status) {
+                query.status = status;
+            }
+
+            if (search) {
+                const initiators = await User.find(
+                    { name: { $regex: search, $options: "i" } },
+                    { _id: 1 }
+                );
+                const initiatorIds = initiators.map(user => user._id);
+
+                if (initiatorIds.length) {
+                    query.initiatorId = { $in: initiatorIds };
+                }
+            }
+
+            const transactions = await Transaction.find(query, { __v: 0, updatedAt: 0 })
                 .populate('initiatorId', 'name -_id')
                 .sort({ createdAt: -1 })
                 .skip(skip)
@@ -535,10 +560,30 @@ class AdminController {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const skip = (page - 1) * limit;
+            const search = req.query.search || "";
+            const status = req.query.status || "";
+
+
+            const query = {};
+            if (status) {
+                query.status = status;
+            }
+
+            if (search) {
+                const users = await User.find(
+                    { name: { $regex: search, $options: "i" } },
+                    { _id: 1 }
+                );
+                const userIds = users.map(user => user._id);
+
+                if (userIds.length) {
+                    query.userId = { $in: userIds };
+                }
+            }
 
             const total = await Order.countDocuments();
 
-            const orders = await Order.find({}, { __v: 0 })
+            const orders = await Order.find(query, { __v: 0 })
                 .populate('userId', 'name -_id')
                 .sort({ createdAt: -1 })
                 .skip(skip)
@@ -638,6 +683,31 @@ class AdminController {
             res.status(200).json({ message: 'User deleted successfully' });
         } catch (error) {
             res.status(500).json({ message: 'Error deleting user', error: error.message });
+        }
+    }
+
+    async getDashboardAggregateData(req, res) {
+        try {
+            const availableProductsCount = await Product.countDocuments({ "data.availability": "YES" });
+            const pendingOrdersCount = await Order.countDocuments({status: 'pending'});
+            const completedOrdersCount = await Order.countDocuments({status: 'completed'});
+            const pendingTransactionsCount = await Transaction.countDocuments({status: 'pending'});
+            const verifiedTransactionsCount = await Transaction.countDocuments({status: 'verified'});
+            const usersCount = await User.countDocuments();
+
+            res.status(200).send({
+                message: "Dashboard data retrieved",
+                numberOfAvailableProducts: availableProductsCount,
+                numberOfPendingOrders: pendingOrdersCount,
+                numberOfCompletedOrders: completedOrdersCount,
+                numberOfPendingTransactions: pendingTransactionsCount,
+                numberOfVerifiedTransactions: verifiedTransactionsCount,
+                numberOfUsers: usersCount
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Error retrieving dashboard data', error: error.message });
         }
     }
 }

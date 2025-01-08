@@ -16,7 +16,7 @@ function processRequest(_x) {
   return _processRequest.apply(this, arguments);
 }
 function _processRequest() {
-  _processRequest = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(messageId) {
+  _processRequest = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(messageId) {
     var io, messageItem, user, isUser, content, timestamp, validUser, _id, username, room;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

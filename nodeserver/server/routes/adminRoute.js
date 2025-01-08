@@ -76,4 +76,6 @@ adminRoute.get('/admin/get/user-transactions', authenticate, AdminController.get
 
 adminRoute.get('/admin/get/transaction', authenticate, AdminController.getTransaction);
 
+adminRoute.get('/admin/get/dashboard-stats', authenticate, AdminController.getDashboardAggregateData);
+
 export default adminRoute;
