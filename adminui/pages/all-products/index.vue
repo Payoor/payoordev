@@ -25,8 +25,9 @@
             <tr>
               <th>S/N</th>
               <th v-for="(header, idx) in getTableHeaders" :key="idx">
-                {{ header.toLowerCase() }}
+                {{ header }}
               </th>
+              <th>UpdatedAt</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -39,7 +40,7 @@
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
-                v-if="key !== '_id'"
+                v-if="key !== '_id' && key !== 'updatedAt'"
                 @click="editCell(rowIndex, colIndex)"
               >
                 <template v-if="key !== 'data' && key !== 'createdAt' && key !== 'updatedAt'">
@@ -86,12 +87,11 @@
                     </tbody>
                   </table>
                 </template>
-
-                <template v-if="key === 'updatedAt' || key === 'createdAt'">
-                  {{ data[key] ? timestampToDateString(data[key]) : "N/A" }}
-                </template>
               </td>
 
+              <td>
+                {{ data.updatedAt ? timestampToDateString(data.updatedAt) : "N/A" }}
+              </td>
 
               <td>
                 <div class="actions-cell">
@@ -206,7 +206,7 @@ export default {
     getTableHeaders() {
       return this.products.length
         ? [
-            ...Object.keys(this.products[0]).filter((key) => key !== "_id"),
+            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt"),
           ]
         : [];
     },
