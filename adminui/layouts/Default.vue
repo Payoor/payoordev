@@ -45,7 +45,7 @@ export default {
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      height: 100vh;
+      // height: 100vh;
     }
   }
 </style>
