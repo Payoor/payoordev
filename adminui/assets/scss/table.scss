@@ -1,9 +1,7 @@
 .table__container {
     overflow-x: auto;
     width: 100%;
-    margin-top: 2rem;
-    color: rgba($white, .7);
-    min-height: 100dvh;
+    height: calc(100vh - 9rem);
 
     table {
         border-collapse: collapse;
@@ -42,18 +40,10 @@
                         height: auto;
                         display: grid;
                         background-color: rgb(47, 47, 47);
-                        z-index: 2;
-                        left: -100%;
+                        z-index: 1000;
+                        left: -120px;
                         top: 100%;
                         border-radius: 0.25rem;
-            
-                        @media screen and (min-width: 768px) {
-                            left: -50%;
-                        }
-            
-                        @media screen and (min-width: 1024px) {
-                            left: -30%;
-                        }
             
                         button {
                             background-color: transparent;
@@ -78,7 +68,7 @@
                         display: grid;
                         background-color: rgb(47, 47, 47);
                         z-index: 2;
-                        left: -100%;
+                        left: -120px;
                         top: 100%;
                         border-radius: 0.25rem;
 
