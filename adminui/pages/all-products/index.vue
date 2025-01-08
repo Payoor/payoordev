@@ -42,19 +42,20 @@
                 v-if="key !== '_id'"
                 @click="editCell(rowIndex, colIndex)"
               >
-                <template v-if="key !== 'data'">
+                <template v-if="key !== 'data' && key !== 'createdAt' && key !== 'updatedAt'">
                   <div v-if="isEditingCell(rowIndex, colIndex)">
                     <input
                       type="text"
                       v-model="editableTableData[rowIndex][key]"
                       @blur="saveEdit(rowIndex)"
                       @keyup.enter="saveEdit(rowIndex)"
+                      ref="editInput"
                     />
                   </div>
                   <div v-else>{{ value }}</div>
                 </template>
 
-                <template v-else>
+                <template v-if="key === 'data'">
                   <table class="embedded-table">
                     <thead>
                       <tr>
@@ -76,6 +77,7 @@
                               v-model="editableTableData[rowIndex].data[subRowIndex][cellKey]"
                               @blur="saveEdit(rowIndex)"
                               @keyup.enter="saveEdit(rowIndex)"
+                              ref="editEmbeddedInput"
                             />
                           </div>
                           <div v-else>{{ cellValue }}</div>
@@ -83,6 +85,10 @@
                       </tr>
                     </tbody>
                   </table>
+                </template>
+
+                <template v-if="key === 'updatedAt' || key === 'createdAt'">
+                  {{ data[key] ? timestampToDateString(data[key]) : "N/A" }}
                 </template>
               </td>
 
@@ -188,6 +194,7 @@ import {
 } from "../../api";
 import SearchIcon from "../../components/icons/SearchIcon.vue";
 import { useDebounce } from "../../utils";
+import { isDate, timestampToDateString } from "../../helpers";
 
 export default {
   components: {
@@ -233,6 +240,8 @@ export default {
     updateProductDetails,
     removeProduct,
     uploadProductImage,
+    isDate,
+    timestampToDateString,
     fetchProducts() {
       this.getAllProducts({
         page: this.currentPage, 
@@ -265,7 +274,14 @@ export default {
     },
 
     editCell(rowIndex, colIndex) {
+      if (this.isEditingCell(rowIndex, colIndex)) return; 
+      
       this.editingCell = { row: rowIndex, col: colIndex };
+      this.$nextTick(() => {
+        const input = this.$refs.editInput;
+        // console.log(input[0])
+        if (input[0]) input[0].focus();
+      });
     },
 
     isEditingCell(row, col) {
@@ -277,8 +293,16 @@ export default {
     },
 
     editEmbeddedCell(parentRowIndex, subRowIndex, key) {
+      if (this.isEditingEmbeddedCell(parentRowIndex, subRowIndex, key)) return; 
+
       this.editingCell = { row: parentRowIndex, col: null };
       this.editingEmbeddedCell = { parentRow: parentRowIndex, row: subRowIndex, key };
+
+      this.$nextTick(() => {
+        const input = this.$refs.editEmbeddedInput;
+        // console.log(input[0])
+        if (input[0]) input[0].focus();
+      });
     },
 
     isEditingEmbeddedCell(parentRowIndex, subRowIndex, key) {
@@ -421,7 +445,7 @@ td {
   
     &:focus {
       outline: none;
-      border: 1px solid rgb(47, 47, 47);
+      border: 1px solid rgba($white, 0.5);
     }
   }
 }
