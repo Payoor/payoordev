@@ -1,5 +1,23 @@
 <template>
   <DefaultLayout :page-text="'Products'">
+    <div class="search__container">
+      <div></div>
+      <div class="search__bar">
+        <input 
+          type="text"
+          placeholder="Search..."
+          v-model="search"
+          @input="handleSearchInput"
+        >
+        <button 
+          type="button"
+          @click="handleSearchInput"
+        >
+          <SearchIcon />
+        </button>
+      </div>
+    </div>
+
     <template v-if="products && products.length !== 0">
       <div class="table__container">
         <table>
@@ -91,6 +109,7 @@
         </table>
       </div>
       <Pagination
+        v-if="totalPages > 1"
         :totalPages="totalPages"
         :perPage="limit"
         :currentPage="currentPage"
@@ -99,7 +118,7 @@
     </template>
 
     <template v-else>
-      <EmptyProduct />
+      <EmptyState />
     </template>
 
     <Transition name="fade">
@@ -167,10 +186,13 @@ import {
   uploadProductImage,
   removeProduct 
 } from "../../api";
+import SearchIcon from "../../components/icons/SearchIcon.vue";
+import { useDebounce } from "../../utils";
 
 export default {
   components: {
     DefaultLayout: Default,
+    SearchIcon
   },
 
   computed: {
@@ -200,7 +222,9 @@ export default {
       hasError: false,
       totalPages: 0,
       currentPage: 1,
-      limit: 10
+      limit: 10,
+      search: "",
+      debouncedSearchTerm: "",
     };
   },
 
@@ -210,7 +234,11 @@ export default {
     removeProduct,
     uploadProductImage,
     fetchProducts() {
-      this.getAllProducts(this.currentPage, this.limit).then((response) => {
+      this.getAllProducts({
+        page: this.currentPage, 
+        limit: this.limit,
+        search: this.debouncedSearchTerm,
+      }).then((response) => {
         this.products = response.data.products;
         this.currentPage = response.data.page;
         this.totalPages = response.data.totalPages;
@@ -226,6 +254,11 @@ export default {
         console.log(error.response.data);
       })
     },
+
+    handleSearchInput: useDebounce(function () {
+      this.debouncedSearchTerm = this.search;
+      this.fetchProducts();
+    }),
 
     getIndex(index) {
       return this.currentPage * this.limit - this.limit + index + 1;
@@ -373,21 +406,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-input {
-  width: 100%;
-  background-color: transparent;
-  border: none;
-  padding: 0.5rem;
-  color: rgba($white, 0.5);
-  font-size: 1rem;
-
-  &::placeholder {
+td {
+  input {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    color: rgba($white, 0.5);
     font-size: 1rem;
-  }
-
-  &:focus {
-    outline: none;
-    border: 1px solid rgb(47, 47, 47);
+  
+    &::placeholder {
+      font-size: 1rem;
+    }
+  
+    &:focus {
+      outline: none;
+      border: 1px solid rgb(47, 47, 47);
+    }
   }
 }
 

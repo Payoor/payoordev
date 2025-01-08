@@ -1,5 +1,22 @@
 <template>
   <DefaultLayout page-text="Admins">
+    <div class="search__container">
+      <div></div>
+      <div class="search__bar">
+        <input 
+          type="text"
+          placeholder="Search..."
+          v-model="search"
+          @input="handleSearchInput"
+        >
+        <button 
+          type="button"
+          @click="handleSearchInput"
+        >
+          <SearchIcon />
+        </button>
+      </div>
+    </div>
     <div class="table__container">
       <table>
         <thead>
@@ -33,23 +50,27 @@
           </tr>
         </tbody>
       </table>
-      <Pagination
-        :totalPages="totalPages"
-        :perPage="limit"
-        :currentPage="currentPage"
-        @pagechanged="onPageChange"
-      />
     </div>
+    <Pagination
+      v-if="totalPages > 1"
+      :totalPages="totalPages"
+      :perPage="limit"
+      :currentPage="currentPage"
+      @pagechanged="onPageChange"
+    />
   </DefaultLayout>
 </template>
 
 <script>
 import Default from "../../layouts/Default.vue";
-import {getUsers } from "../../api";
+import { getUsers } from "../../api";
+import SearchIcon from "../../components/icons/SearchIcon.vue";
+import { useDebounce } from "../../utils";
 
 export default {
   components: {
     DefaultLayout: Default,
+    SearchIcon
   },
 
   data() {
@@ -61,7 +82,9 @@ export default {
       isLoading: false,
       totalPages: 0,
       currentPage: 1,
-      limit: 10
+      limit: 10, 
+      search: "",
+      debouncedSearchTerm: "",
     };
   },
 
@@ -76,22 +99,30 @@ export default {
   methods: {
     getUsers,
     fetchUsers() {
-      this.getUsers(this.currentPage, this.limit)
-        .then((response) => {
-          this.users = response.data.users;
-          this.currentPage = response.data.page;
-          this.totalPages = response.data.totalPages;
-          this.users = this.users.map((user, index) => ({
-            ...Object.fromEntries(
-              Object.entries(user).filter(([key]) => key !== "_id")
-            ),
-            _id: user._id, // Keep the _id for sending updates
-          }));
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
+      this.getUsers({
+        page: this.currentPage, 
+        limit: this.limit,
+        search: this.debouncedSearchTerm,
+      }).then((response) => {
+        this.users = response.data.users;
+        this.currentPage = response.data.page;
+        this.totalPages = response.data.totalPages;
+        this.users = this.users.map((user, index) => ({
+          ...Object.fromEntries(
+            Object.entries(user).filter(([key]) => key !== "_id")
+          ),
+          _id: user._id, // Keep the _id for sending updates
+        }));
+
+      }).catch((error) => {
+        console.log(error.response.data);
+      });
     },
+
+    handleSearchInput: useDebounce(function () {
+      this.debouncedSearchTerm = this.search;
+      this.fetchUsers();
+    }),
 
     getIndex(index) {
       return this.currentPage * this.limit - this.limit + index + 1;
@@ -116,6 +147,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-</style>
