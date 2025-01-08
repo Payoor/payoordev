@@ -1,6 +1,8 @@
 <template>
   <div class="admin-sidebar">
-    <div class="header">Hi, {{ adminUsername ?? 'Admin' }}</div>
+    <div class="header">
+      <img src="../assets/imgs/payoor-white-logo.png" alt="">
+    </div>
 
     <nav class="sidebar-items">
       <div class="item">
@@ -122,17 +124,13 @@ export default {
   background-color: rgb(47, 47, 47);
 
   .header {
-    padding: 1rem;
+    padding: 2rem 0;
     text-align: center;
-    background-color: $primary-color;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: capitalize;
   }
 
   nav {
     flex-grow: 1;
-    padding-block: 2rem;
+    padding-block: 1rem;
     width: 100%;
     overflow-y: auto;
 
