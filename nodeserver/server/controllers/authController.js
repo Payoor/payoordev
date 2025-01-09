@@ -235,6 +235,7 @@ class AuthController {
 
     async getValidUser(req, res) {
         try {
+            console.log('hello there')
             const { userId, tokenId } = req.authData;
 
             const validUser = await User.findOne({ _id: userId });

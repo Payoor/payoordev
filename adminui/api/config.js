@@ -23,4 +23,4 @@ export const getFileHeader = () => {
   }
 };
 
-export const serverUrl = 'https://server.development.payoor.store';
+export const serverUrl = 'http://localhost:3030';//'https://server.development.payoor.store';

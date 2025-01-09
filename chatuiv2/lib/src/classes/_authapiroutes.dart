@@ -104,6 +104,8 @@ class AuthApiRoutes {
     try {
       final uri = Uri.parse('${Urls.baseUrl}/auth/getvaliduser');
 
+      //print(jwtToken);
+
       final response = await http.get(
         uri,
         headers: {

@@ -10,7 +10,7 @@ var _fs = _interopRequireDefault(require("fs"));
 var _adminController = _interopRequireDefault(require("../controllers/adminController"));
 var _orderController = _interopRequireDefault(require("../controllers/orderController"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-var _require = require('../middleware/admin/auth'),
+var _require = require('../services/payoor/admin/auth'),
   authenticate = _require.authenticate,
   isFirstAdmin = _require.isFirstAdmin;
 var adminRoute = (0, _express["default"])();

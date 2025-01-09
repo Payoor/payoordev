@@ -1,11 +1,11 @@
 import express from 'express';
 import OrderController from '../controllers/orderController';
-import verifyJWT from '../middleware/user/verifyJWT';
+import verifyToken from "../services/payoor/verifyToken";
 
 const orderRoute = express();
 
-orderRoute.get('/user/get/orders', verifyJWT, OrderController.getUserOrders);
+orderRoute.get('/user/get/orders', verifyToken, OrderController.getUserOrders);
 
-orderRoute.get('/user/get/order', verifyJWT, OrderController.getOrder);
+orderRoute.get('/user/get/order', verifyToken, OrderController.getOrder);
 
 export default orderRoute;

@@ -1,11 +1,11 @@
 import express from 'express';
 import TransactionController from '../controllers/transactionController';
-import verifyJWT from '../middleware/user/verifyJWT';
+import verifyToken from "../services/payoor/verifyToken";
 
 const transactionRoute = express();
 
-transactionRoute.get('/user/get/transactions', verifyJWT, TransactionController.getUserTransactions);
+transactionRoute.get('/user/get/transactions', verifyToken, TransactionController.getUserTransactions);
 
-transactionRoute.get('/user/get/transaction', verifyJWT, TransactionController.getTransaction);
+transactionRoute.get('/user/get/transaction', verifyToken, TransactionController.getTransaction);
 
 export default transactionRoute;

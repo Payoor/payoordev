@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../../models/admin'); // Adjust path as needed
+const Admin = require('../../../models/admin');
 
 const authenticate = async (req, res, next) => {
     try {

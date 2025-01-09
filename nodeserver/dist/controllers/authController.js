@@ -349,12 +349,13 @@ var AuthController = /*#__PURE__*/function () {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
               _context5.prev = 0;
+              console.log('hello there');
               _req$authData = req.authData, userId = _req$authData.userId, tokenId = _req$authData.tokenId;
-              _context5.next = 4;
+              _context5.next = 5;
               return _user["default"].findOne({
                 _id: userId
               });
-            case 4:
+            case 5:
               validUser = _context5.sent;
               //console.log(validUser)
 
@@ -384,10 +385,10 @@ var AuthController = /*#__PURE__*/function () {
                 };
                 res.status(404).json(notFoundResponse);
               }
-              _context5.next = 13;
+              _context5.next = 14;
               break;
-            case 8:
-              _context5.prev = 8;
+            case 9:
+              _context5.prev = 9;
               _context5.t0 = _context5["catch"](0);
               console.log(_context5.t0);
               errorResponse = {
@@ -399,11 +400,11 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 13:
+            case 14:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 8]]);
+        }, _callee5, null, [[0, 9]]);
       }));
       function getValidUser(_x9, _x10) {
         return _getValidUser.apply(this, arguments);

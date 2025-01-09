@@ -1,6 +1,6 @@
 import express from 'express';
 import AuthChatController from "../controllers/authChatController";
-import { authenticate } from '../middleware/admin/auth';
+import { authenticate } from '../services/payoor/admin/auth';
 
 const messageRoute = express();
 
