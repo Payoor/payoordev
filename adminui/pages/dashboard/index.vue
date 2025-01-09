@@ -1,0 +1,144 @@
+<template>
+  <DefaultLayout :page-text="'Dashboard'">
+    <div class="dashboard-layout">
+      <StatsCard
+        :label="'Number of Available Products'"
+        :count="numberOfAvailableProducts"
+        :href="'/all-products'"
+      >
+        <template #icon>
+          <CartIcon class="default-color" /> 
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        :label="'Number of Pending Orders'"
+        :count="numberOfPendingOrders"
+        :href="'/orders'"
+      >
+        <template #icon>
+          <ContainerIcon class="pending" /> 
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        :label="'Number of Completed Orders'"
+        :count="numberOfCompletedOrders"
+        :href="'/orders'"
+      >
+        <template #icon>
+          <ContainerIcon class="default-color" /> 
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        :label="'Number of Pending Transactions'"
+        :count="numberOfPendingTransactions"
+        :href="'/transactions'"
+      >
+        <template #icon>
+          <CreditCardIcon class="pending" /> 
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        :label="'Number of Verified Transactions'"
+        :count="numberOfVerifiedTransactions"
+        :href="'/transactions'"
+      >
+        <template #icon>
+          <CreditCardIcon class="default-color" /> 
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        :label="'Number of Users'"
+        :count="numberOfUsers"
+        :href="'/users'"
+      >
+        <template #icon>
+          <UsersIcon class="default-color" /> 
+        </template>
+      </StatsCard>
+    </div>
+  </DefaultLayout>
+</template>
+
+<script>
+import Default from "../../layouts/Default.vue";
+import CartIcon from "../../components/icons/CartIcon.vue";
+import ContainerIcon from "../../components/icons/ContainerIcon.vue";
+import UsersIcon from "../../components/icons/UsersIcon.vue";
+import CreditCardIcon from "../../components/icons/CreditCardIcon.vue";
+import { getDashboardStats } from "../../api"
+
+export default {
+  components: {
+    DefaultLayout: Default,
+    CartIcon,
+    ContainerIcon,
+    UsersIcon,
+    CreditCardIcon,
+  },
+
+  data() {
+    return {
+      numberOfAvailableProducts: 0,
+      numberOfPendingOrders: 0,
+      numberOfCompletedOrders: 0,
+      numberOfPendingTransactions: 0,
+      numberOfVerifiedTransactions: 0,
+      numberOfUsers: 0,
+    }
+  },
+
+  methods: {
+    getDashboardStats,
+  },
+
+  mounted() {
+    this.getDashboardStats().then(res => {
+      this.numberOfAvailableProducts = res.data.numberOfAvailableProducts;
+      this.numberOfPendingOrders = res.data.numberOfPendingOrders;
+      this.numberOfCompletedOrders = res.data.numberOfCompletedOrders;
+      this.numberOfPendingTransactions = res.data.numberOfPendingTransactions;
+      this.numberOfVerifiedTransactions = res.data.numberOfVerifiedTransactions;
+      this.numberOfUsers = res.data.numberOfUsers;
+    }).catch(error => error.response.data)
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  gap: 1rem;
+  padding-block: 2rem;
+
+  @media screen and (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+
+    &.default-color {
+      color: $primary-color;
+    }
+    
+    &.pending {
+      color: gold;
+    }
+  }
+
+}
+
+</style>
+

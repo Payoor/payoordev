@@ -83,7 +83,7 @@ export default {
     },
 
     redirectToDashboard() {
-      this.$router.push("/all-products");
+      this.$router.push("/dashboard");
     }
   },
 }

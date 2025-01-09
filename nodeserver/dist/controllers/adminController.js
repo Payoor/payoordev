@@ -145,7 +145,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "getProducts",
     value: function () {
       var _getProducts = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
-        var page, limit, skip, products, formattedProducts, totalCount;
+        var page, limit, skip, search, query, products, totalCount;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -153,24 +153,22 @@ var AdminController = /*#__PURE__*/function () {
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 20;
               skip = (page - 1) * limit;
-              _context3.next = 6;
-              return _product["default"].find().skip(skip).limit(limit).lean();
-            case 6:
+              search = req.query.search || "";
+              query = {};
+              if (search) {
+                query.product_name = {
+                  $regex: search,
+                  $options: "i"
+                };
+              }
+              _context3.next = 9;
+              return _product["default"].find(query).skip(skip).limit(limit).lean();
+            case 9:
               products = _context3.sent;
-              formattedProducts = products.map(function (_ref) {
-                var _id = _ref._id,
-                  product_name = _ref.product_name,
-                  data = _ref.data;
-                return _objectSpread({
-                  _id: _id,
-                  product_name: product_name
-                }, data);
-              });
-              _context3.next = 10;
+              _context3.next = 12;
               return _product["default"].countDocuments();
-            case 10:
+            case 12:
               totalCount = _context3.sent;
-              console.log(totalCount);
               res.status(200).send({
                 message: "Products retrieved",
                 page: page,
@@ -178,20 +176,20 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 products: products
               });
-              _context3.next = 19;
+              _context3.next = 20;
               break;
-            case 15:
-              _context3.prev = 15;
+            case 16:
+              _context3.prev = 16;
               _context3.t0 = _context3["catch"](0);
               console.log(_context3.t0);
               res.status(500).send({
                 message: _context3.t0.message
               });
-            case 19:
+            case 20:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 15]]);
+        }, _callee3, null, [[0, 16]]);
       }));
       function getProducts(_x5, _x6) {
         return _getProducts.apply(this, arguments);
@@ -785,7 +783,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "getUsers",
     value: function () {
       var _getUsers = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee14(req, res) {
-        var page, limit, skip, users, totalCount;
+        var page, limit, skip, search, query, users, totalCount;
         return _regeneratorRuntime().wrap(function _callee14$(_context14) {
           while (1) switch (_context14.prev = _context14.next) {
             case 0:
@@ -793,13 +791,21 @@ var AdminController = /*#__PURE__*/function () {
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
-              _context14.next = 6;
-              return _user["default"].find({}, '_id email name phoneNumber').skip(skip).limit(limit).lean();
-            case 6:
-              users = _context14.sent;
+              search = req.query.search || "";
+              query = {};
+              if (search) {
+                query.name = {
+                  $regex: search,
+                  $options: "i"
+                };
+              }
               _context14.next = 9;
-              return _user["default"].countDocuments();
+              return _user["default"].find(query, '_id email name phoneNumber').skip(skip).limit(limit).lean();
             case 9:
+              users = _context14.sent;
+              _context14.next = 12;
+              return _user["default"].countDocuments();
+            case 12:
               totalCount = _context14.sent;
               res.status(200).send({
                 message: "Users retrieved",
@@ -808,20 +814,20 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 users: users
               });
-              _context14.next = 17;
+              _context14.next = 20;
               break;
-            case 13:
-              _context14.prev = 13;
+            case 16:
+              _context14.prev = 16;
               _context14.t0 = _context14["catch"](0);
               console.log(_context14.t0);
               res.status(500).send({
                 message: _context14.t0.message
               });
-            case 17:
+            case 20:
             case "end":
               return _context14.stop();
           }
-        }, _callee14, null, [[0, 13]]);
+        }, _callee14, null, [[0, 16]]);
       }));
       function getUsers(_x27, _x28) {
         return _getUsers.apply(this, arguments);
@@ -897,7 +903,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "getTransactions",
     value: function () {
       var _getTransactions = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee16(req, res) {
-        var page, limit, skip, transactions, totalCount;
+        var page, limit, skip, search, status, query, initiators, initiatorIds, transactions, totalCount;
         return _regeneratorRuntime().wrap(function _callee16$(_context16) {
           while (1) switch (_context16.prev = _context16.next) {
             case 0:
@@ -905,18 +911,48 @@ var AdminController = /*#__PURE__*/function () {
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
-              _context16.next = 6;
-              return _transaction["default"].find({}, {
+              search = req.query.search || "";
+              status = req.query.status || "";
+              query = {};
+              if (status) {
+                query.status = status;
+              }
+              if (!search) {
+                _context16.next = 14;
+                break;
+              }
+              _context16.next = 11;
+              return _user["default"].find({
+                name: {
+                  $regex: search,
+                  $options: "i"
+                }
+              }, {
+                _id: 1
+              });
+            case 11:
+              initiators = _context16.sent;
+              initiatorIds = initiators.map(function (user) {
+                return user._id;
+              });
+              if (initiatorIds.length) {
+                query.initiatorId = {
+                  $in: initiatorIds
+                };
+              }
+            case 14:
+              _context16.next = 16;
+              return _transaction["default"].find(query, {
                 __v: 0,
                 updatedAt: 0
               }).populate('initiatorId', 'name -_id').sort({
                 createdAt: -1
               }).skip(skip).limit(limit).lean();
-            case 6:
+            case 16:
               transactions = _context16.sent;
-              _context16.next = 9;
+              _context16.next = 19;
               return _transaction["default"].countDocuments();
-            case 9:
+            case 19:
               totalCount = _context16.sent;
               res.status(200).send({
                 message: "Transactions retrieved",
@@ -925,20 +961,20 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 transactions: transactions
               });
-              _context16.next = 17;
+              _context16.next = 27;
               break;
-            case 13:
-              _context16.prev = 13;
+            case 23:
+              _context16.prev = 23;
               _context16.t0 = _context16["catch"](0);
               console.log(_context16.t0);
               res.status(500).send({
                 message: _context16.t0.message
               });
-            case 17:
+            case 27:
             case "end":
               return _context16.stop();
           }
-        }, _callee16, null, [[0, 13]]);
+        }, _callee16, null, [[0, 23]]);
       }));
       function getTransactions(_x31, _x32) {
         return _getTransactions.apply(this, arguments);
@@ -1062,7 +1098,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "getOrders",
     value: function () {
       var _getOrders = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee19(req, res) {
-        var page, limit, skip, total, orders;
+        var page, limit, skip, search, status, query, users, userIds, total, orders;
         return _regeneratorRuntime().wrap(function _callee19$(_context19) {
           while (1) switch (_context19.prev = _context19.next) {
             case 0:
@@ -1070,17 +1106,47 @@ var AdminController = /*#__PURE__*/function () {
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
-              _context19.next = 6;
+              search = req.query.search || "";
+              status = req.query.status || "";
+              query = {};
+              if (status) {
+                query.status = status;
+              }
+              if (!search) {
+                _context19.next = 14;
+                break;
+              }
+              _context19.next = 11;
+              return _user["default"].find({
+                name: {
+                  $regex: search,
+                  $options: "i"
+                }
+              }, {
+                _id: 1
+              });
+            case 11:
+              users = _context19.sent;
+              userIds = users.map(function (user) {
+                return user._id;
+              });
+              if (userIds.length) {
+                query.userId = {
+                  $in: userIds
+                };
+              }
+            case 14:
+              _context19.next = 16;
               return _order["default"].countDocuments();
-            case 6:
+            case 16:
               total = _context19.sent;
-              _context19.next = 9;
-              return _order["default"].find({}, {
+              _context19.next = 19;
+              return _order["default"].find(query, {
                 __v: 0
               }).populate('userId', 'name -_id').sort({
                 createdAt: -1
               }).skip(skip).limit(limit);
-            case 9:
+            case 19:
               orders = _context19.sent;
               res.status(200).json({
                 message: 'Orders retrieved',
@@ -1090,10 +1156,10 @@ var AdminController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 orders: orders
               });
-              _context19.next = 17;
+              _context19.next = 27;
               break;
-            case 13:
-              _context19.prev = 13;
+            case 23:
+              _context19.prev = 23;
               _context19.t0 = _context19["catch"](0);
               console.log(_context19.t0);
               res.status(500).json({
@@ -1101,11 +1167,11 @@ var AdminController = /*#__PURE__*/function () {
                 message: 'Error fetching orders',
                 error: _context19.t0.message
               });
-            case 17:
+            case 27:
             case "end":
               return _context19.stop();
           }
-        }, _callee19, null, [[0, 13]]);
+        }, _callee19, null, [[0, 23]]);
       }));
       function getOrders(_x37, _x38) {
         return _getOrders.apply(this, arguments);
@@ -1260,6 +1326,79 @@ var AdminController = /*#__PURE__*/function () {
       }
       return deleteOneUser;
     }()
+  }, {
+    key: "getDashboardAggregateData",
+    value: function () {
+      var _getDashboardAggregateData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee23(req, res) {
+        var availableProductsCount, pendingOrdersCount, completedOrdersCount, pendingTransactionsCount, verifiedTransactionsCount, usersCount;
+        return _regeneratorRuntime().wrap(function _callee23$(_context23) {
+          while (1) switch (_context23.prev = _context23.next) {
+            case 0:
+              _context23.prev = 0;
+              _context23.next = 3;
+              return _product["default"].countDocuments({
+                "data.availability": "YES"
+              });
+            case 3:
+              availableProductsCount = _context23.sent;
+              _context23.next = 6;
+              return _order["default"].countDocuments({
+                status: 'pending'
+              });
+            case 6:
+              pendingOrdersCount = _context23.sent;
+              _context23.next = 9;
+              return _order["default"].countDocuments({
+                status: 'completed'
+              });
+            case 9:
+              completedOrdersCount = _context23.sent;
+              _context23.next = 12;
+              return _transaction["default"].countDocuments({
+                status: 'pending'
+              });
+            case 12:
+              pendingTransactionsCount = _context23.sent;
+              _context23.next = 15;
+              return _transaction["default"].countDocuments({
+                status: 'verified'
+              });
+            case 15:
+              verifiedTransactionsCount = _context23.sent;
+              _context23.next = 18;
+              return _user["default"].countDocuments();
+            case 18:
+              usersCount = _context23.sent;
+              res.status(200).send({
+                message: "Dashboard data retrieved",
+                numberOfAvailableProducts: availableProductsCount,
+                numberOfPendingOrders: pendingOrdersCount,
+                numberOfCompletedOrders: completedOrdersCount,
+                numberOfPendingTransactions: pendingTransactionsCount,
+                numberOfVerifiedTransactions: verifiedTransactionsCount,
+                numberOfUsers: usersCount
+              });
+              _context23.next = 26;
+              break;
+            case 22:
+              _context23.prev = 22;
+              _context23.t0 = _context23["catch"](0);
+              console.log(_context23.t0);
+              res.status(500).json({
+                message: 'Error retrieving dashboard data',
+                error: _context23.t0.message
+              });
+            case 26:
+            case "end":
+              return _context23.stop();
+          }
+        }, _callee23, null, [[0, 22]]);
+      }));
+      function getDashboardAggregateData(_x45, _x46) {
+        return _getDashboardAggregateData.apply(this, arguments);
+      }
+      return getDashboardAggregateData;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -1271,36 +1410,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x45, _x46) {
+function processExcelSheetData(_x47, _x48) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee23(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee24(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee23$(_context23) {
-      while (1) switch (_context23.prev = _context23.next) {
+    return _regeneratorRuntime().wrap(function _callee24$(_context24) {
+      while (1) switch (_context24.prev = _context24.next) {
         case 0:
-          _context23.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context24.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context23.t1 = _context23.t0()).done) {
-            _context23.next = 8;
+          if ((_context24.t1 = _context24.t0()).done) {
+            _context24.next = 8;
             break;
           }
-          index = _context23.t1.value;
+          index = _context24.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context23.next = 6;
+          _context24.next = 6;
           return productData.save();
         case 6:
-          _context23.next = 1;
+          _context24.next = 1;
           break;
         case 8:
         case "end":
-          return _context23.stop();
+          return _context24.stop();
       }
-    }, _callee23);
+    }, _callee24);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }

@@ -1,15 +1,22 @@
 <template>
   <div class="admin-sidebar">
-    <div class="header">Hi, {{ adminUsername ?? 'Admin' }}</div>
+    <div class="header">
+      <img src="../assets/imgs/payoor-white-logo.png" alt="">
+    </div>
 
     <nav class="sidebar-items">
       <div class="item">
-        <div class="item-category">Products</div>
         <ul>
+          <li>
+            <NuxtLink to="/dashboard">
+              <DashboardIcon />
+              <span>Dashboard</span>
+            </NuxtLink>
+          </li>
           <li>
             <NuxtLink to="/all-products">
               <CartIcon />
-              <span>All Products</span>
+              <span>Products</span>
             </NuxtLink>
           </li>
 
@@ -19,64 +26,39 @@
               <span>Add Products</span>
             </NuxtLink>
           </li>
-        </ul>
-      </div>
 
-      <div class="item">
-        <div class="item-category">Orders</div>
-        <ul>
           <li>
             <NuxtLink to="/orders">
               <ContainerIcon />
-              <span>All Orders</span>
+              <span>Orders</span>
             </NuxtLink>
           </li>
-        </ul>
-      </div>
 
-      <div class="item">
-        <div class="item-category">Transactions</div>
-        <ul>
           <li>
             <NuxtLink to="/transactions">
               <CreditCardIcon />
-              <span>All Transactions</span>
+              <span>Transactions</span>
             </NuxtLink>
           </li>
-        </ul>
-      </div>
 
-      <div class="item">
-        <div class="item-category">Users</div>
-        <ul>
           <li>
             <NuxtLink to="/users">
               <UsersIcon />
-              <span>All Users</span>
+              <span>Users</span>
             </NuxtLink>
           </li>
-        </ul>
-      </div>
 
-      <div class="item">
-        <div class="item-category">Chat</div>
-        <ul>
           <li>
             <NuxtLink to="/chat">
               <ChatBubbleIcon />
               <span>Chat Room</span>
             </NuxtLink>
           </li>
-        </ul>
-      </div>
 
-      <div class="item">
-        <div class="item-category">Admin</div>
-        <ul>
           <li>
             <NuxtLink to="/admins">
               <UserCogIcon />
-              <span>All Admins</span>
+              <span>Admins</span>
             </NuxtLink>
           </li>
 
@@ -93,6 +75,7 @@
 </template>
 
 <script>
+import DashboardIcon from "./icons/DashboardIcon.vue";
 import CartIcon from "./icons/CartIcon.vue";
 import ChatBubbleIcon from "./icons/ChatBubbleIcon.vue";
 import AddPackageIcon from "./icons/AddPackageIcon.vue";
@@ -104,6 +87,7 @@ import CreditCardIcon from "./icons/CreditCardIcon.vue";
 
 export default {
   components: {
+    DashboardIcon,
     CartIcon,
     ChatBubbleIcon,
     AddPackageIcon,
@@ -140,17 +124,13 @@ export default {
   background-color: rgb(47, 47, 47);
 
   .header {
-    padding: 1rem;
+    padding: 2rem 0;
     text-align: center;
-    background-color: $primary-color;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: capitalize;
   }
 
   nav {
     flex-grow: 1;
-    padding-block: 2rem;
+    padding-block: 1rem;
     width: 100%;
     overflow-y: auto;
 
@@ -163,7 +143,6 @@ export default {
     }
 
     ul {
-      padding: 1rem;
       li {
         list-style: none;
         a {
@@ -173,7 +152,7 @@ export default {
           color: rgba($white, 0.7);
           text-decoration: none;
           font-size: 0.8rem;
-          padding: 1rem 0.5rem;
+          padding: 1.5rem 1rem;
           border-bottom: 1px solid rgb(77, 77, 77);
           transition: 0.2s;
 
@@ -189,6 +168,12 @@ export default {
 
           &.nuxt-link-active {
             background-color: rgb(77, 77, 77);
+            font-weight: bold;
+          }
+        }
+        &:last-child {
+          a {
+            border-bottom: none;
           }
         }
       }

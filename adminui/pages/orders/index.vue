@@ -1,55 +1,86 @@
 <template>
   <DefaultLayout page-text="Orders">
-    <div class="table__container">
-      <table>
-        <thead>
-          <tr>
-            <th>S/N</th>
-            <th v-for="header in getTableHeaders" :key="header">
-              <template v-if="header === 'userId'">
-                user
-              </template>
-              <template v-else>
-                {{ header }}
-              </template>
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(order, rowIndex) in orders" :key="order.orderId">
-            <td>{{ getIndex(rowIndex) }}</td>
-            <td v-for="header in getTableHeaders" :key="header">
-              <template v-if="header === 'total'">
-                {{ formatAmount(order[header]) }}
-              </template>
-              <template v-if="header === 'items'">
-                {{ order[header].length }} {{ order[header].length > 1 ? 'items' : 'item' }}
-              </template>
-              <template v-if="header === 'userId'">
-                {{ order[header].name }}
-              </template>
-              <template v-if="header !== 'total' && header !== 'items' && header !== 'userId'">
-                {{ isDate(order[header]) ? timestampToDateString(order[header]) : order[header] || "N/A" }}
-              </template>
-            </td>
-            <td class="actions-cell">
-              <button class="actions-toggle" @click="toggleDropdown(rowIndex)">...</button>
-              <div v-if="dropdownIndex === rowIndex" class="orders-dropdown">
-                <button @click="viewOrderDetails(order._id)">View Order Details</button>
-                <!-- <button @click="openDeleteModal(order._id)">Delete Order</button> -->
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="search__container">
+      <StatusFilter
+        :statuses="orderStatuses" 
+        :selectedStatus="selectedStatus" 
+        v-on:status-change="handleStatusChange" 
+      />
+
+      <div class="search__bar">
+        <input 
+          type="text"
+          placeholder="Search..."
+          v-model="search"
+          @input="handleSearchInput"
+        >
+        <button 
+          type="button"
+          @click="handleSearchInput"
+        >
+          <SearchIcon />
+        </button>
+      </div>
+    </div>
+
+    <template v-if="orders && orders.length !== 0">
+      <div class="table__container">
+        <table>
+          <thead>
+            <tr>
+              <th>S/N</th>
+              <th v-for="header in getTableHeaders" :key="header">
+                <template v-if="header === 'userId'">
+                  user
+                </template>
+                <template v-else>
+                  {{ header }}
+                </template>
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(order, rowIndex) in orders" :key="order.orderId">
+              <td>{{ getIndex(rowIndex) }}</td>
+              <td v-for="header in getTableHeaders" :key="header">
+                <template v-if="header === 'total'">
+                  {{ formatAmount(order[header]) }}
+                </template>
+                <template v-if="header === 'items'">
+                  {{ order[header].length }} {{ order[header].length > 1 ? 'items' : 'item' }}
+                </template>
+                <template v-if="header === 'userId'">
+                  {{ order[header].name }}
+                </template>
+                <template v-if="header !== 'total' && header !== 'items' && header !== 'userId'">
+                  {{ isDate(order[header]) ? timestampToDateString(order[header]) : order[header] || "N/A" }}
+                </template>
+              </td>
+              <td class="actions-cell">
+                <button class="actions-toggle" @click="toggleDropdown(rowIndex)">...</button>
+                <div v-if="dropdownIndex === rowIndex" class="orders-dropdown">
+                  <button @click="viewOrderDetails(order._id)">View Order Details</button>
+                  <!-- <button @click="openDeleteModal(order._id)">Delete Order</button> -->
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <Pagination
+        v-if="totalPages > 1"
         :totalPages="totalPages"
         :perPage="limit"
         :currentPage="currentPage"
         @pagechanged="onPageChange"
       />
-    </div>
+    </template>
+
+    <template v-else>
+      <EmptyState :empty-text="'No orders found'" />
+    </template>
+
 
     <!-- <Transition name="fade">
       <Modal
@@ -73,12 +104,15 @@
 
 <script>
 import { getOrders } from "../../api";
-import { formatAmount, timestampToDateString } from "../../helpers";
+import { formatAmount, orderStatuses, timestampToDateString } from "../../helpers";
 import Default from "../../layouts/Default.vue";
+import SearchIcon from "../../components/icons/SearchIcon.vue";
+import { useDebounce } from "../../utils";
 
 export default {
   components: {
     DefaultLayout: Default,
+    SearchIcon
   },
 
   computed: {
@@ -100,6 +134,10 @@ export default {
       totalPages: 0,
       currentPage: 1,
       limit: 10,
+      search: "",
+      debouncedSearchTerm: "",
+      orderStatuses,
+      selectedStatus: "",
     };
   },
 
@@ -108,22 +146,38 @@ export default {
     timestampToDateString,
     formatAmount,
     fetchOrders() {
-      this.getOrders(this.currentPage, this.limit)
-        .then((response) => {
-          this.orders = response.data.orders;
-          this.totalPages = response.data.totalPages;
-          this.currentPage = response.data.page;
-          this.orders = this.orders.map((order, index) => ({
-            ...Object.fromEntries(
-              Object.entries(order).filter(([key]) => key !== "_id")
-            ),
-            _id: order._id, // Keep the _id for sending updates
-          }));
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
+      this.getOrders({
+        page: this.currentPage, 
+        limit: this.limit,
+        search: this.debouncedSearchTerm,
+        status: this.selectedStatus
+      }).then((response) => {
+        this.orders = response.data.orders;
+        this.totalPages = response.data.totalPages;
+        this.currentPage = response.data.page;
+        this.orders = this.orders.map((order, index) => ({
+          ...Object.fromEntries(
+            Object.entries(order).filter(([key]) => key !== "_id")
+          ),
+          _id: order._id, // Keep the _id for sending updates
+        }));
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
     },
+
+    handleSearchInput: useDebounce(function () {
+      this.debouncedSearchTerm = this.search;
+      this.fetchOrders();
+    }),
+
+    handleStatusChange(value) {
+      this.selectedStatus = value;
+      this.currentPage = 1;
+      this.fetchOrders();
+    },
+
     getIndex(index) {
       return this.currentPage * this.limit - this.limit + index + 1;
     },

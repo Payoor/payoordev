@@ -54,6 +54,7 @@ export default {
       '~/assets/scss/table.scss',
       '~/assets/scss/chatbox.scss',
       '~/assets/scss/authform.scss',
+      '~/assets/scss/searchbar.scss',
     ],
     hoistUseStatements: true
   },

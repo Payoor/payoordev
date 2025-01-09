@@ -1,5 +1,23 @@
 <template>
   <DefaultLayout :page-text="'Products'">
+    <div class="search__container">
+      <div></div>
+      <div class="search__bar">
+        <input 
+          type="text"
+          placeholder="Search..."
+          v-model="search"
+          @input="handleSearchInput"
+        >
+        <button 
+          type="button"
+          @click="handleSearchInput"
+        >
+          <SearchIcon />
+        </button>
+      </div>
+    </div>
+
     <template v-if="products && products.length !== 0">
       <div class="table__container">
         <table>
@@ -7,8 +25,9 @@
             <tr>
               <th>S/N</th>
               <th v-for="(header, idx) in getTableHeaders" :key="idx">
-                {{ header.toLowerCase() }}
+                {{ header }}
               </th>
+              <th>UpdatedAt</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -21,22 +40,23 @@
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
-                v-if="key !== '_id'"
+                v-if="key !== '_id' && key !== 'updatedAt'"
                 @click="editCell(rowIndex, colIndex)"
               >
-                <template v-if="key !== 'data'">
+                <template v-if="key !== 'data' && key !== 'createdAt' && key !== 'updatedAt'">
                   <div v-if="isEditingCell(rowIndex, colIndex)">
                     <input
                       type="text"
                       v-model="editableTableData[rowIndex][key]"
                       @blur="saveEdit(rowIndex)"
                       @keyup.enter="saveEdit(rowIndex)"
+                      ref="editInput"
                     />
                   </div>
                   <div v-else>{{ value }}</div>
                 </template>
 
-                <template v-else>
+                <template v-if="key === 'data'">
                   <table class="embedded-table">
                     <thead>
                       <tr>
@@ -58,6 +78,7 @@
                               v-model="editableTableData[rowIndex].data[subRowIndex][cellKey]"
                               @blur="saveEdit(rowIndex)"
                               @keyup.enter="saveEdit(rowIndex)"
+                              ref="editEmbeddedInput"
                             />
                           </div>
                           <div v-else>{{ cellValue }}</div>
@@ -68,6 +89,9 @@
                 </template>
               </td>
 
+              <td>
+                {{ data.updatedAt ? timestampToDateString(data.updatedAt) : "N/A" }}
+              </td>
 
               <td>
                 <div class="actions-cell">
@@ -91,6 +115,7 @@
         </table>
       </div>
       <Pagination
+        v-if="totalPages > 1"
         :totalPages="totalPages"
         :perPage="limit"
         :currentPage="currentPage"
@@ -99,7 +124,7 @@
     </template>
 
     <template v-else>
-      <EmptyProduct />
+      <EmptyState />
     </template>
 
     <Transition name="fade">
@@ -167,17 +192,21 @@ import {
   uploadProductImage,
   removeProduct 
 } from "../../api";
+import SearchIcon from "../../components/icons/SearchIcon.vue";
+import { useDebounce } from "../../utils";
+import { isDate, timestampToDateString } from "../../helpers";
 
 export default {
   components: {
     DefaultLayout: Default,
+    SearchIcon
   },
 
   computed: {
     getTableHeaders() {
       return this.products.length
         ? [
-            ...Object.keys(this.products[0]).filter((key) => key !== "_id"),
+            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt"),
           ]
         : [];
     },
@@ -200,7 +229,9 @@ export default {
       hasError: false,
       totalPages: 0,
       currentPage: 1,
-      limit: 10
+      limit: 10,
+      search: "",
+      debouncedSearchTerm: "",
     };
   },
 
@@ -209,8 +240,14 @@ export default {
     updateProductDetails,
     removeProduct,
     uploadProductImage,
+    isDate,
+    timestampToDateString,
     fetchProducts() {
-      this.getAllProducts(this.currentPage, this.limit).then((response) => {
+      this.getAllProducts({
+        page: this.currentPage, 
+        limit: this.limit,
+        search: this.debouncedSearchTerm,
+      }).then((response) => {
         this.products = response.data.products;
         this.currentPage = response.data.page;
         this.totalPages = response.data.totalPages;
@@ -227,12 +264,24 @@ export default {
       })
     },
 
+    handleSearchInput: useDebounce(function () {
+      this.debouncedSearchTerm = this.search;
+      this.fetchProducts();
+    }),
+
     getIndex(index) {
       return this.currentPage * this.limit - this.limit + index + 1;
     },
 
     editCell(rowIndex, colIndex) {
+      if (this.isEditingCell(rowIndex, colIndex)) return; 
+      
       this.editingCell = { row: rowIndex, col: colIndex };
+      this.$nextTick(() => {
+        const input = this.$refs.editInput;
+        // console.log(input[0])
+        if (input[0]) input[0].focus();
+      });
     },
 
     isEditingCell(row, col) {
@@ -244,8 +293,16 @@ export default {
     },
 
     editEmbeddedCell(parentRowIndex, subRowIndex, key) {
+      if (this.isEditingEmbeddedCell(parentRowIndex, subRowIndex, key)) return; 
+
       this.editingCell = { row: parentRowIndex, col: null };
       this.editingEmbeddedCell = { parentRow: parentRowIndex, row: subRowIndex, key };
+
+      this.$nextTick(() => {
+        const input = this.$refs.editEmbeddedInput;
+        // console.log(input[0])
+        if (input[0]) input[0].focus();
+      });
     },
 
     isEditingEmbeddedCell(parentRowIndex, subRowIndex, key) {
@@ -373,21 +430,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-input {
-  width: 100%;
-  background-color: transparent;
-  border: none;
-  padding: 0.5rem;
-  color: rgba($white, 0.5);
-  font-size: 1rem;
-
-  &::placeholder {
+td {
+  input {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    color: rgba($white, 0.5);
     font-size: 1rem;
-  }
-
-  &:focus {
-    outline: none;
-    border: 1px solid rgb(47, 47, 47);
+  
+    &::placeholder {
+      font-size: 1rem;
+    }
+  
+    &:focus {
+      outline: none;
+      border: 1px solid rgba($white, 0.5);
+    }
   }
 }
 

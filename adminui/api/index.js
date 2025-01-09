@@ -21,7 +21,7 @@ export const removeAdmin = (adminId) => $http.delete(`${serverUrl}/admin/${admin
 // Product Manangement
 export const uploadExcelSheet = (data) => $http.post(`${serverUrl}/admin/upload/products/excel`, data, getFileHeader());
 
-export const getAllProducts = (page, limit) => $http.get(`${serverUrl}/admin/get/products?page=${page}&limit=${limit}`, getDefaultHeader());
+export const getAllProducts = ({page, limit, search}) => $http.get(`${serverUrl}/admin/get/products?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
 
 export const getSingleProduct = (productId) => $http.get(`${serverUrl}/admin/get/product?id=${productId}`, getDefaultHeader());
 
@@ -43,13 +43,13 @@ export const verifyPayment = (data) => $http.post(`${serverUrl}/paystack/verify-
 
 
 // User Management
-export const getUsers = (page, limit) => $http.get(`${serverUrl}/admin/get/users?page=${page}&limit=${limit}`, getDefaultHeader());
+export const getUsers = ({page, limit, search}) => $http.get(`${serverUrl}/admin/get/users?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
 
 export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${userId}`, getDefaultHeader());
 
 
 // Order Management
-export const getOrders = (page, limit) => $http.get(`${serverUrl}/admin/get/orders?page=${page}&limit=${limit}`, getDefaultHeader());
+export const getOrders = ({page, limit, search, status}) => $http.get(`${serverUrl}/admin/get/orders?page=${page}&limit=${limit}&search=${search}&status=${status}`, getDefaultHeader());
 
 export const getUserOrders = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-orders?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
@@ -57,7 +57,7 @@ export const getOrder = (orderId) => $http.get(`${serverUrl}/admin/get/order?id=
 
 
 // Transaction Management
-export const getTransactions = (page, limit) => $http.get(`${serverUrl}/admin/get/transactions?page=${page}&limit=${limit}`, getDefaultHeader());
+export const getTransactions = ({page, limit, search, status}) => $http.get(`${serverUrl}/admin/get/transactions?page=${page}&limit=${limit}&search=${search}&status=${status}`, getDefaultHeader());
 
 export const getUserTransactions = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-transactions?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
@@ -66,3 +66,6 @@ export const getTransaction = (transactionId) => $http.get(`${serverUrl}/admin/g
 
 // Messages management
 export const getConversation = (userId) => $http.get(`${serverUrl}/messages?roomId=${userId}`, getDefaultHeader());
+
+
+export const getDashboardStats = () => $http.get(`${serverUrl}/admin/get/dashboard-stats`, getDefaultHeader());

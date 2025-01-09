@@ -5,7 +5,14 @@
     </aside>
 
     <main class="page__container">
-      <HeaderText :page-text="pageText" />
+      <template v-if="pageText === 'Dashboard'">
+        <div class="greeting">
+          <h1>Welcome <span>{{ getAdminUsername }}</span></h1>
+        </div>
+      </template>
+      <template v-else>
+        <HeaderText :page-text="pageText" />
+      </template>
       <slot />
     </main>
   </div>
@@ -18,6 +25,11 @@ export default {
   components: {
     'ChatBubbleIcon': ChatBubbleIcon,
     'AddPackageIcon': AddPackageIcon,
+  },
+  computed: {
+    getAdminUsername() {
+      return localStorage.getItem('adminUsername');
+    }
   },
   props: {
     pageText: {
@@ -45,7 +57,17 @@ export default {
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      height: 100vh;
+      // height: 100vh;
+
+      .greeting h1 {
+        color: $primary-color;
+        text-transform: capitalize;
+      }
+      span {
+        color: $white;
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
     }
   }
 </style>
