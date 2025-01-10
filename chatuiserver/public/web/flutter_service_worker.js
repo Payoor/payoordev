@@ -3,11 +3,11 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"flutter_bootstrap.js": "2693496e707d22eb6f3c96dcedf3389d",
+const RESOURCES = {"flutter_bootstrap.js": "598d146e73ec2c68fc941d36a44b68f9",
 "version.json": "0394ea80a25a19317aaad56c13542aef",
 "index.html": "2d768e5facc63373cd2ea8c409c06492",
 "/": "2d768e5facc63373cd2ea8c409c06492",
-"main.dart.js": "d7e5fadc5173ac9081eafa00f07a0e4a",
+"main.dart.js": "238c5d43c87e441ca470412e8f4b7fe5",
 "flutter.js": "f31737fb005cd3a3c6bd9355efd33061",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
@@ -22,7 +22,7 @@ const RESOURCES = {"flutter_bootstrap.js": "2693496e707d22eb6f3c96dcedf3389d",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "e986ebe42ef785b27164c36a9abc7818",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "assets/AssetManifest.bin": "79afdbd1095b953f3befe5ad09148469",
-"assets/fonts/MaterialIcons-Regular.otf": "550b3b25bfbb9b5fd68c9dd69dbaab7d",
+"assets/fonts/MaterialIcons-Regular.otf": "cff2047e4aeb0f1ff2b452acc88f805b",
 "assets/assets/gal2.jpg": "c389ad7a4451fdbe12456a076b477691",
 "assets/assets/payoorlogo.png": "d1b00bff946afe52be80292caff0926c",
 "assets/assets/gal.jpg": "95fc8a866d60bf9d9798079d1a92033e",

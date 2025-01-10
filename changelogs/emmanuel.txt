@@ -1,0 +1,7 @@
+* Deleted the middleware folder in nodeserver/server
+
+* Added Icons to pills slider in chat area
+
+* Added a global side nav to client area
+
+* Make chat bubble in client area both collapsible and uncollapsible
