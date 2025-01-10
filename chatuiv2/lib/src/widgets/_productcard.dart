@@ -7,11 +7,15 @@ import 'package:chatuiv2/src/classes/_serverresponse.dart';
 class ProductCard extends StatefulWidget {
   final String productName;
   final String productId;
+  final void Function()? onProductTap;
+  final void Function()? onFavoriteTap;
 
   const ProductCard({
     super.key,
     required this.productName,
     required this.productId,
+    this.onProductTap,
+    this.onFavoriteTap,
   });
 
   @override
@@ -59,8 +63,8 @@ class _ProductCardState extends State<ProductCard> {
 
                         // Assuming your ServerResponse data contains imageUrl
                         return Image.network(
-                          snapshot.data!.data[
-                              'images'][0]["imageUrl"], // Adjust based on your data structure
+                          snapshot.data!.data['images'][0][
+                              "imageUrl"], // Adjust based on your data structure
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
@@ -83,23 +87,26 @@ class _ProductCardState extends State<ProductCard> {
                 Positioned(
                   top: 8,
                   left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: AppColors.black.withOpacity(.2),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 20,
-                      color: AppColors.white,
+                  child: GestureDetector(
+                    onTap: widget.onFavoriteTap,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppColors.black.withOpacity(.2),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.favorite_border,
+                        size: 20,
+                        color: AppColors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -124,58 +131,30 @@ class _ProductCardState extends State<ProductCard> {
                   )
                 ],
               )),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.black,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () {
-                    // Handle minus
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Text(
-                      "",
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+          GestureDetector(
+            onTap: widget.onProductTap, // Pass this function from parent
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.black,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .center, // Changed to center since we only have one item now
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "View Options",
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-                Text(
-                  "Options",
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    // Handle plus
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Text(
-                      "",
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(

@@ -10,11 +10,9 @@ import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
 import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
-import 'package:chatuiv2/src/widgets/_productdisplay.dart';
 import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
-import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
 import 'package:chatuiv2/src/widgets/_ordersdisplay.dart';
-import 'package:chatuiv2/src/widgets/_userdetailslist.dart';
+import 'package:chatuiv2/src/widgets/_messagecontent.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
@@ -69,6 +67,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     {"label": "Cart", "action": "View Cart"},
     {"label": "Orders", "action": "Proceed to orders view"},
     {"label": "Pay", "action": "Proceed to payment"},
+    {"label": "Support", "action": "Speak to an agent"},
   ];
 
   @override
@@ -395,13 +394,11 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           reverse: false,
           physics: const ClampingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 10),
-          // Add these properties to help stabilize the list
           itemCount: messagesList.length,
-          cacheExtent: 9999, // Increase cache to prevent rebuilds
+          cacheExtent: 9999,
           itemBuilder: (context, index) {
             final message = messagesList[messagesList.length - 1 - index];
 
-            // Wrap each message type in a container with constraints
             return ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: 50, // Set a minimum height
@@ -451,116 +448,53 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       );
     }
 
-    return Column(
-      key: ValueKey(
-          'message_content_${message.clienttimestamp?.millisecondsSinceEpoch}'),
-      mainAxisSize: MainAxisSize.min, // Add this
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.greyBlack.withOpacity(.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TypewriterText(
-                key: ValueKey(
-                    'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                text: message.text,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withOpacity(0.8),
-                ),
-                duration: Duration(milliseconds: 1500),
-                showCursor: true,
-                scrollController: _scrollController,
-                onTap: () {},
-                onComplete: () {
-                  setState(() {
-                    _showProducts = message.isProductsDisplay;
-                    _showCart = message.isCartView;
-                  });
-                },
-              ),
-            ),
-          ),
-        ),
-        if (message.isCartView && _showCart && index == messagesList.length - 1)
-          Consumer<CartProvider>(
-            builder: (context, cartProvider, child) {
-              return Column(
-                children: [
-                  CartDisplay(),
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.greyBlack.withOpacity(.5),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: TypewriterText(
-                          key: ValueKey(
-                              'message_${message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                          text: "Service Fee: ₦ ${cartProvider.serviceCharge}\n"
-                              "Delivery Fee: ₦ $_deliveryFee\n"
-                              "Total: ₦ ${cartProvider.serviceCharge + _deliveryFee + cartProvider.totalAmount}\n" /*"Please confirm your current delivery address"*/,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                          duration: Duration(milliseconds: 1500),
-                          showCursor: true,
-                          scrollController: _scrollController,
-                          onTap: () {},
-                          onComplete: () {
-                            setState(() {
-                              _showProducts = message.isProductsDisplay;
-                              _showCart = message.isCartView;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              );
-            },
-          ),
-        if (message.isProductsDisplay &&
-            _showProducts &&
-            message.results.isNotEmpty &&
-            index == messagesList.length - 1)
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            child: Container(
-                padding: const EdgeInsets.all(8), child: ProductDisplay()),
-          ),
-      ],
-    );
+    return MessageContent(
+        message: message,
+        scrollController: _scrollController,
+        index: index,
+        messagesList: messagesList,
+        deliveryFee: _deliveryFee);
   }
 
   Widget _buildAnimatedHeader() {
     return AnimatedOpacity(
       opacity: isInitialAnimationComplete ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 500),
-      child: HeaderRow(),
+      child: HeaderRow(onBurgerMenuTap: () {
+        
+      }),
     );
+  }
+
+  Icon conditionalIconForPillsSlide(label) {
+    switch (label) {
+      case 'Cart':
+        return Icon(
+          Icons.shopping_cart_outlined,
+          size: 15,
+          color: AppColors.primaryColor,
+        );
+      case 'Orders':
+        return Icon(
+          Icons.receipt_long_outlined,
+          size: 15,
+          color: AppColors.primaryColor,
+        );
+      case 'Pay':
+        return Icon(
+          Icons.payment_outlined,
+          size: 15,
+          color: AppColors.primaryColor,
+        );
+      case 'Support':
+        return Icon(
+          Icons.headset_mic_outlined,
+          size: 15,
+          color: AppColors.primaryColor,
+        );
+      default:
+        return const Icon(Icons.help_outline);
+    }
   }
 
   Widget _buildPillsSlide() {
@@ -572,7 +506,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           children: [
             Consumer<ResultListProvider>(
               builder: (context, resultList, child) {
-                final suggested_prompts = [
+                final pill_slide_array = [
                   ...pills,
                   ...resultList.suggested_prompts
                 ];
@@ -580,12 +514,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 return Row(
                   children: [
                     ...List.generate(
-                      suggested_prompts.length,
+                      pill_slide_array.length,
                       (index) => Consumer<CartProvider>(
                         builder: (context, cart, child) {
-                          return suggested_prompts[index]['label'] == "Cart" &&
+                          return pill_slide_array[index]['label'] == "Cart" &&
                                       cart.itemCount == 0 ||
-                                  suggested_prompts[index]['label'] == "Pay" &&
+                                  pill_slide_array[index]['label'] == "Pay" &&
                                       cart.itemCount == 0
                               ? SizedBox()
                               : Padding(
@@ -594,7 +528,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                   child: InkWell(
                                     onTap: () {
                                       final action =
-                                          suggested_prompts[index]['action'];
+                                          pill_slide_array[index]['action'];
                                       if (action != null &&
                                           action == "View Cart") {
                                         closeProductSizeSelector();
@@ -632,16 +566,27 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                           ),
-                                          child: Text(
-                                            suggested_prompts[index]['label'] ??
-                                                '',
-                                            style: TextStyle(
-                                              color:
-                                                  Colors.white.withOpacity(.6),
-                                            ),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                pill_slide_array[index]
+                                                        ['label'] ??
+                                                    '',
+                                                style: TextStyle(
+                                                  color: Colors.white
+                                                      .withOpacity(.6),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              conditionalIconForPillsSlide(
+                                                  pill_slide_array[index]
+                                                      ['label'])
+                                            ],
                                           ),
                                         ),
-                                        if (suggested_prompts[index]['label'] ==
+                                        if (pill_slide_array[index]['label'] ==
                                                 'Cart' &&
                                             cart.itemCount > 0)
                                           Positioned(

@@ -87,21 +87,22 @@ class _ProductDisplayState extends State<ProductDisplay> {
               productData = [];
             }
 
-            return GestureDetector(
-              onTap: () {
-                context.read<ResultListProvider>().setCurrentProduct(
-                    productData: productData,
-                    productId: productId,
-                    productName: productName);
-              },
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 500),
-                opacity: _visibleItems.length > index && _visibleItems[index]
-                    ? 1.0
-                    : 0.0,
-                curve: Curves.easeIn,
-                child:
-                    ProductCard(productName: productName, productId: productId),
+            return AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: _visibleItems.length > index && _visibleItems[index]
+                  ? 1.0
+                  : 0.0,
+              curve: Curves.easeIn,
+              child: ProductCard(
+                productName: productName,
+                productId: productId,
+                onProductTap: () {
+                  context.read<ResultListProvider>().setCurrentProduct(
+                      productData: productData,
+                      productId: productId,
+                      productName: productName);
+                },
+                onFavoriteTap: () {},
               ),
             );
           },
