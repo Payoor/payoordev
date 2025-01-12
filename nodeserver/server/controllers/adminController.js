@@ -74,6 +74,36 @@ class AdminController {
         }
     }
 
+    async addProduct(req, res) {
+        try {
+            const { productName, unit, pricePerUnit, isAvailable } = req.body;
+
+            const productData = {
+                unit: unit,
+                price: pricePerUnit,
+                available: isAvailable
+            }
+
+            const product = new Product({
+                product_name: productName,
+                data: [productData],
+            });
+            
+            await product.save();
+
+            res.status(200).send({
+                message: "Product created successfully!",
+                product: product
+            });
+
+        } catch (error) {
+            res.status(400).json({
+                error: 'Failed to add product',
+                details: error.message
+            });
+        }
+    }
+
     async getProducts(req, res) {
         try {
             const page = parseInt(req.query.page) || 1;
@@ -88,7 +118,7 @@ class AdminController {
 
             const products = await Product.find(query).skip(skip).limit(limit).lean();
 
-            const totalCount = await Product.countDocuments();
+            const totalCount = Product.countDocuments(query);
 
             res.status(200).send({
                 message: "Products retrieved",
@@ -398,7 +428,7 @@ class AdminController {
             }
 
             const users = await User.find(query, '_id email name phoneNumber').skip(skip).limit(limit).lean();
-            const totalCount = await User.countDocuments();
+            const totalCount = await User.countDocuments(query);
 
             res.status(200).send({
                 message: "Users retrieved",
@@ -482,7 +512,7 @@ class AdminController {
                 .skip(skip)
                 .limit(limit)
                 .lean();
-            const totalCount = await Transaction.countDocuments();
+            const totalCount = await Transaction.countDocuments(query);
 
             res.status(200).send({
                 message: "Transactions retrieved",
@@ -581,13 +611,13 @@ class AdminController {
                 }
             }
 
-            const total = await Order.countDocuments();
-
             const orders = await Order.find(query, { __v: 0 })
-                .populate('userId', 'name -_id')
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit);
+            .populate('userId', 'name -_id')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+            const total = await Order.countDocuments(query);
 
             res.status(200).json({
                 message: 'Orders retrieved',

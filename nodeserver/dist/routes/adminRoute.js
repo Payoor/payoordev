@@ -46,6 +46,7 @@ adminRoute.get('/admins', authenticate, _adminController["default"].getAllAdmins
 adminRoute.post('/admin/login', _adminController["default"].signInAdmin);
 adminRoute.post('/admin/upload/products/excel', authenticate, uploadFileWithMulter("files/excel").single('file'), _adminController["default"].uploadExcelSheet);
 adminRoute.get('/admin/get/products', authenticate, _adminController["default"].getProducts);
+adminRoute.post('/admin/create/product', authenticate, _adminController["default"].addProduct);
 adminRoute.get('/admin/get/product', authenticate, _adminController["default"].getProduct);
 adminRoute.patch('/admin/update/product', authenticate, _adminController["default"].updateProduct);
 adminRoute["delete"]('/admin/delete/product', authenticate, _adminController["default"].deleteProduct);

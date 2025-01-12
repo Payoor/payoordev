@@ -44,6 +44,8 @@ adminRoute.post('/admin/upload/products/excel', authenticate, uploadFileWithMult
 
 adminRoute.get('/admin/get/products', authenticate, AdminController.getProducts);
 
+adminRoute.post('/admin/create/product', authenticate, AdminController.addProduct);
+
 adminRoute.get('/admin/get/product', authenticate, AdminController.getProduct);
 
 adminRoute.patch('/admin/update/product', authenticate, AdminController.updateProduct);

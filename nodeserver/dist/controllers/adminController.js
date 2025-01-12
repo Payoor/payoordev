@@ -142,14 +142,60 @@ var AdminController = /*#__PURE__*/function () {
       return uploadExcelSheet;
     }()
   }, {
-    key: "getProducts",
+    key: "addProduct",
     value: function () {
-      var _getProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
-        var page, limit, skip, search, query, products, totalCount;
+      var _addProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+        var _req$body, productName, unit, pricePerUnit, isAvailable, productData, product;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _context3.prev = 0;
+              _req$body = req.body, productName = _req$body.productName, unit = _req$body.unit, pricePerUnit = _req$body.pricePerUnit, isAvailable = _req$body.isAvailable;
+              productData = {
+                unit: unit,
+                price: pricePerUnit,
+                available: isAvailable
+              };
+              product = new _product["default"]({
+                product_name: productName,
+                data: [productData]
+              });
+              _context3.next = 6;
+              return product.save();
+            case 6:
+              res.status(200).send({
+                message: "Product created successfully!",
+                product: product
+              });
+              _context3.next = 12;
+              break;
+            case 9:
+              _context3.prev = 9;
+              _context3.t0 = _context3["catch"](0);
+              res.status(400).json({
+                error: 'Failed to add product',
+                details: _context3.t0.message
+              });
+            case 12:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 9]]);
+      }));
+      function addProduct(_x5, _x6) {
+        return _addProduct.apply(this, arguments);
+      }
+      return addProduct;
+    }()
+  }, {
+    key: "getProducts",
+    value: function () {
+      var _getProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+        var page, limit, skip, search, query, products, totalCount;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.prev = 0;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 20;
               skip = (page - 1) * limit;
@@ -161,14 +207,11 @@ var AdminController = /*#__PURE__*/function () {
                   $options: "i"
                 };
               }
-              _context3.next = 9;
+              _context4.next = 9;
               return _product["default"].find(query).skip(skip).limit(limit).lean();
             case 9:
-              products = _context3.sent;
-              _context3.next = 12;
-              return _product["default"].countDocuments();
-            case 12:
-              totalCount = _context3.sent;
+              products = _context4.sent;
+              totalCount = _product["default"].countDocuments(query);
               res.status(200).send({
                 message: "Products retrieved",
                 page: page,
@@ -176,22 +219,22 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 products: products
               });
-              _context3.next = 20;
+              _context4.next = 18;
               break;
-            case 16:
-              _context3.prev = 16;
-              _context3.t0 = _context3["catch"](0);
-              console.log(_context3.t0);
+            case 14:
+              _context4.prev = 14;
+              _context4.t0 = _context4["catch"](0);
+              console.log(_context4.t0);
               res.status(500).send({
-                message: _context3.t0.message
+                message: _context4.t0.message
               });
-            case 20:
+            case 18:
             case "end":
-              return _context3.stop();
+              return _context4.stop();
           }
-        }, _callee3, null, [[0, 16]]);
+        }, _callee4, null, [[0, 14]]);
       }));
-      function getProducts(_x5, _x6) {
+      function getProducts(_x7, _x8) {
         return _getProducts.apply(this, arguments);
       }
       return getProducts;
@@ -199,30 +242,30 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProduct",
     value: function () {
-      var _getProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _getProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
         var id, product, _id, data, images;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.prev = 0;
+              _context5.prev = 0;
               id = req.query.id;
               if (id) {
-                _context4.next = 4;
+                _context5.next = 4;
                 break;
               }
-              return _context4.abrupt("return", res.status(400).send({
+              return _context5.abrupt("return", res.status(400).send({
                 message: "Product ID is required"
               }));
             case 4:
-              _context4.next = 6;
+              _context5.next = 6;
               return _product["default"].findById(id).lean();
             case 6:
-              product = _context4.sent;
+              product = _context5.sent;
               if (product) {
-                _context4.next = 9;
+                _context5.next = 9;
                 break;
               }
-              return _context4.abrupt("return", res.status(404).send({
+              return _context5.abrupt("return", res.status(404).send({
                 message: "Product not found"
               }));
             case 9:
@@ -232,22 +275,22 @@ var AdminController = /*#__PURE__*/function () {
               }, data), {}, {
                 images: images
               }));
-              _context4.next = 17;
+              _context5.next = 17;
               break;
             case 13:
-              _context4.prev = 13;
-              _context4.t0 = _context4["catch"](0);
-              console.log(_context4.t0);
+              _context5.prev = 13;
+              _context5.t0 = _context5["catch"](0);
+              console.log(_context5.t0);
               res.status(500).send({
-                message: _context4.t0.message
+                message: _context5.t0.message
               });
             case 17:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
-        }, _callee4, null, [[0, 13]]);
+        }, _callee5, null, [[0, 13]]);
       }));
-      function getProduct(_x7, _x8) {
+      function getProduct(_x9, _x10) {
         return _getProduct.apply(this, arguments);
       }
       return getProduct;
@@ -255,36 +298,36 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "updateProduct",
     value: function () {
-      var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+      var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
         var id, updateData, options, updatedProduct, formattedProduct;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
+              _context6.prev = 0;
               id = req.query.id;
               updateData = req.body;
               options = {
                 "new": true
               };
               if (!(_typeof(updateData) !== 'object' || Array.isArray(updateData))) {
-                _context5.next = 6;
+                _context6.next = 6;
                 break;
               }
-              return _context5.abrupt("return", res.status(400).send({
+              return _context6.abrupt("return", res.status(400).send({
                 message: "Invalid update data provided"
               }));
             case 6:
-              _context5.next = 8;
+              _context6.next = 8;
               return _product["default"].findByIdAndUpdate(id, {
                 $set: updateData
               }, options).lean();
             case 8:
-              updatedProduct = _context5.sent;
+              updatedProduct = _context6.sent;
               if (updatedProduct) {
-                _context5.next = 11;
+                _context6.next = 11;
                 break;
               }
-              return _context5.abrupt("return", res.status(404).send({
+              return _context6.abrupt("return", res.status(404).send({
                 message: "Product not found"
               }));
             case 11:
@@ -295,22 +338,22 @@ var AdminController = /*#__PURE__*/function () {
                 message: "Product updated",
                 product: formattedProduct
               });
-              _context5.next = 19;
+              _context6.next = 19;
               break;
             case 15:
-              _context5.prev = 15;
-              _context5.t0 = _context5["catch"](0);
-              console.log(_context5.t0);
+              _context6.prev = 15;
+              _context6.t0 = _context6["catch"](0);
+              console.log(_context6.t0);
               res.status(500).send({
-                message: _context5.t0.message
+                message: _context6.t0.message
               });
             case 19:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
-        }, _callee5, null, [[0, 15]]);
+        }, _callee6, null, [[0, 15]]);
       }));
-      function updateProduct(_x9, _x10) {
+      function updateProduct(_x11, _x12) {
         return _updateProduct.apply(this, arguments);
       }
       return updateProduct;
@@ -318,30 +361,30 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteProduct",
     value: function () {
-      var _deleteProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+      var _deleteProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
         var id, deletedProduct;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context6.prev = 0;
+              _context7.prev = 0;
               id = req.query.id;
               if (id) {
-                _context6.next = 4;
+                _context7.next = 4;
                 break;
               }
-              return _context6.abrupt("return", res.status(400).send({
+              return _context7.abrupt("return", res.status(400).send({
                 message: "Product ID is required"
               }));
             case 4:
-              _context6.next = 6;
+              _context7.next = 6;
               return _product["default"].findByIdAndDelete(id).lean();
             case 6:
-              deletedProduct = _context6.sent;
+              deletedProduct = _context7.sent;
               if (deletedProduct) {
-                _context6.next = 9;
+                _context7.next = 9;
                 break;
               }
-              return _context6.abrupt("return", res.status(404).send({
+              return _context7.abrupt("return", res.status(404).send({
                 message: "Product not found"
               }));
             case 9:
@@ -349,22 +392,22 @@ var AdminController = /*#__PURE__*/function () {
                 message: "Product deleted successfully",
                 product: deletedProduct
               });
-              _context6.next = 16;
+              _context7.next = 16;
               break;
             case 12:
-              _context6.prev = 12;
-              _context6.t0 = _context6["catch"](0);
-              console.log(_context6.t0);
+              _context7.prev = 12;
+              _context7.t0 = _context7["catch"](0);
+              console.log(_context7.t0);
               res.status(500).send({
-                message: _context6.t0.message
+                message: _context7.t0.message
               });
             case 16:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
-        }, _callee6, null, [[0, 12]]);
+        }, _callee7, null, [[0, 12]]);
       }));
-      function deleteProduct(_x11, _x12) {
+      function deleteProduct(_x13, _x14) {
         return _deleteProduct.apply(this, arguments);
       }
       return deleteProduct;
@@ -372,17 +415,17 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "uploadProductImage",
     value: function () {
-      var _uploadProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+      var _uploadProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
         var id, file, fileName, uploadParams, command, s3Response, imageUrl, image;
-        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-          while (1) switch (_context7.prev = _context7.next) {
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
-              _context7.prev = 0;
+              _context8.prev = 0;
               if (req.file) {
-                _context7.next = 3;
+                _context8.next = 3;
                 break;
               }
-              return _context7.abrupt("return", res.status(400).json({
+              return _context8.abrupt("return", res.status(400).json({
                 error: 'No file uploaded'
               }));
             case 3:
@@ -396,38 +439,38 @@ var AdminController = /*#__PURE__*/function () {
                 ContentType: file.mimetype
               };
               command = new PutObjectCommand(uploadParams);
-              _context7.next = 10;
+              _context8.next = 10;
               return s3Client.send(command);
             case 10:
-              s3Response = _context7.sent;
+              s3Response = _context8.sent;
               imageUrl = "https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/".concat(fileName);
               image = new _image["default"]({
                 imageUrl: imageUrl,
                 product: id
               });
-              _context7.next = 15;
+              _context8.next = 15;
               return image.save();
             case 15:
               res.status(200).send({
                 message: "product image uploaded successfully",
                 image: image
               });
-              _context7.next = 22;
+              _context8.next = 22;
               break;
             case 18:
-              _context7.prev = 18;
-              _context7.t0 = _context7["catch"](0);
-              console.log(_context7.t0);
+              _context8.prev = 18;
+              _context8.t0 = _context8["catch"](0);
+              console.log(_context8.t0);
               res.status(500).send({
-                message: _context7.t0.message
+                message: _context8.t0.message
               });
             case 22:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
-        }, _callee7, null, [[0, 18]]);
+        }, _callee8, null, [[0, 18]]);
       }));
-      function uploadProductImage(_x13, _x14) {
+      function uploadProductImage(_x15, _x16) {
         return _uploadProductImage.apply(this, arguments);
       }
       return uploadProductImage;
@@ -435,40 +478,40 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getProductImages",
     value: function () {
-      var _getProductImages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
+      var _getProductImages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
         var id, images;
-        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
+        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+          while (1) switch (_context9.prev = _context9.next) {
             case 0:
-              _context8.prev = 0;
+              _context9.prev = 0;
               id = req.query.id;
-              _context8.next = 4;
+              _context9.next = 4;
               return _image["default"].find({
                 product: id
               });
             case 4:
-              images = _context8.sent;
+              images = _context9.sent;
               res.status(200).send({
                 message: "images found",
                 images: images,
                 total: images.length
               });
-              _context8.next = 12;
+              _context9.next = 12;
               break;
             case 8:
-              _context8.prev = 8;
-              _context8.t0 = _context8["catch"](0);
-              console.log(_context8.t0);
+              _context9.prev = 8;
+              _context9.t0 = _context9["catch"](0);
+              console.log(_context9.t0);
               res.status(500).send({
-                message: _context8.t0.message
+                message: _context9.t0.message
               });
             case 12:
             case "end":
-              return _context8.stop();
+              return _context9.stop();
           }
-        }, _callee8, null, [[0, 8]]);
+        }, _callee9, null, [[0, 8]]);
       }));
-      function getProductImages(_x15, _x16) {
+      function getProductImages(_x17, _x18) {
         return _getProductImages.apply(this, arguments);
       }
       return getProductImages;
@@ -476,32 +519,32 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteProductImage",
     value: function () {
-      var _deleteProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
+      var _deleteProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
         var id, image, key, deleteCommand, _error$$metadata;
-        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-          while (1) switch (_context9.prev = _context9.next) {
+        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
             case 0:
-              _context9.prev = 0;
+              _context10.prev = 0;
               id = req.query.id;
               if (id) {
-                _context9.next = 4;
+                _context10.next = 4;
                 break;
               }
-              return _context9.abrupt("return", res.status(400).json({
+              return _context10.abrupt("return", res.status(400).json({
                 message: 'Image ID is required'
               }));
             case 4:
-              _context9.next = 6;
+              _context10.next = 6;
               return _image["default"].findOne({
                 _id: id
               });
             case 6:
-              image = _context9.sent;
+              image = _context10.sent;
               if (image) {
-                _context9.next = 9;
+                _context10.next = 9;
                 break;
               }
-              return _context9.abrupt("return", res.status(404).json({
+              return _context10.abrupt("return", res.status(404).json({
                 message: 'Image not found'
               }));
             case 9:
@@ -510,10 +553,10 @@ var AdminController = /*#__PURE__*/function () {
                 Bucket: 'payoorimages',
                 Key: key
               });
-              _context9.next = 13;
+              _context10.next = 13;
               return s3Client.send(deleteCommand);
             case 13:
-              _context9.next = 15;
+              _context10.next = 15;
               return _image["default"].findOneAndDelete({
                 _id: id
               });
@@ -522,40 +565,40 @@ var AdminController = /*#__PURE__*/function () {
                 message: 'Image deleted successfully',
                 deletedImage: image
               });
-              _context9.next = 26;
+              _context10.next = 26;
               break;
             case 18:
-              _context9.prev = 18;
-              _context9.t0 = _context9["catch"](0);
-              console.log(_context9.t0);
-              if (!(_context9.t0.name === 'CastError')) {
-                _context9.next = 23;
+              _context10.prev = 18;
+              _context10.t0 = _context10["catch"](0);
+              console.log(_context10.t0);
+              if (!(_context10.t0.name === 'CastError')) {
+                _context10.next = 23;
                 break;
               }
-              return _context9.abrupt("return", res.status(400).json({
+              return _context10.abrupt("return", res.status(400).json({
                 message: 'Invalid image ID format'
               }));
             case 23:
-              if (!((_error$$metadata = _context9.t0.$metadata) !== null && _error$$metadata !== void 0 && _error$$metadata.httpStatusCode)) {
-                _context9.next = 25;
+              if (!((_error$$metadata = _context10.t0.$metadata) !== null && _error$$metadata !== void 0 && _error$$metadata.httpStatusCode)) {
+                _context10.next = 25;
                 break;
               }
-              return _context9.abrupt("return", res.status(_context9.t0.$metadata.httpStatusCode).json({
+              return _context10.abrupt("return", res.status(_context10.t0.$metadata.httpStatusCode).json({
                 message: 'Error deleting image from storage',
-                error: _context9.t0.message
+                error: _context10.t0.message
               }));
             case 25:
               res.status(500).send({
                 message: 'Error deleting image',
-                error: _context9.t0.message
+                error: _context10.t0.message
               });
             case 26:
             case "end":
-              return _context9.stop();
+              return _context10.stop();
           }
-        }, _callee9, null, [[0, 18]]);
+        }, _callee10, null, [[0, 18]]);
       }));
-      function deleteProductImage(_x17, _x18) {
+      function deleteProductImage(_x19, _x20) {
         return _deleteProductImage.apply(this, arguments);
       }
       return deleteProductImage;
@@ -563,75 +606,8 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "createAdmin",
     value: function () {
-      var _createAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
-        var _req$body, username, password, existingAdmin, admin, token;
-        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
-          while (1) switch (_context10.prev = _context10.next) {
-            case 0:
-              _context10.prev = 0;
-              _req$body = req.body, username = _req$body.username, password = _req$body.password; // Validate input
-              if (!(!username || !password)) {
-                _context10.next = 4;
-                break;
-              }
-              return _context10.abrupt("return", res.status(400).json({
-                error: 'Username and password are required'
-              }));
-            case 4:
-              _context10.next = 6;
-              return _admin["default"].findOne({
-                username: username
-              });
-            case 6:
-              existingAdmin = _context10.sent;
-              if (!existingAdmin) {
-                _context10.next = 9;
-                break;
-              }
-              return _context10.abrupt("return", res.status(400).json({
-                error: 'Username already exists'
-              }));
-            case 9:
-              // Create new admin
-              admin = new _admin["default"]({
-                username: username,
-                password: password
-              }); // Save admin and generate token
-              _context10.next = 12;
-              return admin.save();
-            case 12:
-              _context10.next = 14;
-              return admin.generateAuthToken();
-            case 14:
-              token = _context10.sent;
-              res.status(201).json({
-                admin: admin,
-                token: token
-              });
-              _context10.next = 21;
-              break;
-            case 18:
-              _context10.prev = 18;
-              _context10.t0 = _context10["catch"](0);
-              res.status(400).json({
-                error: _context10.t0.message
-              });
-            case 21:
-            case "end":
-              return _context10.stop();
-          }
-        }, _callee10, null, [[0, 18]]);
-      }));
-      function createAdmin(_x19, _x20) {
-        return _createAdmin.apply(this, arguments);
-      }
-      return createAdmin;
-    }()
-  }, {
-    key: "signInAdmin",
-    value: function () {
-      var _signInAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
-        var _req$body2, username, password, admin, token;
+      var _createAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11(req, res) {
+        var _req$body2, username, password, existingAdmin, admin, token;
         return _regeneratorRuntime().wrap(function _callee11$(_context11) {
           while (1) switch (_context11.prev = _context11.next) {
             case 0:
@@ -646,32 +622,99 @@ var AdminController = /*#__PURE__*/function () {
               }));
             case 4:
               _context11.next = 6;
+              return _admin["default"].findOne({
+                username: username
+              });
+            case 6:
+              existingAdmin = _context11.sent;
+              if (!existingAdmin) {
+                _context11.next = 9;
+                break;
+              }
+              return _context11.abrupt("return", res.status(400).json({
+                error: 'Username already exists'
+              }));
+            case 9:
+              // Create new admin
+              admin = new _admin["default"]({
+                username: username,
+                password: password
+              }); // Save admin and generate token
+              _context11.next = 12;
+              return admin.save();
+            case 12:
+              _context11.next = 14;
+              return admin.generateAuthToken();
+            case 14:
+              token = _context11.sent;
+              res.status(201).json({
+                admin: admin,
+                token: token
+              });
+              _context11.next = 21;
+              break;
+            case 18:
+              _context11.prev = 18;
+              _context11.t0 = _context11["catch"](0);
+              res.status(400).json({
+                error: _context11.t0.message
+              });
+            case 21:
+            case "end":
+              return _context11.stop();
+          }
+        }, _callee11, null, [[0, 18]]);
+      }));
+      function createAdmin(_x21, _x22) {
+        return _createAdmin.apply(this, arguments);
+      }
+      return createAdmin;
+    }()
+  }, {
+    key: "signInAdmin",
+    value: function () {
+      var _signInAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
+        var _req$body3, username, password, admin, token;
+        return _regeneratorRuntime().wrap(function _callee12$(_context12) {
+          while (1) switch (_context12.prev = _context12.next) {
+            case 0:
+              _context12.prev = 0;
+              _req$body3 = req.body, username = _req$body3.username, password = _req$body3.password; // Validate input
+              if (!(!username || !password)) {
+                _context12.next = 4;
+                break;
+              }
+              return _context12.abrupt("return", res.status(400).json({
+                error: 'Username and password are required'
+              }));
+            case 4:
+              _context12.next = 6;
               return _admin["default"].findByCredentials(username, password);
             case 6:
-              admin = _context11.sent;
-              _context11.next = 9;
+              admin = _context12.sent;
+              _context12.next = 9;
               return admin.generateAuthToken();
             case 9:
-              token = _context11.sent;
+              token = _context12.sent;
               res.json({
                 admin: admin,
                 token: token
               });
-              _context11.next = 16;
+              _context12.next = 16;
               break;
             case 13:
-              _context11.prev = 13;
-              _context11.t0 = _context11["catch"](0);
+              _context12.prev = 13;
+              _context12.t0 = _context12["catch"](0);
               res.status(401).json({
                 error: 'Invalid login credentials'
               });
             case 16:
             case "end":
-              return _context11.stop();
+              return _context12.stop();
           }
-        }, _callee11, null, [[0, 13]]);
+        }, _callee12, null, [[0, 13]]);
       }));
-      function signInAdmin(_x21, _x22) {
+      function signInAdmin(_x23, _x24) {
         return _signInAdmin.apply(this, arguments);
       }
       return signInAdmin;
@@ -679,68 +722,68 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteAdmin",
     value: function () {
-      var _deleteAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
+      var _deleteAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee13(req, res) {
         var adminId, adminCount, adminToDelete;
-        return _regeneratorRuntime().wrap(function _callee12$(_context12) {
-          while (1) switch (_context12.prev = _context12.next) {
+        return _regeneratorRuntime().wrap(function _callee13$(_context13) {
+          while (1) switch (_context13.prev = _context13.next) {
             case 0:
-              _context12.prev = 0;
+              _context13.prev = 0;
               adminId = req.params.adminId; // Check if trying to delete self
               if (!(adminId === req.admin._id.toString())) {
-                _context12.next = 4;
+                _context13.next = 4;
                 break;
               }
-              return _context12.abrupt("return", res.status(400).json({
+              return _context13.abrupt("return", res.status(400).json({
                 error: 'Cannot delete your own admin account'
               }));
             case 4:
-              _context12.next = 6;
+              _context13.next = 6;
               return _admin["default"].countDocuments({});
             case 6:
-              adminCount = _context12.sent;
+              adminCount = _context13.sent;
               if (!(adminCount <= 1)) {
-                _context12.next = 9;
+                _context13.next = 9;
                 break;
               }
-              return _context12.abrupt("return", res.status(400).json({
+              return _context13.abrupt("return", res.status(400).json({
                 error: 'Cannot delete the last admin account'
               }));
             case 9:
-              _context12.next = 11;
+              _context13.next = 11;
               return _admin["default"].findById(adminId);
             case 11:
-              adminToDelete = _context12.sent;
+              adminToDelete = _context13.sent;
               if (adminToDelete) {
-                _context12.next = 14;
+                _context13.next = 14;
                 break;
               }
-              return _context12.abrupt("return", res.status(404).json({
+              return _context13.abrupt("return", res.status(404).json({
                 error: 'Admin not found'
               }));
             case 14:
-              _context12.next = 16;
+              _context13.next = 16;
               return _admin["default"].findByIdAndDelete(adminId);
             case 16:
               res.json({
                 message: 'Admin deleted successfully',
                 deletedAdmin: adminToDelete.username
               });
-              _context12.next = 22;
+              _context13.next = 22;
               break;
             case 19:
-              _context12.prev = 19;
-              _context12.t0 = _context12["catch"](0);
+              _context13.prev = 19;
+              _context13.t0 = _context13["catch"](0);
               res.status(400).json({
                 error: 'Failed to delete admin',
-                details: _context12.t0.message
+                details: _context13.t0.message
               });
             case 22:
             case "end":
-              return _context12.stop();
+              return _context13.stop();
           }
-        }, _callee12, null, [[0, 19]]);
+        }, _callee13, null, [[0, 19]]);
       }));
-      function deleteAdmin(_x23, _x24) {
+      function deleteAdmin(_x25, _x26) {
         return _deleteAdmin.apply(this, arguments);
       }
       return deleteAdmin;
@@ -748,33 +791,33 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getAllAdmins",
     value: function () {
-      var _getAllAdmins = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee13(req, res) {
+      var _getAllAdmins = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(req, res) {
         var admins;
-        return _regeneratorRuntime().wrap(function _callee13$(_context13) {
-          while (1) switch (_context13.prev = _context13.next) {
+        return _regeneratorRuntime().wrap(function _callee14$(_context14) {
+          while (1) switch (_context14.prev = _context14.next) {
             case 0:
-              _context13.prev = 0;
-              _context13.next = 3;
+              _context14.prev = 0;
+              _context14.next = 3;
               return _admin["default"].find({}, 'username _id');
             case 3:
-              admins = _context13.sent;
+              admins = _context14.sent;
               res.json(admins);
-              _context13.next = 10;
+              _context14.next = 10;
               break;
             case 7:
-              _context13.prev = 7;
-              _context13.t0 = _context13["catch"](0);
+              _context14.prev = 7;
+              _context14.t0 = _context14["catch"](0);
               res.status(400).json({
                 error: 'Failed to fetch admins',
-                details: _context13.t0.message
+                details: _context14.t0.message
               });
             case 10:
             case "end":
-              return _context13.stop();
+              return _context14.stop();
           }
-        }, _callee13, null, [[0, 7]]);
+        }, _callee14, null, [[0, 7]]);
       }));
-      function getAllAdmins(_x25, _x26) {
+      function getAllAdmins(_x27, _x28) {
         return _getAllAdmins.apply(this, arguments);
       }
       return getAllAdmins;
@@ -782,12 +825,12 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getUsers",
     value: function () {
-      var _getUsers = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(req, res) {
+      var _getUsers = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(req, res) {
         var page, limit, skip, search, query, users, totalCount;
-        return _regeneratorRuntime().wrap(function _callee14$(_context14) {
-          while (1) switch (_context14.prev = _context14.next) {
+        return _regeneratorRuntime().wrap(function _callee15$(_context15) {
+          while (1) switch (_context15.prev = _context15.next) {
             case 0:
-              _context14.prev = 0;
+              _context15.prev = 0;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
@@ -799,14 +842,14 @@ var AdminController = /*#__PURE__*/function () {
                   $options: "i"
                 };
               }
-              _context14.next = 9;
+              _context15.next = 9;
               return _user["default"].find(query, '_id email name phoneNumber').skip(skip).limit(limit).lean();
             case 9:
-              users = _context14.sent;
-              _context14.next = 12;
-              return _user["default"].countDocuments();
+              users = _context15.sent;
+              _context15.next = 12;
+              return _user["default"].countDocuments(query);
             case 12:
-              totalCount = _context14.sent;
+              totalCount = _context15.sent;
               res.status(200).send({
                 message: "Users retrieved",
                 page: page,
@@ -814,22 +857,22 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 users: users
               });
-              _context14.next = 20;
+              _context15.next = 20;
               break;
             case 16:
-              _context14.prev = 16;
-              _context14.t0 = _context14["catch"](0);
-              console.log(_context14.t0);
+              _context15.prev = 16;
+              _context15.t0 = _context15["catch"](0);
+              console.log(_context15.t0);
               res.status(500).send({
-                message: _context14.t0.message
+                message: _context15.t0.message
               });
             case 20:
             case "end":
-              return _context14.stop();
+              return _context15.stop();
           }
-        }, _callee14, null, [[0, 16]]);
+        }, _callee15, null, [[0, 16]]);
       }));
-      function getUsers(_x27, _x28) {
+      function getUsers(_x29, _x30) {
         return _getUsers.apply(this, arguments);
       }
       return getUsers;
@@ -837,30 +880,30 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getUser",
     value: function () {
-      var _getUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(req, res) {
+      var _getUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee16(req, res) {
         var id, user, userResponse, response;
-        return _regeneratorRuntime().wrap(function _callee15$(_context15) {
-          while (1) switch (_context15.prev = _context15.next) {
+        return _regeneratorRuntime().wrap(function _callee16$(_context16) {
+          while (1) switch (_context16.prev = _context16.next) {
             case 0:
-              _context15.prev = 0;
+              _context16.prev = 0;
               id = req.query.id;
               if (id) {
-                _context15.next = 4;
+                _context16.next = 4;
                 break;
               }
-              return _context15.abrupt("return", res.status(400).send({
+              return _context16.abrupt("return", res.status(400).send({
                 message: "User ID is required"
               }));
             case 4:
-              _context15.next = 6;
+              _context16.next = 6;
               return _user["default"].findById(id).lean();
             case 6:
-              user = _context15.sent;
+              user = _context16.sent;
               if (user) {
-                _context15.next = 9;
+                _context16.next = 9;
                 break;
               }
-              return _context15.abrupt("return", res.status(404).send({
+              return _context16.abrupt("return", res.status(404).send({
                 message: "User not found"
               }));
             case 9:
@@ -879,22 +922,22 @@ var AdminController = /*#__PURE__*/function () {
                 }
               };
               res.status(200).send(response);
-              _context15.next = 18;
+              _context16.next = 18;
               break;
             case 14:
-              _context15.prev = 14;
-              _context15.t0 = _context15["catch"](0);
-              console.log(_context15.t0);
+              _context16.prev = 14;
+              _context16.t0 = _context16["catch"](0);
+              console.log(_context16.t0);
               res.status(500).send({
-                message: _context15.t0.message
+                message: _context16.t0.message
               });
             case 18:
             case "end":
-              return _context15.stop();
+              return _context16.stop();
           }
-        }, _callee15, null, [[0, 14]]);
+        }, _callee16, null, [[0, 14]]);
       }));
-      function getUser(_x29, _x30) {
+      function getUser(_x31, _x32) {
         return _getUser.apply(this, arguments);
       }
       return getUser;
@@ -902,12 +945,12 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getTransactions",
     value: function () {
-      var _getTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee16(req, res) {
+      var _getTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee17(req, res) {
         var page, limit, skip, search, status, query, initiators, initiatorIds, transactions, totalCount;
-        return _regeneratorRuntime().wrap(function _callee16$(_context16) {
-          while (1) switch (_context16.prev = _context16.next) {
+        return _regeneratorRuntime().wrap(function _callee17$(_context17) {
+          while (1) switch (_context17.prev = _context17.next) {
             case 0:
-              _context16.prev = 0;
+              _context17.prev = 0;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
@@ -918,10 +961,10 @@ var AdminController = /*#__PURE__*/function () {
                 query.status = status;
               }
               if (!search) {
-                _context16.next = 14;
+                _context17.next = 14;
                 break;
               }
-              _context16.next = 11;
+              _context17.next = 11;
               return _user["default"].find({
                 name: {
                   $regex: search,
@@ -931,7 +974,7 @@ var AdminController = /*#__PURE__*/function () {
                 _id: 1
               });
             case 11:
-              initiators = _context16.sent;
+              initiators = _context17.sent;
               initiatorIds = initiators.map(function (user) {
                 return user._id;
               });
@@ -941,7 +984,7 @@ var AdminController = /*#__PURE__*/function () {
                 };
               }
             case 14:
-              _context16.next = 16;
+              _context17.next = 16;
               return _transaction["default"].find(query, {
                 __v: 0,
                 updatedAt: 0
@@ -949,11 +992,11 @@ var AdminController = /*#__PURE__*/function () {
                 createdAt: -1
               }).skip(skip).limit(limit).lean();
             case 16:
-              transactions = _context16.sent;
-              _context16.next = 19;
-              return _transaction["default"].countDocuments();
+              transactions = _context17.sent;
+              _context17.next = 19;
+              return _transaction["default"].countDocuments(query);
             case 19:
-              totalCount = _context16.sent;
+              totalCount = _context17.sent;
               res.status(200).send({
                 message: "Transactions retrieved",
                 page: page,
@@ -961,22 +1004,22 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 transactions: transactions
               });
-              _context16.next = 27;
+              _context17.next = 27;
               break;
             case 23:
-              _context16.prev = 23;
-              _context16.t0 = _context16["catch"](0);
-              console.log(_context16.t0);
+              _context17.prev = 23;
+              _context17.t0 = _context17["catch"](0);
+              console.log(_context17.t0);
               res.status(500).send({
-                message: _context16.t0.message
+                message: _context17.t0.message
               });
             case 27:
             case "end":
-              return _context16.stop();
+              return _context17.stop();
           }
-        }, _callee16, null, [[0, 23]]);
+        }, _callee17, null, [[0, 23]]);
       }));
-      function getTransactions(_x31, _x32) {
+      function getTransactions(_x33, _x34) {
         return _getTransactions.apply(this, arguments);
       }
       return getTransactions;
@@ -984,33 +1027,33 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getTransaction",
     value: function () {
-      var _getTransaction = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee17(req, res) {
+      var _getTransaction = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee18(req, res) {
         var transactionId, transaction;
-        return _regeneratorRuntime().wrap(function _callee17$(_context17) {
-          while (1) switch (_context17.prev = _context17.next) {
+        return _regeneratorRuntime().wrap(function _callee18$(_context18) {
+          while (1) switch (_context18.prev = _context18.next) {
             case 0:
-              _context17.prev = 0;
+              _context18.prev = 0;
               transactionId = req.query.id;
               if (transactionId) {
-                _context17.next = 4;
+                _context18.next = 4;
                 break;
               }
-              return _context17.abrupt("return", res.status(400).send({
+              return _context18.abrupt("return", res.status(400).send({
                 message: "Transaction ID is required"
               }));
             case 4:
-              _context17.next = 6;
+              _context18.next = 6;
               return _transaction["default"].findById(transactionId, {
                 __v: 0,
                 updatedAt: 0
               }).lean();
             case 6:
-              transaction = _context17.sent;
+              transaction = _context18.sent;
               if (transaction) {
-                _context17.next = 9;
+                _context18.next = 9;
                 break;
               }
-              return _context17.abrupt("return", res.status(404).json({
+              return _context18.abrupt("return", res.status(404).json({
                 success: false,
                 message: 'Transaction not found'
               }));
@@ -1021,58 +1064,6 @@ var AdminController = /*#__PURE__*/function () {
                   message: 'Transaction found',
                   transaction: transaction
                 }
-              });
-              _context17.next = 16;
-              break;
-            case 12:
-              _context17.prev = 12;
-              _context17.t0 = _context17["catch"](0);
-              console.log(_context17.t0);
-              res.status(500).send({
-                message: _context17.t0.message
-              });
-            case 16:
-            case "end":
-              return _context17.stop();
-          }
-        }, _callee17, null, [[0, 12]]);
-      }));
-      function getTransaction(_x33, _x34) {
-        return _getTransaction.apply(this, arguments);
-      }
-      return getTransaction;
-    }()
-  }, {
-    key: "getUserTransactions",
-    value: function () {
-      var _getUserTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee18(req, res) {
-        var userId, page, limit, skip, transactions, totalCount;
-        return _regeneratorRuntime().wrap(function _callee18$(_context18) {
-          while (1) switch (_context18.prev = _context18.next) {
-            case 0:
-              _context18.prev = 0;
-              userId = req.query.userId;
-              page = parseInt(req.query.page) || 1;
-              limit = parseInt(req.query.limit) || 10;
-              skip = (page - 1) * limit;
-              _context18.next = 7;
-              return _transaction["default"].find({
-                initiatorId: userId
-              }, {
-                __v: 0,
-                updatedAt: 0
-              }).sort({
-                createdAt: -1
-              }).skip(skip).limit(limit).lean();
-            case 7:
-              transactions = _context18.sent;
-              totalCount = transactions.length;
-              res.status(200).send({
-                message: "Transactions retrieved",
-                page: page,
-                totalPages: Math.ceil(totalCount / limit),
-                totalCount: totalCount,
-                transactions: transactions
               });
               _context18.next = 16;
               break;
@@ -1089,7 +1080,59 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee18, null, [[0, 12]]);
       }));
-      function getUserTransactions(_x35, _x36) {
+      function getTransaction(_x35, _x36) {
+        return _getTransaction.apply(this, arguments);
+      }
+      return getTransaction;
+    }()
+  }, {
+    key: "getUserTransactions",
+    value: function () {
+      var _getUserTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee19(req, res) {
+        var userId, page, limit, skip, transactions, totalCount;
+        return _regeneratorRuntime().wrap(function _callee19$(_context19) {
+          while (1) switch (_context19.prev = _context19.next) {
+            case 0:
+              _context19.prev = 0;
+              userId = req.query.userId;
+              page = parseInt(req.query.page) || 1;
+              limit = parseInt(req.query.limit) || 10;
+              skip = (page - 1) * limit;
+              _context19.next = 7;
+              return _transaction["default"].find({
+                initiatorId: userId
+              }, {
+                __v: 0,
+                updatedAt: 0
+              }).sort({
+                createdAt: -1
+              }).skip(skip).limit(limit).lean();
+            case 7:
+              transactions = _context19.sent;
+              totalCount = transactions.length;
+              res.status(200).send({
+                message: "Transactions retrieved",
+                page: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalCount: totalCount,
+                transactions: transactions
+              });
+              _context19.next = 16;
+              break;
+            case 12:
+              _context19.prev = 12;
+              _context19.t0 = _context19["catch"](0);
+              console.log(_context19.t0);
+              res.status(500).send({
+                message: _context19.t0.message
+              });
+            case 16:
+            case "end":
+              return _context19.stop();
+          }
+        }, _callee19, null, [[0, 12]]);
+      }));
+      function getUserTransactions(_x37, _x38) {
         return _getUserTransactions.apply(this, arguments);
       }
       return getUserTransactions;
@@ -1097,12 +1140,12 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getOrders",
     value: function () {
-      var _getOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee19(req, res) {
-        var page, limit, skip, search, status, query, users, userIds, total, orders;
-        return _regeneratorRuntime().wrap(function _callee19$(_context19) {
-          while (1) switch (_context19.prev = _context19.next) {
+      var _getOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee20(req, res) {
+        var page, limit, skip, search, status, query, users, userIds, orders, total;
+        return _regeneratorRuntime().wrap(function _callee20$(_context20) {
+          while (1) switch (_context20.prev = _context20.next) {
             case 0:
-              _context19.prev = 0;
+              _context20.prev = 0;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
@@ -1113,10 +1156,10 @@ var AdminController = /*#__PURE__*/function () {
                 query.status = status;
               }
               if (!search) {
-                _context19.next = 14;
+                _context20.next = 14;
                 break;
               }
-              _context19.next = 11;
+              _context20.next = 11;
               return _user["default"].find({
                 name: {
                   $regex: search,
@@ -1126,7 +1169,7 @@ var AdminController = /*#__PURE__*/function () {
                 _id: 1
               });
             case 11:
-              users = _context19.sent;
+              users = _context20.sent;
               userIds = users.map(function (user) {
                 return user._id;
               });
@@ -1136,18 +1179,18 @@ var AdminController = /*#__PURE__*/function () {
                 };
               }
             case 14:
-              _context19.next = 16;
-              return _order["default"].countDocuments();
-            case 16:
-              total = _context19.sent;
-              _context19.next = 19;
+              _context20.next = 16;
               return _order["default"].find(query, {
                 __v: 0
               }).populate('userId', 'name -_id').sort({
                 createdAt: -1
               }).skip(skip).limit(limit);
+            case 16:
+              orders = _context20.sent;
+              _context20.next = 19;
+              return _order["default"].countDocuments(query);
             case 19:
-              orders = _context19.sent;
+              total = _context20.sent;
               res.status(200).json({
                 message: 'Orders retrieved',
                 page: page,
@@ -1156,24 +1199,24 @@ var AdminController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 orders: orders
               });
-              _context19.next = 27;
+              _context20.next = 27;
               break;
             case 23:
-              _context19.prev = 23;
-              _context19.t0 = _context19["catch"](0);
-              console.log(_context19.t0);
+              _context20.prev = 23;
+              _context20.t0 = _context20["catch"](0);
+              console.log(_context20.t0);
               res.status(500).json({
                 success: false,
                 message: 'Error fetching orders',
-                error: _context19.t0.message
+                error: _context20.t0.message
               });
             case 27:
             case "end":
-              return _context19.stop();
+              return _context20.stop();
           }
-        }, _callee19, null, [[0, 23]]);
+        }, _callee20, null, [[0, 23]]);
       }));
-      function getOrders(_x37, _x38) {
+      function getOrders(_x39, _x40) {
         return _getOrders.apply(this, arguments);
       }
       return getOrders;
@@ -1181,17 +1224,17 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrders",
     value: function () {
-      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee20(req, res) {
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee21(req, res) {
         var userId, page, limit, skip, orders, total;
-        return _regeneratorRuntime().wrap(function _callee20$(_context20) {
-          while (1) switch (_context20.prev = _context20.next) {
+        return _regeneratorRuntime().wrap(function _callee21$(_context21) {
+          while (1) switch (_context21.prev = _context21.next) {
             case 0:
-              _context20.prev = 0;
+              _context21.prev = 0;
               userId = req.query.userId;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
-              _context20.next = 7;
+              _context21.next = 7;
               return _order["default"].find({
                 userId: userId
               }, {
@@ -1200,7 +1243,7 @@ var AdminController = /*#__PURE__*/function () {
                 createdAt: -1
               }).skip(skip).limit(limit);
             case 7:
-              orders = _context20.sent;
+              orders = _context21.sent;
               total = orders.length;
               res.status(200).json({
                 message: 'Orders retrieved',
@@ -1210,24 +1253,24 @@ var AdminController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 orders: orders
               });
-              _context20.next = 16;
+              _context21.next = 16;
               break;
             case 12:
-              _context20.prev = 12;
-              _context20.t0 = _context20["catch"](0);
-              console.log(_context20.t0);
+              _context21.prev = 12;
+              _context21.t0 = _context21["catch"](0);
+              console.log(_context21.t0);
               res.status(500).json({
                 success: false,
                 message: 'Error fetching orders',
-                error: _context20.t0.message
+                error: _context21.t0.message
               });
             case 16:
             case "end":
-              return _context20.stop();
+              return _context21.stop();
           }
-        }, _callee20, null, [[0, 12]]);
+        }, _callee21, null, [[0, 12]]);
       }));
-      function getUserOrders(_x39, _x40) {
+      function getUserOrders(_x41, _x42) {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;
@@ -1235,22 +1278,22 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee21(req, res) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee22(req, res) {
         var orderId, order;
-        return _regeneratorRuntime().wrap(function _callee21$(_context21) {
-          while (1) switch (_context21.prev = _context21.next) {
+        return _regeneratorRuntime().wrap(function _callee22$(_context22) {
+          while (1) switch (_context22.prev = _context22.next) {
             case 0:
-              _context21.prev = 0;
+              _context22.prev = 0;
               orderId = req.query.id;
-              _context21.next = 4;
+              _context22.next = 4;
               return _order["default"].findById(orderId).populate('userId', 'name email');
             case 4:
-              order = _context21.sent;
+              order = _context22.sent;
               if (order) {
-                _context21.next = 7;
+                _context22.next = 7;
                 break;
               }
-              return _context21.abrupt("return", res.status(404).json({
+              return _context22.abrupt("return", res.status(404).json({
                 success: false,
                 message: 'Order not found'
               }));
@@ -1259,24 +1302,24 @@ var AdminController = /*#__PURE__*/function () {
                 success: true,
                 data: order
               });
-              _context21.next = 14;
+              _context22.next = 14;
               break;
             case 10:
-              _context21.prev = 10;
-              _context21.t0 = _context21["catch"](0);
-              console.log(_context21.t0);
+              _context22.prev = 10;
+              _context22.t0 = _context22["catch"](0);
+              console.log(_context22.t0);
               res.status(500).json({
                 success: false,
                 message: 'Error fetching order',
-                error: _context21.t0.message
+                error: _context22.t0.message
               });
             case 14:
             case "end":
-              return _context21.stop();
+              return _context22.stop();
           }
-        }, _callee21, null, [[0, 10]]);
+        }, _callee22, null, [[0, 10]]);
       }));
-      function getOrder(_x41, _x42) {
+      function getOrder(_x43, _x44) {
         return _getOrder.apply(this, arguments);
       }
       return getOrder;
@@ -1284,44 +1327,44 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteOneUser",
     value: function () {
-      var _deleteOneUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee22(req, res) {
+      var _deleteOneUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee23(req, res) {
         var userId, deletedUser;
-        return _regeneratorRuntime().wrap(function _callee22$(_context22) {
-          while (1) switch (_context22.prev = _context22.next) {
+        return _regeneratorRuntime().wrap(function _callee23$(_context23) {
+          while (1) switch (_context23.prev = _context23.next) {
             case 0:
-              _context22.prev = 0;
+              _context23.prev = 0;
               userId = req.query.userId;
-              _context22.next = 4;
+              _context23.next = 4;
               return _user["default"].findByIdAndDelete(userId);
             case 4:
-              deletedUser = _context22.sent;
+              deletedUser = _context23.sent;
               if (deletedUser) {
-                _context22.next = 7;
+                _context23.next = 7;
                 break;
               }
-              return _context22.abrupt("return", res.status(404).json({
+              return _context23.abrupt("return", res.status(404).json({
                 message: 'User not found'
               }));
             case 7:
               res.status(200).json({
                 message: 'User deleted successfully'
               });
-              _context22.next = 13;
+              _context23.next = 13;
               break;
             case 10:
-              _context22.prev = 10;
-              _context22.t0 = _context22["catch"](0);
+              _context23.prev = 10;
+              _context23.t0 = _context23["catch"](0);
               res.status(500).json({
                 message: 'Error deleting user',
-                error: _context22.t0.message
+                error: _context23.t0.message
               });
             case 13:
             case "end":
-              return _context22.stop();
+              return _context23.stop();
           }
-        }, _callee22, null, [[0, 10]]);
+        }, _callee23, null, [[0, 10]]);
       }));
-      function deleteOneUser(_x43, _x44) {
+      function deleteOneUser(_x45, _x46) {
         return _deleteOneUser.apply(this, arguments);
       }
       return deleteOneUser;
@@ -1329,46 +1372,46 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getDashboardAggregateData",
     value: function () {
-      var _getDashboardAggregateData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee23(req, res) {
+      var _getDashboardAggregateData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee24(req, res) {
         var availableProductsCount, pendingOrdersCount, completedOrdersCount, pendingTransactionsCount, verifiedTransactionsCount, usersCount;
-        return _regeneratorRuntime().wrap(function _callee23$(_context23) {
-          while (1) switch (_context23.prev = _context23.next) {
+        return _regeneratorRuntime().wrap(function _callee24$(_context24) {
+          while (1) switch (_context24.prev = _context24.next) {
             case 0:
-              _context23.prev = 0;
-              _context23.next = 3;
+              _context24.prev = 0;
+              _context24.next = 3;
               return _product["default"].countDocuments({
                 "data.availability": "YES"
               });
             case 3:
-              availableProductsCount = _context23.sent;
-              _context23.next = 6;
+              availableProductsCount = _context24.sent;
+              _context24.next = 6;
               return _order["default"].countDocuments({
                 status: 'pending'
               });
             case 6:
-              pendingOrdersCount = _context23.sent;
-              _context23.next = 9;
+              pendingOrdersCount = _context24.sent;
+              _context24.next = 9;
               return _order["default"].countDocuments({
                 status: 'completed'
               });
             case 9:
-              completedOrdersCount = _context23.sent;
-              _context23.next = 12;
+              completedOrdersCount = _context24.sent;
+              _context24.next = 12;
               return _transaction["default"].countDocuments({
                 status: 'pending'
               });
             case 12:
-              pendingTransactionsCount = _context23.sent;
-              _context23.next = 15;
+              pendingTransactionsCount = _context24.sent;
+              _context24.next = 15;
               return _transaction["default"].countDocuments({
                 status: 'verified'
               });
             case 15:
-              verifiedTransactionsCount = _context23.sent;
-              _context23.next = 18;
+              verifiedTransactionsCount = _context24.sent;
+              _context24.next = 18;
               return _user["default"].countDocuments();
             case 18:
-              usersCount = _context23.sent;
+              usersCount = _context24.sent;
               res.status(200).send({
                 message: "Dashboard data retrieved",
                 numberOfAvailableProducts: availableProductsCount,
@@ -1378,23 +1421,23 @@ var AdminController = /*#__PURE__*/function () {
                 numberOfVerifiedTransactions: verifiedTransactionsCount,
                 numberOfUsers: usersCount
               });
-              _context23.next = 26;
+              _context24.next = 26;
               break;
             case 22:
-              _context23.prev = 22;
-              _context23.t0 = _context23["catch"](0);
-              console.log(_context23.t0);
+              _context24.prev = 22;
+              _context24.t0 = _context24["catch"](0);
+              console.log(_context24.t0);
               res.status(500).json({
                 message: 'Error retrieving dashboard data',
-                error: _context23.t0.message
+                error: _context24.t0.message
               });
             case 26:
             case "end":
-              return _context23.stop();
+              return _context24.stop();
           }
-        }, _callee23, null, [[0, 22]]);
+        }, _callee24, null, [[0, 22]]);
       }));
-      function getDashboardAggregateData(_x45, _x46) {
+      function getDashboardAggregateData(_x47, _x48) {
         return _getDashboardAggregateData.apply(this, arguments);
       }
       return getDashboardAggregateData;
@@ -1410,36 +1453,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x47, _x48) {
+function processExcelSheetData(_x49, _x50) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee24(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee25(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee24$(_context24) {
-      while (1) switch (_context24.prev = _context24.next) {
+    return _regeneratorRuntime().wrap(function _callee25$(_context25) {
+      while (1) switch (_context25.prev = _context25.next) {
         case 0:
-          _context24.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context25.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context24.t1 = _context24.t0()).done) {
-            _context24.next = 8;
+          if ((_context25.t1 = _context25.t0()).done) {
+            _context25.next = 8;
             break;
           }
-          index = _context24.t1.value;
+          index = _context25.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context24.next = 6;
+          _context25.next = 6;
           return productData.save();
         case 6:
-          _context24.next = 1;
+          _context25.next = 1;
           break;
         case 8:
         case "end":
-          return _context24.stop();
+          return _context25.stop();
       }
-    }, _callee24);
+    }, _callee25);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }
