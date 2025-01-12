@@ -5,7 +5,7 @@ import fs from "fs";
 import AdminController from "../controllers/adminController";
 import OrderController from '../controllers/orderController';
 
-const { authenticate, isFirstAdmin } = require('../middleware/admin/auth');
+const { authenticate, isFirstAdmin } = require('../services/payoor/admin/auth');
 
 const adminRoute = express();
 

@@ -52,7 +52,7 @@ var AdminController = /*#__PURE__*/function () {
   return _createClass(AdminController, [{
     key: "deleteAllProducts",
     value: function () {
-      var _deleteAllProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _deleteAllProducts = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var result;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -99,7 +99,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "uploadExcelSheet",
     value: function () {
-      var _uploadExcelSheet = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _uploadExcelSheet = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var filepath, excelSheetData;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -144,7 +144,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "addProduct",
     value: function () {
-      var _addProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _addProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var _req$body, productName, unit, pricePerUnit, isAvailable, productData, product;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {

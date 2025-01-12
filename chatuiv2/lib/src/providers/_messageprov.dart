@@ -4,10 +4,12 @@ import 'package:chatuiv2/src/classes/_message.dart';
 
 class MessageProvider extends ChangeNotifier {
   final List<Message> _messages = [];
+  int _previousLength = 0;
 
   List<Message> get messages => List.unmodifiable(_messages);
 
   void addMessage(Message message) {
+    _previousLength = _messages.length;
     _messages.add(message);
     notifyListeners();
   }
@@ -27,4 +29,7 @@ class MessageProvider extends ChangeNotifier {
     _messages.clear();
     notifyListeners();
   }
+
+  bool get lengthChanged => _messages.length != _previousLength;
+  int get lengthDifference => _messages.length - _previousLength;
 }

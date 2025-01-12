@@ -24,8 +24,8 @@ function initSocket(server) {
       methods: ["GET", "POST"]
     }
   });
-  io.use(/*#__PURE__*/function () {
-    var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(socket, next) {
+  io.use( /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(socket, next) {
       var token, adminAuth, user;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
@@ -77,7 +77,7 @@ function initSocket(server) {
   }());
   io.on('connection', function (socket) {
     var roomId;
-    socket.on('createRoom', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    socket.on('createRoom', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var _socket$user, _socket$user2, _socket$user4;
       var existingRoom, _socket$user3;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
@@ -137,7 +137,7 @@ function initSocket(server) {
 
     // Admin joins user room
     socket.on("joinRoom", /*#__PURE__*/function () {
-      var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(data) {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(data) {
         var userId, roomName;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -180,7 +180,7 @@ function initSocket(server) {
       io.to(roomId).emit("adminStopTyping");
     });
     socket.on("sendMessage", /*#__PURE__*/function () {
-      var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(data) {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(data) {
         var text, clienttimestamp, sender, userId, message;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {

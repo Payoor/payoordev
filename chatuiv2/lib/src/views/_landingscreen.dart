@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'dart:html' as html;
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:chatuiv2/main.dart';
+
 import 'package:chatuiv2/src/widgets/_onboardinput.dart';
 import 'package:chatuiv2/src/widgets/_createlistbtn.dart';
 import 'package:chatuiv2/src/widgets/_onboardingslider.dart';
@@ -143,7 +145,9 @@ class _LandingScreenState extends State<LandingScreen> {
                                           fit: BoxFit.contain,
                                         ),
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            sideNavVisible.value = true;
+                                          },
                                           child: Image.asset(
                                             'assets/burger.png',
                                             width: constraints.maxWidth * 0.1,

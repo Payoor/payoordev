@@ -15,7 +15,7 @@ function sendOtp(_x) {
   return _sendOtp.apply(this, arguments);
 }
 function _sendOtp() {
-  _sendOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+  _sendOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
     var email, otp, data;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

@@ -1,7 +1,7 @@
 import PaymentController from '../controllers/paymentController';
 import OrderController from '../controllers/orderController';
 
-import verifyToken from "../middleware/user/verifyJWT";
+import verifyToken from "../services/payoor/verifyToken";
 
 const express = require('express');
 const paymentRoute = express();

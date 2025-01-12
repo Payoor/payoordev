@@ -615,6 +615,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
+          if (index == 4) Text("Place the google places widget here")
         ],
       ),
     );

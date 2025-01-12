@@ -32,7 +32,7 @@ var AuthController = /*#__PURE__*/function () {
   return _createClass(AuthController, [{
     key: "generateOtp",
     value: function () {
-      var _generateOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _generateOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var email, otpcode, mailResponse, newEmailOtp, response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -101,7 +101,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "verifyOtp",
     value: function () {
-      var _verifyOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _verifyOtp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var _req$body, email, otp, user, userExists, isValid, expiredResponse, response, invalidResponse, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -209,7 +209,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "handleSignUp",
     value: function () {
-      var _handleSignUp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _handleSignUp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var _req$body2, name, email, phone, location, shoppingList, existingUser, duplicateResponse, user, response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -293,7 +293,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "generateJWT",
     value: function () {
-      var _generateJWT2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _generateJWT2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
         var id, token, response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
@@ -343,18 +343,19 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "getValidUser",
     value: function () {
-      var _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+      var _getValidUser = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
         var _req$authData, userId, tokenId, validUser, userResponse, response, notFoundResponse, errorResponse;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
               _context5.prev = 0;
+              console.log('hello there');
               _req$authData = req.authData, userId = _req$authData.userId, tokenId = _req$authData.tokenId;
-              _context5.next = 4;
+              _context5.next = 5;
               return _user["default"].findOne({
                 _id: userId
               });
-            case 4:
+            case 5:
               validUser = _context5.sent;
               //console.log(validUser)
 
@@ -384,10 +385,10 @@ var AuthController = /*#__PURE__*/function () {
                 };
                 res.status(404).json(notFoundResponse);
               }
-              _context5.next = 13;
+              _context5.next = 14;
               break;
-            case 8:
-              _context5.prev = 8;
+            case 9:
+              _context5.prev = 9;
               _context5.t0 = _context5["catch"](0);
               console.log(_context5.t0);
               errorResponse = {
@@ -399,11 +400,11 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 13:
+            case 14:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 8]]);
+        }, _callee5, null, [[0, 9]]);
       }));
       function getValidUser(_x9, _x10) {
         return _getValidUser.apply(this, arguments);

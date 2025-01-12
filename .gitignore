@@ -21,3 +21,4 @@ llmserver/myenv/
 package-lock.json
 llmserver/chroma_persistent_storage/
 python_playground/
+snippets.txt

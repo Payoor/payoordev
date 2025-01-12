@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:chatuiv2/src/classes/_appcolors.dart';
+
 import 'package:chatuiv2/src/views/_authpage.dart';
 import 'package:chatuiv2/src/views/_welcome.dart';
 import 'package:chatuiv2/src/views/_authenticatedchat.dart';
@@ -34,12 +36,67 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       title: 'Payoor',
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child ?? Container(), 
+            ValueListenableBuilder<bool>(
+              valueListenable: sideNavVisible,
+              builder: (context, isVisible, _) {
+                return Visibility(
+                  visible: isVisible,
+                  child: Positioned(
+                    top: 0,
+                    left: 0,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: SideNavWidget(),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
       routes: {
         '/': (context) => const AuthLoading(),
         '/auth': (context) => const AuthPage(),
         '/welcome': (context) => const Welcome(),
         '/authchat': (context) => const AuthenticatedChat(),
       },
+    );
+  }
+}
+
+final ValueNotifier<bool> sideNavVisible = ValueNotifier(false);
+
+
+class SideNavWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.black,
+      child: Row(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            color: Colors.white,
+            child: ListView(
+              children: [
+               
+                
+                // More menu items...
+              ],
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => sideNavVisible.value = false,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
