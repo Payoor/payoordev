@@ -5,89 +5,98 @@
 
     table {
         border-collapse: collapse;
+        border-spacing: 0;
         width: 100%;
+        background-color: $white;
+        box-shadow: 0px 0px 5px -2px #32475c4d;
 
         thead {
-            background-color: rgb(47, 47, 47);
+            background-color: $grey;
             text-transform: capitalize;
+            th {
+                padding-block: 1.2rem;
+            }
         }
 
         td,
         th {
-            border: 1px solid rgb(47, 47, 47);
+            border: 2px solid $grey;
             text-align: left;
             padding: 0.5rem;
-            color: rgba($white, .5);
+            color: $font-color;
         }
 
         tbody {
+            border-radius: 2rem;
             .actions-cell {
-                    position: relative;
-            
-                    .actions-toggle {
-                        padding-inline: 1rem;
+                position: relative;
+        
+                .actions-toggle {
+                    padding-inline: 1rem;
+                    background-color: transparent;
+                    color: $font-color;
+                    border: none;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+        
+                .dropdown {
+                    position: absolute;
+                    width: 150px;
+                    height: auto;
+                    display: grid;
+                    background-color: $white;
+                    box-shadow: 0px 0px 5px -2px #32475c4d;
+                    z-index: 1000;
+                    left: -120px;
+                    top: 100%;
+                    border-radius: 0.25rem;
+        
+                    button {
                         background-color: transparent;
-                        color: rgba($white, 0.5);
+                        color: $font-color;
                         border: none;
-                        font-size: 1.5rem;
-                        font-weight: bold;
+                        font-size: 0.8rem;
+                        padding: 1rem;
+                        text-align: left;
+                        transition: 0.2s;
                         cursor: pointer;
-                    }
-            
-                    .dropdown {
-                        position: absolute;
-                        width: 150px;
-                        height: auto;
-                        display: grid;
-                        background-color: rgb(47, 47, 47);
-                        z-index: 1000;
-                        left: -120px;
-                        top: 100%;
-                        border-radius: 0.25rem;
-            
-                        button {
-                            background-color: transparent;
-                            color: rgba($white, 0.5);
-                            border: none;
-                            font-size: 0.8rem;
-                            padding: 1rem;
-                            text-align: left;
-                            transition: 0.2s;
-                            cursor: pointer;
-            
-                            &:hover {
-                                opacity: 0.7;
-                            }
-                        }
-                    }
-
-                    .orders-dropdown {
-                        position: absolute;
-                        width: 150px;
-                        height: auto;
-                        display: grid;
-                        background-color: rgb(47, 47, 47);
-                        z-index: 2;
-                        left: -120px;
-                        top: 100%;
-                        border-radius: 0.25rem;
-
-                        button {
-                            background-color: transparent;
-                            color: rgba($white, 0.5);
-                            border: none;
-                            font-size: 0.8rem;
-                            padding: 1rem;
-                            text-align: left;
-                            transition: 0.2s;
-                            cursor: pointer;
-
-                            &:hover {
-                                opacity: 0.7;
-                            }
+        
+                        &:hover {
+                            opacity: 0.7;
                         }
                     }
                 }
+
+                .orders-dropdown {
+                    position: absolute;
+                    width: 150px;
+                    height: auto;
+                    display: grid;
+                    background-color: $white;
+                    box-shadow: 0px 0px 5px -2px #32475c4d;
+                    z-index: 2;
+                    left: -120px;
+                    top: 100%;
+                    border-radius: 0.25rem;
+
+                    button {
+                        background-color: transparent;
+                        color: $font-color;
+                        border: none;
+                        font-size: 0.8rem;
+                        padding: 1rem;
+                        text-align: left;
+                        transition: 0.2s;
+                        cursor: pointer;
+
+                        &:hover {
+                            opacity: 0.7;
+                        }
+                    }
+                }
+            }
         }
     }
 }

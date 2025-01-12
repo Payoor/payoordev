@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout page-text="Admins">
+  <DefaultLayout page-text="Users">
     <div class="search__container">
       <div></div>
       <div class="search__bar">

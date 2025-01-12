@@ -34,18 +34,19 @@ export default {
     grid-template-rows: auto;
     gap: 1rem;
     align-items: center;
-    background-color: rgb(47, 47, 47);
+    background-color: $white;
     padding: 2rem 1.5rem;
+    border: 1px solid $grey;
     border-radius: 0.5rem;
+    box-shadow: 0px 0px 5px -2px #32475c4d;
     transition: 0.2s;
 
     &:hover {
-      background-color: rgb(77, 77, 77);
       transform: scale(1.02);
     }
 
     p {
-      color: rgba($white, 0.7);
+      color: $font-color;
       &.count {
         font-weight: bold;
       }

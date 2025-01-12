@@ -116,7 +116,9 @@ export default {
     gap: 2rem;
 
     h2 {
-      background-color: rgb(47, 47, 47);
+      background-color: $grey;
+      box-shadow: 0px 0px 5px -2px #32475c4d;
+      color: $font-color;
       padding: 0.5rem;
     }
 
@@ -182,6 +184,7 @@ export default {
 
       p {
         font-size: 0.85rem;
+        color: $font-color;
       }
     }
   }

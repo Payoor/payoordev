@@ -1,7 +1,7 @@
 <template>
   <div class="admin-sidebar">
     <div class="header">
-      <img src="../assets/imgs/payoor-white-logo.png" alt="">
+      <img src="../assets/imgs/payoor-green.svg" alt="">
     </div>
 
     <nav class="sidebar-items">
@@ -121,16 +121,19 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: rgb(47, 47, 47);
+  background-color: $white;
+  border-right: 1px solid $grey;
+  box-shadow: 0px 0px 5px -2px #32475c4d;
 
   .header {
-    padding: 2rem 0;
-    text-align: center;
+    width: 100%;
+    height: 100px;
+    padding-inline: 2rem;
   }
 
   nav {
     flex-grow: 1;
-    padding-block: 1rem;
+    padding-block: 2rem;
     width: 100%;
     overflow-y: auto;
 
@@ -148,27 +151,31 @@ export default {
         a {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
-          color: rgba($white, 0.7);
+          gap: 0.5rem;
+          color: $font-color;
           text-decoration: none;
           font-size: 0.8rem;
-          padding: 1.5rem 1rem;
-          border-bottom: 1px solid rgb(77, 77, 77);
+          padding: 1rem;
           transition: 0.2s;
 
           svg {
-            color: $primary-color;
-            width: 1rem;
-            height: 1rem;
+            color: $grey-2;
+            width: 1.25rem;
+            height: 1.25rem;
           }
 
           &:hover {
-            background-color: rgb(77, 77, 77);
+            svg {
+              color: $primary-color;
+            }
           }
 
           &.nuxt-link-active {
-            background-color: rgb(77, 77, 77);
+            svg {
+              color: $primary-color;
+            }
             font-weight: bold;
+            border-left: 5px solid $primary-color;
           }
         }
         &:last-child {

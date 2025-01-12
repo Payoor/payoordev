@@ -7,7 +7,7 @@
     <main class="page__container">
       <template v-if="pageText === 'Dashboard'">
         <div class="greeting">
-          <h1>Welcome <span>{{ getAdminUsername }}</span></h1>
+          <h1>Welcome <span>{{ adminName }}</span></h1>
         </div>
       </template>
       <template v-else>
@@ -26,11 +26,23 @@ export default {
     'ChatBubbleIcon': ChatBubbleIcon,
     'AddPackageIcon': AddPackageIcon,
   },
-  computed: {
-    getAdminUsername() {
-      return localStorage.getItem('adminUsername');
+
+  data() {
+    return {
+      adminName: ""
     }
   },
+
+  methods: {
+    getAdminUsername() {
+      this.adminName = localStorage.getItem('adminUsername');
+    }
+  },
+
+  mounted() {
+    this.getAdminUsername();
+  },
+
   props: {
     pageText: {
       type: String,
@@ -64,7 +76,7 @@ export default {
         text-transform: capitalize;
       }
       span {
-        color: $white;
+        color: $font-color;
         font-size: 1.3rem;
         font-weight: 500;
       }

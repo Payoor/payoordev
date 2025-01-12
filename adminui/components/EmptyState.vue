@@ -23,10 +23,11 @@ export default {
 
 <style lang="scss" scoped>
   .empty-state {
-    border: 2px solid rgb(47, 47, 47);
+    border: 2px solid $grey;
     border-radius: 0.5rem;
-    background-color: rgb(32, 32, 32);
+    background-color: $white;
     padding: 4rem 1rem;
     text-align: center;
+    color: $font-color;
   }
 </style>

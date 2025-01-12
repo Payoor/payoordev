@@ -436,7 +436,7 @@ td {
     background-color: transparent;
     border: none;
     padding: 0.5rem;
-    color: rgba($white, 0.5);
+    color: $font-color;
     font-size: 1rem;
   
     &::placeholder {
@@ -444,8 +444,7 @@ td {
     }
   
     &:focus {
-      outline: none;
-      border: 1px solid rgba($white, 0.5);
+      outline: 1px solid $primary-color;
     }
   }
 }

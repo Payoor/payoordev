@@ -17,7 +17,7 @@
   color: $primary-color;
 }
 span {
-  color: $white;
+  color: $font-color;
   font-size: 1.3rem;
   font-weight: 500;
 }

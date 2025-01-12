@@ -169,7 +169,9 @@ export default {
   }
 
   h2 {
-    background: rgb(47, 47, 47);
+    background-color: $grey;
+    box-shadow: 0px 0px 5px -2px #32475c4d;
+    color: $font-color;
     padding: 0.5rem;
     margin-top: 2rem;
   }
@@ -177,10 +179,14 @@ export default {
   section {
     padding: 1rem;
 
+    p {
+      color: $font-color;
+    }
+
     .order-item {
       display: flex;
       align-items: center;
-      border-bottom: 1px solid rgb(47, 47, 47);
+      border-bottom: 1px solid $grey;
       padding-block: 0.5rem;
 
       .product-image {
@@ -196,7 +202,8 @@ export default {
         margin-block: 1rem;
 
         div {
-          background-color: rgb(47, 47, 47);
+          background-color: $white;
+          box-shadow: 0px 0px 5px -2px #32475c4d;
           padding: 0.8rem;
           border-radius: 0.25rem;
         }

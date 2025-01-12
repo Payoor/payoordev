@@ -190,7 +190,11 @@ export default {
     border: 2px dashed $primary-color;
     border-radius: 0.25rem;
     gap: 0.5rem;
-    color: rgba($white, 0.7);
+    color: $font-color;
+
+    span {
+      font-size: 1rem;
+    }
 
     @media screen and (min-width: 768px) {
       width: 500px;
@@ -212,10 +216,11 @@ export default {
     align-items: center;
     gap: 0.5rem;
     width: 100%;
-    background-color: $grey-3;
+    background-color: $grey;
+    box-shadow: 0px 0px 5px -2px #32475c4d;
     padding: 1rem 0.5rem;
     border-radius: 0.25rem;
-    color: rgba($white, 0.7);
+    color: $font-color;
 
     @media screen and (min-width: 768px) {
       width: 500px;
@@ -235,7 +240,7 @@ export default {
     button {
       background-color: transparent;
       border: none;
-      color: rgba($white, 0.7);
+      color: $font-color;
       cursor: pointer;
 
       &:hover {
@@ -260,8 +265,7 @@ export default {
 
   .upload-btn {
     background-color: $primary-color;
-    font-size: 0.8rem;
-    color: rgba($white, 0.9);
+    font-size: 0.8rem !important;
     padding: 0.75rem 1rem;
     border: none;
     border-radius: 0.25rem;
