@@ -81,7 +81,7 @@ class AdminController {
             const productData = {
                 unit: unit,
                 price: pricePerUnit,
-                available: isAvailable
+                availablility: isAvailable
             }
 
             const product = new Product({
@@ -116,9 +116,9 @@ class AdminController {
                 query.product_name = { $regex: search, $options: "i" };
             }
 
-            const products = await Product.find(query).skip(skip).limit(limit).lean();
+            const products = await Product.find(query, {__v: 0}).skip(skip).limit(limit).lean();
 
-            const totalCount = Product.countDocuments(query);
+            const totalCount = await Product.countDocuments(query);
 
             res.status(200).send({
                 message: "Products retrieved",

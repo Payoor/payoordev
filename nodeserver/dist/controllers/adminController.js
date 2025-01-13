@@ -52,7 +52,7 @@ var AdminController = /*#__PURE__*/function () {
   return _createClass(AdminController, [{
     key: "deleteAllProducts",
     value: function () {
-      var _deleteAllProducts = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _deleteAllProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var result;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -99,7 +99,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "uploadExcelSheet",
     value: function () {
-      var _uploadExcelSheet = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _uploadExcelSheet = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var filepath, excelSheetData;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -144,7 +144,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "addProduct",
     value: function () {
-      var _addProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _addProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var _req$body, productName, unit, pricePerUnit, isAvailable, productData, product;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -154,7 +154,7 @@ var AdminController = /*#__PURE__*/function () {
               productData = {
                 unit: unit,
                 price: pricePerUnit,
-                available: isAvailable
+                availablility: isAvailable
               };
               product = new _product["default"]({
                 product_name: productName,
@@ -208,10 +208,15 @@ var AdminController = /*#__PURE__*/function () {
                 };
               }
               _context4.next = 9;
-              return _product["default"].find(query).skip(skip).limit(limit).lean();
+              return _product["default"].find(query, {
+                __v: 0
+              }).skip(skip).limit(limit).lean();
             case 9:
               products = _context4.sent;
-              totalCount = _product["default"].countDocuments(query);
+              _context4.next = 12;
+              return _product["default"].countDocuments(query);
+            case 12:
+              totalCount = _context4.sent;
               res.status(200).send({
                 message: "Products retrieved",
                 page: page,
@@ -219,20 +224,20 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 products: products
               });
-              _context4.next = 18;
+              _context4.next = 20;
               break;
-            case 14:
-              _context4.prev = 14;
+            case 16:
+              _context4.prev = 16;
               _context4.t0 = _context4["catch"](0);
               console.log(_context4.t0);
               res.status(500).send({
                 message: _context4.t0.message
               });
-            case 18:
+            case 20:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[0, 14]]);
+        }, _callee4, null, [[0, 16]]);
       }));
       function getProducts(_x7, _x8) {
         return _getProducts.apply(this, arguments);
