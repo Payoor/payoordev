@@ -28,7 +28,9 @@ var authenticate = /*#__PURE__*/function () {
             _context.next = 9;
             break;
           }
-          throw new Error('No authentication token provided');
+          return _context.abrupt("return", res.status(401).json({
+            error: 'No authentication token provided'
+          }));
         case 9:
           _context.next = 11;
           return Admin.findByToken(token);
@@ -38,21 +40,23 @@ var authenticate = /*#__PURE__*/function () {
             _context.next = 14;
             break;
           }
-          throw new Error('Invalid authentication token');
+          return _context.abrupt("return", res.status(401).json({
+            error: 'Invalid authentication token'
+          }));
         case 14:
           req.token = token;
           req.admin = admin;
           next();
-          _context.next = 22;
+          _context.next = 23;
           break;
         case 19:
           _context.prev = 19;
           _context.t0 = _context["catch"](0);
+          console.log(_context.t0);
           res.status(401).json({
-            error: 'Please authenticate',
-            details: _context.t0.message
+            error: 'Please authenticate'
           });
-        case 22:
+        case 23:
         case "end":
           return _context.stop();
       }

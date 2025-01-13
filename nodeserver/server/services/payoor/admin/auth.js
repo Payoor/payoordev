@@ -12,22 +12,26 @@ const authenticate = async (req, res, next) => {
         const token = req.header('Authorization')?.replace('Bearer ', '');
 
         if (!token) {
-            throw new Error('No authentication token provided');
+            return res.status(401).json({
+                error: 'No authentication token provided'
+            })
         }
 
         const admin = await Admin.findByToken(token);
 
         if (!admin) {
-            throw new Error('Invalid authentication token');
+            return res.status(401).json({
+                error: 'Invalid authentication token'
+            })
         }
 
         req.token = token;
         req.admin = admin;
         next();
     } catch (error) {
+        console.log(error)
         res.status(401).json({
             error: 'Please authenticate',
-            details: error.message
         });
     }
 };
