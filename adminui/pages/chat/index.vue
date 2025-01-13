@@ -51,7 +51,7 @@
               />
             </div>
             <div v-if="state.isUserTyping" class="typing-indicator">
-              <em>user is typing...</em>
+              <em>isTyping...</em>
             </div>
           </div>
         </template>
@@ -226,7 +226,14 @@ export default {
             userTransactions.value = res.data.transactions;
             hasTransactions.value = userTransactions.value.length > 0;
           })
-          .catch((error) => console.log(error.response.data));
+          .catch((error) => {
+            console.log(error.response);
+            if (error.response.status === 401) {
+              localStorage.removeItem('adminToken');
+              localStorage.removeItem('adminUsername');
+              this.$router.push('/');
+            }
+          });
       }
     };
 
@@ -237,7 +244,14 @@ export default {
             userOrders.value = res.data.orders;
             hasOrders.value = userOrders.value.length > 0;
           })
-          .catch((error) => console.log(error.response.data));
+          .catch((error) => {
+            console.log(error.response);
+            if (error.response.status === 401) {
+              localStorage.removeItem('adminToken');
+              localStorage.removeItem('adminUsername');
+              this.$router.push('/');
+            }
+          });
       }
     };
 
@@ -417,16 +431,16 @@ export default {
       margin-block: 1rem; 
       p {
         text-align: center;
-        color: rgba($white, 0.5);
+        color: rgba($font-color, 0.5);
         font-size: 12px;
-        background-color: rgb(40, 40, 40);
+        background-color: $grey;
         padding: 0.5rem;
         border-radius: 0.25rem;
       }
     }
 
     .typing-indicator {
-      color: $white;
+      color: $font-color;
     }
   }
 
@@ -435,16 +449,17 @@ export default {
     flex-grow: 1;
     overflow-y: auto;
     padding: 1rem;
-    color: rgba($white, 0.7);
+    color: $font-color;
     font-size: 0.8rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     
     .empty-state {
-      border: 2px solid rgb(47, 47, 47);
+      border: 2px solid $grey;
       border-radius: 0.5rem;
-      background-color: rgb(32, 32, 32);
+      box-shadow: 0px 0px 5px -2px #32475c4d;
+      background-color: $white;
       padding: 2rem 1rem;
       text-align: center;
     }

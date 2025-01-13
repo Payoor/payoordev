@@ -71,7 +71,8 @@ export default {
 
     .text {
       border-radius: 1rem 1rem 1rem 0;
-      background-color: rgb(47, 47, 47);
+      color: $font-color;
+      background-color: rgba($grey-2, .3);
 
       .message-content {
         white-space: pre-wrap;
@@ -80,7 +81,7 @@ export default {
 
       .timestamp {
         font-size: 0.65rem;
-        color: rgba($white, 0.5);
+        color: rgba($font-color, 0.5);
         margin-top: 0.5rem;
       }
     }
