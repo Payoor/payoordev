@@ -161,6 +161,11 @@ export default {
         this.hasError = true;
         this.uploadMessage = "Failed to upload file. Please try again.";
         console.log(error.response);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       })
     },
 

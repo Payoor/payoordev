@@ -61,6 +61,11 @@ export default {
       })
       .catch((error) => {
         console.log(error.response);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       });
     },
   },
@@ -116,7 +121,7 @@ export default {
     gap: 2rem;
 
     h2 {
-      background-color: $grey;
+      background-color: $white;
       box-shadow: 0px 0px 5px -2px #32475c4d;
       color: $font-color;
       padding: 0.5rem;

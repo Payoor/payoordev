@@ -80,6 +80,11 @@ export default {
         this.isLoading = false;
         this.hasError = true;
         this.message = error.response.data.error || "An error occurred during login";
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       })
     },
 
