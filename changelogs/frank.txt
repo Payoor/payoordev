@@ -1,0 +1,7 @@
+* Added an if statement that selects which the serverUrl to be used based on the node environment
+
+* Clear token from localStorage and redirect to login page onve node environment is changed
+
+* Updated admin dashboard theme color
+
+* Created a starter endpoint to add a product ---> still in progress
