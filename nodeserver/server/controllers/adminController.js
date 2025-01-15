@@ -7,6 +7,9 @@ import Admin from "../models/admin";
 import User from "../models/user";
 import Transaction from "../models/transaction";
 import Order from "../models/order";
+import NewProduct from "../models/newProduct";
+import ProductVariant from "../models/productVariant";
+
 
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
@@ -76,29 +79,76 @@ class AdminController {
 
     async addProduct(req, res) {
         try {
-            const { productName, unit, pricePerUnit, isAvailable } = req.body;
+            const productName = req.body.productName;
 
-            const productData = {
-                unit: unit,
-                price: pricePerUnit,
-                availablility: isAvailable
+            if (!productName) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Product name is required."
+                });
             }
 
-            const product = new Product({
-                product_name: productName,
-                data: [productData],
+            const product = new NewProduct({
+                name: productName
             });
             
             await product.save();
 
-            res.status(200).send({
+            res.status(201).send({
+                success: true,
                 message: "Product created successfully!",
                 product: product
             });
 
         } catch (error) {
             res.status(400).json({
+                success: false,
                 error: 'Failed to add product',
+                details: error.message
+            });
+        }
+    }
+
+    async addProductVariants(req, res) {
+        try {
+            const productId = req.query.id;
+            const { unit, price, isAvailable } = req.body;
+
+            const product = await NewProduct.findById(productId);
+
+            if (!product) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Product not found"
+                })
+            }
+
+            if (!unit || !price || !isAvailable) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Values for fields (unit, price and isAvailable) are required."
+                })
+            }
+
+            const productVariant = new ProductVariant({
+                productId: product._id,
+                unit: unit,
+                price: price,
+                availablility: isAvailable
+            });
+
+            await productVariant.save();
+
+            return res.status(201).json({
+                success: true,
+                message: "Product variant added successfully",
+                productVariant: productVariant
+            });
+
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                error: 'Failed to add product variant',
                 details: error.message
             });
         }
@@ -113,20 +163,37 @@ class AdminController {
 
             const query = {};
             if (search) {
-                query.product_name = { $regex: search, $options: "i" };
+                query.name = { $regex: search, $options: "i" };
             }
 
-            const products = await Product.find(query, {__v: 0}).skip(skip).limit(limit).lean();
+            const products = await NewProduct.find(query, { __v: 0 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
 
-            const totalCount = await Product.countDocuments(query);
+            const productIds = products.map((product) => product._id);
+
+            const variants = await ProductVariant.find({
+                productId: { $in: productIds },
+            }, { __v: 0 }).lean();
+
+            const productsWithVariants = products.map((product) => ({
+                ...product,
+                variants: variants.filter(
+                    (variant) => variant.productId.toString() === product._id.toString()
+                ),
+            }));
+
+            const totalCount = await NewProduct.countDocuments(query);
 
             res.status(200).send({
                 message: "Products retrieved",
                 page,
                 totalPages: Math.ceil(totalCount / limit),
                 totalCount,
-                products: products
+                products: productsWithVariants
             });
+
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: error.message });
