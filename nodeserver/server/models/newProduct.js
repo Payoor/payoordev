@@ -20,4 +20,6 @@ const newProductSchema = new mongoose.Schema({
     timestamps: true
 });
 
+newProductSchema.index({ name: 'text' });
+
 module.exports = mongoose.model('newProduct', newProductSchema);
