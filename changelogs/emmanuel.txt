@@ -10,3 +10,4 @@ Thursday 16 Jan
 ==================
 add side nav
 add google places and geolocation to address input during authentication
+add google places to address chat input
