@@ -301,6 +301,26 @@ Removes a product from the system.
     }
     ```
 
+### Delete Product Variant
+Removes a product variant from the system.
+
+- **URL:** `/admin/delete/product-variant`
+- **Method:** `DELETE`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product variant ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Variant deleted successfully",
+      "variant": {
+        "_id": "string",
+        ...deletedVariant
+      }
+    }
+    ```
+
 ## Product Image Management
 
 ### Upload Product Image
