@@ -20,6 +20,7 @@ import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
+import 'package:chatuiv2/src/providers/_googleplaces.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
@@ -54,6 +55,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool _userOrdersOpen = false;
   bool _showCart = false;
   bool _paying = false;
+  bool _confirmingAddress = false;
 
   double _deliveryFee = 3700;
   double _serviceCharge = 0;
@@ -90,6 +92,19 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
 
     _handleOnboardingMessage();
+
+    _controller.addListener(() {
+      //print(_controller.text);
+
+      if (_currentChatInputMode == _chatInputModes[0]) {
+        if (!_confirmingAddress) {
+          setState(() {
+            _confirmingAddress = true;
+          });
+        }
+        context.read<GooglePlaces>().searchPlaces(_controller.text);
+      }
+    });
 
     _subscription = SocketService.transactionStream.listen((data) {
       if (data["reference"] == null) return;
@@ -362,9 +377,35 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                   _buildAnimatedHeader(),
                   Expanded(
                     child: Stack(
+                      fit: StackFit
+                          .expand, // Add this to ensure Stack fills available space
                       children: [
                         _renderMessages(),
-                        // You can add more children to the Stack here
+                        if (_confirmingAddress)
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              constraints: BoxConstraints(
+                                maxHeight: MediaQuery.of(context).size.height *
+                                    0.3, // Example: 30% of screen height
+                              ),
+                              child: AddressesList(
+                                  onLocationSelected: (updatedAddress) {
+                                //print(updatedAddress);
+                                _setInputText(updatedAddress);
+                              }, onAddressSelected: (addressData) {
+                                String value = addressData['address']!;
+                                _setInputText(value);
+                                setState(() {
+                                  // _paying = true;
+                                  _confirmingAddress = false;
+                                });
+                                context.read<GooglePlaces>().clearPredictions();
+                              }),
+                            ),
+                          )
                       ],
                     ),
                   ),
@@ -655,6 +696,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 style: const TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
                 onSubmitted: _handleSubmit,
+                onChanged: (value) {},
                 enableInteractiveSelection: true,
               ),
               Positioned(
@@ -799,10 +841,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     if (_controller.text.trim().isNotEmpty) {
       if (_chatInputModes.isNotEmpty &&
           _currentChatInputMode == _chatInputModes[0]) {
-        /*final messageText = _controller.text.trim();
+        //print('just sent the address');
+        final messageText = _controller.text.trim();
 
         setState(() {
           _deliveryAddress = messageText;
+          _confirmingAddress = false;
+          _currentChatInputMode = "";
         });
 
         final message = Message(
@@ -816,9 +861,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         context.read<MessageProvider>().addMessage(message);
         _scrollToBottom();
 
-        _handlePaymentLinkGeneration();
+        return;
 
-        return;*/
+        // _handlePaymentLinkGeneration();
       }
 
       try {

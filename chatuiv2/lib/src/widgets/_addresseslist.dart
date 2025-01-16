@@ -73,6 +73,7 @@ class _AddressesListState extends State<AddressesList> {
           children: [
             Container(
               height: 600, // Fixed height for the container
+              color: AppColors.primaryColorDark,
               child: Column(
                 children: [
                   GestureDetector(

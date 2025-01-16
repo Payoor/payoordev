@@ -10,7 +10,7 @@ import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
-
+//cart.itemCount > 0
 class MessageContent extends StatefulWidget {
   final Message message;
   final ScrollController scrollController;
@@ -129,7 +129,7 @@ class _MessageContentState extends State<MessageContent> {
                     return Column(
                       children: [
                         CartDisplay(),
-                        Container(
+                        cartProvider.itemCount > 0 ? Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.transparent,
@@ -168,7 +168,7 @@ class _MessageContentState extends State<MessageContent> {
                               ),
                             ),
                           ),
-                        )
+                        ) : SizedBox()
                       ],
                     );
                   },
