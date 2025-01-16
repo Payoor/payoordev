@@ -13,10 +13,10 @@ import cors from 'cors';
 
 import corsOrginArray from './corsOriginArray';
 
-
 import { initSocket } from './utils/socketio_util';
 
-import PaymentController from './controllers/paymentController';
+import paymentRoute from './routes/paymentRoute';
+import googleApiRoute from './routes/googleApiRoute';
 
 if (process.env.NODE_ENV !== 'production') {
     const corsOptions = {
@@ -57,7 +57,8 @@ io.on('connection', (socket) => {
     });
 }, 3000); */
 
-app.post('/paystack/payment-response', PaymentController.handlePayStackPaymentResponse);
+app.use(paymentRoute);
+app.use(googleApiRoute);
 
 // Start server
 const PORT = process.env.PORT || 3031;

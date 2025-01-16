@@ -14,7 +14,7 @@ services:
       - adminui
       - chatuiserver
       - llmserver
-      - payment
+      - services
     networks:
       - payoor_development_network      
 
@@ -77,10 +77,10 @@ services:
     networks:
       - payoor_development_network
 
-  payment:
-    container_name: payment
+  services:
+    container_name: services
     restart: always
-    build: ./services/paymentconfirm
+    build: ./services
     environment:
       - PORT=8085
       - NODE_ENV=development

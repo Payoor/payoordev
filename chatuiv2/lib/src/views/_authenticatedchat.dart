@@ -13,6 +13,7 @@ import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
 import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
 import 'package:chatuiv2/src/widgets/_ordersdisplay.dart';
 import 'package:chatuiv2/src/widgets/_messagecontent.dart';
+import 'package:chatuiv2/src/widgets/_addresseslist.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
@@ -360,7 +361,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 children: [
                   _buildAnimatedHeader(),
                   Expanded(
-                    child: _renderMessages(),
+                    child: Stack(
+                      children: [
+                        _renderMessages(),
+                        // You can add more children to the Stack here
+                      ],
+                    ),
                   ),
                   _buildPillsSlide(),
                   _buildTextField(),
@@ -460,9 +466,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     return AnimatedOpacity(
       opacity: isInitialAnimationComplete ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 500),
-      child: HeaderRow(onBurgerMenuTap: () {
-        
-      }),
+      child: HeaderRow(onBurgerMenuTap: () {}),
     );
   }
 
@@ -795,7 +799,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     if (_controller.text.trim().isNotEmpty) {
       if (_chatInputModes.isNotEmpty &&
           _currentChatInputMode == _chatInputModes[0]) {
-        final messageText = _controller.text.trim();
+        /*final messageText = _controller.text.trim();
 
         setState(() {
           _deliveryAddress = messageText;
@@ -814,7 +818,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
         _handlePaymentLinkGeneration();
 
-        return;
+        return;*/
       }
 
       try {

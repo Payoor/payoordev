@@ -8,7 +8,7 @@ class AuthProv extends ChangeNotifier {
   String? _jwt;
   bool _isLoading = false;
   bool _error = false;
-  Map<String, dynamic>? _userData;
+  Map<String, dynamic>? _userData = null;
 
   String? get userId => _userId;
   String? get jwt => _jwt;
@@ -47,7 +47,7 @@ class AuthProv extends ChangeNotifier {
       final userData = response.data['user'];
 
       _userData = userData;
-      _jwt = jwtToken; 
+      _jwt = jwtToken;
       _error = false;
       _isLoading = false;
       notifyListeners();
