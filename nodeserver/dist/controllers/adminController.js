@@ -408,8 +408,8 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "updateProduct",
     value: function () {
-      var _updateProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
-        var id, _req$body2, name, generatedDescription, generatedCategories, variants, options, product, _iterator, _step, variantData, variantId, unit, price, availability, variant, updatedVariants, updatedProduct;
+      var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+        var id, _req$body2, name, generatedDescription, generatedCategories, variants, options, product, _iterator, _step, variantData, _id, unit, price, availability, variant, updatedVariants, updatedProduct;
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
             case 0:
@@ -449,9 +449,9 @@ var AdminController = /*#__PURE__*/function () {
                 break;
               }
               variantData = _step.value;
-              variantId = variantData.variantId, unit = variantData.unit, price = variantData.price, availability = variantData.availability;
+              _id = variantData._id, unit = variantData.unit, price = variantData.price, availability = variantData.availability;
               _context7.next = 22;
-              return _productVariant["default"].findById(variantId);
+              return _productVariant["default"].findById(_id);
             case 22:
               variant = _context7.sent;
               if (variant) {

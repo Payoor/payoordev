@@ -44,7 +44,7 @@
                 v-if="key !== '_id' && key !== 'updatedAt' && key !== 'createdAt'"
                 @click="editCell(rowIndex, colIndex)"
               >
-                <template v-if="key !== 'data' && key !== 'createdAt' && key !== 'updatedAt'">
+                <template v-if="key !== 'variants' && key !== 'createdAt' && key !== 'updatedAt'">
                   <div v-if="isEditingCell(rowIndex, colIndex)">
                     <input
                       type="text"
@@ -57,19 +57,23 @@
                   <div v-else>{{ value }}</div>
                 </template>
 
-                <template v-if="key === 'data'">
+                <template v-if="key === 'variants'">
                   <table class="embedded-table">
                     <thead>
                       <tr>
-                        <th v-for="header in getEmbeddedTableHeaders(data.data)" :key="header">
+                        <th 
+                          v-for="header in getEmbeddedTableHeaders(data.variants)" :key="header"
+                          v-if="header !== '_id' && header !== 'productId'"
+                        >
                           {{ header.toLowerCase() }}
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(row, subRowIndex) in data.data" :key="subRowIndex">
+                      <tr v-for="(row, subRowIndex) in data.variants" :key="subRowIndex">
                         <td
                           v-for="(cellValue, cellKey, cellIndex) in row"
+                          v-if="cellKey !== '_id' && cellKey !== 'productId'"
                           :key="cellIndex"
                           @click="editEmbeddedCell(rowIndex, subRowIndex, cellKey)"
                         >

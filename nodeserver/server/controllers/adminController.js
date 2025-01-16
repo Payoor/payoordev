@@ -247,9 +247,9 @@ class AdminController {
             await product.save();
 
             for (let variantData of variants) {
-                const { variantId, unit, price, availability } = variantData;
+                const { _id, unit, price, availability } = variantData;
 
-                const variant = await ProductVariant.findById(variantId);
+                const variant = await ProductVariant.findById(_id);
                 if (!variant) {
                     return res.status(404).json({ 
                         success: false,
