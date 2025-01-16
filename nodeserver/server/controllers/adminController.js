@@ -208,15 +208,18 @@ class AdminController {
                 return res.status(400).send({ message: "Product ID is required" });
             }
 
-            const product = await Product.findById(id).lean(); // Use lean() for a plain JavaScript object
+            const product = await NewProduct.findById(id).lean(); // Use lean() for a plain JavaScript object
 
             if (!product) {
                 return res.status(404).send({ message: "Product not found" });
             }
 
-            const { _id, data, images } = product;
+            const productVariants = await ProductVariant.find({ productId: product._id }, { __v: 0 }).lean();
 
-            res.status(200).send({ _id, ...data, images });
+            const { _id, name, images } = product;
+
+            res.status(200).send({ _id, name, images, variants: productVariants });
+
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: error.message });
@@ -226,26 +229,52 @@ class AdminController {
     async updateProduct(req, res) {
         try {
             const { id } = req.query;
-            const updateData = req.body;
+            const { name, generatedDescription, generatedCategories, variants } = req.body;
             const options = { new: true };
 
-            if (typeof updateData !== 'object' || Array.isArray(updateData)) {
-                return res.status(400).send({ message: "Invalid update data provided" });
+            const product = await NewProduct.findById(id, {__v: 0});
+            if (!product) {
+                return res.status(404).json({ 
+                    success: false,
+                    message: 'Product not found' 
+                });
             }
 
-            const updatedProduct = await Product.findByIdAndUpdate(
-                id,
-                { $set: updateData },
-                options
-            ).lean();
+            product.name = name ?? product.name;
+            product.generatedDescription = generatedDescription ?? product.generatedDescription;
+            product.generatedCategories = generatedCategories ?? product.generatedCategories;
 
-            if (!updatedProduct) {
-                return res.status(404).send({ message: "Product not found" });
+            await product.save();
+
+            for (let variantData of variants) {
+                const { variantId, unit, price, availability } = variantData;
+
+                const variant = await ProductVariant.findById(variantId);
+                if (!variant) {
+                    return res.status(404).json({ 
+                        success: false,
+                        message: 'Product variant not found' 
+                    });
+                }
+
+                variant.unit = unit ?? unit;
+                variant.price = price ?? price;
+                variant.availability = availability ?? availability;
+
+                await variant.save();
             }
 
-            const formattedProduct = { _id: updatedProduct._id, ...updatedProduct.data };
+            const updatedVariants = await ProductVariant.find({ productId: product._id }, { __v: 0 }).lean();
 
-            res.status(200).send({ message: "Product updated", product: formattedProduct });
+            const updatedProduct = {
+                ...product.toObject(),
+                variants: updatedVariants
+            };
+
+            res.status(200).json({
+                message: 'Product updated',
+                product: updatedProduct
+            });
 
         } catch (error) {
             console.log(error);
@@ -255,19 +284,38 @@ class AdminController {
 
     async deleteProduct(req, res) {
         try {
-            const { id } = req.query;
+            const productId = req.query.id;
 
-            if (!id) {
-                return res.status(400).send({ message: "Product ID is required" });
-            }
-
-            const deletedProduct = await Product.findByIdAndDelete(id).lean();
-
-            if (!deletedProduct) {
+            const product = await NewProduct.findById(productId);
+            if (!product) {
                 return res.status(404).send({ message: "Product not found" });
             }
 
-            res.status(200).send({ message: "Product deleted successfully", product: deletedProduct });
+            await NewProduct.findByIdAndDelete(productId).lean();
+
+            await ProductVariant.deleteMany({ productId });
+
+            res.status(200).send({ message: "Product deleted successfully", product: product });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ message: error.message });
+        }
+    }
+
+    async deleteProductVariant(req, res) {
+        try {
+            const variantId = req.query.id;
+
+            const variant = await ProductVariant.findById(variantId);
+            if (!variant) {
+                return res.status(404).json({ message: 'Variant not found' });
+            }
+
+            await ProductVariant.findByIdAndDelete(variantId);
+
+            res.status(200).json({ message: 'Variant deleted successfully', variant: variant });
+
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: error.message });

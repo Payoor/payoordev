@@ -51,6 +51,7 @@ adminRoute.post('/admin/add/product-variant', authenticate, _adminController["de
 adminRoute.get('/admin/get/product', authenticate, _adminController["default"].getProduct);
 adminRoute.patch('/admin/update/product', authenticate, _adminController["default"].updateProduct);
 adminRoute["delete"]('/admin/delete/product', authenticate, _adminController["default"].deleteProduct);
+adminRoute["delete"]('/admin/delete/product-variant', authenticate, _adminController["default"].deleteProductVariant);
 adminRoute["delete"]('/admin/delete/all/products', authenticate, _adminController["default"].deleteAllProducts);
 adminRoute.post('/admin/upload/product/image', authenticate, uploadFileWithMulter().single('file'), _adminController["default"].uploadProductImage);
 adminRoute.get('/admin/product/images', authenticate, _adminController["default"].getProductImages);
