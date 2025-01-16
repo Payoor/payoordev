@@ -143,11 +143,13 @@ export default {
       justify-content: space-between;
       gap: 0.5rem;
       font-size: 0.9rem;
+      color: $font-color;
 
       input {
         padding: 0.25rem;
-        border: none;
+        border: 1px solid $grey;
         border-radius: 0.25rem;
+        box-shadow: 0px 0px 5px -2px #32475c4d;
         width: fit-content;
         &:focus {
           outline: none;

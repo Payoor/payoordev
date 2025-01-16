@@ -28,6 +28,8 @@ import transactionRoute from './routes/transactionRoute';
 import corsOriginArray from './corsOriginArray';
 import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 
+import Product from './models/product';
+
 if (process.env.NODE_ENV !== 'production') {
   const corsOptions = {
     origin: corsOriginArray,
@@ -128,12 +130,22 @@ server.listen(PORT, (error) => {
 
 initSocket(server);
 
+async function dropIndex(indexName) {
+  try {
+    await Product.collection.dropIndex(indexName);
+    console.log(`Index ${indexName} dropped successfully`);
+  } catch (err) {
+    console.error(`Error dropping index ${indexName}:`, err);
+  }
+}
+
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
   .then(() => {
     console.log(`database connection on ${process.env.MONGO_URL}`)
+    // dropIndex('filepath_1');
   })
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);

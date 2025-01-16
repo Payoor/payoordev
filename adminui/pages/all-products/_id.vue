@@ -184,6 +184,11 @@ export default {
       })
       .catch((error) => {
         console.log(error.response);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       });
 
     this.getImages()
@@ -231,11 +236,13 @@ export default {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    color: rgba($white, 0.7);
+    color: $font-color;
     gap: 2rem;
 
     h2 {
-      background-color: rgb(47, 47, 47);
+      background-color: $white;
+      box-shadow: 0px 0px 5px -2px #32475c4d;
+      color: $font-color;
       padding: 0.5rem;
     }
 
@@ -282,7 +289,7 @@ export default {
       .product-image-container {
         width: 400px;
         height: 400px;
-        background-color: rgb(47, 47, 47);
+        background-color: $grey-2;
         border-radius: 0.5rem;
         display: flex;
         justify-content: center;

@@ -104,7 +104,14 @@ export default {
       this.numberOfPendingTransactions = res.data.numberOfPendingTransactions;
       this.numberOfVerifiedTransactions = res.data.numberOfVerifiedTransactions;
       this.numberOfUsers = res.data.numberOfUsers;
-    }).catch(error => error.response.data)
+    }).catch(error => {
+      console.log(error.response);
+      if (error.response.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUsername');
+        this.$router.push('/');
+      }
+    })
   },
 }
 </script>

@@ -7,16 +7,18 @@
 	.search__bar {
 		width: 100%;
 		max-width: 300px;
-		background-color: rgb(47, 47, 47);
+		background-color: $white;
+		border: 1px solid $grey;
 		padding: 0.5rem;
 		display: flex;
 		align-items: center;
 		border-radius: 0.25rem;
+		box-shadow: 0px 0px 5px -2px #32475c4d;
 
 		input {
 			background-color: transparent;
 			border: none;
-			color: rgba($white, .5);
+			color: $font-color;
 			flex-grow: 1;
 			padding: 0.5rem;
 
@@ -29,7 +31,7 @@
 			border: none;
 			background-color: transparent;
 			cursor: pointer;
-			color: rgba($white, .5);
+			color: $grey-2;
 			padding-inline: 0.5rem;
 
 			svg {
@@ -45,21 +47,22 @@
 		display: flex;
 		gap: 0.5rem;
 		align-items: center;
+		color: $font-color;
 
 		.filter-label {
 			cursor: pointer;
 			display: inline-block;
 			padding: 0.25rem 1rem;
-			border: 1px solid rgb(67, 67, 67);
+			border: 1px solid $grey-2;
 			border-radius: 2.5rem;
 			background-color: transparent;
 			text-align: center;
 			font-size: 0.8rem;
-			color: rgba($white, .7);
+			color: $font-color;
 			transition: background-color .2s ease, color .2s ease;
 			user-select: none;
 
-			&.active {
+			&:hover, &.active {
 				background-color: $primary-color;
 				color: $white;
 				border-color: $primary-color;

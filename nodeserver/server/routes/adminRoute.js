@@ -44,11 +44,17 @@ adminRoute.post('/admin/upload/products/excel', authenticate, uploadFileWithMult
 
 adminRoute.get('/admin/get/products', authenticate, AdminController.getProducts);
 
+adminRoute.post('/admin/create/product', authenticate, AdminController.addProduct);
+
+adminRoute.post('/admin/add/product-variant', authenticate, AdminController.addProductVariants);
+
 adminRoute.get('/admin/get/product', authenticate, AdminController.getProduct);
 
 adminRoute.patch('/admin/update/product', authenticate, AdminController.updateProduct);
 
 adminRoute.delete('/admin/delete/product', authenticate, AdminController.deleteProduct);
+
+adminRoute.delete('/admin/delete/product-variant', authenticate, AdminController.deleteProductVariant);
 
 adminRoute.delete('/admin/delete/all/products', authenticate, AdminController.deleteAllProducts);
 

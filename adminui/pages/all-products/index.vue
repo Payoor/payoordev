@@ -27,6 +27,7 @@
               <th v-for="(header, idx) in getTableHeaders" :key="idx">
                 {{ header }}
               </th>
+              <th>CreatedAt</th>
               <th>UpdatedAt</th>
               <th>Actions</th>
             </tr>
@@ -40,7 +41,7 @@
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
-                v-if="key !== '_id' && key !== 'updatedAt'"
+                v-if="key !== '_id' && key !== 'updatedAt' && key !== 'createdAt'"
                 @click="editCell(rowIndex, colIndex)"
               >
                 <template v-if="key !== 'data' && key !== 'createdAt' && key !== 'updatedAt'">
@@ -89,6 +90,10 @@
                 </template>
               </td>
 
+              <td>
+                {{ data.createdAt ? timestampToDateString(data.createdAt) : "N/A" }}
+              </td>
+              
               <td>
                 {{ data.updatedAt ? timestampToDateString(data.updatedAt) : "N/A" }}
               </td>
@@ -206,7 +211,7 @@ export default {
     getTableHeaders() {
       return this.products.length
         ? [
-            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt"),
+            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt" && key !== "createdAt"),
           ]
         : [];
     },
@@ -261,6 +266,11 @@ export default {
 
       }).catch((error) => {
         console.log(error.response.data);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       })
     },
 
@@ -436,7 +446,7 @@ td {
     background-color: transparent;
     border: none;
     padding: 0.5rem;
-    color: rgba($white, 0.5);
+    color: $font-color;
     font-size: 1rem;
   
     &::placeholder {
@@ -444,8 +454,7 @@ td {
     }
   
     &:focus {
-      outline: none;
-      border: 1px solid rgba($white, 0.5);
+      outline: 1px solid $primary-color;
     }
   }
 }

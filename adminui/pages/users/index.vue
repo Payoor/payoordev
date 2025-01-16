@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout page-text="Admins">
+  <DefaultLayout page-text="Users">
     <div class="search__container">
       <div></div>
       <div class="search__bar">
@@ -116,6 +116,11 @@ export default {
 
       }).catch((error) => {
         console.log(error.response.data);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       });
     },
 

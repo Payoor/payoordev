@@ -164,6 +164,11 @@ export default {
       })
       .catch((error) => {
         console.log(error.response.data);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
       });
     },
 

@@ -165,6 +165,50 @@ Uploads and processes an Excel file containing product data.
     }
     ```
 
+### Create Product
+Creates a new product.
+
+- **URL:** `/admin/create/product`
+- **Method:** `POST`
+- **Auth Required:** Yes
+- **Request Body:**
+  ```json
+  {
+    "productName": "string"
+  }
+  ```
+- **Success Response:**
+  - **Code:** 201
+    ```json
+    {
+      "message": "Product created successfully!"
+    }
+    ```
+
+### Add Product Variant
+Adds a variant of a product
+
+- **URL:** `/admin/add/product-variant`
+- **Method:** `POST`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product ID
+- **Request Body:**
+  ```json
+  {
+    "unit": "string",
+    "price": "number",
+    "isAvailable": "string",
+  }
+  ```
+- **Success Response:**
+  - **Code:** 201
+    ```json
+    {
+      "message": "Product variant added successfully"
+    }
+    ```
+
 ### Get Products
 Retrieves a paginated list of products.
 
@@ -253,6 +297,26 @@ Removes a product from the system.
       "product": {
         "_id": "string",
         ...deletedProductData
+      }
+    }
+    ```
+
+### Delete Product Variant
+Removes a product variant from the system.
+
+- **URL:** `/admin/delete/product-variant`
+- **Method:** `DELETE`
+- **Auth Required:** Yes
+- **Query Params:**
+  - `id`: Product variant ID
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "message": "Variant deleted successfully",
+      "variant": {
+        "_id": "string",
+        ...deletedVariant
       }
     }
     ```

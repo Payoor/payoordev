@@ -33,10 +33,10 @@ export default {
 .user-card {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 1px solid rgb(47, 47, 47);
+  border-bottom: 1px solid $grey;
   padding: 1rem 0.5rem;
   align-items: center;
-  color: rgba($white, 0.7);
+  color: $font-color;
   transition: 0.2s;
   cursor: pointer;
 
@@ -51,7 +51,8 @@ export default {
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    background-color: rgb(66, 66, 66);
+    background-color: $grey;
+    box-shadow: 0px 0px 5px -2px #32475c4d;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,21 +70,12 @@ export default {
     }
   }
 
-  &:hover {
-    background-color: rgb(66, 66, 66);
+  &:hover, &.active {
+    background-color: $grey;
     border-radius: 0.25rem;
 
     .avatar {
-      background-color: rgb(47, 47, 47);
-    }
-  }
-
-  &.active {
-    background-color: rgb(66, 66, 66);
-    border-radius: 0.25rem;
-
-    .avatar {
-      background-color: rgb(47, 47, 47);
+      background-color: $white;
     }
   }
   
@@ -91,10 +83,6 @@ export default {
     border-bottom: 0;
     padding: 0;
     cursor: default;
-
-    // &.avatar {
-    //   background-color: rgb(47, 47, 47);
-    // }
 
     &:hover {
       background-color: transparent;
