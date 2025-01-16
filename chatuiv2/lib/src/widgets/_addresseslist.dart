@@ -47,6 +47,7 @@ class _AddressesListState extends State<AddressesList> {
           widget.onLocationSelected(updatedAddress);
         }
       }).catchError((error) {
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

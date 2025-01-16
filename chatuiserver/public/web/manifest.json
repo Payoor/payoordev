@@ -1,13 +1,14 @@
 {
-    "name": "chatuiv2",
-    "short_name": "chatuiv2",
+    "name": "Payoor",
+    "short_name": "Payoor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Payoor - AI Shopping Assistant",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "permissions": ["geolocation"],
     "icons": [
         {
             "src": "icons/Icon-192.png",
