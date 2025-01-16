@@ -27,7 +27,7 @@ var PaymentController = /*#__PURE__*/function () {
   return _createClass(PaymentController, [{
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _generatePaymentLink = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var https, email, total, orderId, userId, _req$body, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest, errorResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -84,7 +84,7 @@ var PaymentController = /*#__PURE__*/function () {
                     }
                   }
                 };
-                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
                   var transaction_reference, transaction, order_update;
                   return _regeneratorRuntime().wrap(function _callee$(_context) {
                     while (1) switch (_context.prev = _context.next) {
@@ -161,7 +161,7 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _handlePayStackPaymentResponse = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
         var crypto, paystackSignature, hash, event, paymentData, errorResponse;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -224,7 +224,7 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "verifyPayment",
     value: function () {
-      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+      var _verifyPayment = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
         var https, transactionReference, options, transaction, verificationRequest, errorResponse;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {

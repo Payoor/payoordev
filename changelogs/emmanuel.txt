@@ -5,3 +5,8 @@
 * Added a global side nav to client area
 
 * Make chat bubble in client area both collapsible and uncollapsible
+
+Thursday 16 Jan
+==================
+add side nav
+add google places and geolocation to address input during authentication
