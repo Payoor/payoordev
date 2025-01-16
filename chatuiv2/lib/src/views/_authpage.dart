@@ -5,6 +5,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:chatuiv2/src/widgets/_custominput.dart';
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_animatedcartloader.dart';
+import 'package:chatuiv2/src/widgets/_addresseslist.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_authmessages.dart';
@@ -13,6 +14,7 @@ import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
+import 'package:chatuiv2/src/providers/_googleplaces.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -26,6 +28,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   late Animation<double> _animation;
   late PageController _pageController;
   late TextEditingController _inputController;
+  late final FocusNode _focusNode;
 
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
@@ -88,6 +91,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
     super.initState();
     _inputController = TextEditingController();
     _pageController = PageController();
+    _focusNode = FocusNode();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -199,6 +203,10 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   }
 
   void _handleInputChange(String value) {
+    switch (currentPage) {
+      case 4:
+        context.read<GooglePlaces>().searchPlaces(value);
+    }
     /*setState(() {
       switch (currentPage) {
         case 0:
@@ -223,7 +231,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
     });*/
   }
 
-  String _getCurrentValue() {
+  /*String _getCurrentValue() {
     switch (currentPage) {
       case 0:
         return email;
@@ -240,7 +248,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
       default:
         return '';
     }
-  }
+  }*/
 
   Future<void> _handleSubmit(String value) async {
     setState(() {
@@ -468,6 +476,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   }
 
   Widget buildPageContent(int index) {
+    //index = 4; //development remove when done
     String getUserResponse() {
       switch (index) {
         case 0:
@@ -615,7 +624,22 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-          if (index == 4) Text("Place the google places widget here")
+          if (index == 4)
+            AddressesList(
+              onLocationSelected: (updatedAddress) {
+                _inputController.text = updatedAddress;
+
+                _focusNode.unfocus();
+              },
+              onAddressSelected: (addressData) {
+                //print(addressData['address']);
+                String value = addressData['address']!;
+                _inputController.text = value;
+
+                context.read<GooglePlaces>().clearPredictions();
+                _focusNode.unfocus();
+              },
+            )
         ],
       ),
     );
@@ -678,6 +702,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                   padding: EdgeInsets.all(20),
                   child: CustomInput(
                     controller: _inputController,
+                    focusNode: _focusNode,
                     inputType: _getInputTypeForPage(currentPage),
                     onInputChanged: _handleInputChange,
                     onInputFocus: handleInputFocus,

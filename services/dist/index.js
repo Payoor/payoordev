@@ -3,7 +3,8 @@
 var _cors = _interopRequireDefault(require("cors"));
 var _corsOriginArray = _interopRequireDefault(require("./corsOriginArray"));
 var _socketio_util = require("./utils/socketio_util");
-var _paymentController = _interopRequireDefault(require("./controllers/paymentController"));
+var _paymentRoute = _interopRequireDefault(require("./routes/paymentRoute"));
+var _googleApiRoute = _interopRequireDefault(require("./routes/googleApiRoute"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 if (process.env.NODE_ENV !== 'production') {
   require("dotenv").config();
@@ -49,7 +50,8 @@ io.on('connection', function (socket) {
     });
 }, 3000); */
 
-app.post('/paystack/payment-response', _paymentController["default"].handlePayStackPaymentResponse);
+app.use(_paymentRoute["default"]);
+app.use(_googleApiRoute["default"]);
 
 // Start server
 var PORT = process.env.PORT || 3031;

@@ -20,25 +20,26 @@ class CustomInput extends StatefulWidget {
   final String? hintText;
   final String? errorText;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
 
-  const CustomInput({
-    super.key,
-    required this.onInputChanged,
-    required this.onInputFocus,
-    required this.onInputBlur,
-    required this.onSubmit, // New required parameter
-    required this.inputType,
-    this.hintText,
-    this.errorText,
-    this.controller,
-  });
+  const CustomInput(
+      {super.key,
+      required this.onInputChanged,
+      required this.onInputFocus,
+      required this.onInputBlur,
+      required this.onSubmit, // New required parameter
+      required this.inputType,
+      this.hintText,
+      this.errorText,
+      this.controller,
+      this.focusNode});
 
   @override
   State<CustomInput> createState() => _CustomInputState();
 }
 
 class _CustomInputState extends State<CustomInput> {
-  final FocusNode _focusNode = FocusNode();
+  late final FocusNode _focusNode;
   late final TextEditingController _controller;
   String? _errorText;
   bool _isValid = false;
@@ -47,18 +48,27 @@ class _CustomInputState extends State<CustomInput> {
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
+    _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
+        _validateInput(_controller.text);
         widget.onInputFocus();
       } else {
-        _validateInput(_controller.text);
         widget.onInputBlur();
       }
+    });
+
+    _controller.addListener(() {
+      _validateInput(_controller.text);
+      widget.onInputChanged(_controller.text);
     });
   }
 
   void _validateInput(String value) {
+    //print('validate this $value');
     setState(() {
+      _errorText = null;
+
       switch (widget.inputType) {
         case CustomInputType.email:
           final emailRegex = RegExp(
@@ -123,6 +133,9 @@ class _CustomInputState extends State<CustomInput> {
     if (_isValid) {
       widget.onSubmit(_controller.text.trim());
       _focusNode.unfocus();
+      setState(() {
+        _errorText = null;
+      });
     }
   }
 
@@ -227,8 +240,9 @@ class _CustomInputState extends State<CustomInput> {
                       : null,
           keyboardType: _getKeyboardType(),
           onChanged: (value) {
-            _validateInput(value);
-            widget.onInputChanged(value);
+            //print('here $value');
+            //_validateInput(value);
+            //widget.onInputChanged(value);
           },
           onSubmitted: (_) {
             _handleSubmit();
@@ -283,7 +297,9 @@ class _CustomInputState extends State<CustomInput> {
     if (widget.controller == null) {
       _controller.dispose();
     }
-    _focusNode.dispose();
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
     super.dispose();
   }
 }

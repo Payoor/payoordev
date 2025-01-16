@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:chatuiv2/src/classes/_appcolors.dart';
+import 'package:chatuiv2/src/widgets/_sidenav.dart';
 
 import 'package:chatuiv2/src/views/_authpage.dart';
 import 'package:chatuiv2/src/views/_welcome.dart';
@@ -13,6 +13,9 @@ import 'package:chatuiv2/src/providers/_authprov.dart';
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
+import 'package:chatuiv2/src/providers/_googleplaces.dart';
+
+final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(MultiProvider(providers: [
@@ -20,7 +23,8 @@ void main() {
     ChangeNotifierProvider(create: (_) => AuthProv()),
     ChangeNotifierProvider(create: (_) => MessageProvider()),
     ChangeNotifierProvider(create: (_) => ResultListProvider()),
-    ChangeNotifierProvider(create: (_) => CartProvider())
+    ChangeNotifierProvider(create: (_) => CartProvider()),
+    ChangeNotifierProvider(create: (_) => GooglePlaces())
   ], child: MyApp()));
 }
 
@@ -33,36 +37,49 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorObservers: [routeObserver],
+      navigatorKey: navigationKey,
       initialRoute: '/',
       title: 'Payoor',
       debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        return Stack(
-          children: [
-            child ?? Container(), 
-            ValueListenableBuilder<bool>(
-              valueListenable: sideNavVisible,
-              builder: (context, isVisible, _) {
-                return Visibility(
-                  visible: isVisible,
-                  child: Positioned(
-                    top: 0,
-                    left: 0,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: SideNavWidget(),
-                  ),
-                );
-              },
-            ),
-          ],
+      /*builder: (context, child) {
+        return Material(
+          // Add Material widget here
+          child: Navigator(
+            // Add Navigator here
+            onGenerateRoute: (settings) {
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (context) => Stack(
+                  children: [
+                    child ?? Container(),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: sideNavVisible,
+                      builder: (context, isVisible, _) {
+                        return Visibility(
+                          visible: isVisible,
+                          child: Positioned(
+                            top: 0,
+                            left: 0,
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: SideNavWidget(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
-      },
+      },*/
       routes: {
-        '/': (context) => const AuthLoading(),
-        '/auth': (context) => const AuthPage(),
-        '/welcome': (context) => const Welcome(),
-        '/authchat': (context) => const AuthenticatedChat(),
+        '/': (context) => const StackWithNav(child: AuthLoading()),
+        '/auth': (context) => const StackWithNav(child: AuthPage()),
+        '/welcome': (context) => const StackWithNav(child: Welcome()),
+        '/authchat': (context) =>
+            const StackWithNav(child: AuthenticatedChat()),
       },
     );
   }
@@ -70,33 +87,32 @@ class MyApp extends StatelessWidget {
 
 final ValueNotifier<bool> sideNavVisible = ValueNotifier(false);
 
+class StackWithNav extends StatelessWidget {
+  final Widget child;
 
-class SideNavWidget extends StatelessWidget {
+  const StackWithNav({Key? key, required this.child}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.black,
-      child: Row(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            color: Colors.white,
-            child: ListView(
-              children: [
-               
-                
-                // More menu items...
-              ],
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => sideNavVisible.value = false,
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-        ],
-      ),
+    return Stack(
+      children: [
+        child,
+        ValueListenableBuilder<bool>(
+          valueListenable: sideNavVisible,
+          builder: (context, isVisible, _) {
+            return Visibility(
+              visible: isVisible,
+              child: Positioned(
+                top: 0,
+                left: 0,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: SideNavWidget(),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
