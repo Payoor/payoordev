@@ -9,6 +9,7 @@ class ProductCard extends StatefulWidget {
   final String productId;
   final void Function()? onProductTap;
   final void Function()? onFavoriteTap;
+  static final Map<String, String> _imageCache = {}; // Static cache for URLs
 
   const ProductCard({
     super.key,
@@ -23,10 +24,33 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
+  late Future<String> _imageUrlFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageUrlFuture = _getImageUrl();
+  }
+
+  Future<String> _getImageUrl() async {
+    // Check cache first
+    if (ProductCard._imageCache.containsKey(widget.productId)) {
+      return ProductCard._imageCache[widget.productId]!;
+    }
+
+    // Fetch if not in cache
+    final response = await ProductRoute.getProductImage(widget.productId);
+    final imageUrl = response.data['images'][0]["imageUrl"];
+
+    // Store in cache
+    ProductCard._imageCache[widget.productId] = imageUrl;
+
+    return imageUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      //padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,9 +64,8 @@ class _ProductCardState extends State<ProductCard> {
                   child: Container(
                     width: double.infinity,
                     height: 150,
-                    child: FutureBuilder<ServerResponse>(
-                      future: ProductRoute.getProductImage(
-                          widget.productId), // Make sure productId is available
+                    child: FutureBuilder<String>(
+                      future: _imageUrlFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -61,10 +84,8 @@ class _ProductCardState extends State<ProductCard> {
                           );
                         }
 
-                        // Assuming your ServerResponse data contains imageUrl
                         return Image.network(
-                          snapshot.data!.data['images'][0][
-                              "imageUrl"], // Adjust based on your data structure
+                          snapshot.data!,
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
@@ -84,6 +105,7 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ),
                 ),
+                // Rest of your Stack children remain the same
                 Positioned(
                   top: 8,
                   left: 8,
@@ -114,25 +136,26 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
           Container(
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.productName,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    maxLines: 2,
-                  )
-                ],
-              )),
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.productName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
           GestureDetector(
-            onTap: widget.onProductTap, // Pass this function from parent
+            onTap: widget.onProductTap,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
@@ -141,8 +164,7 @@ class _ProductCardState extends State<ProductCard> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .center, // Changed to center since we only have one item now
+                mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
@@ -157,9 +179,7 @@ class _ProductCardState extends State<ProductCard> {
               ),
             ),
           ),
-          SizedBox(
-            height: 10,
-          )
+          SizedBox(height: 10),
         ],
       ),
     );

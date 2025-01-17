@@ -54,13 +54,26 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
                     textAlign: TextAlign.left,
                     maxLines: 2,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 24),
-                    onPressed: widget
-                        .closeWidget, // Direct call to the passed function
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    splashRadius: 24,
+                  ElevatedButton(
+                    onPressed: widget.closeWidget,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
+                      minimumSize: const Size(24, 24),
+                      backgroundColor: AppColors.primaryColor,
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Done',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   )
                 ],
               )),

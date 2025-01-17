@@ -14,4 +14,5 @@ authRoute.post('/auth/email/verify', _authController["default"].verifyOtp);
 authRoute.post('/auth/signup', _authController["default"].handleSignUp);
 authRoute.post('/auth/genjwt', _authController["default"].generateJWT);
 authRoute.get('/auth/getvaliduser', _verifyToken["default"], _authController["default"].getValidUser);
+authRoute.post('/auth/jwt/delete', _verifyToken["default"], _authController["default"].handleSignOut);
 var _default = exports["default"] = authRoute;

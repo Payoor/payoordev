@@ -8,6 +8,7 @@ var _visitor = _interopRequireDefault(require("../models/visitor"));
 var _user = _interopRequireDefault(require("../models/user"));
 var _message = _interopRequireDefault(require("../models/message"));
 var _emailOtp = _interopRequireDefault(require("../models/emailOtp"));
+var _jwttoken = _interopRequireDefault(require("../models/jwttoken"));
 var _authChatController = _interopRequireDefault(require("./authChatController"));
 var _generateOTP = _interopRequireDefault(require("../services/payoor/generateOTP"));
 var _verifyOtp2 = _interopRequireDefault(require("../services/payoor/verifyOtp"));
@@ -349,13 +350,12 @@ var AuthController = /*#__PURE__*/function () {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
               _context5.prev = 0;
-              console.log('hello there');
               _req$authData = req.authData, userId = _req$authData.userId, tokenId = _req$authData.tokenId;
-              _context5.next = 5;
+              _context5.next = 4;
               return _user["default"].findOne({
                 _id: userId
               });
-            case 5:
+            case 4:
               validUser = _context5.sent;
               //console.log(validUser)
 
@@ -385,10 +385,10 @@ var AuthController = /*#__PURE__*/function () {
                 };
                 res.status(404).json(notFoundResponse);
               }
-              _context5.next = 14;
+              _context5.next = 13;
               break;
-            case 9:
-              _context5.prev = 9;
+            case 8:
+              _context5.prev = 8;
               _context5.t0 = _context5["catch"](0);
               console.log(_context5.t0);
               errorResponse = {
@@ -400,16 +400,81 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(500).json(errorResponse);
-            case 14:
+            case 13:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 9]]);
+        }, _callee5, null, [[0, 8]]);
       }));
       function getValidUser(_x9, _x10) {
         return _getValidUser.apply(this, arguments);
       }
       return getValidUser;
+    }()
+  }, {
+    key: "handleSignOut",
+    value: function () {
+      var _handleSignOut = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+        var _req$authData2, userId, tokenId, token, errorResponse, response, _errorResponse;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              _context6.prev = 0;
+              _req$authData2 = req.authData, userId = _req$authData2.userId, tokenId = _req$authData2.tokenId;
+              _context6.next = 4;
+              return _jwttoken["default"].findById(tokenId);
+            case 4:
+              token = _context6.sent;
+              if (token) {
+                _context6.next = 8;
+                break;
+              }
+              errorResponse = {
+                success: false,
+                data: {
+                  message: 'Token not found',
+                  timestamp: new Date().toISOString()
+                }
+              };
+              return _context6.abrupt("return", res.status(404).json(errorResponse));
+            case 8:
+              token.isRevoked = true;
+              _context6.next = 11;
+              return token.save();
+            case 11:
+              response = {
+                success: true,
+                data: {
+                  message: 'Successfully signed out',
+                  timestamp: new Date().toISOString()
+                }
+              };
+              res.status(200).json(response);
+              _context6.next = 20;
+              break;
+            case 15:
+              _context6.prev = 15;
+              _context6.t0 = _context6["catch"](0);
+              console.log(_context6.t0);
+              _errorResponse = {
+                success: false,
+                data: {
+                  message: _context6.t0.message || 'Failed to signout user',
+                  error: process.env.NODE_ENV === 'development' ? _context6.t0.toString() : undefined,
+                  timestamp: new Date().toISOString()
+                }
+              };
+              res.status(500).json(_errorResponse);
+            case 20:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6, null, [[0, 15]]);
+      }));
+      function handleSignOut(_x11, _x12) {
+        return _handleSignOut.apply(this, arguments);
+      }
+      return handleSignOut;
     }()
   }]);
 }();
