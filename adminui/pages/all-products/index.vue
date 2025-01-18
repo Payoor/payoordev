@@ -24,6 +24,7 @@
           <thead>
             <tr>
               <th>S/N</th>
+              <th>Image</th>
               <th v-for="(header, idx) in getTableHeaders" :key="idx">
                 {{ header }}
               </th>
@@ -38,55 +39,78 @@
               :key="rowIndex"
             >
               <td>{{ getIndex(rowIndex) }}</td>
+              <td>
+                <div class="image">
+                  <img v-if="data.images" :src="data.images[0]" alt="">
+                  <PlaceholderImageIcon v-else />
+                </div>
+              </td>
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
-                v-if="key !== '_id' && key !== 'updatedAt' && key !== 'createdAt'"
+                v-if="key !== '_id' && key !== 'updatedAt' && key !== 'createdAt' && key !== 'images'"
                 @click="editCell(rowIndex, colIndex)"
               >
-                <template v-if="key !== 'variants' && key !== 'createdAt' && key !== 'updatedAt'">
-                  <div v-if="isEditingCell(rowIndex, colIndex)">
+                <template v-if="key !== 'variants' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'images'">
+                  <div>
                     <input
+                      v-if="isEditingCell(rowIndex, colIndex)"
                       type="text"
                       v-model="editableTableData[rowIndex][key]"
                       @blur="saveEdit(rowIndex)"
                       @keyup.enter="saveEdit(rowIndex)"
                       ref="editInput"
                     />
+                    <div v-else>{{ value }}</div>
                   </div>
-                  <div v-else>{{ value }}</div>
                 </template>
 
                 <template v-if="key === 'variants'">
-                  <table class="embedded-table">
+                  <div class="add-variants" v-if="data.variants.length == 0">
+                    <NuxtLink :to="{name: 'add-products', query: { productId: data._id, formStep: 2 }}">Add variants</NuxtLink>
+                  </div>
+                  <table v-else class="embedded-table">
                     <thead>
                       <tr>
+                        <th>Image</th>
                         <th 
                           v-for="header in getEmbeddedTableHeaders(data.variants)" :key="header"
-                          v-if="header !== '_id' && header !== 'productId'"
+                          v-if="header !== '_id' && header !== 'productId' && header !== 'image'"
                         >
                           {{ header.toLowerCase() }}
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(row, subRowIndex) in data.variants" :key="subRowIndex">
+                      <tr
+                        v-for="(row, subRowIndex) in data.variants" 
+                        :key="subRowIndex"
+                      >
+                        <td>
+                          <div class="image">
+                            <img v-if="row.image" :src="row.image" alt="">
+                            <PlaceholderImageIcon v-else />
+                          </div>
+                        </td>
                         <td
                           v-for="(cellValue, cellKey, cellIndex) in row"
-                          v-if="cellKey !== '_id' && cellKey !== 'productId'"
+                          v-if="cellKey !== '_id' && cellKey !== 'productId' && cellKey !== 'image'"
                           :key="cellIndex"
                           @click="editEmbeddedCell(rowIndex, subRowIndex, cellKey)"
                         >
-                          <div v-if="isEditingEmbeddedCell(rowIndex, subRowIndex, cellKey)">
-                            <input
-                              type="text"
-                              v-model="editableTableData[rowIndex].data[subRowIndex][cellKey]"
-                              @blur="saveEdit(rowIndex)"
-                              @keyup.enter="saveEdit(rowIndex)"
-                              ref="editEmbeddedInput"
-                            />
-                          </div>
-                          <div v-else>{{ cellValue }}</div>
+                          <template v-if="cellKey !== '_id' && cellKey !== 'productId' && cellKey !== 'image'">
+                            <div v-if="isEditingEmbeddedCell(rowIndex, subRowIndex, cellKey)">
+                              <input
+                                type="text"
+                                v-model="editableTableData[rowIndex].variants[subRowIndex][cellKey]"
+                                @blur="saveEdit(rowIndex)"
+                                @keyup.enter="saveEdit(rowIndex)"
+                                ref="editEmbeddedInput"
+                              />
+                            </div>
+                            <div v-else>{{ cellValue }}</div>
+                          </template>
+
                         </td>
                       </tr>
                     </tbody>
@@ -112,6 +136,7 @@
                   </button>
                   <div v-if="dropdownIndex === rowIndex" class="dropdown">
                     <button @click="viewProduct(data._id)">View Product</button>
+                    <button @click="addVariant(data._id)">Add Product Variant</button>
                     <button @click="openImageModal(data._id)">Add Image</button>
                     <button @click="openDeleteModal(data._id)">
                       Delete Product
@@ -202,20 +227,22 @@ import {
   removeProduct 
 } from "../../api";
 import SearchIcon from "../../components/icons/SearchIcon.vue";
+import PlaceholderImageIcon from "../../components/icons/PlaceholderImageIcon.vue";
 import { useDebounce } from "../../utils";
 import { isDate, timestampToDateString } from "../../helpers";
 
 export default {
   components: {
     DefaultLayout: Default,
-    SearchIcon
+    SearchIcon,
+    PlaceholderImageIcon
   },
 
   computed: {
     getTableHeaders() {
       return this.products.length
         ? [
-            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt" && key !== "createdAt"),
+            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt" && key !== "createdAt" && key !== "images"),
           ]
         : [];
     },
@@ -226,7 +253,7 @@ export default {
       products: [],
       editableTableData: [],
       editingCell: { row: null, col: null },
-      editingEmbeddedCell: null,
+      editingEmbeddedCell: { parentRow: null, row: null, key: null },
       dropdownIndex: null,
       showImageModal: false,
       showDeleteModal: false,
@@ -293,8 +320,7 @@ export default {
       this.editingCell = { row: rowIndex, col: colIndex };
       this.$nextTick(() => {
         const input = this.$refs.editInput;
-        // console.log(input[0])
-        if (input[0]) input[0].focus();
+        if (input && input[0]) input[0].focus();
       });
     },
 
@@ -314,8 +340,7 @@ export default {
 
       this.$nextTick(() => {
         const input = this.$refs.editEmbeddedInput;
-        // console.log(input[0])
-        if (input[0]) input[0].focus();
+        if (input && input[0]) input[0].focus();
       });
     },
 
@@ -343,6 +368,10 @@ export default {
 
     viewProduct(productId) {
       this.$router.push(`/all-products/${productId}`);
+    },
+
+    addVariant(productId) {
+      this.$router.push(`/add-products?productId=${productId}&formStep=${2}`);
     },
 
     toggleDropdown(index) {
@@ -445,6 +474,24 @@ export default {
 
 <style lang="scss" scoped>
 td {
+  .add-variants {
+    display: flex;
+    justify-content: center;
+    a {
+      background-color: $primary-color;
+      padding: 0.5rem 1rem;
+      color: $white;
+      font-size: 0.8rem;
+      text-decoration: none;
+      border-radius: 0.25rem;
+      transition: .2s;
+
+      &:hover {
+        background-color: rgba($primary-color, .7);
+      }
+    }
+  }
+
   input {
     width: 100%;
     background-color: transparent;
@@ -459,6 +506,27 @@ td {
   
     &:focus {
       outline: 1px solid $primary-color;
+    }
+  }
+
+  .image {
+    display: flex;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 0.25rem;
+      border: 1px solid $grey;
+      box-shadow: 0px 0px 5px -2px #32475c4d;
+    }
+
+    svg {
+      color: $grey-2;
+      width: 100%;
+      height: 100%;
     }
   }
 }

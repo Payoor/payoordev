@@ -40,13 +40,19 @@
               <thead>
                 <tr>
                   <th v-for="value, key in tableHeaders" :key="key">
-                    {{ key }}
+                    {{ value }}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(value, key) in filteredProductDetails" :key="key">
                   <td v-for="(item, key) in value">
+                    <template v-if="key === 'image'">
+                      <div class="image">
+                        <img v-if="item" :src="item[0]" alt="">
+                        <PlaceholderImageIcon v-else />
+                      </div>
+                    </template>
                     <template v-if="key === 'price'">
                       {{ formatAmount(item) }}
                     </template>
@@ -102,9 +108,9 @@ export default {
   computed: {
     filteredProductDetails() {
       if (this.product) {
-        const { _id, images, ...rest } = this.product;
-        this.tableHeaders = rest[0];
-        return rest;
+        const { _id, images, name, variants} = this.product;
+        this.tableHeaders = variants ? Object.keys(variants[0]) : [];
+        return variants;
       }
       return {};
     },
@@ -181,6 +187,7 @@ export default {
       .then((response) => {
         this.isLoading = false;
         this.product = response.data;
+        console.log(this.product.variants[0])
       })
       .catch((error) => {
         console.log(error.response);
@@ -317,6 +324,28 @@ export default {
 
       .table__container {
         margin-top: 0 !important;
+        height: auto !important;
+
+        .image {
+          display: flex;
+          justify-content: center;
+          width: 4rem;
+          height: 4rem;
+
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.25rem;
+            border: 1px solid $grey;
+            box-shadow: 0px 0px 5px -2px #32475c4d;
+          }
+
+          svg {
+            color: $grey-2;
+            width: 100%;
+            height: 100%;
+          }
+        }
       }
     }
   }
