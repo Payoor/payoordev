@@ -214,7 +214,7 @@ class AdminController {
                 return res.status(404).send({ message: "Product not found" });
             }
 
-            const productVariants = await ProductVariant.find({ productId: product._id }, { __v: 0 }).lean();
+            const productVariants = await ProductVariant.find({ productId: product._id }, { _id: 0,  __v: 0, productId: 0 }).lean();
 
             const { _id, name, images } = product;
 

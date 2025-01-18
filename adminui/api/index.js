@@ -21,6 +21,10 @@ export const removeAdmin = (adminId) => $http.delete(`${serverUrl}/admin/${admin
 // Product Manangement
 export const uploadExcelSheet = (data) => $http.post(`${serverUrl}/admin/upload/products/excel`, data, getFileHeader());
 
+export const addProduct = (data) => $http.post(`${serverUrl}/admin/create/product`, data, getDefaultHeader());
+
+export const addProductVariant = (productId, data) => $http.post(`${serverUrl}/admin/add/product-variant?id=${productId}`, data, getDefaultHeader());
+
 export const getAllProducts = ({page, limit, search}) => $http.get(`${serverUrl}/admin/get/products?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
 
 export const getSingleProduct = (productId) => $http.get(`${serverUrl}/admin/get/product?id=${productId}`, getDefaultHeader());
