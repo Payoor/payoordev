@@ -11,6 +11,7 @@ import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 
+//cart.itemCount > 0
 class MessageContent extends StatefulWidget {
   final Message message;
   final ScrollController scrollController;
@@ -42,7 +43,7 @@ class _MessageContentState extends State<MessageContent> {
     super.didChangeDependencies();
 
     final messageProvider = context.watch<MessageProvider>();
-    
+
     if (messageProvider.messages.length != previousMessageLength) {
       previousMessageLength = messageProvider.messages.length;
       setState(() {
@@ -111,17 +112,19 @@ class _MessageContentState extends State<MessageContent> {
                             },
                           ))),
                 ),
-                widget.message.isProductsDisplay ? Positioned(
-                  top: 13,
-                  right: 10,
-                  child: Icon(
-                    _showProducts
-                        ? Icons.view_list
-                        : Icons.view_agenda_outlined,
-                    color: AppColors.primaryColor.withOpacity(0.8),
-                    size: 17,
-                  ),
-                ) : SizedBox(),
+                widget.message.isProductsDisplay
+                    ? Positioned(
+                        top: 13,
+                        right: 10,
+                        child: Icon(
+                          _showProducts
+                              ? Icons.view_list
+                              : Icons.view_agenda_outlined,
+                          color: AppColors.primaryColor.withOpacity(0.8),
+                          size: 17,
+                        ),
+                      )
+                    : SizedBox(),
               ]),
               if (widget.message.isCartView && _showCart)
                 Consumer<CartProvider>(
@@ -129,58 +132,65 @@ class _MessageContentState extends State<MessageContent> {
                     return Column(
                       children: [
                         CartDisplay(),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppColors.greyBlack.withOpacity(.5),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: TypewriterText(
-                                key: ValueKey(
-                                    'message_${widget.message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                                text:
-                                    "Service Fee: ₦ ${cartProvider.serviceCharge}\n"
-                                    "Delivery Fee: ₦ ${widget.deliveryFee}\n"
-                                    "Total: ₦ ${cartProvider.serviceCharge + widget.deliveryFee + cartProvider.totalAmount}\n",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white.withOpacity(0.8),
+                        cartProvider.itemCount > 0
+                            ? Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                duration: Duration(milliseconds: 1500),
-                                showCursor: true,
-                                scrollController: widget.scrollController,
-                                onTap: () {},
-                                onComplete: () {
-                                  setState(() {
-                                    _showProducts =
-                                        widget.message.isProductsDisplay;
-                                    _showCart = widget.message.isCartView;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        )
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          AppColors.greyBlack.withOpacity(.5),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TypewriterText(
+                                      key: ValueKey(
+                                          'message_${widget.message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
+                                      text:
+                                          "Service Fee: ₦ ${cartProvider.serviceCharge}\n"
+                                          "Delivery Fee: ₦ ${widget.deliveryFee}\n"
+                                          "Total: ₦ ${cartProvider.serviceCharge + widget.deliveryFee + cartProvider.totalAmount}\n",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white.withOpacity(0.8),
+                                      ),
+                                      duration: Duration(milliseconds: 1500),
+                                      showCursor: true,
+                                      scrollController: widget.scrollController,
+                                      onTap: () {},
+                                      onComplete: () {
+                                        setState(() {
+                                          _showProducts =
+                                              widget.message.isProductsDisplay;
+                                          _showCart = widget.message.isCartView;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : SizedBox()
                       ],
                     );
                   },
                 ),
               if (widget.message.isProductsDisplay &&
-                  _showProducts &&
                   widget.message.results.isNotEmpty)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 4),
                   child: Container(
                       padding: const EdgeInsets.all(8),
-                      child: ProductDisplay()),
+                      child: Visibility(
+                          visible:
+                              _showProducts,
+                          maintainState: true,
+                          child: ProductDisplay())),
                 ),
             ]);
       },

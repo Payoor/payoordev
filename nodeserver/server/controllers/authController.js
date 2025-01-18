@@ -4,6 +4,7 @@ import Visitor from "../models/visitor";
 import User from "../models/user";
 import Message from "../models/message";
 import EmailOtp from "../models/emailOtp";
+import JwtToken from "../models/jwttoken";
 
 import MessageController from "./authChatController";
 
@@ -235,7 +236,6 @@ class AuthController {
 
     async getValidUser(req, res) {
         try {
-            console.log('hello there')
             const { userId, tokenId } = req.authData;
 
             const validUser = await User.findOne({ _id: userId });
@@ -279,6 +279,51 @@ class AuthController {
                 success: false,
                 data: {
                     message: error.message || 'Failed to create user',
+                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(500).json(errorResponse);
+        }
+    }
+
+    async handleSignOut(req, res) {
+        try {
+            const { userId, tokenId } = req.authData;
+
+            const token = await JwtToken.findById(tokenId);
+
+            if (!token) {
+                const errorResponse = {
+                    success: false,
+                    data: {
+                        message: 'Token not found',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                return res.status(404).json(errorResponse);
+            }
+
+            token.isRevoked = true;
+            await token.save();
+
+            const response = {
+                success: true,
+                data: {
+                    message: 'Successfully signed out',
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            res.status(200).json(response);
+        } catch (error) {
+            console.log(error);
+            const errorResponse = {
+                success: false,
+                data: {
+                    message: error.message || 'Failed to signout user',
                     error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
                     timestamp: new Date().toISOString()
                 }

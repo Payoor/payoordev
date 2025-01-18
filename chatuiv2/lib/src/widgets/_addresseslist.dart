@@ -47,6 +47,7 @@ class _AddressesListState extends State<AddressesList> {
           widget.onLocationSelected(updatedAddress);
         }
       }).catchError((error) {
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -73,6 +74,7 @@ class _AddressesListState extends State<AddressesList> {
           children: [
             Container(
               height: 600, // Fixed height for the container
+              color: AppColors.primaryColorDark,
               child: Column(
                 children: [
                   GestureDetector(

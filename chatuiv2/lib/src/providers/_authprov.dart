@@ -57,7 +57,27 @@ class AuthProv extends ChangeNotifier {
     }
   }
 
-  //admin/delete/user?userId=6761aa1aeb1224182114fffa
+  Future<void> logout() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      if (_jwt == null) {
+        _resetState(clearData: true);
+        return;
+      }
+
+      final response = await AuthApiRoutes.logoutUser(_jwt!);
+
+      JwtManager.removeToken();
+
+      _resetState(clearData: true);
+    } catch (error) {
+      print('Error during logout: $error');
+      JwtManager.removeToken();
+      _resetState(clearData: true, hasError: true);
+    }
+  }
 
   void _resetState({bool clearData = false, bool hasError = false}) {
     _isLoading = false;

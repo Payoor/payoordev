@@ -110,8 +110,11 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                             ListTile(
                               leading: Icon(Icons.logout, color: Colors.white),
                               title: Text('Signout', style: menuItem),
-                              onTap: () {
-                                // Handle logout
+                              onTap: () async {
+                                await authProv.logout();
+                                Navigator.of(context, rootNavigator: true)
+                                    .pushNamed('/');
+                                sideNavVisible.value = false;
                               },
                             ),
                           ],
