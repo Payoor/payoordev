@@ -1,171 +1,163 @@
 <template>
-  <DefaultLayout :page-text="'Add Products'">
-    <div class="file-upload">
-      <label for="excel-file" class="custom-input">
-        <UploadIcon class="upload-icon" />
-        <span>Click to upload products list</span>
+  <DefaultLayout :page-text="$route.query ? 'Add Product Variant' : 'Add Products'">
+      <div class="form__container">
+        <div class="header">
+          <template v-if="!$route.query">
+            <h3>Step {{ step }}</h3>
+            <p v-if="step === 1">Create a product by inputting the name of the product</p>
+            <p v-if="step === 2">Add a variant of <strong>{{ product.name }}</strong></p>
+          </template>
 
-        <input
-          ref="fileInput"
-          type="file"
-          accept=".xls, .xlsx"
-          id="excel-file"
-          @change="handleFileSelect"
-          hidden
-        />
-      </label>
+          <template v-else>
+            <p>Add a variant of <strong>{{ product.name }}</strong></p>
+          </template>  
+        </div>
 
-      <div>
-        <div v-if="selectedFile" class="selected-file">
-          <FileIcon v-if="!isUploading" class="file-icon" />
-          <div class="file-name">
-            <p>{{ selectedFile.name }}</p>
-
-            <div v-if="isUploading" class="progress-bar">
-              <div
-                :style="{ width: progress + '%' }"
-                class="progress-bar-fill"
-              ></div>
-            </div>
+        <form v-if="step === 1" @submit.prevent="handleCreateProduct">
+          <div class="form__group">
+            <label for="productNname">Product Name</label>
+            <input
+              type="text"
+              placeholder="Enter product name"
+              v-model="productName"
+            >
           </div>
 
-          <button @click="handleFileRemoval">
-            <CircleXIcon />
+          <button
+            type="submit"
+            class="submit-btn"
+            :class="{ isLoading }"
+          >
+            <span>Next</span>
           </button>
-        </div>
+
+          <Notification
+            v-if="message"
+            :message="message" 
+            :isError="hasError"
+          />
+        </form>
+
+        <Transition name="slide-fade">
+          <form v-if="step === 2" @submit.prevent="handleAddVariant">
+            <div class="form__group">
+              <label for="unit">Unit</label>
+              <input
+                type="text"
+                placeholder="Eg: De rica"
+                v-model="unit"
+              >
+            </div>
+
+            <div class="form__group">
+              <label for="unit">Price</label>
+              <input
+                type="number"
+                placeholder="0"
+                v-model="price"
+                min="0"
+              >
+            </div>
+
+            <div class="checkbox">
+              <input
+                type="checkbox"
+                v-model="isAvailable"
+              >
+              <label for="isAvailable">Variant is available</label>
+            </div>
+
+            <button
+              type="submit"
+              class="submit-btn"
+              :class="{ isLoading }"
+            >
+              <span>Submit</span>
+            </button>
+
+            <Notification
+              v-if="message"
+              :message="message" 
+              :isError="hasError"
+            />
+
+          </form>
+        </Transition>
       </div>
 
-      <div>
-        <button
-          @click="uploadFile"
-          class="upload-btn submit-btn"
-          :class="{ isLoading }"
-          :disabled="!selectedFile"
-        >
-          <span>Upload file</span>
-        </button>
-      </div>
-
-      <div v-if="uploadMessage">
-        <Notification :message="uploadMessage" :isError="hasError" />
-      </div>
-    </div>
   </DefaultLayout>
 </template>
 
 <script>
 import Default from "../../layouts/Default.vue";
-import UploadIcon from "../../components/icons/UploadIcon.vue";
-import CircleXIcon from "../../components/icons/CircleXIcon.vue";
-import FileIcon from "../../components/icons/FileIcon.vue";
-import { uploadExcelSheet } from "../../api";
+import { addProduct, addProductVariant, getSingleProduct } from "../../api";
 
 export default {
   components: {
     DefaultLayout: Default,
-    CircleXIcon: CircleXIcon,
-    UploadIcon: UploadIcon,
-    FileIcon: FileIcon,
   },
 
   data() {
     return {
-      selectedFile: null,
+      step: 1,
       isLoading: false,
-      isUploading: false,
-      fileLoaded: false,
       progress: 0,
       hasError: false,
-      uploadMessage: "",
+      message: "",
+      product: {},
+      productId: undefined,
+      productName: "",
+      unit: "",
+      price: 0,
+      isAvailable: false,
     };
   },
 
   methods: {
-    uploadExcelSheet,
-    handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (file) {
-        // Validate file type to accept only Excel files
-        const isExcelFile =
-          file.type === "application/vnd.ms-excel" ||
-          file.type ===
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-        if (!isExcelFile) {
-          this.hasError = true;
-          this.uploadMessage =
-            "Please select a valid Excel file (.xls or .xlsx)";
-          this.selectedFile = null;
-          this.fileLoaded = false;
-          return;
-        }
-
-        this.selectedFile = file;
-        this.hasError = false;
-        this.uploadMessage = ""; // Clear any previous messages
-        console.log(this.selectedFile);
-
-        this.loadFile();
-      }
-    },
-
-    handleFileRemoval() {
-      this.selectedFile = null;
-    },
-
-    loadFile() {
-      this.isUploading = true;
-      this.fileLoaded = false;
-      const reader = new FileReader();
-
-      reader.onloadstart = () => {
-        this.progress = 0;
-      };
-
-      reader.onprogress = (event) => {
-        if (event.lengthComputable) {
-          this.progress = Math.round((event.loaded / event.total) * 100);
-        }
-      };
-
-      reader.onloadend = () => {
-        this.progress = 100;
-        this.isUploading = false;
-        this.fileLoaded = true;
-      };
-
-      reader.onerror = () => {
-        this.hasError = true;
-        this.uploadMessage = "Error loading file";
-        this.isUploading = false;
-      };
-
-      reader.readAsDataURL(this.selectedFile);
-    },
-
-    uploadFile() {
-      if (!this.fileLoaded) return;
+    addProduct,
+    addProductVariant,
+    getSingleProduct,
+    handleCreateProduct() {
       this.isLoading = true;
+      this.addProduct({ productName: this.productName }).then(res => {
+        console.log(res.data);
+        this.product = res.data.product;
+        this.message = res.data.message || 'Product created!';
 
-      const formData = new FormData();
-      formData.append("file", this.selectedFile);
-
-      this.uploadExcelSheet(formData).then((response) => {
-        this.uploadMessage = response.data.message;
         setTimeout(() => {
+          this.isLoading = false;
+          this.step = 2; 
+          this.message = "";
+        }, 2000);
+
+      }).catch(error => {
+        console.log(error.response.data);
+        this.isLoading = false;
+        this.hasError = true;
+        this.message = error.response.data.message || 'Failed to create product';
+      })
+    },
+
+    handleAddVariant() {
+      this.isLoading = true;
+      this.addProductVariant(this.productId ? this.productId : this.product._id, {
+        unit: this.unit,
+        price: this.price,
+        isAvailable: this.isAvailable ? "YES" : "NO",
+      }).then(res => {
+        console.log(res.data);
+        this.message = res.data.message || 'Product variant added!';
+
+        setTimeout(() => {
+          this.isLoading = false;
           this.redirectToProductsPage();
         }, 2000);
 
-      }).catch((error) => {
+      }).catch(error => {
+        console.log(error.response.data);
         this.isLoading = false;
         this.hasError = true;
-        this.uploadMessage = "Failed to upload file. Please try again.";
-        console.log(error.response);
-        if (error.response.status === 401) {
-          localStorage.removeItem('adminToken');
-          localStorage.removeItem('adminUsername');
-          this.$router.push('/');
-        }
+        this.message = error.response.data.message || 'Failed to add product variant';
       })
     },
 
@@ -173,111 +165,42 @@ export default {
       this.$router.push("/all-products");
     },
   },
+
+  mounted() {
+    this.productId = this.$route.query.productId;
+    this.step = parseInt(this.$route.query.formStep);
+
+    this.getSingleProduct(this.productId)
+      .then((response) => {
+        this.product = response.data;
+      })
+      .catch((error) => {
+        console.log(error.response);
+        if (error.response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUsername');
+          this.$router.push('/');
+        }
+      });
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-.file-upload {
-  width: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.header {
+  color: $font-color;
   margin-top: 2rem;
-
-  .custom-input {
-    width: 100%;
-    height: auto;
-    padding: 1.5rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 2px dashed $primary-color;
-    border-radius: 0.25rem;
-    gap: 0.5rem;
-    color: $font-color;
-
-    span {
-      font-size: 1rem;
-    }
-
-    @media screen and (min-width: 768px) {
-      width: 500px;
-    }
-
-    &:hover {
-      opacity: 70%;
-      cursor: pointer;
-    }
-
-    .upload-icon {
-      width: 2rem;
-      height: 2rem;
-    }
-  }
-
-  .selected-file {
+}
+form {
+  .checkbox {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: 100%;
-    background-color: $grey;
-    box-shadow: 0px 0px 5px -2px #32475c4d;
-    padding: 1rem 0.5rem;
-    border-radius: 0.25rem;
     color: $font-color;
+    margin-bottom: 2rem;
 
-    @media screen and (min-width: 768px) {
-      width: 500px;
-    }
-
-    .file-icon {
-      color: $primary-color;
-    }
-
-    .file-name {
-      flex-grow: 1;
-      p {
-        font-size: 0.85rem;
-      }
-    }
-
-    button {
-      background-color: transparent;
-      border: none;
-      color: $font-color;
+    input[type="checkbox"] {
       cursor: pointer;
-
-      &:hover {
-        opacity: 70%;
-      }
-    }
-
-    .progress-bar {
-      width: 90%;
-      background-color: rgba($white, 0.7);
-      height: 0.2rem;
-      border-radius: 3px;
-
-      &-fill {
-        height: 100%;
-        background-color: $primary-color;
-        transition: width 0.5s;
-        border-radius: 3px;
-      }
-    }
-  }
-
-  .upload-btn {
-    background-color: $primary-color;
-    font-size: 0.8rem !important;
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 0.8;
     }
   }
 }

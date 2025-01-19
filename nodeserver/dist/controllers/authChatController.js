@@ -22,7 +22,7 @@ var AuthChatController = /*#__PURE__*/function () {
   return _createClass(AuthChatController, [{
     key: "sendUserMessage",
     value: function () {
-      var _sendUserMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _sendUserMessage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
         var response, errorResponse;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -67,7 +67,7 @@ var AuthChatController = /*#__PURE__*/function () {
   }, {
     key: "getRoomMessages",
     value: function () {
-      var _getRoomMessages = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getRoomMessages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
         var roomId, messages, data;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
