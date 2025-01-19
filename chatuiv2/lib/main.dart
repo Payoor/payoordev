@@ -41,39 +41,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       title: 'Payoor',
       debugShowCheckedModeBanner: false,
-      /*builder: (context, child) {
-        return Material(
-          // Add Material widget here
-          child: Navigator(
-            // Add Navigator here
-            onGenerateRoute: (settings) {
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => Stack(
-                  children: [
-                    child ?? Container(),
-                    ValueListenableBuilder<bool>(
-                      valueListenable: sideNavVisible,
-                      builder: (context, isVisible, _) {
-                        return Visibility(
-                          visible: isVisible,
-                          child: Positioned(
-                            top: 0,
-                            left: 0,
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: SideNavWidget(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },*/
       routes: {
         '/': (context) => const StackWithNav(child: AuthLoading()),
         '/auth': (context) => const StackWithNav(child: AuthPage()),

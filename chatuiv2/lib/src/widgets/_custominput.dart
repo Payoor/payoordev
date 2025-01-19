@@ -244,6 +244,7 @@ class _CustomInputState extends State<CustomInput> {
             //_validateInput(value);
             //widget.onInputChanged(value);
           },
+          enableInteractiveSelection: true,
           onSubmitted: (_) {
             _handleSubmit();
           },

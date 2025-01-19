@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 
@@ -41,6 +42,7 @@ class _OnboardInputState extends State<OnboardInput> {
       minLines: 3,
       maxLength: 500,
       onChanged: widget.onInputChanged,
+      enableInteractiveSelection: true,
       onSubmitted: (_) {
         _focusNode.unfocus(); // Unfocus when done is pressed
       },
