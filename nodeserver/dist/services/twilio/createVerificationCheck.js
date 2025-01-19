@@ -20,7 +20,7 @@ function createVerificationCheck(_x, _x2) {
   return _createVerificationCheck.apply(this, arguments);
 }
 function _createVerificationCheck() {
-  _createVerificationCheck = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(code, number) {
+  _createVerificationCheck = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(code, number) {
     var verificationCheck;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
