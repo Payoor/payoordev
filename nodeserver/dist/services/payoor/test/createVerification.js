@@ -12,7 +12,7 @@ function createVerificationTest(_x) {
   return _createVerificationTest.apply(this, arguments);
 }
 function _createVerificationTest() {
-  _createVerificationTest = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(number) {
+  _createVerificationTest = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(number) {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:html' as html;
+//import 'dart:html' as html;
 import 'dart:async';
 
 import 'package:chatuiv2/src/views/_landingscreen.dart';
@@ -698,6 +701,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                 onSubmitted: _handleSubmit,
                 onChanged: (value) {},
                 enableInteractiveSelection: true,
+                enableSuggestions: true, // Add this
+                enabled: true,
               ),
               Positioned(
                 right: 8,
