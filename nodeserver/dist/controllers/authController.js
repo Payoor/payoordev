@@ -414,7 +414,7 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "handleSignOut",
     value: function () {
-      var _handleSignOut = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+      var _handleSignOut = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
         var _req$authData2, userId, tokenId, token, errorResponse, response, _errorResponse;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {

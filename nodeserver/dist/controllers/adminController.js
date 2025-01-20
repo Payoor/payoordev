@@ -410,7 +410,7 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "updateProduct",
     value: function () {
-      var _updateProduct = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+      var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
         var id, _req$body2, name, generatedDescription, generatedCategories, variants, options, product, _iterator, _step, variantData, _id, unit, price, availability, variant, updatedVariants, updatedProduct;
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
@@ -627,7 +627,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "uploadProductImage",
     value: function () {
       var _uploadProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(req, res) {
-        var id, file, fileName, uploadParams, command, s3Response, imageUrl, image;
+        var id, modelName, product, file, fileName, uploadParams, command, imageUrl, image;
         return _regeneratorRuntime().wrap(function _callee10$(_context10) {
           while (1) switch (_context10.prev = _context10.next) {
             case 0:
@@ -641,6 +641,41 @@ var AdminController = /*#__PURE__*/function () {
               }));
             case 3:
               id = req.query.id;
+              modelName = req.body.modelName;
+              if (!(modelName === 'newProduct')) {
+                _context10.next = 11;
+                break;
+              }
+              _context10.next = 8;
+              return _newProduct["default"].findById(id);
+            case 8:
+              product = _context10.sent;
+              _context10.next = 18;
+              break;
+            case 11:
+              if (!(modelName === 'ProductVariant')) {
+                _context10.next = 17;
+                break;
+              }
+              _context10.next = 14;
+              return _productVariant["default"].findById(id);
+            case 14:
+              product = _context10.sent;
+              _context10.next = 18;
+              break;
+            case 17:
+              return _context10.abrupt("return", res.status(404).send({
+                message: "Invalid model name"
+              }));
+            case 18:
+              if (product) {
+                _context10.next = 20;
+                break;
+              }
+              return _context10.abrupt("return", res.status(404).send({
+                message: "Product not found"
+              }));
+            case 20:
               file = req.file;
               fileName = generateUniqueFileName(file.originalname);
               uploadParams = {
@@ -650,36 +685,40 @@ var AdminController = /*#__PURE__*/function () {
                 ContentType: file.mimetype
               };
               command = new PutObjectCommand(uploadParams);
-              _context10.next = 10;
+              _context10.next = 26;
               return s3Client.send(command);
-            case 10:
-              s3Response = _context10.sent;
+            case 26:
               imageUrl = "https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/".concat(fileName);
               image = new _image["default"]({
                 imageUrl: imageUrl,
-                product: id
+                modelName: modelName,
+                modelId: id
               });
-              _context10.next = 15;
+              _context10.next = 30;
               return image.save();
-            case 15:
+            case 30:
+              product.image = imageUrl;
+              _context10.next = 33;
+              return product.save();
+            case 33:
               res.status(200).send({
                 message: "product image uploaded successfully",
                 image: image
               });
-              _context10.next = 22;
+              _context10.next = 40;
               break;
-            case 18:
-              _context10.prev = 18;
+            case 36:
+              _context10.prev = 36;
               _context10.t0 = _context10["catch"](0);
               console.log(_context10.t0);
               res.status(500).send({
                 message: _context10.t0.message
               });
-            case 22:
+            case 40:
             case "end":
               return _context10.stop();
           }
-        }, _callee10, null, [[0, 18]]);
+        }, _callee10, null, [[0, 36]]);
       }));
       function uploadProductImage(_x19, _x20) {
         return _uploadProductImage.apply(this, arguments);
@@ -698,7 +737,7 @@ var AdminController = /*#__PURE__*/function () {
               id = req.query.id;
               _context11.next = 4;
               return _image["default"].find({
-                product: id
+                modelId: id
               });
             case 4:
               images = _context11.sent;
@@ -731,12 +770,12 @@ var AdminController = /*#__PURE__*/function () {
     key: "deleteProductImage",
     value: function () {
       var _deleteProductImage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(req, res) {
-        var id, image, key, deleteCommand, _error$$metadata;
+        var _req$query, id, isVariant, image, product, key, deleteCommand, _error$$metadata;
         return _regeneratorRuntime().wrap(function _callee12$(_context12) {
           while (1) switch (_context12.prev = _context12.next) {
             case 0:
               _context12.prev = 0;
-              id = req.query.id;
+              _req$query = req.query, id = _req$query.id, isVariant = _req$query.isVariant;
               if (id) {
                 _context12.next = 4;
                 break;
@@ -745,69 +784,113 @@ var AdminController = /*#__PURE__*/function () {
                 message: 'Image ID is required'
               }));
             case 4:
-              _context12.next = 6;
+              if (!isVariant) {
+                _context12.next = 8;
+                break;
+              }
+              _context12.next = 7;
               return _image["default"].findOne({
-                _id: id
+                modelId: id
               });
-            case 6:
+            case 7:
               image = _context12.sent;
+            case 8:
+              if (isVariant) {
+                _context12.next = 12;
+                break;
+              }
+              _context12.next = 11;
+              return _image["default"].findById(id);
+            case 11:
+              image = _context12.sent;
+            case 12:
               if (image) {
-                _context12.next = 9;
+                _context12.next = 14;
                 break;
               }
               return _context12.abrupt("return", res.status(404).json({
                 message: 'Image not found'
               }));
-            case 9:
+            case 14:
+              if (!(image.modelName === 'newProduct')) {
+                _context12.next = 18;
+                break;
+              }
+              _context12.next = 17;
+              return _newProduct["default"].findById(image.modelId);
+            case 17:
+              product = _context12.sent;
+            case 18:
+              if (!(image.modelName === 'ProductVariant')) {
+                _context12.next = 22;
+                break;
+              }
+              _context12.next = 21;
+              return _productVariant["default"].findById(image.modelId);
+            case 21:
+              product = _context12.sent;
+            case 22:
+              if (product) {
+                _context12.next = 24;
+                break;
+              }
+              return _context12.abrupt("return", res.status(404).send({
+                message: "Product not found"
+              }));
+            case 24:
               key = image.imageUrl.split('.com/').pop();
               deleteCommand = new DeleteObjectCommand({
                 Bucket: 'payoorimages',
                 Key: key
               });
-              _context12.next = 13;
+              _context12.next = 28;
               return s3Client.send(deleteCommand);
-            case 13:
-              _context12.next = 15;
+            case 28:
+              _context12.next = 30;
               return _image["default"].findOneAndDelete({
-                _id: id
+                modelId: product._id
               });
-            case 15:
+            case 30:
+              product.image = "";
+              _context12.next = 33;
+              return product.save();
+            case 33:
               res.status(200).json({
                 message: 'Image deleted successfully',
                 deletedImage: image
               });
-              _context12.next = 26;
+              _context12.next = 44;
               break;
-            case 18:
-              _context12.prev = 18;
+            case 36:
+              _context12.prev = 36;
               _context12.t0 = _context12["catch"](0);
               console.log(_context12.t0);
               if (!(_context12.t0.name === 'CastError')) {
-                _context12.next = 23;
+                _context12.next = 41;
                 break;
               }
               return _context12.abrupt("return", res.status(400).json({
                 message: 'Invalid image ID format'
               }));
-            case 23:
+            case 41:
               if (!((_error$$metadata = _context12.t0.$metadata) !== null && _error$$metadata !== void 0 && _error$$metadata.httpStatusCode)) {
-                _context12.next = 25;
+                _context12.next = 43;
                 break;
               }
               return _context12.abrupt("return", res.status(_context12.t0.$metadata.httpStatusCode).json({
                 message: 'Error deleting image from storage',
                 error: _context12.t0.message
               }));
-            case 25:
+            case 43:
               res.status(500).send({
                 message: 'Error deleting image',
                 error: _context12.t0.message
               });
-            case 26:
+            case 44:
             case "end":
               return _context12.stop();
           }
-        }, _callee12, null, [[0, 18]]);
+        }, _callee12, null, [[0, 36]]);
       }));
       function deleteProductImage(_x23, _x24) {
         return _deleteProductImage.apply(this, arguments);

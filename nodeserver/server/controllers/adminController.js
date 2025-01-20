@@ -329,6 +329,23 @@ class AdminController {
             }
 
             const { id } = req.query;
+            const modelName = req.body.modelName;
+
+            let product;
+
+            if (modelName === 'newProduct') {
+                product = await NewProduct.findById(id);
+
+            } else if (modelName === 'ProductVariant') {
+                product = await ProductVariant.findById(id);
+
+            } else {
+                return res.status(404).send({ message: "Invalid model name" });
+            }
+
+            if (!product) {
+                return res.status(404).send({ message: "Product not found" });
+            }
 
             const file = req.file;
             const fileName = generateUniqueFileName(file.originalname);
@@ -341,18 +358,23 @@ class AdminController {
             };
 
             const command = new PutObjectCommand(uploadParams);
-            const s3Response = await s3Client.send(command);
+            await s3Client.send(command);
 
             const imageUrl = `https://payoorimages.s3.ap-southeast-2.amazonaws.com/products/${fileName}`;
 
             const image = new Image({
                 imageUrl,
-                product: id
+                modelName,
+                modelId: id
             });
 
             await image.save();
 
+            product.image = imageUrl;
+            await product.save();
+
             res.status(200).send({ message: "product image uploaded successfully", image });
+
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: error.message });
@@ -363,7 +385,7 @@ class AdminController {
         try {
             const { id } = req.query;
 
-            const images = await Image.find({ product: id });
+            const images = await Image.find({ modelId: id });
 
             res.status(200).send({ message: "images found", images, total: images.length });
         } catch (error) {
@@ -374,16 +396,34 @@ class AdminController {
 
     async deleteProductImage(req, res) {
         try {
-            const { id } = req.query;
+            const { id, isVariant } = req.query;
 
             if (!id) {
                 return res.status(400).json({ message: 'Image ID is required' });
             }
 
-            const image = await Image.findOne({ _id: id });
+            let image;
+            if (isVariant) {
+                image = await Image.findOne({ modelId: id });
+            }
+            if (!isVariant) {
+                image = await Image.findById(id);
+            }
 
             if (!image) {
                 return res.status(404).json({ message: 'Image not found' });
+            }
+
+            let product;
+            if (image.modelName === 'newProduct') {
+                product = await NewProduct.findById(image.modelId);
+            }
+            if (image.modelName === 'ProductVariant') {
+                product = await ProductVariant.findById(image.modelId);
+            }
+
+            if (!product) {
+                return res.status(404).send({ message: "Product not found" });
             }
 
             const key = image.imageUrl.split('.com/').pop();
@@ -395,7 +435,9 @@ class AdminController {
 
             await s3Client.send(deleteCommand);
 
-            await Image.findOneAndDelete({ _id: id });
+            await Image.findOneAndDelete({ modelId: product._id });
+            product.image = "";
+            await product.save();
 
             res.status(200).json({
                 message: 'Image deleted successfully',
