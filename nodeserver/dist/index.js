@@ -33,7 +33,7 @@ var crypto = require('crypto');
 if (process.env.NODE_ENV !== 'production') {
   var corsOptions = {
     origin: _corsOriginArray["default"],
-    methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
+    methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
     credentials: true
   };

@@ -33,7 +33,7 @@ import Product from './models/product';
 if (process.env.NODE_ENV !== 'production') {
   const corsOptions = {
     origin: corsOriginArray,
-    methods: ['POST', 'OPTIONS', 'GET', 'PATCH'],
+    methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
     allowedHeaders: [
       'Origin',
       'X-Requested-With',
