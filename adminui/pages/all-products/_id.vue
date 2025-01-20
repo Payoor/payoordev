@@ -10,7 +10,7 @@
       <div class="details-wrapper">
         <h2>Images</h2>
         <div class="image-list">
-          <template v-if="productImages && productImages.length">
+          <template v-if="productImages.length">
             <div 
               v-for="image, index in productImages"
               :key="index"
@@ -49,14 +49,14 @@
                   <td v-for="(item, key) in value">
                     <template v-if="key === 'image'">
                       <div class="image">
-                        <img v-if="item" :src="item[0]" alt="">
+                        <img v-if="item" :src="item" alt="">
                         <PlaceholderImageIcon v-else />
                       </div>
                     </template>
                     <template v-if="key === 'price'">
                       {{ formatAmount(item) }}
                     </template>
-                    <template v-else>
+                    <template v-if="key !== 'image' && key !== 'price'">
                       {{ item }}
                     </template>
                   </td>
@@ -108,7 +108,7 @@ export default {
   computed: {
     filteredProductDetails() {
       if (this.product) {
-        const { _id, images, name, variants} = this.product;
+        const { _id, image, name, variants} = this.product;
         this.tableHeaders = variants ? Object.keys(variants[0]) : [];
         return variants;
       }
@@ -174,7 +174,7 @@ export default {
       }).catch((error) => {
         this.isLoading = false;
         this.hasError = true;
-        this.message = "Failed to delete product. Please try again.";
+        this.message = error.response.data.message || "Failed to delete product. Please try again.";
         console.log(error.response.data);
       })
     }
@@ -329,8 +329,8 @@ export default {
         .image {
           display: flex;
           justify-content: center;
-          width: 4rem;
-          height: 4rem;
+          width: 5rem;
+          height: 5rem;
 
           img {
             width: 100%;

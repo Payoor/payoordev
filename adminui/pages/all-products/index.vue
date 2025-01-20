@@ -40,18 +40,18 @@
             >
               <td>{{ getIndex(rowIndex) }}</td>
               <td>
-                <div class="image">
-                  <img v-if="data.images" :src="data.images[0]" alt="">
+                <div class="product-image">
+                  <img v-if="data.image" :src="data.image" alt="">
                   <PlaceholderImageIcon v-else />
                 </div>
               </td>
               <td
                 v-for="(value, key, colIndex) in data"
                 :key="colIndex"
-                v-if="key !== '_id' && key !== 'updatedAt' && key !== 'createdAt' && key !== 'images'"
+                v-if="key !== '_id' && key !== 'updatedAt' && key !== 'createdAt' && key !== 'image'"
                 @click="editCell(rowIndex, colIndex)"
               >
-                <template v-if="key !== 'variants' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'images'">
+                <template v-if="key !== 'variants' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'image'">
                   <div>
                     <input
                       v-if="isEditingCell(rowIndex, colIndex)"
@@ -79,6 +79,7 @@
                         >
                           {{ header.toLowerCase() }}
                         </th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -110,7 +111,23 @@
                             </div>
                             <div v-else>{{ cellValue }}</div>
                           </template>
+                        </td>
+                        <td>
+                          <div class="variant-action">
+                            <button
+                              @click="openImageModal(row._id, 'ProductVariant')"
+                            >
+                              {{ row.image ? 'Change image' : 'Add image' }}
+                            </button>
 
+                            <button
+                              class="delete-btn"
+                              @click="openDeleteModal(row._id, 'ProductVariant')"
+                              :disabled="!row.image"
+                            >
+                              Delete image
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -137,7 +154,7 @@
                   <div v-if="dropdownIndex === rowIndex" class="dropdown">
                     <button @click="viewProduct(data._id)">View Product</button>
                     <button @click="addVariant(data._id)">Add Product Variant</button>
-                    <button @click="openImageModal(data._id)">Add Image</button>
+                    <button @click="openImageModal(data._id, 'newProduct')">Add Image</button>
                     <button @click="openDeleteModal(data._id)">
                       Delete Product
                     </button>
@@ -166,7 +183,7 @@
         v-if="showImageModal"
         v-on:close-modal="closeImageModal"
         v-on:submit-form="uploadImage"
-        :modal-header="'Upload Product Image'"
+        :modal-header="modelName === 'ProductVariant' ? 'Upload Variant Image' : 'Upload Product Image'"
         :confirm-text="'Upload'"
         :is-loading="isLoading"
       >
@@ -201,13 +218,13 @@
       <Modal
         v-if="showDeleteModal"
         v-on:close-modal="closeDeleteModal"
-        v-on:submit-form="deleteProduct"
-        :modal-header="'Delete Product'"
+        v-on:submit-form="modelName === 'ProductVariant' ? deleteImage() : deleteProduct()"
+        :modal-header="modelName === 'ProductVariant' ? 'Delete Variant Image' : 'Delete Product'"
         :confirm-text="'Yes, proceed'"
         :is-loading="isLoading"
       >
         <template #modalContent>
-          <p>Are you sure you want to delete this product?</p>
+          <p>{{modelName === 'ProductVariant' ? 'Are you sure you want to delete this variant image?' : 'Are you sure you want to delete this product?'}}</p>
           <div v-if="message" class="notification">
             <Notification :message="message" :isError="hasError" />
           </div>
@@ -224,7 +241,8 @@ import {
   getAllProducts,
   updateProductDetails,
   uploadProductImage,
-  removeProduct 
+  removeProduct,
+  removeProductImage
 } from "../../api";
 import SearchIcon from "../../components/icons/SearchIcon.vue";
 import PlaceholderImageIcon from "../../components/icons/PlaceholderImageIcon.vue";
@@ -242,7 +260,7 @@ export default {
     getTableHeaders() {
       return this.products.length
         ? [
-            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt" && key !== "createdAt" && key !== "images"),
+            ...Object.keys(this.products[0]).filter((key) => key !== "_id" && key !== "updatedAt" && key !== "createdAt" && key !== "image"),
           ]
         : [];
     },
@@ -259,6 +277,7 @@ export default {
       showDeleteModal: false,
       selectedProductId: null,
       selectedImage: null,
+      modelName: "",
       imagePreview: null,
       isLoading: false,
       message: "",
@@ -276,6 +295,7 @@ export default {
     updateProductDetails,
     removeProduct,
     uploadProductImage,
+    removeProductImage,
     isDate,
     timestampToDateString,
     fetchProducts() {
@@ -378,10 +398,11 @@ export default {
       this.dropdownIndex = this.dropdownIndex === index ? null : index;
     },
 
-    openImageModal(productId) {
+    openImageModal(productId, modelName) {
       this.dropdownIndex = null;
       this.selectedProductId = productId;
       this.showImageModal = true;
+      this.modelName = modelName;
     },
 
     closeImageModal() {
@@ -405,9 +426,10 @@ export default {
 
       const formData = new FormData();
       formData.append("file", this.selectedImage);
+      formData.append("modelName", this.modelName);
       
       this.uploadProductImage(this.selectedProductId, formData).then((response) => {
-        
+        this.fetchProducts();
         this.message = response.data.message;
         
         setTimeout(() => {
@@ -426,9 +448,10 @@ export default {
       });
     },
 
-    openDeleteModal(productId) {
+    openDeleteModal(productId, modelName) {
       this.dropdownIndex = null;
       this.selectedProductId = productId;
+      this.modelName = modelName;
       this.showDeleteModal = true;
     },
 
@@ -455,9 +478,35 @@ export default {
       }).catch((error) => {
         this.isLoading = false;
         this.hasError = true;
-        this.message = "Failed to delete product. Please try again.";
+        this.message = error.response.data.message || "Failed to delete product. Please try again.";
         console.log(error.response.data);
       });
+    },
+
+    deleteImage() {
+      this.hasError = false;
+      this.isLoading = true;
+      this.message = "";
+      
+      this.removeProductImage({ 
+        imageId : this.selectedProductId,
+        isVariant : true
+      }).then((response) => {
+        this.message = response.data.message;
+
+        setTimeout(() => {
+          this.isLoading = false;
+          this.message = "";
+          this.fetchProducts();
+          this.closeDeleteModal();
+        }, 2000);
+
+      }).catch((error) => {
+        this.isLoading = false;
+        this.hasError = true;
+        this.message = error.response.data.message || "Failed to delete product. Please try again.";
+        console.log(error.response.data);
+      })
     },
 
     onPageChange(page) {
@@ -492,6 +541,38 @@ td {
     }
   }
 
+  .variant-action {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 0.25rem;
+
+    button {
+      width: 98px;
+      background-color: $primary-color;
+      padding: 0.35rem;
+      border: none;
+      border-radius: 0.25rem;
+      color: $white;
+      font-size: 0.8rem;
+      transition: .1s;
+      cursor: pointer;
+
+      &.delete-btn {
+        background-color: $grey-2;
+        color: $font-color;
+
+        &:hover {
+          background-color: rgba($grey-2, .7);
+        }
+      }
+
+      &:hover {
+        background-color: rgba($primary-color, .7);
+      }
+    }
+  }
+
   input {
     width: 100%;
     background-color: transparent;
@@ -506,6 +587,27 @@ td {
   
     &:focus {
       outline: 1px solid $primary-color;
+    }
+  }
+
+  .product-image {
+    display: flex;
+    justify-content: center;
+    width: 5.5rem;
+    height: 5.5rem;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 0.25rem;
+      border: 1px solid $grey;
+      box-shadow: 0px 0px 5px -2px #32475c4d;
+    }
+
+    svg {
+      color: $grey-2;
+      width: 80%;
+      height: 80%;
     }
   }
 
