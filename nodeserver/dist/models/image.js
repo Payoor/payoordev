@@ -6,9 +6,14 @@ var imageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  product: {
+  modelName: {
+    type: String,
+    "enum": ['newProduct', 'ProductVariant'],
+    "default": 'newProduct'
+  },
+  modelId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    refPath: 'modelName',
     required: true
   }
 }, {
