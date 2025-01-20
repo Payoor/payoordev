@@ -5,3 +5,9 @@
 * Updated admin dashboard theme color
 
 * Created a starter endpoint to add a product ---> still in progress
+
+Monday 20 Jan
+==================
+* Updated route to upload, get and delete images for products and product variants
+
+* Implemeted the UI for uploading and deleting image for product variants
