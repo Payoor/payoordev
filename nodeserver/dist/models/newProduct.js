@@ -5,7 +5,7 @@ var newProductSchema = new mongoose.Schema({
   name: {
     type: String
   },
-  images: {
+  image: {
     type: String,
     "default": ""
   },
