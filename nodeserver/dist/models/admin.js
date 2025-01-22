@@ -34,14 +34,14 @@ AdminSchema.statics.findByCredentials = function (username, password) {
     username: username
   }).then(function (admin) {
     if (!admin) {
-      return Promise.reject();
+      return Promise.reject(new Error('Invalid username or password'));
     }
     return new Promise(function (resolve, reject) {
       _bcryptjs["default"].compare(password, admin.password, function (err, res) {
         if (res) {
           resolve(admin);
         } else {
-          reject();
+          reject(new Error('Invalid username or password'));
         }
       });
     });

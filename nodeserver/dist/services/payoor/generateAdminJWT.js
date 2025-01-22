@@ -14,7 +14,7 @@ function generateAdminJWT(_x) {
   return _generateAdminJWT.apply(this, arguments);
 }
 function _generateAdminJWT() {
-  _generateAdminJWT = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+  _generateAdminJWT = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
     var adminid, username, admin_payload, token;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

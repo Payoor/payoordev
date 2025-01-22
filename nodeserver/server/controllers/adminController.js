@@ -91,7 +91,7 @@ class AdminController {
             const product = new NewProduct({
                 name: productName
             });
-            
+
             await product.save();
 
             res.status(201).send({
@@ -167,9 +167,9 @@ class AdminController {
             }
 
             const products = await NewProduct.find(query, { __v: 0 })
-            .skip(skip)
-            .limit(limit)
-            .lean();
+                .skip(skip)
+                .limit(limit)
+                .lean();
 
             const productIds = products.map((product) => product._id);
 
@@ -214,7 +214,7 @@ class AdminController {
                 return res.status(404).send({ message: "Product not found" });
             }
 
-            const productVariants = await ProductVariant.find({ productId: product._id }, { _id: 0,  __v: 0, productId: 0 }).lean();
+            const productVariants = await ProductVariant.find({ productId: product._id }, { _id: 0, __v: 0, productId: 0 }).lean();
 
             const { _id, name, images } = product;
 
@@ -232,11 +232,11 @@ class AdminController {
             const { name, generatedDescription, generatedCategories, variants } = req.body;
             const options = { new: true };
 
-            const product = await NewProduct.findById(id, {__v: 0});
+            const product = await NewProduct.findById(id, { __v: 0 });
             if (!product) {
-                return res.status(404).json({ 
+                return res.status(404).json({
                     success: false,
-                    message: 'Product not found' 
+                    message: 'Product not found'
                 });
             }
 
@@ -251,9 +251,9 @@ class AdminController {
 
                 const variant = await ProductVariant.findById(_id);
                 if (!variant) {
-                    return res.status(404).json({ 
+                    return res.status(404).json({
                         success: false,
-                        message: 'Product variant not found' 
+                        message: 'Product variant not found'
                     });
                 }
 
@@ -497,8 +497,9 @@ class AdminController {
         }
     }
 
-    async signInAdmin(req, res) {
+    async signInAdmin(req, res, next) {
         try {
+            console.log(req.body);
             const { username, password } = req.body;
 
             // Validate input
@@ -512,7 +513,10 @@ class AdminController {
 
             res.json({ admin, token });
         } catch (error) {
-            res.status(401).json({ error: 'Invalid login credentials' });
+            console.log('error here', error, 'error here')
+            error.statusCode = 401;
+            error.payoorDevErrorMessage = 'Invalid login credentials';
+            next(error);
         }
     }
 
@@ -769,10 +773,10 @@ class AdminController {
             }
 
             const orders = await Order.find(query, { __v: 0 })
-            .populate('userId', 'name -_id')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+                .populate('userId', 'name -_id')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit);
 
             const total = await Order.countDocuments(query);
 
@@ -876,10 +880,10 @@ class AdminController {
     async getDashboardAggregateData(req, res) {
         try {
             const availableProductsCount = await Product.countDocuments({ "data.availability": "YES" });
-            const pendingOrdersCount = await Order.countDocuments({status: 'pending'});
-            const completedOrdersCount = await Order.countDocuments({status: 'completed'});
-            const pendingTransactionsCount = await Transaction.countDocuments({status: 'pending'});
-            const verifiedTransactionsCount = await Transaction.countDocuments({status: 'verified'});
+            const pendingOrdersCount = await Order.countDocuments({ status: 'pending' });
+            const completedOrdersCount = await Order.countDocuments({ status: 'completed' });
+            const pendingTransactionsCount = await Transaction.countDocuments({ status: 'pending' });
+            const verifiedTransactionsCount = await Transaction.countDocuments({ status: 'verified' });
             const usersCount = await User.countDocuments();
 
             res.status(200).send({
