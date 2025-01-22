@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 class GoogleApiController {
-    async searchPlaces(req, res) {
+    async searchPlaces(req, res, next) {
         try {
             const placesResponse = await axios.get(
                 `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${req.query.query}&region=ng&components=country:ng&key=${process.env.GOOGLE_MAPS_API_KEY}`
@@ -27,12 +27,13 @@ class GoogleApiController {
             }
             return res.status(200).json(response);
         } catch (error) {
-            console.log(error)
-            return res.status(500).json(error);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Error searching location';
+            next(error);
         }
     }
 
-    async reverseGeocode(req, res) {
+    async reverseGeocode(req, res, next) {
         try {
             const { lat, lng } = req.query;
 
@@ -71,8 +72,9 @@ class GoogleApiController {
             }
 
         } catch (error) {
-            console.log(error)
-            return res.status(500).json(error);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Error reading coordinates';
+            next(error);
         }
     }
 }

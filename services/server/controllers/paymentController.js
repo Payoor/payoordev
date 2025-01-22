@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 class PaymentController {
-    async handlePayStackPaymentResponse(req, res) {
+    async handlePayStackPaymentResponse(req, res, next) {
         console.log('called paystack route');
         try {
             const crypto = require('crypto');
@@ -74,16 +74,9 @@ class PaymentController {
 
         } catch (error) {
             console.error('Webhook processing error:', error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Error handling payment response',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            return res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Error handling payment response';
+            next(error);
         }
     }
 }

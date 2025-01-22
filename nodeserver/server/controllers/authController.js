@@ -1,23 +1,17 @@
 const jwt = require('jsonwebtoken');
 
-import Visitor from "../models/visitor";
 import User from "../models/user";
-import Message from "../models/message";
 import EmailOtp from "../models/emailOtp";
 import JwtToken from "../models/jwttoken";
 
-import MessageController from "./authChatController";
-
 import generateOTP from "../services/payoor/generateOTP";
-import verifyOtp from "../services/payoor/verifyOtp";
 import generateJWT from "../services/payoor/generateJWT";
-import getValidUser from '../services/payoor/getValidUser';
 
 import sendOtp from "../services/resend/sendOtp";
 
 class AuthController {
 
-    async generateOtp(req, res) {
+    async generateOtp(req, res, next) {
         try {
             const { email } = req.body;
 
@@ -48,21 +42,13 @@ class AuthController {
 
             res.status(200).json(response);
         } catch (error) {
-            console.log(error)
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to send OTP',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here');
+            error.payoorDevErrorMessage = 'Failed to send OTP';
+            next(error);
         }
     }
 
-    async verifyOtp(req, res) {
+    async verifyOtp(req, res, next) {
         try {
             const { email, otp } = req.body;
 
@@ -128,21 +114,13 @@ class AuthController {
                 res.status(400).json(invalidResponse);
             }
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to verify OTP',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here');
+            error.payoorDevErrorMessage = 'Failed to verify OTP';
+            next(error);
         }
     }
 
-    async handleSignUp(req, res) {
+    async handleSignUp(req, res, next) {
         try {
             const { name, email, phone, location, shoppingList } = req.body;
 
@@ -190,21 +168,13 @@ class AuthController {
                 res.status(200).json(response);
             }
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to create user',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to create user';
+            next(error);
         }
     }
 
-    async generateJWT(req, res) {
+    async generateJWT(req, res, next) {
         try {
             const { id } = req.query;
 
@@ -220,21 +190,13 @@ class AuthController {
 
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to create user',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to generate jwt';
+            next(error);
         }
     }
 
-    async getValidUser(req, res) {
+    async getValidUser(req, res, next) {
         try {
             const { userId, tokenId } = req.authData;
 
@@ -274,21 +236,13 @@ class AuthController {
                 res.status(404).json(notFoundResponse);
             }
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to create user',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve user';
+            next(error);
         }
     }
 
-    async handleSignOut(req, res) {
+    async handleSignOut(req, res, next) {
         try {
             const { userId, tokenId } = req.authData;
 
@@ -319,17 +273,9 @@ class AuthController {
 
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to signout user',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to signout user';
+            next(error);
         }
     }
 }

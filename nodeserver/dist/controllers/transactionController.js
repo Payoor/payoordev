@@ -22,7 +22,7 @@ var TransactionController = /*#__PURE__*/function () {
   return _createClass(TransactionController, [{
     key: "getUserTransactions",
     value: function () {
-      var _getUserTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _getUserTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
         var page, limit, skip, transactions, total;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -50,24 +50,22 @@ var TransactionController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 transactions: transactions
               });
-              _context.next = 15;
+              _context.next = 17;
               break;
             case 11:
               _context.prev = 11;
               _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
-              res.status(500).json({
-                success: false,
-                message: 'Error fetching transactions',
-                error: _context.t0.message
-              });
-            case 15:
+              console.log('error here', _context.t0, 'error here');
+              _context.t0.statusCode = 400;
+              _context.t0.payoorDevErrorMessage = 'Failed to retrieve transactions';
+              next(_context.t0);
+            case 17:
             case "end":
               return _context.stop();
           }
         }, _callee, null, [[0, 11]]);
       }));
-      function getUserTransactions(_x, _x2) {
+      function getUserTransactions(_x, _x2, _x3) {
         return _getUserTransactions.apply(this, arguments);
       }
       return getUserTransactions;
@@ -75,7 +73,7 @@ var TransactionController = /*#__PURE__*/function () {
   }, {
     key: "getTransaction",
     value: function () {
-      var _getTransaction = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getTransaction = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
         var transactionId, transaction;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -113,22 +111,22 @@ var TransactionController = /*#__PURE__*/function () {
                   transaction: transaction
                 }
               });
-              _context2.next = 16;
+              _context2.next = 18;
               break;
             case 12:
               _context2.prev = 12;
               _context2.t0 = _context2["catch"](0);
-              console.log(_context2.t0);
-              res.status(500).send({
-                message: _context2.t0.message
-              });
-            case 16:
+              console.log('error here', _context2.t0, 'error here');
+              _context2.t0.statusCode = 400;
+              _context2.t0.payoorDevErrorMessage = 'Failed to retrieve transaction';
+              next(_context2.t0);
+            case 18:
             case "end":
               return _context2.stop();
           }
         }, _callee2, null, [[0, 12]]);
       }));
-      function getTransaction(_x3, _x4) {
+      function getTransaction(_x4, _x5, _x6) {
         return _getTransaction.apply(this, arguments);
       }
       return getTransaction;

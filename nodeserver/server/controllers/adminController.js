@@ -77,7 +77,7 @@ class AdminController {
         }
     }
 
-    async addProduct(req, res) {
+    async addProduct(req, res, next) {
         try {
             const productName = req.body.productName;
 
@@ -101,15 +101,14 @@ class AdminController {
             });
 
         } catch (error) {
-            res.status(400).json({
-                success: false,
-                error: 'Failed to add product',
-                details: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to add product';
+            next(error);
         }
     }
 
-    async addProductVariants(req, res) {
+    async addProductVariants(req, res, next) {
         try {
             const productId = req.query.id;
             const { unit, price, isAvailable } = req.body;
@@ -146,15 +145,14 @@ class AdminController {
             });
 
         } catch (error) {
-            res.status(400).json({
-                success: false,
-                error: 'Failed to add product variant',
-                details: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to add product variant';
+            next(error);
         }
     }
 
-    async getProducts(req, res) {
+    async getProducts(req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 20;
@@ -195,12 +193,14 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to retrieve products';
+            next(error);
         }
     }
 
-    async getProduct(req, res) {
+    async getProduct(req, res, next) {
         try {
             const { id } = req.query;
 
@@ -221,16 +221,17 @@ class AdminController {
             res.status(200).send({ _id, name, image, variants: productVariants });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to retrieve product';
+            next(error);
         }
     }
 
-    async updateProduct(req, res) {
+    async updateProduct(req, res, next) {
         try {
             const { id } = req.query;
             const { name, generatedDescription, generatedCategories, variants } = req.body;
-            const options = { new: true };
 
             const product = await NewProduct.findById(id, { __v: 0 });
             if (!product) {
@@ -277,12 +278,14 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to update product';
+            next(error);
         }
     }
 
-    async deleteProduct(req, res) {
+    async deleteProduct(req, res, next) {
         try {
             const productId = req.query.id;
 
@@ -298,12 +301,14 @@ class AdminController {
             res.status(200).send({ message: "Product deleted successfully", product: product });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to delete product';
+            next(error);
         }
     }
 
-    async deleteProductVariant(req, res) {
+    async deleteProductVariant(req, res, next) {
         try {
             const variantId = req.query.id;
 
@@ -317,12 +322,14 @@ class AdminController {
             res.status(200).json({ message: 'Variant deleted successfully', variant: variant });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to delete product variant';
+            next(error);
         }
     }
 
-    async uploadProductImage(req, res) {
+    async uploadProductImage(req, res, next) {
         try {
             if (!req.file) {
                 return res.status(400).json({ error: 'No file uploaded' });
@@ -376,12 +383,13 @@ class AdminController {
             res.status(200).send({ message: "product image uploaded successfully", image });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to upload product image';
+            next(error);
         }
     }
 
-    async getProductImages(req, res) {
+    async getProductImages(req, res, next) {
         try {
             const { id } = req.query;
 
@@ -389,12 +397,13 @@ class AdminController {
 
             res.status(200).send({ message: "images found", images, total: images.length });
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve product image';
+            next(error);
         }
     }
 
-    async deleteProductImage(req, res) {
+    async deleteProductImage(req, res, next) {
         try {
             const { id, isVariant } = req.query;
 
@@ -445,28 +454,13 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-
-            if (error.name === 'CastError') {
-                return res.status(400).json({ message: 'Invalid image ID format' });
-            }
-
-            if (error.$metadata?.httpStatusCode) {
-                return res.status(error.$metadata.httpStatusCode).json({
-                    message: 'Error deleting image from storage',
-                    error: error.message
-                });
-            }
-
-
-            res.status(500).send({
-                message: 'Error deleting image',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Error deleteing image';
+            next(error);
         }
     }
 
-    async createAdmin(req, res) {
+    async createAdmin(req, res, next) {
         try {
             const { username, password } = req.body;
 
@@ -493,7 +487,10 @@ class AdminController {
 
             res.status(201).json({ admin, token });
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to create admin';
+            next(error);
         }
     }
 
@@ -520,7 +517,7 @@ class AdminController {
         }
     }
 
-    async deleteAdmin(req, res) {
+    async deleteAdmin(req, res, next) {
         try {
             const { adminId } = req.params;
 
@@ -555,27 +552,27 @@ class AdminController {
                 deletedAdmin: adminToDelete.username
             });
         } catch (error) {
-            res.status(400).json({
-                error: 'Failed to delete admin',
-                details: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to delete admin';
+            next(error);
         }
     }
 
     // Optional: Add a method to get all admins for reference
-    async getAllAdmins(req, res) {
+    async getAllAdmins(req, res, next) {
         try {
             const admins = await Admin.find({}, 'username _id');
             res.json(admins);
         } catch (error) {
-            res.status(400).json({
-                error: 'Failed to fetch admins',
-                details: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to fetch admins';
+            next(error);
         }
     }
 
-    async getUsers(req, res) {
+    async getUsers(req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -599,12 +596,13 @@ class AdminController {
                 users: users
             });
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve users';
+            next(error);
         }
     }
 
-    async getUser(req, res) {
+    async getUser(req, res, next) {
         try {
             const { id } = req.query;
 
@@ -637,12 +635,13 @@ class AdminController {
             res.status(200).send(response);
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve user';
+            next(error);
         }
     }
 
-    async getTransactions(req, res) {
+    async getTransactions(req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -683,12 +682,13 @@ class AdminController {
                 transactions: transactions
             });
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve transactions';
+            next(error);
         }
     }
 
-    async getTransaction(req, res) {
+    async getTransaction(req, res, next) {
         try {
             const transactionId = req.query.id;
 
@@ -713,12 +713,13 @@ class AdminController {
                 }
             });
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve transaction';
+            next(error);
         }
     }
 
-    async getUserTransactions(req, res) {
+    async getUserTransactions(req, res, next) {
         try {
             const userId = req.query.userId;
             const page = parseInt(req.query.page) || 1;
@@ -741,12 +742,13 @@ class AdminController {
                 transactions: transactions
             });
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve transactions';
+            next(error);
         }
     }
 
-    async getOrders(req, res) {
+    async getOrders(req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -790,16 +792,13 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching orders',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve orders';
+            next(error);
         }
     }
 
-    async getUserOrders(req, res) {
+    async getUserOrders(req, res, next) {
         try {
             const userId = req.query.userId;
             const page = parseInt(req.query.page) || 1;
@@ -823,16 +822,13 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching orders',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve users';
+            next(error);
         }
     }
 
-    async getOrder(req, res) {
+    async getOrder(req, res, next) {
         try {
             const orderId = req.query.id;
 
@@ -852,16 +848,13 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching order',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve users';
+            next(error);
         }
     }
 
-    async deleteOneUser(req, res) {
+    async deleteOneUser(req, res, next) {
         try {
             const { userId } = req.query;
 
@@ -873,13 +866,15 @@ class AdminController {
 
             res.status(200).json({ message: 'User deleted successfully' });
         } catch (error) {
-            res.status(500).json({ message: 'Error deleting user', error: error.message });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Error deleting user';
+            next(error);
         }
     }
 
-    async getDashboardAggregateData(req, res) {
+    async getDashboardAggregateData(req, res, next) {
         try {
-            const availableProductsCount = await Product.countDocuments({ "data.availability": "YES" });
+            const availableProductsCount = await ProductVariant.countDocuments({ availability: 'YES' });
             const pendingOrdersCount = await Order.countDocuments({ status: 'pending' });
             const completedOrdersCount = await Order.countDocuments({ status: 'completed' });
             const pendingTransactionsCount = await Transaction.countDocuments({ status: 'pending' });
@@ -897,8 +892,9 @@ class AdminController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: 'Error retrieving dashboard data', error: error.message });
+            console.log('error here', error, 'error here');
+            error.payoorDevErrorMessage = 'Failed to retrieve dashboard data';
+            next(error);
         }
     }
 }

@@ -39,7 +39,7 @@ conversationRoute.get('/getconversation', /*#__PURE__*/function () {
   };
 }());
 conversationRoute.post('/saveconversation', /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+  var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
     var jwt, body, payload, savePromises;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
@@ -75,22 +75,21 @@ conversationRoute.post('/saveconversation', /*#__PURE__*/function () {
           res.status(200).send({
             message: 'All messages saved successfully'
           });
-          _context2.next = 17;
+          _context2.next = 18;
           break;
         case 13:
           _context2.prev = 13;
           _context2.t0 = _context2["catch"](0);
-          console.error('Error saving conversation:', _context2.t0);
-          res.status(500).send({
-            message: 'An error occurred while saving the conversation'
-          });
-        case 17:
+          console.log('error here', _context2.t0, 'error here');
+          _context2.t0.payoorDevErrorMessage = 'An error occurred while saving the conversation';
+          next(_context2.t0);
+        case 18:
         case "end":
           return _context2.stop();
       }
     }, _callee2, null, [[0, 13]]);
   }));
-  return function (_x3, _x4) {
+  return function (_x3, _x4, _x5) {
     return _ref2.apply(this, arguments);
   };
 }());

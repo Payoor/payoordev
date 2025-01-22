@@ -1,7 +1,7 @@
 import Transaction from "../models/transaction";
 
 class TransactionController {
-    async getUserTransactions(req, res) {
+    async getUserTransactions(req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -24,16 +24,14 @@ class TransactionController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching transactions',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to retrieve transactions';
+            next(error);
         }
     }
 
-    async getTransaction(req, res) {
+    async getTransaction(req, res, next) {
         try {
             const transactionId = req.query.id;
 
@@ -58,8 +56,10 @@ class TransactionController {
                 }
             });
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ message: error.message });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Failed to retrieve transaction';
+            next(error);
         }
     }
 }

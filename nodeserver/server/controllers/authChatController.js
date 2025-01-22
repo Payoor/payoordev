@@ -34,7 +34,7 @@ class AuthChatController {
         }
     }
 
-    async getRoomMessages(req, res) {
+    async getRoomMessages(req, res, next) {
         try {
             const { roomId } = req.query;
 
@@ -51,12 +51,9 @@ class AuthChatController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching messages',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve messages';
+            next(error);
         }
     }
 }

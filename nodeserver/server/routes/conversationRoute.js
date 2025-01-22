@@ -15,7 +15,7 @@ conversationRoute.get('/getconversation', async (req, res) => {
     res.status(200).send({ conversation });
 });
 
-conversationRoute.post('/saveconversation', async (req, res) => {
+conversationRoute.post('/saveconversation', async (req, res, next) => {
     try {
         const { jwt } = req.query;
         const body = req.body;
@@ -46,8 +46,9 @@ conversationRoute.post('/saveconversation', async (req, res) => {
 
         res.status(200).send({ message: 'All messages saved successfully' });
     } catch (error) {
-        console.error('Error saving conversation:', error);
-        res.status(500).send({ message: 'An error occurred while saving the conversation' });
+        console.log('error here', error, 'error here');
+        error.payoorDevErrorMessage = 'An error occurred while saving the conversation';
+        next(error);
     }
 });
 

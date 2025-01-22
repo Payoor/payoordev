@@ -67,7 +67,7 @@ var AuthChatController = /*#__PURE__*/function () {
   }, {
     key: "getRoomMessages",
     value: function () {
-      var _getRoomMessages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getRoomMessages = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
         var roomId, messages, data;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -88,24 +88,21 @@ var AuthChatController = /*#__PURE__*/function () {
                 success: true,
                 data: data
               });
-              _context2.next = 13;
+              _context2.next = 14;
               break;
             case 9:
               _context2.prev = 9;
               _context2.t0 = _context2["catch"](0);
-              console.log(_context2.t0);
-              res.status(500).json({
-                success: false,
-                message: 'Error fetching messages',
-                error: _context2.t0.message
-              });
-            case 13:
+              console.log('error here', _context2.t0, 'error here');
+              _context2.t0.payoorDevErrorMessage = 'Failed to retrieve messages';
+              next(_context2.t0);
+            case 14:
             case "end":
               return _context2.stop();
           }
         }, _callee2, null, [[0, 9]]);
       }));
-      function getRoomMessages(_x3, _x4) {
+      function getRoomMessages(_x3, _x4, _x5) {
         return _getRoomMessages.apply(this, arguments);
       }
       return getRoomMessages;

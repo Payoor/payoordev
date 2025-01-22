@@ -106,18 +106,16 @@ var OrderController = /*#__PURE__*/function () {
                 error: error.message
               });
             case 27:
-              _context.next = 33;
+              _context.next = 35;
               break;
             case 29:
               _context.prev = 29;
               _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
-              res.status(500).json({
-                success: false,
-                message: 'Error creating order',
-                error: _context.t0.message
-              });
-            case 33:
+              console.log('error here', _context.t0, 'error here');
+              _context.t0.statusCode = 400;
+              _context.t0.payoorDevErrorMessage = 'Error creating order';
+              next(_context.t0);
+            case 35:
             case "end":
               return _context.stop();
           }
@@ -131,7 +129,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
         var orderId, order;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -155,24 +153,22 @@ var OrderController = /*#__PURE__*/function () {
                 success: true,
                 data: order
               });
-              _context2.next = 14;
+              _context2.next = 16;
               break;
             case 10:
               _context2.prev = 10;
               _context2.t0 = _context2["catch"](0);
-              console.log(_context2.t0);
-              res.status(500).json({
-                success: false,
-                message: 'Error fetching order',
-                error: _context2.t0.message
-              });
-            case 14:
+              console.log('error here', _context2.t0, 'error here');
+              _context2.t0.statusCode = 400;
+              _context2.t0.payoorDevErrorMessage = 'Error fetching order';
+              next(_context2.t0);
+            case 16:
             case "end":
               return _context2.stop();
           }
         }, _callee2, null, [[0, 10]]);
       }));
-      function getOrder(_x4, _x5) {
+      function getOrder(_x4, _x5, _x6) {
         return _getOrder.apply(this, arguments);
       }
       return getOrder;
@@ -180,7 +176,7 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrders",
     value: function () {
-      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
         var page, limit, skip, orders, formattedOrders, total, data;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
@@ -217,24 +213,22 @@ var OrderController = /*#__PURE__*/function () {
                 success: true,
                 data: data
               });
-              _context3.next = 17;
+              _context3.next = 19;
               break;
             case 13:
               _context3.prev = 13;
               _context3.t0 = _context3["catch"](0);
-              console.log(_context3.t0);
-              res.status(500).json({
-                success: false,
-                message: 'Error fetching orders',
-                error: _context3.t0.message
-              });
-            case 17:
+              console.log('error here', _context3.t0, 'error here');
+              _context3.t0.statusCode = 400;
+              _context3.t0.payoorDevErrorMessage = 'Error fetching orders';
+              next(_context3.t0);
+            case 19:
             case "end":
               return _context3.stop();
           }
         }, _callee3, null, [[0, 13]]);
       }));
-      function getUserOrders(_x6, _x7) {
+      function getUserOrders(_x7, _x8, _x9) {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;

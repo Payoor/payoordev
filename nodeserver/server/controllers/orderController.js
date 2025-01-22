@@ -68,16 +68,14 @@ class OrderController {
             }
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error creating order',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Error creating order';
+            next(error);
         }
     }
 
-    async getOrder(req, res) {
+    async getOrder(req, res, next) {
         try {
             const orderId = req.query.id;
 
@@ -97,16 +95,14 @@ class OrderController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching order',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Error fetching order';
+            next(error);
         }
     }
 
-    async getUserOrders(req, res) {
+    async getUserOrders(req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -139,12 +135,10 @@ class OrderController {
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching orders',
-                error: error.message
-            });
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Error fetching orders';
+            next(error);
         }
     }
 }

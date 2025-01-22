@@ -4,16 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-var _visitor = _interopRequireDefault(require("../models/visitor"));
 var _user = _interopRequireDefault(require("../models/user"));
-var _message = _interopRequireDefault(require("../models/message"));
 var _emailOtp = _interopRequireDefault(require("../models/emailOtp"));
 var _jwttoken = _interopRequireDefault(require("../models/jwttoken"));
-var _authChatController = _interopRequireDefault(require("./authChatController"));
 var _generateOTP = _interopRequireDefault(require("../services/payoor/generateOTP"));
-var _verifyOtp2 = _interopRequireDefault(require("../services/payoor/verifyOtp"));
 var _generateJWT3 = _interopRequireDefault(require("../services/payoor/generateJWT"));
-var _getValidUser2 = _interopRequireDefault(require("../services/payoor/getValidUser"));
 var _sendOtp = _interopRequireDefault(require("../services/resend/sendOtp"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -33,8 +28,8 @@ var AuthController = /*#__PURE__*/function () {
   return _createClass(AuthController, [{
     key: "generateOtp",
     value: function () {
-      var _generateOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-        var email, otpcode, mailResponse, newEmailOtp, response, errorResponse;
+      var _generateOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+        var email, otpcode, mailResponse, newEmailOtp, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -78,23 +73,16 @@ var AuthController = /*#__PURE__*/function () {
             case 17:
               _context.prev = 17;
               _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context.t0.message || 'Failed to send OTP',
-                  error: process.env.NODE_ENV === 'development' ? _context.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
+              console.log('error here', _context.t0, 'error here');
+              _context.t0.payoorDevErrorMessage = 'Failed to send OTP';
+              next(_context.t0);
             case 22:
             case "end":
               return _context.stop();
           }
         }, _callee, null, [[0, 17]]);
       }));
-      function generateOtp(_x, _x2) {
+      function generateOtp(_x, _x2, _x3) {
         return _generateOtp.apply(this, arguments);
       }
       return generateOtp;
@@ -102,8 +90,8 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "verifyOtp",
     value: function () {
-      var _verifyOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
-        var _req$body, email, otp, user, userExists, isValid, expiredResponse, response, invalidResponse, errorResponse;
+      var _verifyOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
+        var _req$body, email, otp, user, userExists, isValid, expiredResponse, response, invalidResponse;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
@@ -186,23 +174,16 @@ var AuthController = /*#__PURE__*/function () {
             case 24:
               _context2.prev = 24;
               _context2.t0 = _context2["catch"](0);
-              console.log(_context2.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context2.t0.message || 'Failed to verify OTP',
-                  error: process.env.NODE_ENV === 'development' ? _context2.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
+              console.log('error here', _context2.t0, 'error here');
+              _context2.t0.payoorDevErrorMessage = 'Failed to verify OTP';
+              next(_context2.t0);
             case 29:
             case "end":
               return _context2.stop();
           }
         }, _callee2, null, [[0, 24]]);
       }));
-      function verifyOtp(_x3, _x4) {
+      function verifyOtp(_x4, _x5, _x6) {
         return _verifyOtp.apply(this, arguments);
       }
       return verifyOtp;
@@ -210,8 +191,8 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "handleSignUp",
     value: function () {
-      var _handleSignUp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
-        var _req$body2, name, email, phone, location, shoppingList, existingUser, duplicateResponse, user, response, errorResponse;
+      var _handleSignUp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+        var _req$body2, name, email, phone, location, shoppingList, existingUser, duplicateResponse, user, response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -270,23 +251,16 @@ var AuthController = /*#__PURE__*/function () {
             case 17:
               _context3.prev = 17;
               _context3.t0 = _context3["catch"](0);
-              console.log(_context3.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context3.t0.message || 'Failed to create user',
-                  error: process.env.NODE_ENV === 'development' ? _context3.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
+              console.log('error here', _context3.t0, 'error here');
+              _context3.t0.payoorDevErrorMessage = 'Failed to create user';
+              next(_context3.t0);
             case 22:
             case "end":
               return _context3.stop();
           }
         }, _callee3, null, [[0, 17]]);
       }));
-      function handleSignUp(_x5, _x6) {
+      function handleSignUp(_x7, _x8, _x9) {
         return _handleSignUp.apply(this, arguments);
       }
       return handleSignUp;
@@ -294,8 +268,8 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "generateJWT",
     value: function () {
-      var _generateJWT2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
-        var id, token, response, errorResponse;
+      var _generateJWT2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res, next) {
+        var id, token, response;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
@@ -320,23 +294,16 @@ var AuthController = /*#__PURE__*/function () {
             case 9:
               _context4.prev = 9;
               _context4.t0 = _context4["catch"](0);
-              console.log(_context4.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context4.t0.message || 'Failed to create user',
-                  error: process.env.NODE_ENV === 'development' ? _context4.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
+              console.log('error here', _context4.t0, 'error here');
+              _context4.t0.payoorDevErrorMessage = 'Failed to generate jwt';
+              next(_context4.t0);
             case 14:
             case "end":
               return _context4.stop();
           }
         }, _callee4, null, [[0, 9]]);
       }));
-      function generateJWT(_x7, _x8) {
+      function generateJWT(_x10, _x11, _x12) {
         return _generateJWT2.apply(this, arguments);
       }
       return generateJWT;
@@ -344,8 +311,8 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "getValidUser",
     value: function () {
-      var _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
-        var _req$authData, userId, tokenId, validUser, userResponse, response, notFoundResponse, errorResponse;
+      var _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
+        var _req$authData, userId, tokenId, validUser, userResponse, response, notFoundResponse;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
@@ -390,23 +357,16 @@ var AuthController = /*#__PURE__*/function () {
             case 8:
               _context5.prev = 8;
               _context5.t0 = _context5["catch"](0);
-              console.log(_context5.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context5.t0.message || 'Failed to create user',
-                  error: process.env.NODE_ENV === 'development' ? _context5.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
+              console.log('error here', _context5.t0, 'error here');
+              _context5.t0.payoorDevErrorMessage = 'Failed to retrieve user';
+              next(_context5.t0);
             case 13:
             case "end":
               return _context5.stop();
           }
         }, _callee5, null, [[0, 8]]);
       }));
-      function getValidUser(_x9, _x10) {
+      function getValidUser(_x13, _x14, _x15) {
         return _getValidUser.apply(this, arguments);
       }
       return getValidUser;
@@ -414,8 +374,8 @@ var AuthController = /*#__PURE__*/function () {
   }, {
     key: "handleSignOut",
     value: function () {
-      var _handleSignOut = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
-        var _req$authData2, userId, tokenId, token, errorResponse, response, _errorResponse;
+      var _handleSignOut = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res, next) {
+        var _req$authData2, userId, tokenId, token, errorResponse, response;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
@@ -455,23 +415,16 @@ var AuthController = /*#__PURE__*/function () {
             case 15:
               _context6.prev = 15;
               _context6.t0 = _context6["catch"](0);
-              console.log(_context6.t0);
-              _errorResponse = {
-                success: false,
-                data: {
-                  message: _context6.t0.message || 'Failed to signout user',
-                  error: process.env.NODE_ENV === 'development' ? _context6.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(_errorResponse);
+              console.log('error here', _context6.t0, 'error here');
+              _context6.t0.payoorDevErrorMessage = 'Failed to signout user';
+              next(_context6.t0);
             case 20:
             case "end":
               return _context6.stop();
           }
         }, _callee6, null, [[0, 15]]);
       }));
-      function handleSignOut(_x11, _x12) {
+      function handleSignOut(_x16, _x17, _x18) {
         return _handleSignOut.apply(this, arguments);
       }
       return handleSignOut;
