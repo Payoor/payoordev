@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout page-text="Transactions">
+  <DefaultLayout page-text="Transactions" description="View all Transactions">
     <div class="search__container">
       <StatusFilter
         :statuses="transactionStatuses" 

@@ -1,20 +1,20 @@
 <template>
-  <DefaultLayout :page-text="'Products'">
+  <DefaultLayout :page-text="'Products'" description="View all Products">
     <div class="search__container">
       <div></div>
       <div class="search__bar">
-        <input 
-          type="text"
-          placeholder="Search..."
-          v-model="search"
-          @input="handleSearchInput"
-        >
         <button 
           type="button"
           @click="handleSearchInput"
         >
           <SearchIcon />
         </button>
+        <input 
+          type="text"
+          placeholder="Search..."
+          v-model="search"
+          @input="handleSearchInput"
+        >
       </div>
     </div>
 

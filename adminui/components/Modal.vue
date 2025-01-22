@@ -82,7 +82,7 @@ export default {
   left: 0;
   display: flex;
   justify-content: center;
-  z-index: 2;
+  z-index: 25;
   background: rgba(0, 0, 0, 0.5);
 
   .modal-content-container {

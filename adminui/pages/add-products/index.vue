@@ -1,26 +1,77 @@
 <template>
-  <DefaultLayout :page-text="$route.query ? 'Add Product Variant' : 'Add Products'">
-      <div class="form__container">
-        <div class="header">
-          <template v-if="!$route.query">
-            <h3>Step {{ step }}</h3>
-            <p v-if="step === 1">Create a product by inputting the name of the product</p>
-            <p v-if="step === 2">Add a variant of <strong>{{ product.name }}</strong></p>
-          </template>
+  <DefaultLayout 
+    :page-text="$route.query.productId 
+      ? 'Add Product Variant' 
+      : 'Add Products'" 
+    :description="$route.query.productId
+      ? 'Add a new product variant'
+      : 'Add a new product'"
+  >
+    <div class="form__container">
+      <div class="header">
+        <template v-if="!$route.query.productId">
+          <p class="step"><strong>Step {{ step }}</strong></p>
+          <p class="step-desc" v-if="step === 1">Create a product by inputting the name of the product</p>
+          <p class="step-desc" v-if="step === 2">Add a variant of <strong>{{ product.name }}</strong></p>
+        </template>
 
-          <template v-else>
-            <p>Add a variant of <strong>{{ product.name }}</strong></p>
-          </template>  
+        <template v-else>
+          <p>Add a variant of <strong>{{ product.name }}</strong></p>
+        </template>  
+      </div>
+
+      <form v-if="step === 1" @submit.prevent="handleCreateProduct">
+        <div class="form__group">
+          <label for="productNname">Product Name</label>
+          <input
+            type="text"
+            placeholder="Enter product name"
+            v-model="productName"
+          >
         </div>
 
-        <form v-if="step === 1" @submit.prevent="handleCreateProduct">
+        <button
+          type="submit"
+          class="submit-btn"
+          :class="{ isLoading }"
+        >
+          <span>Next</span>
+        </button>
+
+        <Notification
+          v-if="message"
+          :message="message" 
+          :isError="hasError"
+        />
+      </form>
+
+      <Transition name="slide-fade">
+        <form v-if="step === 2" @submit.prevent="handleAddVariant">
           <div class="form__group">
-            <label for="productNname">Product Name</label>
+            <label for="unit">Unit</label>
             <input
               type="text"
-              placeholder="Enter product name"
-              v-model="productName"
+              placeholder="Eg: De rica"
+              v-model="unit"
             >
+          </div>
+
+          <div class="form__group">
+            <label for="unit">Price</label>
+            <input
+              type="number"
+              placeholder="0"
+              v-model="price"
+              min="0"
+            >
+          </div>
+
+          <div class="checkbox">
+            <input
+              type="checkbox"
+              v-model="isAvailable"
+            >
+            <label for="isAvailable">Variant is available</label>
           </div>
 
           <button
@@ -28,7 +79,7 @@
             class="submit-btn"
             :class="{ isLoading }"
           >
-            <span>Next</span>
+            <span>Submit</span>
           </button>
 
           <Notification
@@ -36,55 +87,10 @@
             :message="message" 
             :isError="hasError"
           />
+
         </form>
-
-        <Transition name="slide-fade">
-          <form v-if="step === 2" @submit.prevent="handleAddVariant">
-            <div class="form__group">
-              <label for="unit">Unit</label>
-              <input
-                type="text"
-                placeholder="Eg: De rica"
-                v-model="unit"
-              >
-            </div>
-
-            <div class="form__group">
-              <label for="unit">Price</label>
-              <input
-                type="number"
-                placeholder="0"
-                v-model="price"
-                min="0"
-              >
-            </div>
-
-            <div class="checkbox">
-              <input
-                type="checkbox"
-                v-model="isAvailable"
-              >
-              <label for="isAvailable">Variant is available</label>
-            </div>
-
-            <button
-              type="submit"
-              class="submit-btn"
-              :class="{ isLoading }"
-            >
-              <span>Submit</span>
-            </button>
-
-            <Notification
-              v-if="message"
-              :message="message" 
-              :isError="hasError"
-            />
-
-          </form>
-        </Transition>
-      </div>
-
+      </Transition>
+    </div>
   </DefaultLayout>
 </template>
 
@@ -167,21 +173,25 @@ export default {
   },
 
   mounted() {
-    this.productId = this.$route.query.productId;
-    this.step = parseInt(this.$route.query.formStep);
+    if (this.$route.query.productId && this.$route.query.formStep) {
+      this.productId = this.$route.query.productId;
+      this.step = parseInt(this.$route.query.formStep);
+    }
 
-    this.getSingleProduct(this.productId)
-      .then((response) => {
-        this.product = response.data;
-      })
-      .catch((error) => {
-        console.log(error.response);
-        if (error.response.status === 401) {
-          localStorage.removeItem('adminToken');
-          localStorage.removeItem('adminUsername');
-          this.$router.push('/');
-        }
-      });
+    if (this.productId) {
+      this.getSingleProduct(this.productId)
+        .then((response) => {
+          this.product = response.data;
+        })
+        .catch((error) => {
+          console.log(error.response);
+          if (error.response.status === 401) {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUsername');
+            this.$router.push('/');
+          }
+        });
+    }
   }
 };
 </script>
@@ -190,6 +200,11 @@ export default {
 .header {
   color: $font-color;
   margin-top: 2rem;
+
+  .step-desc {
+    font-size: 0.9rem;
+    opacity: 60%;
+  }
 }
 form {
   .checkbox {
@@ -201,6 +216,10 @@ form {
 
     input[type="checkbox"] {
       cursor: pointer;
+    }
+
+    label {
+      font-size: 0.9rem;
     }
   }
 }

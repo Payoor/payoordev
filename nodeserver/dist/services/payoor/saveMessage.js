@@ -16,7 +16,7 @@ function saveMessage(_x) {
   return _saveMessage.apply(this, arguments);
 }
 function _saveMessage() {
-  _saveMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(msg) {
+  _saveMessage = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(msg) {
     var jwt, userPhoneNumber, message, isUser, timestamp, isLoggedIn, isAdmin, userid, newMessage, validUser, payload, _validUser;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

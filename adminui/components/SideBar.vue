@@ -128,7 +128,7 @@ export default {
   .header {
     width: 100%;
     height: 100px;
-    padding-inline: 2rem;
+    padding-inline: 1rem;
   }
 
   nav {

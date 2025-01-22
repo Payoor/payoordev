@@ -1,8 +1,8 @@
 <template>
-  <DefaultLayout :page-text="'Dashboard'">
+  <DefaultLayout :page-text="'Dashboard'" description="View dashboard stats">
     <div class="dashboard-layout">
       <StatsCard
-        :label="'Number of Available Products'"
+        :label="'Total Available Products'"
         :count="numberOfAvailableProducts"
         :href="'/all-products'"
       >
@@ -12,7 +12,7 @@
       </StatsCard>
 
       <StatsCard
-        :label="'Number of Pending Orders'"
+        :label="'Total Pending Orders'"
         :count="numberOfPendingOrders"
         :href="'/orders'"
       >
@@ -22,7 +22,7 @@
       </StatsCard>
 
       <StatsCard
-        :label="'Number of Completed Orders'"
+        :label="'Total Completed Orders'"
         :count="numberOfCompletedOrders"
         :href="'/orders'"
       >
@@ -32,7 +32,7 @@
       </StatsCard>
 
       <StatsCard
-        :label="'Number of Pending Transactions'"
+        :label="'Total Pending Transactions'"
         :count="numberOfPendingTransactions"
         :href="'/transactions'"
       >
@@ -42,7 +42,7 @@
       </StatsCard>
 
       <StatsCard
-        :label="'Number of Verified Transactions'"
+        :label="'Total Verified Transactions'"
         :count="numberOfVerifiedTransactions"
         :href="'/transactions'"
       >
@@ -52,7 +52,7 @@
       </StatsCard>
 
       <StatsCard
-        :label="'Number of Users'"
+        :label="'Total Users'"
         :count="numberOfUsers"
         :href="'/users'"
       >
@@ -133,15 +133,18 @@ export default {
   }
 
   svg {
-    width: 2rem;
-    height: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    padding: 0.5rem;
+    color: $white;
 
     &.default-color {
-      color: $primary-color;
+      background-color: rgba($primary-color, .4);
     }
     
     &.pending {
-      color: gold;
+      background-color: rgba(gold, .4);
     }
   }
 

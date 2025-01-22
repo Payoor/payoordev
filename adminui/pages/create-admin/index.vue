@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout page-text="Create Admin">
+  <DefaultLayout page-text="Create Admin" description="Add a new admin">
     <div class="form__container">
       <form @submit.prevent="handleSubmit">
 

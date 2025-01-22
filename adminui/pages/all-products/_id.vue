@@ -1,9 +1,9 @@
 <template>
-  <DefaultLayout :page-text="'Product Details'">
+  <DefaultLayout :page-text="'Product Details'" description="View a single product">
     <div class="go-back">
       <button @click="$router.push('/all-products')">
         <ChevronLeftIcon class="arrow-icon" />
-        Go back
+        Back
       </button>
     </div>
     <div class="product-details-container">

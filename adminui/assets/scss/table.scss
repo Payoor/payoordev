@@ -1,14 +1,14 @@
 .table__container {
     overflow-x: auto;
     width: 100%;
-    height: calc(100vh - 9rem);
+    height: calc(81vh - 9rem);
 
     table {
         border-collapse: collapse;
         border-spacing: 0;
         width: 100%;
         background-color: $white;
-        box-shadow: 0px 0px 5px -2px #32475c4d;
+        // box-shadow: 0px 0px 5px -2px #32475c4d;
 
         thead {
             background-color: $grey;
@@ -48,7 +48,7 @@
                     display: grid;
                     background-color: $white;
                     box-shadow: 0px 0px 5px -2px #32475c4d;
-                    z-index: 1000;
+                    z-index: 10;
                     left: -120px;
                     top: 100%;
                     border-radius: 0.25rem;

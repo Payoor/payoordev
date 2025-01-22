@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout :page-text="'Chats'">
+  <DefaultLayout :page-text="'Chats'" description="View messages from users">
     <div class="chat__container">
       <div class="chat__sidebar">
         <div class="sidebar__header">
@@ -410,8 +410,8 @@ export default {
       padding: 0.5rem;
       border: none;
       border-radius: 0.25rem;
-      background-color: rgb(66, 66, 66);
-      color: rgba($white, 0.7);
+      background-color: $grey-2;
+      color: rgba($font-color, 0.7);
       font-family: 'Poppins';
       font-size: 0.8rem;
       cursor: pointer;

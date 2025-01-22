@@ -48,6 +48,7 @@ export default {
     p {
       color: $font-color;
       &.count {
+        font-size: 1.5rem;
         font-weight: bold;
       }
     }

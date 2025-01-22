@@ -216,9 +216,9 @@ class AdminController {
 
             const productVariants = await ProductVariant.find({ productId: product._id }, { _id: 0,  __v: 0, productId: 0 }).lean();
 
-            const { _id, name, images } = product;
+            const { _id, name, image } = product;
 
-            res.status(200).send({ _id, name, images, variants: productVariants });
+            res.status(200).send({ _id, name, image, variants: productVariants });
 
         } catch (error) {
             console.log(error);

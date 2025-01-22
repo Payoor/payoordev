@@ -16,7 +16,7 @@
 
 body {
     overflow-x: hidden;
-    background: #FAFBFB;
+    background: $grey;
 }
 
 html {
@@ -76,5 +76,20 @@ button:disabled {
 .slide-fade-enter,
 .slide-fade-leave-to {
     transform: translateX(10px);
+    opacity: 0;
+}
+
+.slide-fade-two-enter-active,
+.slide-fade-two-leave-active {
+    transition: all .3s ease-in-out;
+}
+
+.slide-fade-two-leave-to {
+    transform: translateY(50px);
+    opacity: 0;
+}
+
+.slide-fade-two-enter {
+    transform: translateY(-50px);
     opacity: 0;
 }

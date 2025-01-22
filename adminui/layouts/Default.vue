@@ -4,27 +4,31 @@
       <SideBar />
     </aside>
 
-    <main class="page__container">
-      <template v-if="pageText === 'Dashboard'">
-        <div class="greeting">
-          <h1>Welcome <span>{{ adminName }}</span></h1>
+    <div class="main">
+      <div class="top-nav">
+        <div>
+          <p class="header"><strong>{{ pageText }}</strong></p>
+          <p class="desc">{{ description ?? 'view your dashoard' }}</p>
         </div>
-      </template>
-      <template v-else>
-        <HeaderText :page-text="pageText" />
-      </template>
-      <slot />
-    </main>
+
+        <div class="admin">
+          <div class="avatar"><UserIcon /></div>
+          <p>{{ adminName }}</p>
+        </div>
+      </div>
+      <main class="page__container">
+        <slot />
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
-import ChatBubbleIcon from '../components/icons/ChatBubbleIcon.vue';
-import AddPackageIcon from '../components/icons/AddPackageIcon.vue';
+import UserIcon from '../components/icons/UserIcon.vue';
+
 export default {
   components: {
-    'ChatBubbleIcon': ChatBubbleIcon,
-    'AddPackageIcon': AddPackageIcon,
+    UserIcon,
   },
 
   data() {
@@ -47,6 +51,10 @@ export default {
     pageText: {
       type: String,
       default: 'New Page'
+    },
+    description: {
+      type: String,
+      default: ''
     }
   },
 }
@@ -60,11 +68,12 @@ export default {
     overflow: hidden;
 
     aside {
-      width: 16rem;
+      width: 13rem;
       height: 100%;
     }
 
-    main {
+    .main {
+      position: relative;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
@@ -79,6 +88,48 @@ export default {
         color: $font-color;
         font-size: 1.3rem;
         font-weight: 500;
+      }
+
+      .top-nav {
+        position: fixed;
+        top: 0;
+        z-index: 20;
+        height: 75px;
+        border-bottom: 1px solid $grey;
+        box-shadow: 0px 0px 5px -2px #32475c4d;
+        background-color: $white;
+        padding-inline: 2rem;
+        width: calc(100% - 13rem);
+        color: $font-color;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .desc {
+          font-size: 0.8rem;
+          opacity: 60%;
+          margin: 0;
+        }
+
+        .admin {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: $grey;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              color: rgba($font-color, .7);
+            }
+          }
+        }
       }
     }
   }

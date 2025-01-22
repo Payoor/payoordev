@@ -1,6 +1,6 @@
 <template>
-  <DefaultLayout page-text="Admins">
-    <div class="table__container">
+  <DefaultLayout page-text="Admins" description="View all Admins">
+    <div class="table__container mt-2">
       <table>
         <thead>
           <tr>
@@ -154,6 +154,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mt-2 {
+  margin-top: 2rem;
+}
+
 .notification {
   width: 100%;
   display: flex;

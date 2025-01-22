@@ -14,7 +14,7 @@ function joinRoom(_x) {
   return _joinRoom.apply(this, arguments);
 }
 function _joinRoom() {
-  _joinRoom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(userid) {
+  _joinRoom = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(userid) {
     var rooms;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {

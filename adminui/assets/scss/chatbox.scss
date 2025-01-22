@@ -1,8 +1,8 @@
 .chat__container {
 	display: flex;
-	height: calc(100vh - 9rem);
+	height: calc(95vh - 10rem);
 	overflow: hidden;
-	padding: 1rem 0;
+	margin-top: 2rem;
 
 	.chat__sidebar {
 		width: 16rem;
@@ -52,7 +52,9 @@
 			height: 60px;
 			display: flex;
 			align-items: center;
-			background-color: $grey;
+			background-color: $white;
+			border-bottom: 1px solid $grey;
+			box-shadow: 0px 0px 5px -2px #32475c4d;
 		}
 
 		.chats {
@@ -71,7 +73,9 @@
 			width: 100%;
 			padding: 0 1rem;
 			height: auto;
-			background-color: $grey;
+			background-color: $white;
+			border-top: 1px solid $grey;
+			box-shadow: 0px 0px 5px -2px #32475c4d;
 
 			.message__box {
 				display: flex;
@@ -86,7 +90,7 @@
 					width: 100%;
 					border-radius: 0.25rem;
 					border: none;
-					background-color: $white;
+					background-color: $grey;
 					color: $font-color;
 					padding: 1rem 0.5rem;
 
