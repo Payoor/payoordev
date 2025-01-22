@@ -95,9 +95,11 @@ export default {
 
     .modal-content {
       transform: translateY(10vh);
-      background: rgb(47, 47, 47);
-      color: rgba($white, .7);
+      background: $white;
+      color: $font-color;
       border-radius: 0.25rem;
+      border: 2px solid $grey;
+      box-shadow: 0px 0px 5px -2px #32475c4d;
       z-index: 4;
 
       .modal-header {
@@ -105,7 +107,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid rgba($white, .7);
+        border-bottom: 1px solid $grey;
 
         .header-text {
           font-size: 1.25rem;
@@ -115,13 +117,12 @@ export default {
         .cancel-icon {
           cursor: pointer;
           transition: .2s;
-          opacity: 0.8;
           border: none;
           background: transparent;
-          color: rgba($white, .7);
+          color: $grey-2;
 
           &:hover {
-            opacity: 1;
+            color: rgba($grey-2, .7);
           }
         }
       }
@@ -147,9 +148,9 @@ export default {
           opacity: 0.8;
 
           &.cancel {
-            border: 1px solid $white;
+            border: 1px solid $grey-2;
             background-color: transparent;
-            color: $white;
+            color: $font-color;
           }
 
           &.confirm {

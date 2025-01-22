@@ -640,10 +640,10 @@ td {
 
   label {
     width: 100%;
-    border: 2px dashed $white;
+    border: 2px dashed $font-color;
     border-radius: 0.25rem;
     padding: 0.5rem 1rem;
-    color: $white;
+    color: $font-color;
     cursor: pointer;
     transition: 0.2s;
     opacity: 0.5;
@@ -665,13 +665,13 @@ td {
     img {
       width: 100%;
       height: 90%;
-      background-color: rgba(0, 0, 0, 0.39);
+      background-color: $grey;
       object-fit: contain;
       border-radius: 0.5rem;
     }
 
     span {
-      color: rgba($white, 0.5);
+      color: $font-color;
       font-size: 0.75rem;
       padding: 0.2rem 0;
     }
