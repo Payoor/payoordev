@@ -33,7 +33,7 @@ AdminSchema.statics.findByCredentials = function (username, password) {
 
     return Admin.findOne({ username }).then(admin => {
         if (!admin) {
-            return Promise.reject();
+            return Promise.reject(new Error('Invalid username or password'));
         }
 
         return new Promise((resolve, reject) => {
@@ -42,7 +42,7 @@ AdminSchema.statics.findByCredentials = function (username, password) {
                     resolve(admin);
                 }
                 else {
-                    reject();
+                    reject(new Error('Invalid username or password'));
                 }
             });
         });

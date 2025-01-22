@@ -16,3 +16,10 @@ refactor product display
 Thursday 19 Jan
 ==================
 update text fields on client side to fix copy paste bug
+
+Wednesday 22 Jan
+========================================
+add logger server 
+and logger config to nodeserver/server/configs
+add errorlogger to nodeserver/server/middleware
+added use of logger to signInAdmin in adminController.js

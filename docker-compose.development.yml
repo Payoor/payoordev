@@ -35,6 +35,8 @@ services:
     environment:
       - PORT=8080
       - NODE_ENV=development
+      - ERROR_SERVER_HOST=error-server
+      - ERROR_SERVER_PORT=8086
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -74,6 +76,8 @@ services:
       - PORT=8084          
       - FLASK_APP=server.py
       - FLASK_ENV=production
+      - ERROR_SERVER_HOST=error-server
+      - ERROR_SERVER_PORT=8086
     networks:
       - payoor_development_network
 
@@ -84,8 +88,20 @@ services:
     environment:
       - PORT=8085
       - NODE_ENV=development
+      - ERROR_SERVER_HOST=error-server
+      - ERROR_SERVER_PORT=8086
     networks:
-      - payoor_development_network    
+      - payoor_development_network 
+
+  error-server:
+    container_name: error-server
+    restart: always
+    build: ./errorlogs
+    environment:
+      - PORT=8086
+      - NODE_ENV=development
+    networks:
+      - payoor_development_network   
 
 networks:
   payoor_development_network:

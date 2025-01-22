@@ -967,48 +967,50 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "signInAdmin",
     value: function () {
-      var _signInAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(req, res) {
+      var _signInAdmin = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(req, res, next) {
         var _req$body4, username, password, admin, token;
         return _regeneratorRuntime().wrap(function _callee14$(_context14) {
           while (1) switch (_context14.prev = _context14.next) {
             case 0:
               _context14.prev = 0;
+              console.log(req.body);
               _req$body4 = req.body, username = _req$body4.username, password = _req$body4.password; // Validate input
               if (!(!username || !password)) {
-                _context14.next = 4;
+                _context14.next = 5;
                 break;
               }
               return _context14.abrupt("return", res.status(400).json({
                 error: 'Username and password are required'
               }));
-            case 4:
-              _context14.next = 6;
+            case 5:
+              _context14.next = 7;
               return _admin["default"].findByCredentials(username, password);
-            case 6:
+            case 7:
               admin = _context14.sent;
-              _context14.next = 9;
+              _context14.next = 10;
               return admin.generateAuthToken();
-            case 9:
+            case 10:
               token = _context14.sent;
               res.json({
                 admin: admin,
                 token: token
               });
-              _context14.next = 16;
+              _context14.next = 20;
               break;
-            case 13:
-              _context14.prev = 13;
+            case 14:
+              _context14.prev = 14;
               _context14.t0 = _context14["catch"](0);
-              res.status(401).json({
-                error: 'Invalid login credentials'
-              });
-            case 16:
+              console.log('error here', _context14.t0, 'error here');
+              _context14.t0.statusCode = 401;
+              _context14.t0.payoorDevErrorMessage = 'Invalid login credentials';
+              next(_context14.t0);
+            case 20:
             case "end":
               return _context14.stop();
           }
-        }, _callee14, null, [[0, 13]]);
+        }, _callee14, null, [[0, 14]]);
       }));
-      function signInAdmin(_x27, _x28) {
+      function signInAdmin(_x27, _x28, _x29) {
         return _signInAdmin.apply(this, arguments);
       }
       return signInAdmin;
@@ -1077,7 +1079,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee15, null, [[0, 19]]);
       }));
-      function deleteAdmin(_x29, _x30) {
+      function deleteAdmin(_x30, _x31) {
         return _deleteAdmin.apply(this, arguments);
       }
       return deleteAdmin;
@@ -1111,7 +1113,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee16, null, [[0, 7]]);
       }));
-      function getAllAdmins(_x31, _x32) {
+      function getAllAdmins(_x32, _x33) {
         return _getAllAdmins.apply(this, arguments);
       }
       return getAllAdmins;
@@ -1166,7 +1168,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee17, null, [[0, 16]]);
       }));
-      function getUsers(_x33, _x34) {
+      function getUsers(_x34, _x35) {
         return _getUsers.apply(this, arguments);
       }
       return getUsers;
@@ -1231,7 +1233,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee18, null, [[0, 14]]);
       }));
-      function getUser(_x35, _x36) {
+      function getUser(_x36, _x37) {
         return _getUser.apply(this, arguments);
       }
       return getUser;
@@ -1313,7 +1315,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee19, null, [[0, 23]]);
       }));
-      function getTransactions(_x37, _x38) {
+      function getTransactions(_x38, _x39) {
         return _getTransactions.apply(this, arguments);
       }
       return getTransactions;
@@ -1374,7 +1376,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee20, null, [[0, 12]]);
       }));
-      function getTransaction(_x39, _x40) {
+      function getTransaction(_x40, _x41) {
         return _getTransaction.apply(this, arguments);
       }
       return getTransaction;
@@ -1426,7 +1428,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee21, null, [[0, 12]]);
       }));
-      function getUserTransactions(_x41, _x42) {
+      function getUserTransactions(_x42, _x43) {
         return _getUserTransactions.apply(this, arguments);
       }
       return getUserTransactions;
@@ -1510,7 +1512,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee22, null, [[0, 23]]);
       }));
-      function getOrders(_x43, _x44) {
+      function getOrders(_x44, _x45) {
         return _getOrders.apply(this, arguments);
       }
       return getOrders;
@@ -1564,7 +1566,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee23, null, [[0, 12]]);
       }));
-      function getUserOrders(_x45, _x46) {
+      function getUserOrders(_x46, _x47) {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;
@@ -1613,7 +1615,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee24, null, [[0, 10]]);
       }));
-      function getOrder(_x47, _x48) {
+      function getOrder(_x48, _x49) {
         return _getOrder.apply(this, arguments);
       }
       return getOrder;
@@ -1658,7 +1660,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee25, null, [[0, 10]]);
       }));
-      function deleteOneUser(_x49, _x50) {
+      function deleteOneUser(_x50, _x51) {
         return _deleteOneUser.apply(this, arguments);
       }
       return deleteOneUser;
@@ -1731,7 +1733,7 @@ var AdminController = /*#__PURE__*/function () {
           }
         }, _callee26, null, [[0, 22]]);
       }));
-      function getDashboardAggregateData(_x51, _x52) {
+      function getDashboardAggregateData(_x52, _x53) {
         return _getDashboardAggregateData.apply(this, arguments);
       }
       return getDashboardAggregateData;
@@ -1747,7 +1749,7 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x53, _x54) {
+function processExcelSheetData(_x54, _x55) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
