@@ -11,3 +11,15 @@ Monday 20 Jan
 * Updated route to upload, get and delete images for products and product variants
 
 * Implemeted the UI for uploading and deleting image for product variants
+
+Monday 22 Jan
+==================
+* Updated admin UI
+
+* Fix add products bug
+
+* Fix query to get number of available products
+
+* Added error logs to all used routes
+
+* Deleted unused files from nodeserver and services
