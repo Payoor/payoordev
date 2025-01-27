@@ -67,7 +67,7 @@
 
                 <template v-if="key === 'variants'">
                   <div class="add-variants" v-if="data.variants.length == 0">
-                    <NuxtLink :to="{name: 'add-products', query: { productId: data._id, formStep: 2 }}">Add variants</NuxtLink>
+                    N/A
                   </div>
                   <table v-else class="embedded-table">
                     <thead>
@@ -526,19 +526,6 @@ td {
   .add-variants {
     display: flex;
     justify-content: center;
-    a {
-      background-color: $primary-color;
-      padding: 0.5rem 1rem;
-      color: $white;
-      font-size: 0.8rem;
-      text-decoration: none;
-      border-radius: 0.25rem;
-      transition: .2s;
-
-      &:hover {
-        background-color: rgba($primary-color, .7);
-      }
-    }
   }
 
   .variant-action {
