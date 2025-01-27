@@ -45,7 +45,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // 7. Configure CORS
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
   const corsOptions = {
     origin: corsOriginArray,
     methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
