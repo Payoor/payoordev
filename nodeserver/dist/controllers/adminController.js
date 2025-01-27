@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
+var _axios = _interopRequireDefault(require("axios"));
 var _product = _interopRequireDefault(require("../models/product"));
 var _image = _interopRequireDefault(require("../models/image"));
 var _admin = _interopRequireDefault(require("../models/admin"));
@@ -176,20 +177,23 @@ var AdminController = /*#__PURE__*/function () {
                 message: "Product created successfully!",
                 product: product
               });
-              _context3.next = 16;
+              _axios["default"].post("".concat(process.env.LLM_SERVER, "/product/algolia/add?product_id=").concat(product._id))["catch"](function (error) {
+                return console.error('Algolia sync failed:', error);
+              });
+              _context3.next = 17;
               break;
-            case 10:
-              _context3.prev = 10;
+            case 11:
+              _context3.prev = 11;
               _context3.t0 = _context3["catch"](0);
               console.log('error here', _context3.t0, 'error here');
               _context3.t0.statusCode = 400;
               _context3.t0.payoorDevErrorMessage = 'Failed to add product';
               next(_context3.t0);
-            case 16:
+            case 17:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 10]]);
+        }, _callee3, null, [[0, 11]]);
       }));
       function addProduct(_x5, _x6, _x7) {
         return _addProduct.apply(this, arguments);
@@ -409,7 +413,7 @@ var AdminController = /*#__PURE__*/function () {
     key: "updateProduct",
     value: function () {
       var _updateProduct = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res, next) {
-        var id, _req$body2, name, generatedDescription, generatedCategories, variants, product, _iterator, _step, variantData, _id, unit, price, availability, variant, updatedVariants, updatedProduct;
+        var id, _req$body2, name, generatedDescription, generatedCategories, variants, product, productNameChanged, _iterator, _step, variantData, _id, unit, price, availability, variant, updatedVariants, updatedProduct;
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
             case 0:
@@ -431,62 +435,63 @@ var AdminController = /*#__PURE__*/function () {
                 message: 'Product not found'
               }));
             case 8:
+              productNameChanged = product.name !== name;
               product.name = name !== null && name !== void 0 ? name : product.name;
               product.generatedDescription = generatedDescription !== null && generatedDescription !== void 0 ? generatedDescription : product.generatedDescription;
               product.generatedCategories = generatedCategories !== null && generatedCategories !== void 0 ? generatedCategories : product.generatedCategories;
-              _context7.next = 13;
+              _context7.next = 14;
               return product.save();
-            case 13:
+            case 14:
               _iterator = _createForOfIteratorHelper(variants);
-              _context7.prev = 14;
+              _context7.prev = 15;
               _iterator.s();
-            case 16:
+            case 17:
               if ((_step = _iterator.n()).done) {
-                _context7.next = 31;
+                _context7.next = 32;
                 break;
               }
               variantData = _step.value;
               _id = variantData._id, unit = variantData.unit, price = variantData.price, availability = variantData.availability;
-              _context7.next = 21;
+              _context7.next = 22;
               return _productVariant["default"].findById(_id);
-            case 21:
+            case 22:
               variant = _context7.sent;
               if (variant) {
-                _context7.next = 24;
+                _context7.next = 25;
                 break;
               }
               return _context7.abrupt("return", res.status(404).json({
                 success: false,
                 message: 'Product variant not found'
               }));
-            case 24:
+            case 25:
               variant.unit = unit !== null && unit !== void 0 ? unit : unit;
               variant.price = price !== null && price !== void 0 ? price : price;
               variant.availability = availability !== null && availability !== void 0 ? availability : availability;
-              _context7.next = 29;
+              _context7.next = 30;
               return variant.save();
-            case 29:
-              _context7.next = 16;
+            case 30:
+              _context7.next = 17;
               break;
-            case 31:
-              _context7.next = 36;
+            case 32:
+              _context7.next = 37;
               break;
-            case 33:
-              _context7.prev = 33;
-              _context7.t0 = _context7["catch"](14);
+            case 34:
+              _context7.prev = 34;
+              _context7.t0 = _context7["catch"](15);
               _iterator.e(_context7.t0);
-            case 36:
-              _context7.prev = 36;
+            case 37:
+              _context7.prev = 37;
               _iterator.f();
-              return _context7.finish(36);
-            case 39:
-              _context7.next = 41;
+              return _context7.finish(37);
+            case 40:
+              _context7.next = 42;
               return _productVariant["default"].find({
                 productId: product._id
               }, {
                 __v: 0
               }).lean();
-            case 41:
+            case 42:
               updatedVariants = _context7.sent;
               updatedProduct = _objectSpread(_objectSpread({}, product.toObject()), {}, {
                 variants: updatedVariants
@@ -495,20 +500,28 @@ var AdminController = /*#__PURE__*/function () {
                 message: 'Product updated',
                 product: updatedProduct
               });
-              _context7.next = 52;
+              if (productNameChanged) {
+                _axios["default"].put("".concat(process.env.LLM_SERVER, "/product/algolia/update"), {
+                  product_id: id,
+                  product_name: name
+                })["catch"](function (error) {
+                  return console.error('Algolia sync failed:', error);
+                });
+              }
+              _context7.next = 54;
               break;
-            case 46:
-              _context7.prev = 46;
+            case 48:
+              _context7.prev = 48;
               _context7.t1 = _context7["catch"](0);
               console.log('error here', _context7.t1, 'error here');
               _context7.t1.statusCode = 400;
               _context7.t1.payoorDevErrorMessage = 'Failed to update product';
               next(_context7.t1);
-            case 52:
+            case 54:
             case "end":
               return _context7.stop();
           }
-        }, _callee7, null, [[0, 46], [14, 33, 36, 39]]);
+        }, _callee7, null, [[0, 48], [15, 34, 37, 40]]);
       }));
       function updateProduct(_x17, _x18, _x19) {
         return _updateProduct.apply(this, arguments);
@@ -549,20 +562,23 @@ var AdminController = /*#__PURE__*/function () {
                 message: "Product deleted successfully",
                 product: product
               });
-              _context8.next = 20;
+              _axios["default"]["delete"]("".concat(process.env.LLM_SERVER, "/product/algolia/delete?product_id=").concat(productId))["catch"](function (error) {
+                return console.error('Algolia sync failed:', error);
+              });
+              _context8.next = 21;
               break;
-            case 14:
-              _context8.prev = 14;
+            case 15:
+              _context8.prev = 15;
               _context8.t0 = _context8["catch"](0);
               console.log('error here', _context8.t0, 'error here');
               _context8.t0.statusCode = 400;
               _context8.t0.payoorDevErrorMessage = 'Failed to delete product';
               next(_context8.t0);
-            case 20:
+            case 21:
             case "end":
               return _context8.stop();
           }
-        }, _callee8, null, [[0, 14]]);
+        }, _callee8, null, [[0, 15]]);
       }));
       function deleteProduct(_x20, _x21, _x22) {
         return _deleteProduct.apply(this, arguments);

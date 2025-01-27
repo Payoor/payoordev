@@ -21,22 +21,28 @@ services:
   payoordb:
     container_name: payoordb-development
     image: mongo
-    environment:
-      - PORT=27017
+    ports:
+      - "27017:27017" 
     volumes:
-      - /data-vol-development:/data/payoordb
+      - mongo_data:/data/db
     networks:
       - payoor_development_network  
+
+  redisdb:
+    container_name: redisdb-development
+    image: redis:latest
+    command: redis-server --appendonly yes --save 900 1 300 10 60 10000
+    ports:
+      - "6379:6379"  
+    volumes:
+      - redis_data:/data  
+    networks:
+      - payoor_development_network
 
   nodeserver:
     container_name: nodeserver-development
     restart: always
     build: ./nodeserver
-    environment:
-      - PORT=8080
-      - NODE_ENV=development
-      - ERROR_SERVER_HOST=error-server
-      - ERROR_SERVER_PORT=8086
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -49,9 +55,6 @@ services:
     container_name: adminui-development
     restart: always
     build: ./adminui
-    environment:
-      - PORT=8082
-      - NODE_ENV=development
     networks:
       - payoor_development_network
 
@@ -59,25 +62,14 @@ services:
     container_name: chatuiserver-development
     restart: always
     build: ./chatuiserver
-    environment:
-      - PORT=8083
-      - NODE_ENV=development
     networks:
       - payoor_development_network
 
   llmserver:
-    container_name: llmserver-${APP_ENV:-development}
-    build: 
-      context: ./llmserver
-      dockerfile: Dockerfile
+    container_name: llmserver-development
+    build: ./llmserver
     restart: always
-    env_file: ./llmserver/.env           
-    environment:
-      - PORT=8084          
-      - FLASK_APP=server.py
-      - FLASK_ENV=production
-      - ERROR_SERVER_HOST=error-server
-      - ERROR_SERVER_PORT=8086
+    env_file: ./llmserver/.env
     networks:
       - payoor_development_network
 
@@ -85,24 +77,20 @@ services:
     container_name: services
     restart: always
     build: ./services
-    environment:
-      - PORT=8085
-      - NODE_ENV=development
-      - ERROR_SERVER_HOST=error-server
-      - ERROR_SERVER_PORT=8086
     networks:
       - payoor_development_network 
 
-  error-server:
+  errorserver:
     container_name: error-server
     restart: always
     build: ./errorlogs
-    environment:
-      - PORT=8086
-      - NODE_ENV=development
     networks:
       - payoor_development_network   
 
 networks:
   payoor_development_network:
     driver: bridge
+
+volumes:
+  redis_data: 
+  mongo_data:

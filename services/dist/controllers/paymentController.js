@@ -28,8 +28,8 @@ var PaymentController = /*#__PURE__*/function () {
   return _createClass(PaymentController, [{
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-        var crypto, paystackSignature, hash, event, paymentData, io, errorResponse;
+      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+        var crypto, paystackSignature, hash, event, paymentData, io;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -88,22 +88,16 @@ var PaymentController = /*#__PURE__*/function () {
               _context.prev = 28;
               _context.t1 = _context["catch"](1);
               console.error('Webhook processing error:', _context.t1);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context.t1.message || 'Error handling payment response',
-                  error: process.env.NODE_ENV === 'development' ? _context.t1.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              return _context.abrupt("return", res.status(500).json(errorResponse));
-            case 33:
+              console.log('error here', _context.t1, 'error here');
+              _context.t1.payoorDevErrorMessage = 'Error handling payment response';
+              next(_context.t1);
+            case 34:
             case "end":
               return _context.stop();
           }
         }, _callee, null, [[1, 28]]);
       }));
-      function handlePayStackPaymentResponse(_x, _x2) {
+      function handlePayStackPaymentResponse(_x, _x2, _x3) {
         return _handlePayStackPaymentResponse.apply(this, arguments);
       }
       return handlePayStackPaymentResponse;

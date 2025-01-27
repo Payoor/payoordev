@@ -27,7 +27,7 @@ var GoogleApiController = /*#__PURE__*/function () {
   return _createClass(GoogleApiController, [{
     key: "searchPlaces",
     value: function () {
-      var _searchPlaces = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      var _searchPlaces = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
         var placesResponse, filteredResults, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -53,15 +53,16 @@ var GoogleApiController = /*#__PURE__*/function () {
             case 9:
               _context.prev = 9;
               _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
-              return _context.abrupt("return", res.status(500).json(_context.t0));
-            case 13:
+              console.log('error here', _context.t0, 'error here');
+              _context.t0.payoorDevErrorMessage = 'Error searching location';
+              next(_context.t0);
+            case 14:
             case "end":
               return _context.stop();
           }
         }, _callee, null, [[0, 9]]);
       }));
-      function searchPlaces(_x, _x2) {
+      function searchPlaces(_x, _x2, _x3) {
         return _searchPlaces.apply(this, arguments);
       }
       return searchPlaces;
@@ -69,7 +70,7 @@ var GoogleApiController = /*#__PURE__*/function () {
   }, {
     key: "reverseGeocode",
     value: function () {
-      var _reverseGeocode = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var _reverseGeocode = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
         var _req$query, lat, lng, geocodeResponse, filteredResults, response, _response;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -116,20 +117,21 @@ var GoogleApiController = /*#__PURE__*/function () {
               };
               return _context2.abrupt("return", res.status(200).json(_response));
             case 14:
-              _context2.next = 20;
+              _context2.next = 21;
               break;
             case 16:
               _context2.prev = 16;
               _context2.t0 = _context2["catch"](0);
-              console.log(_context2.t0);
-              return _context2.abrupt("return", res.status(500).json(_context2.t0));
-            case 20:
+              console.log('error here', _context2.t0, 'error here');
+              _context2.t0.payoorDevErrorMessage = 'Error reading coordinates';
+              next(_context2.t0);
+            case 21:
             case "end":
               return _context2.stop();
           }
         }, _callee2, null, [[0, 16]]);
       }));
-      function reverseGeocode(_x3, _x4) {
+      function reverseGeocode(_x4, _x5, _x6) {
         return _reverseGeocode.apply(this, arguments);
       }
       return reverseGeocode;

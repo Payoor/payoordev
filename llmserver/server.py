@@ -1,30 +1,28 @@
 from flask import Flask, request, jsonify
 import os
+import re
+
+from pprint import pprint
+
+import asyncio
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
 from flask_cors import CORS
-from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import logging
-import schedule
 import time
 from threading import Timer
 
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from config.mongoose import ObjectId, productCollection, productVariant 
+from config.algolia import search_algolia_product_index, sync_to_algolia_in_batches, update_algolia_item, delete_algolia_item
+from config.redis import toggle_bookmark, check_bookmarks_for_product
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from data_upload import DataUpload
-from data_prepare import DataPrepare
-from data_use import DataUse
-from cart_module import CartModule
-from order_module import OrderModule
-
 load_dotenv()
 
 app = Flask(__name__)
-port = int(os.getenv('PORT', 8084)) 
+port = int(os.getenv('PORT')) 
 
 if os.getenv('FLASK_ENV') != 'production':
     ALLOWED_ORIGINS = [
@@ -33,7 +31,8 @@ if os.getenv('FLASK_ENV') != 'production':
         'https://admin.development.payoor.store',
         'https://chat.development.payoor.store',
         'https://chat.development.payoor.store',
-        'http://localhost:63882'
+        'http://localhost:63882',
+        'http://localhost:3030'
     ]
 
     CORS(app,
@@ -47,12 +46,6 @@ if os.getenv('FLASK_ENV') != 'production':
             }
         })
 
-dtupload = DataUpload()
-data_prep = DataPrepare()
-data_use = DataUse()
-cart_module = CartModule()
-order_module = OrderModule()
-
 UPLOAD_FOLDER = 'uploads'
 
 if not os.path.exists(UPLOAD_FOLDER):
@@ -60,123 +53,24 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
-"""
-put these in a cron job
-
-items, message = data_prep.get_items_without_description()
-description_templates = data_prep.turn_details_to_plain_text(items)
-plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
-"""
-
-def run_once():
-   Timer(120.0, schedule_data_update).start()
-
-def schedule_data_update():
-    items, message = data_prep.get_items_without_description()
-    description_templates = data_prep.turn_details_to_plain_text(items)
-    #print(description_templates)
-    plain_text_descriptions = data_prep.generate_plaintext_description(description_templates)
-    print(plain_text_descriptions)
-
-"""scheduler = BackgroundScheduler()
-scheduler.add_job(func=schedule_data_update, trigger="interval", hours=5)
-scheduler.start()"""
-
-#schedule_data_update()
-
-run_once()
-
-@app.route('/admin/upload/products/excel', methods=['POST'])
-def upload_excel():
+@app.route('/product/bookmark', methods=['POST'])
+def add_product_to_bookmark():
     try:
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file part'}), 400
-
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({'error': 'No selected file'}), 400
-
-        if file and dtupload.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            
-            try:
-                file.save(filepath)
-            except IOError as e:
-                return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
-
-            try:
-                cleaned_records = dtupload.excel_to_dict(filepath)
-                final_data = dtupload.process_excel_data(cleaned_records)
-                plain_text = dtupload.convert_to_plaintext(final_data)
-                
-                success, message = dtupload.save_to_mongodb_database(plain_text)
-                
-                if success:
-                    return jsonify({
-                        'message': 'File processing completed',
-                        'details': message
-                    }), 200
-                else:
-                    return jsonify({
-                        'error': 'Database operation failed',
-                        'details': message
-                    }), 500
-                
-            except Exception as e:
-                return jsonify({
-                    'error': 'Processing error',
-                    'details': str(e)
-                }), 500
-            
-            finally:
-                try:
-                    os.remove(filepath)
-                except:
-                    print("clean up failed")
-                    
-        return jsonify({'error': 'Invalid file type'}), 400
+        product_id = request.args.get('product_id')
+        user_id = request.args.get('user_id')
         
-    except Exception as e:
-        return jsonify({
-            "error": "Server error",
-            "details": str(e)
-        }), 500
+        bookmark_message = toggle_bookmark(product_id, user_id)
 
-@app.route('/message/user/cartdetails', methods=['POST'])
-def query_cart():
-    try:
-        data = request.json
-        user_cart = data.get('cart')
-
-        print(user_cart)
-
+        print(bookmark_message)
+        
         response_data = {
             "success": True,
-            "data": 'data'
-        }
-
-        cart_summary = cart_module.generate_cart_summary(user_cart)
-
-        print(cart_summary)
-
-        data = {
-                "message": "Success response",
-                "chatresponse": {
-                    "text": cart_summary,
-                    "isClient": False,
-                    "isRead": False
-                }
+            "data": {
+                "product_id": product_id,
+                "bookmark_message": bookmark_message
             }
-
-        print(data)
-
-        response_data = {
-            "success": True,
-            "data": data
         }
-        
+
         response = jsonify(response_data)
         response.status_code = 200
         return response
@@ -184,49 +78,135 @@ def query_cart():
         print(e)
         return jsonify({"error": str(e)}), 500 
 
-@app.route('/message/user/getorderdetails', methods=['GET'])
-def query_order_details():
+@app.route('/product/bookmark/check', methods=['GET'])
+def check_book_marked():
     try:
-        order_reference = request.args.get('orderReference')
-        if not order_reference:
-            return jsonify({"error": "orderReference is required"}), 400
+        product_id = request.args.get('product_id')
+        user_id = request.args.get('user_id')
 
-        current_order = order_module.get_order_by_reference(order_reference)
-
-        order_summary_naturallanguage = order_module.get_order_summary_natural_language(current_order)
-
-        #print(order_summary_naturallanguage)
-
-        data = {
-                "message": "Success response",
-                "chatresponse": {
-                    "text": order_summary_naturallanguage
-                }
-            }
-
-        #print(data)
+        product_bookmarked = check_bookmarks_for_product(product_id, user_id)
 
         response_data = {
             "success": True,
-            "data": data
+            "data": {
+                "product_id": product_id,
+                "product_bookmarked": product_bookmarked
+            }
         }
-        
+
         response = jsonify(response_data)
         response.status_code = 200
         return response
     except Exception as e:
         print(e)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500 
 
-@app.route('/product/images', methods=['GET'])
-def get_product_images():
+@app.route('/product/algolia/add', methods=['POST'])
+def add_product_to_algolia():
     try:
         product_id = request.args.get('product_id')
 
+        sync_to_algolia_in_batches()
+
+        response_data = {
+            "success": True,
+            "data": {
+                "product_id": product_id
+            }
+        }
+
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
+
+@app.route('/product/algolia/update', methods=['PUT'])
+def update_product_in_algolia():
+    try:
+        product_id = request.json.get('product_id')
+        product_name = request.json.get('product_name')
+
+        update_algolia_item(product_id, { "name": product_name })
+        response_data = {
+            "success": True,
+            "data": {
+                "product_id": product_id
+            }
+        }
+
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
+
+@app.route('/product/algolia/delete', methods=['DELETE'])
+def delete_product_from_algolia():
+    product_id = request.args.get('product_id')
+
+    try:
+        delete_algolia_item(product_id)
+        response_data = {
+            "success": True,
+            "data": {
+                "product_id": product_id
+            }
+        }
+
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
+
+@app.route('/product/variants', methods=['GET'])
+def get_product_variant():
+    product_id = request.args.get('product_id')
+
+    def convert_objectids(item):
+        item['_id'] = str(item['_id'])
+        item['productId'] = str(item['productId'])
+        return item
+
+    try:
+        productVariants = list(productVariant.find({"productId": ObjectId(product_id)}))
+        product_variants = [convert_objectids(item) for item in productVariants]
+
+        data = {
+            "message": "Success response",
+            "product_variants": product_variants
+        }
+
+        response_data = {
+            "success": True,
+            "data": data
+        }
+
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
+
+@app.route('/product/images', methods=['GET'])
+def get_product_images():
+    product_id = request.args.get('product_id')
+
+    def get_image_by_id(product_id):
+        product = productCollection.find_one({"_id": ObjectId(product_id)})
+        return {"imageUrl": product['image']}
+
+    try: 
+        get_image_by_id(product_id)
         if not product_id:
             return jsonify({"error": "Product ID is required"}), 400
 
-        images = data_use.get_product_images(product_id)
+        images = [get_image_by_id(product_id)]
 
         data = {
             "message": "Success response",
@@ -247,37 +227,59 @@ def get_product_images():
 
 @app.route('/message/user/send', methods=['POST'])
 def query_data():
+    data = request.json
+    user_query = data.get('text', '').lower()
+
+    def process_search_string(user_query):
+        char_array = re.split('[,\s]+', user_query.strip())
+
+        return char_array
+
+    def search_using_algolia(char_array):
+        results_array = []
+
+        for item in char_array:
+            results = search_algolia_product_index(item)
+
+            if len(results) > 0:
+                for result in results:
+                    product_item = {
+                        '_id': result.object_id,
+                        'product_name': result.name,
+                        'productImageUrl': result.image
+                    }
+
+                    results_array.append(product_item)
+
+        return results_array
+
+    def remove_duplicates_from_results(results_array):
+        final_result = set()
+        unique_products = []
+        for product in results_array:
+            if product['_id'] not in final_result:
+                final_result.add(product['_id'])
+                unique_products.append(product)
+
+        return unique_products
+
     try:
-        data = request.json
-        user_query = data.get('text', '').lower()
-        current_items = data.get('currentItems', '')
-
-        success, raw_results, formatted, results_texts = data_use.query_products_from_chroma(user_query)
-        raw_results_item_ids = raw_results["ids"][0]
-
-        found_items_by_id = data_use.get_items_from_mongodb_by_id(raw_results_item_ids)
-
-        '''query_relevance = data_use.judge_query_relevance(user_query, formatted)'''
-
-        #generated_suggested_prompts = data_use.generate_suggested_prompt(results_texts)
-
-        #print(generated_suggested_prompts)
-
-        #suggested_prompts = data_use.clean_up_generated_prompts_list(generated_suggested_prompts)
-        #print(suggested_prompts)
+        char_array = process_search_string(user_query)
+        results_array = search_using_algolia(char_array)
+        product_search_result = remove_duplicates_from_results(results_array)
 
         data = {
-                "message": "Success response",
-                "chatresponse": {
-                    "text": "I found some items that might be relevant to your query",
-                    "results": found_items_by_id,
-                    "suggested_prompts": [],
-                    "isClient": False,
-                    "isRead": False
-                }
+            "message": "Success response",
+            "chatresponse": {
+                "text": "I found some items that might be relevant to your query",
+                "results": product_search_result,
+                "suggested_prompts": [],
+                "isClient": False,
+                "isRead": False
             }
+        }
 
-        #print(data)
+        pprint(product_search_result)
 
         response_data = {
             "success": True,

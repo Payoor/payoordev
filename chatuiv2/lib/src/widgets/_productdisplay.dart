@@ -5,6 +5,8 @@ import 'package:chatuiv2/src/widgets/_productcard.dart';
 
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 
+import 'package:chatuiv2/src/classes/_productroutes.dart';
+
 class ProductDisplay extends StatefulWidget {
   @override
   State<ProductDisplay> createState() => _ProductDisplayState();
@@ -50,6 +52,8 @@ class _ProductDisplayState extends State<ProductDisplay> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -70,24 +74,6 @@ class _ProductDisplayState extends State<ProductDisplay> {
         final String productName = product['product_name'];
         final String productId = product['_id'];
 
-        List<Map<String, dynamic>> productData = [];
-
-        try {
-          productData = product['data']
-              .map<Map<String, dynamic>>((item) => {
-                    'id': productId,
-                    'name': productName,
-                    'price': double.tryParse(
-                            item['price'].toString().replaceAll(',', '')) ??
-                        0.0,
-                    'unit': item['unit'],
-                    'inStock': item['availability'] == 'YES'
-                  })
-              .toList();
-        } catch (e) {
-          productData = [];
-        }
-
         return AnimatedOpacity(
           duration: const Duration(milliseconds: 500),
           opacity:
@@ -98,9 +84,7 @@ class _ProductDisplayState extends State<ProductDisplay> {
             productId: productId,
             onProductTap: () {
               context.read<ResultListProvider>().setCurrentProduct(
-                  productData: productData,
-                  productId: productId,
-                  productName: productName);
+                  productId: productId, productName: productName);
             },
             onFavoriteTap: () {},
           ),

@@ -16,6 +16,10 @@ var newProductSchema = new mongoose.Schema({
   generatedCategories: {
     type: [String],
     "default": []
+  },
+  synced_to_algolia: {
+    type: Boolean,
+    "default": false
   }
 }, {
   timestamps: true
