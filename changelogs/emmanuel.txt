@@ -23,3 +23,8 @@ add logger server
 and logger config to nodeserver/server/configs
 add errorlogger to nodeserver/server/middleware
 added use of logger to signInAdmin in adminController.js
+
+Monday 27 Jan
+==========================================
+add redis config to llmserver, add bookmark feature, update docker-compose.development with errorserver and volumes
+update mongodb volume
