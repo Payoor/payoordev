@@ -6,8 +6,126 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY;
 
 class PaymentController {
+    async generateTransferDetails(req, res, next) {
+        try {
+            const https = require('https');
+    
+            const { email, total, orderId, userId, name } = req;
+            const { delivery_fee, service_charge } = req.body;
+    
+            const amount = total;
+    
+            if (!email || !amount) {
+                console.log('email and amount are required')
+                return res.status(400).json({
+                    message: 'email and amount are required'
+                })
+            }
+    
+            if (typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number') {
+                throw new Error('All amounts must be numbers');
+            }
+    
+            const amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
+    
+            const params = JSON.stringify({
+                amount:amountTotal,
+                email: email,
+                currency: "NGN",
+                tx_ref: generateTransactionReference(),
+                fullname: name,
+            });
+
+            console.log(params)
+    
+            const options = {
+                hostname: 'api.flutterwave.com',
+                port: 443,
+                path: '/v3/charges?type=bank_transfer',
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json'
+                }
+            };
+    
+            const flutterwaveReq = https.request(options, (flutterwaveRes) => {
+                let data = '';
+    
+                flutterwaveRes.on('data', (chunk) => {
+                    data += chunk;
+                });
+
+                const response = {
+                    success: true,
+                    data: {
+                        message: 'Success response',
+                        chatresponse: {
+                            text: "this is an AI response",
+                            isClient: false,
+                            isRead: false,
+                        }
+                    }
+                };
+    
+                flutterwaveRes.on('end',  async() => {
+                    console.log('Response:', data);
+
+                    const transfer_reference = JSON.parse(data).meta.authorization.transfer_reference;
+
+                    response.data.account_number = JSON.parse(data).meta.authorization.transfer_account;
+                    response.data.bank = JSON.parse(data).meta.authorization.transfer_bank;
+                    response.data.amount = JSON.parse(data).meta.authorization.transfer_amount;
+                    response.data.transfer_reference = transfer_reference;
+
+                    res.status(200).json(response);       
+                    
+                    const transaction = new Transaction({
+                        initiatorId: userId,
+                        orderId: orderId,
+                        amount: amount,
+                        reference: transfer_reference
+                    });
+
+                    await transaction.save();
+
+                    await Order.findOneAndUpdate(
+                        { _id: orderId },
+                        {
+                            $set: {
+                                reference: transfer_reference
+                            }
+                        },
+                        {
+                            new: true,
+                            runValidators: true,
+                        },
+                    );
+                });
+            });
+    
+            flutterwaveReq.on('error', (error) => {
+                console.log(error)
+                return res.status(400).json({
+                    message: 'Error generating bank transfer details'
+                });
+            });
+    
+            flutterwaveReq.write(params);
+            flutterwaveReq.end();
+            
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to generate bank transfer details';
+            next(error);
+        }
+
+    }
+
     async generatePaymentLink(req, res) {
         try {
             const https = require('https');
@@ -167,6 +285,7 @@ class PaymentController {
             }
 
             return res.status(200).json({ message: 'Webhook processed successfully' });
+    
 
         } catch (error) {
             console.error('Webhook processing error:', error);
@@ -263,3 +382,13 @@ class PaymentController {
 }
 
 export default new PaymentController();
+
+const generateTransactionReference = () => {
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < 10; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}

@@ -679,6 +679,52 @@ Retrieves details of a specific user.
     }
     ```
 
+## Bank Transfer
+### Generate Bank Transfer Details
+Generates account details (account number and bank) on demand to receive payments from users via bank transfer.
+
+- **URL:** `/flutter/transfer`
+- **Method:** `POST`
+- **Auth Required:** Yes
+- **Request Body:**
+  ```json
+  {
+    "order": {
+      "items": { ...items },
+      "totalAmount": "number"
+    }, 
+    "order_address": "string", 
+    "delivery_fee": "number", 
+    "service_charge": "number"
+  }
+  ```
+- **Success Response:**
+  - **Code:** 200
+    ```json
+    {
+      "success": true,
+      "data": {
+        "message": "Success response",
+        "account_number": "account number",
+        "bank": "bank name",
+        "amount": "amount to be transfered",
+        "transfer_reference": "transaction reference"
+      }
+    }
+    ```
+- **Error Response:**
+  - **Code:** 400
+    ```json
+    {
+      "message": "Error generating bank transfer details"
+    }
+    ```
+  - **Code:** 500
+    ```json
+    {
+      "message": "Failed to generate bank transfer details"
+    }
+    ```
 
 ## Sockect Events
 ### Events:
