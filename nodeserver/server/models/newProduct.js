@@ -16,6 +16,10 @@ const newProductSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    synced_to_algolia: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });

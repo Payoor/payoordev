@@ -202,8 +202,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   void closeProductSizeSelector() {
     //print('view cart items');
-    context.read<ResultListProvider>().setCurrentProduct(
-        productData: <Map<String, dynamic>>[], productId: "", productName: "");
+    context
+        .read<ResultListProvider>()
+        .setCurrentProduct(productId: "", productName: "");
   }
 
   void closePaystackView(BuildContext context) {
@@ -384,6 +385,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                           .expand, // Add this to ensure Stack fills available space
                       children: [
                         _renderMessages(),
+                        _renderProductVariants(),
                         if (_confirmingAddress)
                           Positioned(
                             bottom: 0,
@@ -431,6 +433,40 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         return LandingScreen();
       },
     );
+  }
+
+  Widget _renderProductVariants() {
+    return Consumer<ResultListProvider>(
+        builder: (context, resultListProvider, child) {
+      String _current_product_name = resultListProvider.current_product_name;
+      String _current_product_id = resultListProvider.current_product_id;
+
+      return Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: resultListProvider.current_product_id.isEmpty
+              ? 0
+              : MediaQuery.of(context).size.height,
+          child: resultListProvider.current_product_id.isEmpty
+              ? const SizedBox.shrink()
+              : SingleChildScrollView(
+                  child: Container(
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height * 0.8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ProductSizeSelector(
+                        productId: _current_product_id,
+                        productName: _current_product_name,
+                        closeWidget: () {
+                          closeProductSizeSelector();
+                        },
+                      ))));
+    });
   }
 
   Widget _renderMessages() {
@@ -1074,42 +1110,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             Positioned(child: OrderDisplay(onBackTap: (context) {
               _toggleUserOrders();
             })),
-          Consumer<ResultListProvider>(
-              builder: (context, resultListProvider, child) {
-            List<Map<String, dynamic>> _current_product_data =
-                resultListProvider.current_product_data;
-            String _current_product_name =
-                resultListProvider.current_product_name;
-            String _current_product_id = resultListProvider.current_product_id;
-
-            return Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: resultListProvider.current_product_id.isEmpty
-                    ? 0
-                    : MediaQuery.of(context).size.height,
-                child: resultListProvider.current_product_id.isEmpty
-                    ? const SizedBox.shrink()
-                    : SingleChildScrollView(
-                        child: Container(
-                            constraints: BoxConstraints(
-                              minHeight:
-                                  MediaQuery.of(context).size.height * 0.8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: ProductSizeSelector(
-                              productData: _current_product_data,
-                              productId: _current_product_id,
-                              productName: _current_product_name,
-                              closeWidget: () {
-                                closeProductSizeSelector();
-                              },
-                            ))));
-          })
         ],
       ),
     );

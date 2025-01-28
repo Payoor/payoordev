@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:chatuiv2/src/providers/_authprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_productroutes.dart';
@@ -9,15 +12,14 @@ class ProductCard extends StatefulWidget {
   final String productId;
   final void Function()? onProductTap;
   final void Function()? onFavoriteTap;
-  static final Map<String, String> _imageCache = {}; // Static cache for URLs
+  static final Map<String, String> _imageCache = {};
 
-  const ProductCard({
-    super.key,
-    required this.productName,
-    required this.productId,
-    this.onProductTap,
-    this.onFavoriteTap,
-  });
+  const ProductCard(
+      {super.key,
+      required this.productName,
+      required this.productId,
+      this.onProductTap,
+      this.onFavoriteTap});
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -25,11 +27,34 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   late Future<String> _imageUrlFuture;
+  bool _isbookmarked = false;
 
   @override
   void initState() {
     super.initState();
     _imageUrlFuture = _getImageUrl();
+    _checkIfProductInBookMarks(widget.productId);
+  }
+
+  void _checkIfProductInBookMarks(productId) async {
+    final userId = context.read<AuthProv>().userData!["_id"];
+    final response =
+        await ProductRoute.checkIfProductInBookMarks(productId, userId);
+
+    //print(response.data['product_bookmarked']);
+
+    setState(() {
+      _isbookmarked = response.data['product_bookmarked'];
+    });
+  }
+
+  void _addProductToBookMarks(productId) async {
+    final userId = context.read<AuthProv>().userData!["_id"];
+    final response =
+        await ProductRoute.addProductToBookMarks(productId, userId);
+
+    //print(response.data);
+    _checkIfProductInBookMarks(productId);
   }
 
   Future<String> _getImageUrl() async {
@@ -110,7 +135,9 @@ class _ProductCardState extends State<ProductCard> {
                   top: 8,
                   left: 8,
                   child: GestureDetector(
-                    onTap: widget.onFavoriteTap,
+                    onTap: () {
+                      _addProductToBookMarks(widget.productId);
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -125,9 +152,11 @@ class _ProductCardState extends State<ProductCard> {
                         ],
                       ),
                       child: Icon(
-                        Icons.favorite_border,
+                        _isbookmarked ? Icons.favorite : Icons.favorite_border,
                         size: 20,
-                        color: AppColors.white,
+                        color: _isbookmarked
+                            ? AppColors.primaryColor
+                            : AppColors.white,
                       ),
                     ),
                   ),

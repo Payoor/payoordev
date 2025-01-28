@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const path = require('path');
 const XLSX = require('xlsx');
 
@@ -99,6 +101,9 @@ class AdminController {
                 message: "Product created successfully!",
                 product: product
             });
+
+            axios.post(`${process.env.LLM_SERVER}/product/algolia/add?product_id=${product._id}`)
+                .catch(error => console.error('Algolia sync failed:', error));
 
         } catch (error) {
             console.log('error here', error, 'error here')
@@ -241,6 +246,8 @@ class AdminController {
                 });
             }
 
+            const productNameChanged = product.name !== name;
+
             product.name = name ?? product.name;
             product.generatedDescription = generatedDescription ?? product.generatedDescription;
             product.generatedCategories = generatedCategories ?? product.generatedCategories;
@@ -277,6 +284,14 @@ class AdminController {
                 product: updatedProduct
             });
 
+            if (productNameChanged) {
+                axios.put(`${process.env.LLM_SERVER}/product/algolia/update`, {
+                    product_id: id,
+                    product_name: name
+                })
+                    .catch(error => console.error('Algolia sync failed:', error));
+            }
+
         } catch (error) {
             console.log('error here', error, 'error here')
             error.statusCode = 400;
@@ -299,6 +314,9 @@ class AdminController {
             await ProductVariant.deleteMany({ productId });
 
             res.status(200).send({ message: "Product deleted successfully", product: product });
+
+            axios.delete(`${process.env.LLM_SERVER}/product/algolia/delete?product_id=${productId}`)
+                .catch(error => console.error('Algolia sync failed:', error));
 
         } catch (error) {
             console.log('error here', error, 'error here')

@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
+import 'package:chatuiv2/src/classes/_productroutes.dart';
 
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 
 class ProductSizeSelector extends StatefulWidget {
-  final List<Map<String, dynamic>> productData;
   final VoidCallback closeWidget;
   final String productName;
   final String productId;
 
   const ProductSizeSelector(
       {super.key,
-      required this.productData,
       required this.closeWidget,
       required this.productName,
       required this.productId});
@@ -23,7 +22,28 @@ class ProductSizeSelector extends StatefulWidget {
 }
 
 class _ProductSizeSelectorState extends State<ProductSizeSelector> {
-  late List<Map<String, dynamic>> productData = widget.productData;
+  late List<dynamic> productData = [];
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    _loadVariants();
+  }
+
+  Future<void> _loadVariants() async {
+    List<dynamic> variants =
+        await _getProductVariants(widget.productId);
+    setState(() {
+      productData = variants;
+    });
+  }
+
+  Future<List<dynamic>> _getProductVariants(productId) async {
+    final response = await ProductRoute.getProductVariants(widget.productId);
+    //print(response.data["product_variants"].runtimeType);
+    return response.data["product_variants"];
+  }
 
   @override
   Widget build(BuildContext context) {
