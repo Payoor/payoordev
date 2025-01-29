@@ -1,6 +1,9 @@
 import Transaction from "../models/transaction";
 import Order from "../models/order";
 
+const https = require('https');
+const crypto = require('crypto');
+
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
 }
@@ -11,8 +14,6 @@ const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY;
 class PaymentController {
     async generateTransferDetails(req, res, next) {
         try {
-            const https = require('https');
-    
             const { email, total, orderId, userId, name } = req;
             const { delivery_fee, service_charge } = req.body;
     
@@ -30,12 +31,12 @@ class PaymentController {
             }
     
             const amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
-    
+            const tx_ref = generateTransactionReference()
             const params = JSON.stringify({
                 amount:amountTotal,
                 email: email,
                 currency: "NGN",
-                tx_ref: generateTransactionReference(),
+                tx_ref: tx_ref,
                 fullname: name,
             });
 
@@ -81,6 +82,7 @@ class PaymentController {
                     response.data.bank = JSON.parse(data).meta.authorization.transfer_bank;
                     response.data.amount = JSON.parse(data).meta.authorization.transfer_amount;
                     response.data.transfer_reference = transfer_reference;
+                    response.data.transaction_reference = tx_ref;
 
                     res.status(200).json(response);       
                     
@@ -88,7 +90,7 @@ class PaymentController {
                         initiatorId: userId,
                         orderId: orderId,
                         amount: amount,
-                        reference: transfer_reference
+                        reference: tx_ref
                     });
 
                     await transaction.save();
@@ -97,7 +99,7 @@ class PaymentController {
                         { _id: orderId },
                         {
                             $set: {
-                                reference: transfer_reference
+                                reference: tx_ref
                             }
                         },
                         {
@@ -126,10 +128,53 @@ class PaymentController {
 
     }
 
+    async handleFlutterwavePaymentResponse(req, res, next) {
+        try {
+            const secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
+            const signature = req.headers["verif-hash"];
+
+            if (!signature || signature !== secretHash) {
+                return res.status(401).json({ 
+                    success: false, 
+                    message: "Unauthorized request" 
+                });
+            }
+
+            const event = req.body;
+            const paymentData = req.body.data;
+            
+            if (event.event === "charge.completed" && event.data.status === "successful") {
+                const txRef = paymentData.tx_ref;
+
+                console.log("Payment received for:", txRef);
+
+                await Transaction.findOneAndUpdate(
+                    { reference: txRef },
+                    {
+                        $set: {
+                            status: "verified"
+                        }
+                    },
+                    {
+                        new: true,
+                        runValidators: true,
+                    },
+                );
+
+                return res.status(200).json({ success: true, message: "Payment verified successfully" });
+            }
+
+            console.log('Unhandled event type:', event.event);
+
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed verify payment';
+            next(error);
+        }
+    }
+
     async generatePaymentLink(req, res) {
         try {
-            const https = require('https');
-
             const { email, total, orderId, userId } = req;
             const { delivery_fee, service_charge } = req.body;
             //const { order, user } = res.locals;
@@ -251,7 +296,6 @@ class PaymentController {
 
     async handlePayStackPaymentResponse(req, res) {
         try {
-            const crypto = require('crypto');
             const paystackSignature = req.headers['x-paystack-signature'];
 
             const hash = crypto

@@ -14,4 +14,5 @@ paymentRoute.post('/paystack/generate-payment-link', _verifyToken["default"], _o
 paymentRoute.post('/paystack/payment-response', _paymentController["default"].handlePayStackPaymentResponse);
 paymentRoute.post('/paystack/verify-payment', _paymentController["default"].verifyPayment);
 paymentRoute.post('/flutter/transfer', _verifyToken["default"], _orderController["default"].createOrder, _paymentController["default"].generateTransferDetails);
+paymentRoute.post('/flutter/verify-payment', _paymentController["default"].handleFlutterwavePaymentResponse);
 var _default = exports["default"] = paymentRoute;

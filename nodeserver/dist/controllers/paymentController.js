@@ -16,6 +16,8 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var https = require('https');
+var crypto = require('crypto');
 if (process.env.NODE_ENV !== 'production') {
   require("dotenv").config();
 }
@@ -29,36 +31,36 @@ var PaymentController = /*#__PURE__*/function () {
     key: "generateTransferDetails",
     value: function () {
       var _generateTransferDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
-        var https, email, total, orderId, userId, name, _req$body, delivery_fee, service_charge, amount, amountTotal, params, options, flutterwaveReq;
+        var email, total, orderId, userId, name, _req$body, delivery_fee, service_charge, amount, amountTotal, tx_ref, params, options, flutterwaveReq;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
-              https = require('https');
               email = req.email, total = req.total, orderId = req.orderId, userId = req.userId, name = req.name;
               _req$body = req.body, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge;
               amount = total;
               if (!(!email || !amount)) {
-                _context2.next = 8;
+                _context2.next = 7;
                 break;
               }
               console.log('email and amount are required');
               return _context2.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 8:
+            case 7:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context2.next = 10;
+                _context2.next = 9;
                 break;
               }
               throw new Error('All amounts must be numbers');
-            case 10:
+            case 9:
               amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
+              tx_ref = generateTransactionReference();
               params = JSON.stringify({
                 amount: amountTotal,
                 email: email,
                 currency: "NGN",
-                tx_ref: generateTransactionReference(),
+                tx_ref: tx_ref,
                 fullname: name
               });
               console.log(params);
@@ -100,28 +102,29 @@ var PaymentController = /*#__PURE__*/function () {
                         response.data.bank = JSON.parse(data).meta.authorization.transfer_bank;
                         response.data.amount = JSON.parse(data).meta.authorization.transfer_amount;
                         response.data.transfer_reference = transfer_reference;
+                        response.data.transaction_reference = tx_ref;
                         res.status(200).json(response);
                         transaction = new _transaction["default"]({
                           initiatorId: userId,
                           orderId: orderId,
                           amount: amount,
-                          reference: transfer_reference
+                          reference: tx_ref
                         });
-                        _context.next = 10;
+                        _context.next = 11;
                         return transaction.save();
-                      case 10:
-                        _context.next = 12;
+                      case 11:
+                        _context.next = 13;
                         return _order["default"].findOneAndUpdate({
                           _id: orderId
                         }, {
                           $set: {
-                            reference: transfer_reference
+                            reference: tx_ref
                           }
                         }, {
                           "new": true,
                           runValidators: true
                         });
-                      case 12:
+                      case 13:
                       case "end":
                         return _context.stop();
                     }
@@ -156,33 +159,97 @@ var PaymentController = /*#__PURE__*/function () {
       return generateTransferDetails;
     }()
   }, {
+    key: "handleFlutterwavePaymentResponse",
+    value: function () {
+      var _handleFlutterwavePaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+        var secretHash, signature, event, paymentData, txRef;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
+              signature = req.headers["verif-hash"];
+              if (!(!signature || signature !== secretHash)) {
+                _context3.next = 5;
+                break;
+              }
+              return _context3.abrupt("return", res.status(401).json({
+                success: false,
+                message: "Unauthorized request"
+              }));
+            case 5:
+              event = req.body;
+              paymentData = req.body.data; // Process the webhook event based on its type
+              if (!(event.event === "charge.completed" && event.data.status === "successful")) {
+                _context3.next = 13;
+                break;
+              }
+              txRef = paymentData.tx_ref;
+              console.log("Payment received for:", txRef);
+              _context3.next = 12;
+              return _transaction["default"].findOneAndUpdate({
+                reference: txRef
+              }, {
+                $set: {
+                  status: "verified"
+                }
+              }, {
+                "new": true,
+                runValidators: true
+              });
+            case 12:
+              return _context3.abrupt("return", res.status(200).json({
+                success: true,
+                message: "Payment verified successfully"
+              }));
+            case 13:
+              console.log('Unhandled event type:', event.event);
+              _context3.next = 21;
+              break;
+            case 16:
+              _context3.prev = 16;
+              _context3.t0 = _context3["catch"](0);
+              console.log('error here', _context3.t0, 'error here');
+              _context3.t0.payoorDevErrorMessage = 'Failed verify payment';
+              next(_context3.t0);
+            case 21:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 16]]);
+      }));
+      function handleFlutterwavePaymentResponse(_x4, _x5, _x6) {
+        return _handleFlutterwavePaymentResponse.apply(this, arguments);
+      }
+      return handleFlutterwavePaymentResponse;
+    }()
+  }, {
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
-        var https, email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
+        var email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.prev = 0;
-              https = require('https');
+              _context5.prev = 0;
               email = req.email, total = req.total, orderId = req.orderId, userId = req.userId;
               _req$body2 = req.body, delivery_fee = _req$body2.delivery_fee, service_charge = _req$body2.service_charge; //const { order, user } = res.locals;
               amount = total; //console.log('amount', amount);
               if (!(!email || !amount)) {
-                _context4.next = 8;
+                _context5.next = 7;
                 break;
               }
               console.log('email and amount are required');
-              return _context4.abrupt("return", res.status(400).json({
+              return _context5.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 8:
+            case 7:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context4.next = 10;
+                _context5.next = 9;
                 break;
               }
               throw new Error('All amounts must be numbers');
-            case 10:
+            case 9:
               amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
               params = JSON.stringify({
                 "email": email,
@@ -215,10 +282,10 @@ var PaymentController = /*#__PURE__*/function () {
                     }
                   }
                 };
-                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
                   var transaction_reference, transaction, order_update;
-                  return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-                    while (1) switch (_context3.prev = _context3.next) {
+                  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+                    while (1) switch (_context4.prev = _context4.next) {
                       case 0:
                         console.log('data here', data);
                         transaction_reference = JSON.parse(data).data.reference;
@@ -236,7 +303,7 @@ var PaymentController = /*#__PURE__*/function () {
                           reference: transaction_reference
                         });
                         transaction.save();
-                        _context3.next = 10;
+                        _context4.next = 10;
                         return _order["default"].findOneAndUpdate({
                           _id: orderId
                         }, {
@@ -248,12 +315,12 @@ var PaymentController = /*#__PURE__*/function () {
                           runValidators: true
                         });
                       case 10:
-                        order_update = _context3.sent;
+                        order_update = _context4.sent;
                       case 11:
                       case "end":
-                        return _context3.stop();
+                        return _context4.stop();
                     }
-                  }, _callee3);
+                  }, _callee4);
                 })));
               }).on('error', function (error) {
                 console.log(error);
@@ -263,28 +330,28 @@ var PaymentController = /*#__PURE__*/function () {
               });
               paystackRequest.write(params);
               paystackRequest.end();
-              _context4.next = 23;
+              _context5.next = 22;
               break;
-            case 18:
-              _context4.prev = 18;
-              _context4.t0 = _context4["catch"](0);
-              console.log(_context4.t0);
+            case 17:
+              _context5.prev = 17;
+              _context5.t0 = _context5["catch"](0);
+              console.log(_context5.t0);
               errorResponse = {
                 success: false,
                 data: {
-                  message: _context4.t0.message || 'Failed to generate payment link',
-                  error: process.env.NODE_ENV === 'development' ? _context4.t0.toString() : undefined,
+                  message: _context5.t0.message || 'Failed to generate payment link',
+                  error: process.env.NODE_ENV === 'development' ? _context5.t0.toString() : undefined,
                   timestamp: new Date().toISOString()
                 }
               };
               res.status(500).json(errorResponse);
-            case 23:
+            case 22:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
-        }, _callee4, null, [[0, 18]]);
+        }, _callee5, null, [[0, 17]]);
       }));
-      function generatePaymentLink(_x4, _x5) {
+      function generatePaymentLink(_x7, _x8) {
         return _generatePaymentLink.apply(this, arguments);
       }
       return generatePaymentLink;
@@ -292,62 +359,61 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
-        var crypto, paystackSignature, hash, event, paymentData, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+        var paystackSignature, hash, event, paymentData, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
-              crypto = require('crypto');
+              _context6.prev = 0;
               paystackSignature = req.headers['x-paystack-signature'];
               hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY).update(JSON.stringify(req.body)).digest('hex');
               if (!(hash !== paystackSignature)) {
-                _context5.next = 6;
+                _context6.next = 5;
                 break;
               }
-              return _context5.abrupt("return", res.status(401).json({
+              return _context6.abrupt("return", res.status(401).json({
                 message: 'Unauthorized request'
               }));
-            case 6:
+            case 5:
               event = req.body;
               paymentData = event.data;
-              _context5.t0 = event.event;
-              _context5.next = _context5.t0 === 'charge.success' ? 11 : _context5.t0 === 'transfer.success' ? 13 : _context5.t0 === 'charge.failed' ? 15 : 16;
+              _context6.t0 = event.event;
+              _context6.next = _context6.t0 === 'charge.success' ? 10 : _context6.t0 === 'transfer.success' ? 12 : _context6.t0 === 'charge.failed' ? 14 : 15;
               break;
-            case 11:
+            case 10:
               console.log('charge successful:', paymentData);
-              return _context5.abrupt("break", 17);
-            case 13:
+              return _context6.abrupt("break", 16);
+            case 12:
               console.log('transfer successful:', paymentData);
-              return _context5.abrupt("break", 17);
+              return _context6.abrupt("break", 16);
+            case 14:
+              return _context6.abrupt("break", 16);
             case 15:
-              return _context5.abrupt("break", 17);
-            case 16:
               console.log('Unhandled event type:', event.event);
-            case 17:
-              return _context5.abrupt("return", res.status(200).json({
+            case 16:
+              return _context6.abrupt("return", res.status(200).json({
                 message: 'Webhook processed successfully'
               }));
-            case 20:
-              _context5.prev = 20;
-              _context5.t1 = _context5["catch"](0);
-              console.error('Webhook processing error:', _context5.t1);
+            case 19:
+              _context6.prev = 19;
+              _context6.t1 = _context6["catch"](0);
+              console.error('Webhook processing error:', _context6.t1);
               errorResponse = {
                 success: false,
                 data: {
-                  message: _context5.t1.message || 'Error handling payment response',
-                  error: process.env.NODE_ENV === 'development' ? _context5.t1.toString() : undefined,
+                  message: _context6.t1.message || 'Error handling payment response',
+                  error: process.env.NODE_ENV === 'development' ? _context6.t1.toString() : undefined,
                   timestamp: new Date().toISOString()
                 }
               };
-              return _context5.abrupt("return", res.status(500).json(errorResponse));
-            case 25:
+              return _context6.abrupt("return", res.status(500).json(errorResponse));
+            case 24:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
-        }, _callee5, null, [[0, 20]]);
+        }, _callee6, null, [[0, 19]]);
       }));
-      function handlePayStackPaymentResponse(_x6, _x7) {
+      function handlePayStackPaymentResponse(_x9, _x10) {
         return _handlePayStackPaymentResponse.apply(this, arguments);
       }
       return handlePayStackPaymentResponse;
@@ -355,13 +421,13 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "verifyPayment",
     value: function () {
-      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
-        var https, transactionReference, options, transaction, verificationRequest, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+        var _https, transactionReference, options, transaction, verificationRequest, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context6.prev = 0;
-              https = require('https');
+              _context7.prev = 0;
+              _https = require('https');
               transactionReference = req.body.transactionReference;
               options = {
                 hostname: 'api.paystack.co',
@@ -372,21 +438,21 @@ var PaymentController = /*#__PURE__*/function () {
                   Authorization: "Bearer ".concat(PAYSTACK_SECRET_KEY)
                 }
               };
-              _context6.next = 6;
+              _context7.next = 6;
               return _transaction["default"].findOne({
                 reference: transactionReference
               });
             case 6:
-              transaction = _context6.sent;
+              transaction = _context7.sent;
               if (transaction) {
-                _context6.next = 9;
+                _context7.next = 9;
                 break;
               }
-              return _context6.abrupt("return", res.status(404).json({
+              return _context7.abrupt("return", res.status(404).json({
                 message: 'Transaction not found.'
               }));
             case 9:
-              verificationRequest = https.request(options, function (verificationResponse) {
+              verificationRequest = _https.request(options, function (verificationResponse) {
                 var data = '';
                 verificationResponse.on('data', function (chunk) {
                   data += chunk;
@@ -416,28 +482,28 @@ var PaymentController = /*#__PURE__*/function () {
                 });
               });
               verificationRequest.end();
-              _context6.next = 18;
+              _context7.next = 18;
               break;
             case 13:
-              _context6.prev = 13;
-              _context6.t0 = _context6["catch"](0);
-              console.log(_context6.t0);
+              _context7.prev = 13;
+              _context7.t0 = _context7["catch"](0);
+              console.log(_context7.t0);
               errorResponse = {
                 success: false,
                 data: {
-                  message: _context6.t0.message || 'Failed to verify payment',
-                  error: process.env.NODE_ENV === 'development' ? _context6.t0.toString() : undefined,
+                  message: _context7.t0.message || 'Failed to verify payment',
+                  error: process.env.NODE_ENV === 'development' ? _context7.t0.toString() : undefined,
                   timestamp: new Date().toISOString()
                 }
               };
               res.status(500).json(errorResponse);
             case 18:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
-        }, _callee6, null, [[0, 13]]);
+        }, _callee7, null, [[0, 13]]);
       }));
-      function verifyPayment(_x8, _x9) {
+      function verifyPayment(_x11, _x12) {
         return _verifyPayment.apply(this, arguments);
       }
       return verifyPayment;
