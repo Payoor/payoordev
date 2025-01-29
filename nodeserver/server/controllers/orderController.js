@@ -45,6 +45,7 @@ class OrderController {
                     req.email = validUser.email;
                     req.orderId = order._id;
                     req.userId = validUser._id;
+                    req.name = validUser.name;
 
 
                     await order.save();
