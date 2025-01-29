@@ -20,7 +20,7 @@ movies_index = "movies_index"
 
 def initialize_product_index_settings():
     try:
-        isFirstRun = redis_client.setnx('ALGOLIA_PRODUCTS_INDEX_SETTINGS_SET_V_ONE', 'true')
+        isFirstRun = redis_client.setnx('ALGOLIA_PRODUCTS_INDEX_SETTINGS_SET_V_TWO', 'true')
 
         if isFirstRun and os.getenv('FLASK_ENV') == 'production':
             response = algolia_client.set_settings(
