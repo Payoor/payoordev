@@ -44,6 +44,8 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+console.log(process.env.NODE_ENV)
+
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' ? corsOriginArray.production : corsOriginArray.development,
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],

@@ -50,6 +50,7 @@ if (!_fs["default"].existsSync(uploadDir)) {
     recursive: true
   });
 }
+console.log(process.env.NODE_ENV);
 var corsOptions = {
   origin: process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development,
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
