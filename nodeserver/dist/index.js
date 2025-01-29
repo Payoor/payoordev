@@ -52,19 +52,10 @@ if (!_fs["default"].existsSync(uploadDir)) {
 }
 console.log(process.env.NODE_ENV);
 var corsOptions = {
-  origin: function origin(_origin, callback) {
-    console.log("Origin attempting to connect:", _origin);
-    var allowedOrigins = process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development;
-    if (!_origin || allowedOrigins.indexOf(_origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log("Origin rejected:", _origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: ['https://admin.development.payoor.store', 'https://admin.payoor.store', 'https://chat.payoor.store', 'https://chat.development.payoor.store'],
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
-  credentials: true,
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: true
 };
 app.use((0, _cors["default"])(corsOptions));
 

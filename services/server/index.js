@@ -32,7 +32,6 @@ app.use(express.json());
 
 initSocket(io);
 
-
 io.on('connection', (socket) => {
     console.log('A user connected');
 
