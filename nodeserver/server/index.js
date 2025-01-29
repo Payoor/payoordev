@@ -44,17 +44,17 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-console.log(process.env.NODE_ENV)
+console.log(process.env.NODE_ENV);
 
 const corsOptions = {
-  origin: 'https://chat.payoor.store', 
+  origin: process.env.NODE_ENV === 'production' ? corsOriginArray.production : corsOriginArray.development,
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
   allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization'
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
   ],
   credentials: true
 };
