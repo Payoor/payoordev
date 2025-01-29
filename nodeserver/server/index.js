@@ -47,14 +47,14 @@ if (!fs.existsSync(uploadDir)) {
 console.log(process.env.NODE_ENV)
 
 const corsOptions = {
-  origin: corsOriginArray,
+  origin: 'https://chat.payoor.store', 
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
   allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization'
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization'
   ],
   credentials: true
 };
