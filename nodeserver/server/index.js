@@ -47,16 +47,22 @@ if (!fs.existsSync(uploadDir)) {
 console.log(process.env.NODE_ENV)
 
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' ? corsOriginArray.production : corsOriginArray.development,
+  origin: function (origin, callback) {
+    console.log("Origin attempting to connect:", origin);
+    const allowedOrigins = process.env.NODE_ENV === 'production'
+      ? corsOriginArray.production
+      : corsOriginArray.development;
+
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log("Origin rejected:", origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization'
-  ],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
 };
 
 app.use(cors(corsOptions));

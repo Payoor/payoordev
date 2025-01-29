@@ -52,10 +52,19 @@ if (!_fs["default"].existsSync(uploadDir)) {
 }
 console.log(process.env.NODE_ENV);
 var corsOptions = {
-  origin: process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development,
+  origin: function origin(_origin, callback) {
+    console.log("Origin attempting to connect:", _origin);
+    var allowedOrigins = process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development;
+    if (!_origin || allowedOrigins.indexOf(_origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log("Origin rejected:", _origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
 };
 app.use((0, _cors["default"])(corsOptions));
 
