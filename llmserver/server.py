@@ -24,27 +24,29 @@ load_dotenv()
 app = Flask(__name__)
 port = int(os.getenv('PORT')) 
 
-if os.getenv('FLASK_ENV') != 'production':
-    ALLOWED_ORIGINS = [
-        'https://chat.payoor.store',
-        'https://admin.payoor.store',
-        'https://admin.development.payoor.store',
-        'https://chat.development.payoor.store',
-        'https://chat.development.payoor.store',
-        'http://localhost:63882',
-        'http://localhost:3030'
-    ]
 
-    CORS(app,
-        resources={
-            r"/*": {
-                "origins": ALLOWED_ORIGINS,
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
-                "supports_credentials": True,
-                "expose_headers": ["Content-Range", "X-Content-Range"]
-            }
-        })
+ALLOWED_ORIGINS = [
+    'http://localhost:63882',
+    'http://localhost:3030'
+]
+
+ALLOWED_ORIGINS_PRODUCTION = [
+    'https://chat.payoor.store',
+    'https://admin.payoor.store',
+    'https://admin.development.payoor.store',
+    'https://chat.development.payoor.store',
+    'https://chat.development.payoor.store' 
+]
+
+CORS(app, resources={
+    r"/*": {
+        "origins": ALLOWED_ORIGINS_PRODUCTION if os.getenv('FLASK_ENV') == 'production' else ALLOWED_ORIGINS,
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
+        "supports_credentials": True,
+        "expose_headers": ["Content-Range", "X-Content-Range"]
+    }
+})
 
 UPLOAD_FOLDER = 'uploads'
 

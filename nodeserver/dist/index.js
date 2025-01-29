@@ -50,17 +50,13 @@ if (!_fs["default"].existsSync(uploadDir)) {
     recursive: true
   });
 }
-
-// 7. Configure CORS
-if (process.env.NODE_ENV === 'production') {
-  var corsOptions = {
-    origin: _corsOriginArray["default"],
-    methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-    credentials: true
-  };
-  app.use((0, _cors["default"])(corsOptions));
-}
+var corsOptions = {
+  origin: process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development,
+  methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: true
+};
+app.use((0, _cors["default"])(corsOptions));
 
 // 8. Global middleware (order matters!)
 app.use(express.json({

@@ -18,7 +18,7 @@ var io = require('socket.io')(http, {
 var path = require('path');
 if (process.env.NODE_ENV !== 'production') {
   var corsOptions = {
-    origin: _corsOriginArray["default"],
+    origin: process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development,
     optionsSuccessStatus: 200
   };
   app.use((0, _cors["default"])(corsOptions));

@@ -28,3 +28,7 @@ Monday 27 Jan
 ==========================================
 add redis config to llmserver, add bookmark feature, update docker-compose.development with errorserver and volumes
 update mongodb volume
+
+Wednesday 29 Jan
+==========================================
+add initialization for algolia production database

@@ -20,7 +20,7 @@ import googleApiRoute from './routes/googleApiRoute';
 
 if (process.env.NODE_ENV !== 'production') {
     const corsOptions = {
-        origin: corsOrginArray,
+        origin: process.env.NODE_ENV === 'production' ? corsOrginArray.production : corsOrginArray.development,
         optionsSuccessStatus: 200,
     };
 

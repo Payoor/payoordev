@@ -28,6 +28,7 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   late Future<String> _imageUrlFuture;
   bool _isbookmarked = false;
+  bool _togglingBookMarks = false;
 
   @override
   void initState() {
@@ -45,11 +46,17 @@ class _ProductCardState extends State<ProductCard> {
 
     setState(() {
       _isbookmarked = response.data['product_bookmarked'];
+      _togglingBookMarks = false;
     });
   }
 
   void _addProductToBookMarks(productId) async {
     final userId = context.read<AuthProv>().userData!["_id"];
+
+    setState(() {
+      _togglingBookMarks = true;
+    });
+
     final response =
         await ProductRoute.addProductToBookMarks(productId, userId);
 
@@ -139,26 +146,36 @@ class _ProductCardState extends State<ProductCard> {
                       _addProductToBookMarks(widget.productId);
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: AppColors.black.withOpacity(.2),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        _isbookmarked ? Icons.favorite : Icons.favorite_border,
-                        size: 20,
-                        color: _isbookmarked
-                            ? AppColors.primaryColor
-                            : AppColors.white,
-                      ),
-                    ),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppColors.black.withOpacity(.2),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: _togglingBookMarks
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.primaryColor,
+                                ),
+                              )
+                            : Icon(
+                                _isbookmarked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                size: 20,
+                                color: _isbookmarked
+                                    ? AppColors.primaryColor
+                                    : AppColors.white,
+                              )),
                   ),
                 ),
               ],
