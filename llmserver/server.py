@@ -34,8 +34,7 @@ ALLOWED_ORIGINS_PRODUCTION = [
     'https://chat.payoor.store',
     'https://admin.payoor.store',
     'https://admin.development.payoor.store',
-    'https://chat.development.payoor.store',
-    'https://chat.development.payoor.store' 
+    'https://chat.development.payoor.store'
 ]
 
 CORS(app, resources={
