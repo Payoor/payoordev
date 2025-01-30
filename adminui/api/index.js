@@ -41,9 +41,11 @@ export const removeProduct = (productId) => $http.delete(`${serverUrl}/admin/del
 
 
 // Payment
-export const generatePaymentLink = (data) => $http.post(`${serverUrl}/paystack/generate-payment-link`, data, getDefaultHeader());
+export const generatePaymentLink = (data) => $http.post(`${serverUrl}/paystack/generate-payment-link`, data, getUserHeader());
 
 export const verifyPayment = (data) => $http.post(`${serverUrl}/paystack/verify-payment`, data, getDefaultHeader());
+
+export const generateBankTransferDetails = (data) => $http.post(`${serverUrl}/flutter/transfer`, data, getUserHeader());
 
 
 // User Management
@@ -67,6 +69,7 @@ export const getUserTransactions = (userId, page, limit) => $http.get(`${serverU
 
 export const getTransaction = (transactionId) => $http.get(`${serverUrl}/admin/get/transaction?id=${transactionId}`, getDefaultHeader());
 
+export const getTransactionandOrderDetails = (transactionRef) => $http.get(`${serverUrl}/user/get/transaction-and-order-details?tx_ref=${transactionRef}`, getUserHeader());
 
 // Messages management
 export const getConversation = (userId) => $http.get(`${serverUrl}/messages?roomId=${userId}`, getDefaultHeader());
