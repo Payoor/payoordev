@@ -16,6 +16,8 @@ from config.mongoose import ObjectId, productCollection, productVariant
 from config.algolia import search_algolia_product_index, sync_to_algolia_in_batches, update_algolia_item, delete_algolia_item
 from config.redis import toggle_bookmark, check_bookmarks_for_product
 
+from payoordata import run_data_processing
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -24,27 +26,28 @@ load_dotenv()
 app = Flask(__name__)
 port = int(os.getenv('PORT')) 
 
-if os.getenv('FLASK_ENV') != 'production':
-    ALLOWED_ORIGINS = [
-        'https://chat.payoor.store',
-        'https://admin.payoor.store',
-        'https://admin.development.payoor.store',
-        'https://chat.development.payoor.store',
-        'https://chat.development.payoor.store',
-        'http://localhost:63882',
-        'http://localhost:3030'
-    ]
 
-    CORS(app,
-        resources={
-            r"/*": {
-                "origins": ALLOWED_ORIGINS,
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
-                "supports_credentials": True,
-                "expose_headers": ["Content-Range", "X-Content-Range"]
-            }
-        })
+ALLOWED_ORIGINS = [
+    'http://localhost:63882',
+    'http://localhost:3030'
+]
+
+ALLOWED_ORIGINS_PRODUCTION = [
+    'https://chat.payoor.store',
+    'https://admin.payoor.store',
+    'https://admin.development.payoor.store',
+    'https://chat.development.payoor.store'
+]
+
+CORS(app, resources={
+    r"/*": {
+        "origins": ALLOWED_ORIGINS_PRODUCTION if os.getenv('FLASK_ENV') == 'production' else ALLOWED_ORIGINS,
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "Session-ID"],
+        "supports_credentials": True,
+        "expose_headers": ["Content-Range", "X-Content-Range"]
+    }
+})
 
 UPLOAD_FOLDER = 'uploads'
 
@@ -292,7 +295,9 @@ def query_data():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500 
-
+with app.app_context():
+    run_data_processing()
+    
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0', 

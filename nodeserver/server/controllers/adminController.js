@@ -189,6 +189,8 @@ class AdminController {
 
             const totalCount = await NewProduct.countDocuments(query);
 
+            //console.log(products);
+
             res.status(200).send({
                 message: "Products retrieved",
                 page,

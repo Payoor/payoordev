@@ -44,22 +44,22 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// 7. Configure CORS
-if (process.env.NODE_ENV === 'production') {
-  const corsOptions = {
-    origin: corsOriginArray,
-    methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
-    allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization'
-    ],
-    credentials: true
-  };
-  app.use(cors(corsOptions));
-}
+console.log(process.env.NODE_ENV);
+
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' ? corsOriginArray.production : corsOriginArray.development,
+  methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
+  ],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 // 8. Global middleware (order matters!)
 app.use(express.json({ limit: '1mb' }));

@@ -5,16 +5,60 @@ from algoliasearch.search.client import SearchClientSync
 from dotenv import load_dotenv
 from pprint import pprint
 
+from config.redis import redis_client
 from config.mongoose import productCollection  
 
 load_dotenv()
 
 ALGOLIA_APP_ID=os.getenv('ALGOLIA_APP_ID')
 ALGOLIA_APP_KEY=os.getenv('ALGOLIA_APP_KEY')
+ALGOLIA_PRODUCTS_INDEX=os.getenv('ALGOLIA_PRODUCTS_INDEX')
 
 algolia_client = SearchClientSync(ALGOLIA_APP_ID, ALGOLIA_APP_KEY)
-products_index = "products-index"
+products_index = ALGOLIA_PRODUCTS_INDEX
 movies_index = "movies_index"
+
+def initialize_product_index_settings():
+    try:
+        isFirstRun = redis_client.setnx('ALGOLIA_PRODUCTS_INDEX_SETTINGS_SET_V_ONE', 'true')
+
+        if isFirstRun and os.getenv('FLASK_ENV') == 'production':
+            response = algolia_client.set_settings(
+                index_name=products_index,
+                index_settings={
+                    "searchableAttributes": ["unordered(name)", "unordered(generatedDescription)", "unordered(generatedCategories)"],
+                    "customRanking": ["desc(popularity)"],
+                    "ranking": ["typo", "geo", "words", "filters", "proximity", "attribute", "exact", "custom"],
+                    "paginationLimitedTo": 1000,
+                    "hitsPerPage": 20, 
+                    "minWordSizefor1Typo": 4, 
+                    "minWordSizefor2Typos": 8,
+                    "queryType": "prefixLast",
+                    "removeWordsIfNoResults": "none",
+                    "exactOnSingleWordQuery": "attribute",
+                    "highlightPreTag": "<em>",
+                    "highlightPostTag": "</em>",
+                    "maxValuesPerFacet": 100,
+                    "alternativesAsExact": ["ignorePlurals", "singleWordSynonym"],
+                    "separatorsToIndex": ""
+                },
+                forward_to_replicas=True
+            )
+
+            response = algolia_client.get_settings(
+                index_name=movies_index,
+            ) 
+
+            print(response)
+            print("Algolia products index settings set")
+        elif(os.getenv('FLASK_ENV') != 'production'):
+            print("This is a development environment")
+        else:
+            print('Algolia products settings already set')
+    except Exception as e:
+        print(e)
+
+initialize_product_index_settings()
 
 def sync_to_algolia_in_batches():
     batch_size = 10
@@ -25,10 +69,10 @@ def sync_to_algolia_in_batches():
 
     for product in unsaved_products:
         body = {
-           "objectID": str(product["_id"]),
-           "name": product["name"],
-           "image": product["image"],
-           "generatedDescription": product["generatedDescription"]
+            "objectID": str(product["_id"]),
+            "name": product.get("name", ""),
+            "image": product.get("image", ""),
+            "generatedDescription": product.get("generatedDescription", "")
         }
 
         try:

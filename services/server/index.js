@@ -20,7 +20,7 @@ import googleApiRoute from './routes/googleApiRoute';
 
 if (process.env.NODE_ENV !== 'production') {
     const corsOptions = {
-        origin: corsOrginArray,
+        origin: process.env.NODE_ENV === 'production' ? corsOrginArray.production : corsOrginArray.development,
         optionsSuccessStatus: 200,
     };
 
@@ -31,7 +31,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 initSocket(io);
-
 
 io.on('connection', (socket) => {
     console.log('A user connected');
