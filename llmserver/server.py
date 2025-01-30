@@ -16,6 +16,8 @@ from config.mongoose import ObjectId, productCollection, productVariant
 from config.algolia import search_algolia_product_index, sync_to_algolia_in_batches, update_algolia_item, delete_algolia_item
 from config.redis import toggle_bookmark, check_bookmarks_for_product
 
+from payoordata import run_data_processing
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -293,7 +295,9 @@ def query_data():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500 
-
+with app.app_context():
+    run_data_processing()
+    
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0', 

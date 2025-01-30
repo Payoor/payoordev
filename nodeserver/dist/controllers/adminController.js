@@ -315,6 +315,8 @@ var AdminController = /*#__PURE__*/function () {
               return _newProduct["default"].countDocuments(query);
             case 17:
               totalCount = _context5.sent;
+              //console.log(products);
+
               res.status(200).send({
                 message: "Products retrieved",
                 page: page,
