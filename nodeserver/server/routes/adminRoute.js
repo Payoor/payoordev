@@ -4,6 +4,7 @@ import fs from "fs";
 
 import AdminController from "../controllers/adminController";
 import OrderController from '../controllers/orderController';
+import verifyToken from '../services/payoor/verifyToken';
 
 const { authenticate, isFirstAdmin } = require('../services/payoor/admin/auth');
 
@@ -81,6 +82,8 @@ adminRoute.get('/admin/get/transactions', authenticate, AdminController.getTrans
 adminRoute.get('/admin/get/user-transactions', authenticate, AdminController.getUserTransactions);
 
 adminRoute.get('/admin/get/transaction', authenticate, AdminController.getTransaction);
+
+adminRoute.get('/admin/get/transaction-and-order-details', verifyToken, AdminController.getTransactionStatusAndOrderDetails);
 
 adminRoute.get('/admin/get/dashboard-stats', authenticate, AdminController.getDashboardAggregateData);
 

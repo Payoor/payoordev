@@ -1,5 +1,6 @@
 import Transaction from "../models/transaction";
 import Order from "../models/order";
+import sendTransactionVerification from "../services/resend/sendTransactionVerification";
 
 const https = require('https');
 const crypto = require('crypto');
@@ -160,8 +161,17 @@ class PaymentController {
                         runValidators: true,
                     },
                 );
+                
+                const mailResponse = await sendTransactionVerification({
+                    email: paymentData.customer.email,
+                    amount: formatAmount(paymentData.amount)
+                });
 
-                return res.status(200).json({ success: true, message: "Payment verified successfully" });
+                return res.status(200).json({ 
+                    success: true, 
+                    message: "Payment verified successfully",
+                    mailResponse 
+                });
             }
 
             console.log('Unhandled event type:', event.event);
@@ -308,7 +318,6 @@ class PaymentController {
             }
 
             const event = req.body;
-
             const paymentData = event.data;
 
             switch (event.event) {
@@ -328,7 +337,28 @@ class PaymentController {
                     console.log('Unhandled event type:', event.event);
             }
 
-            return res.status(200).json({ message: 'Webhook processed successfully' });
+            await Transaction.findOneAndUpdate(
+                { reference: paymentData.reference },
+                {
+                    $set: {
+                        status: "verified"
+                    }
+                },
+                {
+                    new: true,
+                    runValidators: true,
+                },
+            );
+
+            const mailResponse = await sendTransactionVerification({
+                email: paymentData.customer.email,
+                amount: formatAmount(paymentData.amount)
+            });
+
+            return res.status(200).json({ 
+                message: 'Webhook processed successfully',
+                mailResponse
+            });
     
 
         } catch (error) {
@@ -435,4 +465,14 @@ const generateTransactionReference = () => {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+}
+
+const formatAmount = (amount) => {
+  const formatter = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+  });
+
+  return formatter.format(amount);
 }

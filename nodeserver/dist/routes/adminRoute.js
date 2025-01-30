@@ -9,6 +9,7 @@ var _multer = _interopRequireDefault(require("multer"));
 var _fs = _interopRequireDefault(require("fs"));
 var _adminController = _interopRequireDefault(require("../controllers/adminController"));
 var _orderController = _interopRequireDefault(require("../controllers/orderController"));
+var _verifyToken = _interopRequireDefault(require("../services/payoor/verifyToken"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var _require = require('../services/payoor/admin/auth'),
   authenticate = _require.authenticate,
@@ -65,5 +66,6 @@ adminRoute.get('/admin/get/order', authenticate, _adminController["default"].get
 adminRoute.get('/admin/get/transactions', authenticate, _adminController["default"].getTransactions);
 adminRoute.get('/admin/get/user-transactions', authenticate, _adminController["default"].getUserTransactions);
 adminRoute.get('/admin/get/transaction', authenticate, _adminController["default"].getTransaction);
+adminRoute.get('/admin/get/transaction-and-order-details', _verifyToken["default"], _adminController["default"].getTransactionStatusAndOrderDetails);
 adminRoute.get('/admin/get/dashboard-stats', authenticate, _adminController["default"].getDashboardAggregateData);
 var _default = exports["default"] = adminRoute;
