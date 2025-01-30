@@ -120,7 +120,7 @@ export default {
     },
 
     redirectToDashboard() {
-      this.$router.push("/user-chat");
+      this.$router.push("/pay");
     }
   },
 }
