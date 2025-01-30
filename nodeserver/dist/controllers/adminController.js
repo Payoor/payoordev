@@ -1371,78 +1371,19 @@ var AdminController = /*#__PURE__*/function () {
       return getTransaction;
     }()
   }, {
-    key: "getTransactionStatusAndOrderDetails",
+    key: "getUserTransactions",
     value: function () {
-      var _getTransactionStatusAndOrderDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee21(req, res, next) {
-        var transactionRef, transaction;
+      var _getUserTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee21(req, res, next) {
+        var userId, page, limit, skip, transactions, totalCount;
         return _regeneratorRuntime().wrap(function _callee21$(_context21) {
           while (1) switch (_context21.prev = _context21.next) {
             case 0:
               _context21.prev = 0;
-              transactionRef = req.query.tx_ref;
-              if (transactionRef) {
-                _context21.next = 4;
-                break;
-              }
-              return _context21.abrupt("return", res.status(400).send({
-                message: "Transaction reference is required"
-              }));
-            case 4:
-              _context21.next = 6;
-              return _transaction["default"].findOne({
-                reference: transactionRef
-              }).populate('orderId').populate('initiatorId').lean();
-            case 6:
-              transaction = _context21.sent;
-              if (transaction) {
-                _context21.next = 9;
-                break;
-              }
-              return _context21.abrupt("return", res.status(404).json({
-                success: false,
-                message: 'Transaction not found'
-              }));
-            case 9:
-              res.status(200).send({
-                success: true,
-                data: {
-                  message: 'Transaction found',
-                  transaction: transaction
-                }
-              });
-              _context21.next = 17;
-              break;
-            case 12:
-              _context21.prev = 12;
-              _context21.t0 = _context21["catch"](0);
-              console.log('error here', _context21.t0, 'error here');
-              _context21.t0.payoorDevErrorMessage = 'Failed to retrieve transaction';
-              next(_context21.t0);
-            case 17:
-            case "end":
-              return _context21.stop();
-          }
-        }, _callee21, null, [[0, 12]]);
-      }));
-      function getTransactionStatusAndOrderDetails(_x59, _x60, _x61) {
-        return _getTransactionStatusAndOrderDetails.apply(this, arguments);
-      }
-      return getTransactionStatusAndOrderDetails;
-    }()
-  }, {
-    key: "getUserTransactions",
-    value: function () {
-      var _getUserTransactions = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee22(req, res, next) {
-        var userId, page, limit, skip, transactions, totalCount;
-        return _regeneratorRuntime().wrap(function _callee22$(_context22) {
-          while (1) switch (_context22.prev = _context22.next) {
-            case 0:
-              _context22.prev = 0;
               userId = req.query.userId;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
-              _context22.next = 7;
+              _context21.next = 7;
               return _transaction["default"].find({
                 initiatorId: userId
               }, {
@@ -1452,7 +1393,7 @@ var AdminController = /*#__PURE__*/function () {
                 createdAt: -1
               }).skip(skip).limit(limit).lean();
             case 7:
-              transactions = _context22.sent;
+              transactions = _context21.sent;
               totalCount = transactions.length;
               res.status(200).send({
                 message: "Transactions retrieved",
@@ -1461,21 +1402,21 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 transactions: transactions
               });
-              _context22.next = 17;
+              _context21.next = 17;
               break;
             case 12:
-              _context22.prev = 12;
-              _context22.t0 = _context22["catch"](0);
-              console.log('error here', _context22.t0, 'error here');
-              _context22.t0.payoorDevErrorMessage = 'Failed to retrieve transactions';
-              next(_context22.t0);
+              _context21.prev = 12;
+              _context21.t0 = _context21["catch"](0);
+              console.log('error here', _context21.t0, 'error here');
+              _context21.t0.payoorDevErrorMessage = 'Failed to retrieve transactions';
+              next(_context21.t0);
             case 17:
             case "end":
-              return _context22.stop();
+              return _context21.stop();
           }
-        }, _callee22, null, [[0, 12]]);
+        }, _callee21, null, [[0, 12]]);
       }));
-      function getUserTransactions(_x62, _x63, _x64) {
+      function getUserTransactions(_x59, _x60, _x61) {
         return _getUserTransactions.apply(this, arguments);
       }
       return getUserTransactions;
@@ -1483,12 +1424,12 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getOrders",
     value: function () {
-      var _getOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee23(req, res, next) {
+      var _getOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee22(req, res, next) {
         var page, limit, skip, search, status, query, users, userIds, orders, total;
-        return _regeneratorRuntime().wrap(function _callee23$(_context23) {
-          while (1) switch (_context23.prev = _context23.next) {
+        return _regeneratorRuntime().wrap(function _callee22$(_context22) {
+          while (1) switch (_context22.prev = _context22.next) {
             case 0:
-              _context23.prev = 0;
+              _context22.prev = 0;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
@@ -1499,10 +1440,10 @@ var AdminController = /*#__PURE__*/function () {
                 query.status = status;
               }
               if (!search) {
-                _context23.next = 14;
+                _context22.next = 14;
                 break;
               }
-              _context23.next = 11;
+              _context22.next = 11;
               return _user["default"].find({
                 name: {
                   $regex: search,
@@ -1512,7 +1453,7 @@ var AdminController = /*#__PURE__*/function () {
                 _id: 1
               });
             case 11:
-              users = _context23.sent;
+              users = _context22.sent;
               userIds = users.map(function (user) {
                 return user._id;
               });
@@ -1522,18 +1463,18 @@ var AdminController = /*#__PURE__*/function () {
                 };
               }
             case 14:
-              _context23.next = 16;
+              _context22.next = 16;
               return _order["default"].find(query, {
                 __v: 0
               }).populate('userId', 'name -_id').sort({
                 createdAt: -1
               }).skip(skip).limit(limit);
             case 16:
-              orders = _context23.sent;
-              _context23.next = 19;
+              orders = _context22.sent;
+              _context22.next = 19;
               return _order["default"].countDocuments(query);
             case 19:
-              total = _context23.sent;
+              total = _context22.sent;
               res.status(200).json({
                 message: 'Orders retrieved',
                 page: page,
@@ -1542,21 +1483,21 @@ var AdminController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 orders: orders
               });
-              _context23.next = 28;
+              _context22.next = 28;
               break;
             case 23:
-              _context23.prev = 23;
-              _context23.t0 = _context23["catch"](0);
-              console.log('error here', _context23.t0, 'error here');
-              _context23.t0.payoorDevErrorMessage = 'Failed to retrieve orders';
-              next(_context23.t0);
+              _context22.prev = 23;
+              _context22.t0 = _context22["catch"](0);
+              console.log('error here', _context22.t0, 'error here');
+              _context22.t0.payoorDevErrorMessage = 'Failed to retrieve orders';
+              next(_context22.t0);
             case 28:
             case "end":
-              return _context23.stop();
+              return _context22.stop();
           }
-        }, _callee23, null, [[0, 23]]);
+        }, _callee22, null, [[0, 23]]);
       }));
-      function getOrders(_x65, _x66, _x67) {
+      function getOrders(_x62, _x63, _x64) {
         return _getOrders.apply(this, arguments);
       }
       return getOrders;
@@ -1564,17 +1505,17 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrders",
     value: function () {
-      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee24(req, res, next) {
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee23(req, res, next) {
         var userId, page, limit, skip, orders, total;
-        return _regeneratorRuntime().wrap(function _callee24$(_context24) {
-          while (1) switch (_context24.prev = _context24.next) {
+        return _regeneratorRuntime().wrap(function _callee23$(_context23) {
+          while (1) switch (_context23.prev = _context23.next) {
             case 0:
-              _context24.prev = 0;
+              _context23.prev = 0;
               userId = req.query.userId;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
-              _context24.next = 7;
+              _context23.next = 7;
               return _order["default"].find({
                 userId: userId
               }, {
@@ -1583,7 +1524,7 @@ var AdminController = /*#__PURE__*/function () {
                 createdAt: -1
               }).skip(skip).limit(limit);
             case 7:
-              orders = _context24.sent;
+              orders = _context23.sent;
               total = orders.length;
               res.status(200).json({
                 message: 'Orders retrieved',
@@ -1593,21 +1534,21 @@ var AdminController = /*#__PURE__*/function () {
                 itemsPerPage: limit,
                 orders: orders
               });
-              _context24.next = 17;
+              _context23.next = 17;
               break;
             case 12:
-              _context24.prev = 12;
-              _context24.t0 = _context24["catch"](0);
-              console.log('error here', _context24.t0, 'error here');
-              _context24.t0.payoorDevErrorMessage = 'Failed to retrieve users';
-              next(_context24.t0);
+              _context23.prev = 12;
+              _context23.t0 = _context23["catch"](0);
+              console.log('error here', _context23.t0, 'error here');
+              _context23.t0.payoorDevErrorMessage = 'Failed to retrieve users';
+              next(_context23.t0);
             case 17:
             case "end":
-              return _context24.stop();
+              return _context23.stop();
           }
-        }, _callee24, null, [[0, 12]]);
+        }, _callee23, null, [[0, 12]]);
       }));
-      function getUserOrders(_x68, _x69, _x70) {
+      function getUserOrders(_x65, _x66, _x67) {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;
@@ -1615,22 +1556,22 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee25(req, res, next) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee24(req, res, next) {
         var orderId, order;
-        return _regeneratorRuntime().wrap(function _callee25$(_context25) {
-          while (1) switch (_context25.prev = _context25.next) {
+        return _regeneratorRuntime().wrap(function _callee24$(_context24) {
+          while (1) switch (_context24.prev = _context24.next) {
             case 0:
-              _context25.prev = 0;
+              _context24.prev = 0;
               orderId = req.query.id;
-              _context25.next = 4;
+              _context24.next = 4;
               return _order["default"].findById(orderId).populate('userId', 'name email');
             case 4:
-              order = _context25.sent;
+              order = _context24.sent;
               if (order) {
-                _context25.next = 7;
+                _context24.next = 7;
                 break;
               }
-              return _context25.abrupt("return", res.status(404).json({
+              return _context24.abrupt("return", res.status(404).json({
                 success: false,
                 message: 'Order not found'
               }));
@@ -1639,21 +1580,21 @@ var AdminController = /*#__PURE__*/function () {
                 success: true,
                 data: order
               });
-              _context25.next = 15;
+              _context24.next = 15;
               break;
             case 10:
-              _context25.prev = 10;
-              _context25.t0 = _context25["catch"](0);
-              console.log('error here', _context25.t0, 'error here');
-              _context25.t0.payoorDevErrorMessage = 'Failed to retrieve users';
-              next(_context25.t0);
+              _context24.prev = 10;
+              _context24.t0 = _context24["catch"](0);
+              console.log('error here', _context24.t0, 'error here');
+              _context24.t0.payoorDevErrorMessage = 'Failed to retrieve users';
+              next(_context24.t0);
             case 15:
             case "end":
-              return _context25.stop();
+              return _context24.stop();
           }
-        }, _callee25, null, [[0, 10]]);
+        }, _callee24, null, [[0, 10]]);
       }));
-      function getOrder(_x71, _x72, _x73) {
+      function getOrder(_x68, _x69, _x70) {
         return _getOrder.apply(this, arguments);
       }
       return getOrder;
@@ -1661,43 +1602,43 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "deleteOneUser",
     value: function () {
-      var _deleteOneUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee26(req, res, next) {
+      var _deleteOneUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee25(req, res, next) {
         var userId, deletedUser;
-        return _regeneratorRuntime().wrap(function _callee26$(_context26) {
-          while (1) switch (_context26.prev = _context26.next) {
+        return _regeneratorRuntime().wrap(function _callee25$(_context25) {
+          while (1) switch (_context25.prev = _context25.next) {
             case 0:
-              _context26.prev = 0;
+              _context25.prev = 0;
               userId = req.query.userId;
-              _context26.next = 4;
+              _context25.next = 4;
               return _user["default"].findByIdAndDelete(userId);
             case 4:
-              deletedUser = _context26.sent;
+              deletedUser = _context25.sent;
               if (deletedUser) {
-                _context26.next = 7;
+                _context25.next = 7;
                 break;
               }
-              return _context26.abrupt("return", res.status(404).json({
+              return _context25.abrupt("return", res.status(404).json({
                 message: 'User not found'
               }));
             case 7:
               res.status(200).json({
                 message: 'User deleted successfully'
               });
-              _context26.next = 15;
+              _context25.next = 15;
               break;
             case 10:
-              _context26.prev = 10;
-              _context26.t0 = _context26["catch"](0);
-              console.log('error here', _context26.t0, 'error here');
-              _context26.t0.payoorDevErrorMessage = 'Error deleting user';
-              next(_context26.t0);
+              _context25.prev = 10;
+              _context25.t0 = _context25["catch"](0);
+              console.log('error here', _context25.t0, 'error here');
+              _context25.t0.payoorDevErrorMessage = 'Error deleting user';
+              next(_context25.t0);
             case 15:
             case "end":
-              return _context26.stop();
+              return _context25.stop();
           }
-        }, _callee26, null, [[0, 10]]);
+        }, _callee25, null, [[0, 10]]);
       }));
-      function deleteOneUser(_x74, _x75, _x76) {
+      function deleteOneUser(_x71, _x72, _x73) {
         return _deleteOneUser.apply(this, arguments);
       }
       return deleteOneUser;
@@ -1705,46 +1646,46 @@ var AdminController = /*#__PURE__*/function () {
   }, {
     key: "getDashboardAggregateData",
     value: function () {
-      var _getDashboardAggregateData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee27(req, res, next) {
+      var _getDashboardAggregateData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee26(req, res, next) {
         var availableProductsCount, pendingOrdersCount, completedOrdersCount, pendingTransactionsCount, verifiedTransactionsCount, usersCount;
-        return _regeneratorRuntime().wrap(function _callee27$(_context27) {
-          while (1) switch (_context27.prev = _context27.next) {
+        return _regeneratorRuntime().wrap(function _callee26$(_context26) {
+          while (1) switch (_context26.prev = _context26.next) {
             case 0:
-              _context27.prev = 0;
-              _context27.next = 3;
+              _context26.prev = 0;
+              _context26.next = 3;
               return _productVariant["default"].countDocuments({
                 availability: 'YES'
               });
             case 3:
-              availableProductsCount = _context27.sent;
-              _context27.next = 6;
+              availableProductsCount = _context26.sent;
+              _context26.next = 6;
               return _order["default"].countDocuments({
                 status: 'pending'
               });
             case 6:
-              pendingOrdersCount = _context27.sent;
-              _context27.next = 9;
+              pendingOrdersCount = _context26.sent;
+              _context26.next = 9;
               return _order["default"].countDocuments({
                 status: 'completed'
               });
             case 9:
-              completedOrdersCount = _context27.sent;
-              _context27.next = 12;
+              completedOrdersCount = _context26.sent;
+              _context26.next = 12;
               return _transaction["default"].countDocuments({
                 status: 'pending'
               });
             case 12:
-              pendingTransactionsCount = _context27.sent;
-              _context27.next = 15;
+              pendingTransactionsCount = _context26.sent;
+              _context26.next = 15;
               return _transaction["default"].countDocuments({
                 status: 'verified'
               });
             case 15:
-              verifiedTransactionsCount = _context27.sent;
-              _context27.next = 18;
+              verifiedTransactionsCount = _context26.sent;
+              _context26.next = 18;
               return _user["default"].countDocuments();
             case 18:
-              usersCount = _context27.sent;
+              usersCount = _context26.sent;
               res.status(200).send({
                 message: "Dashboard data retrieved",
                 numberOfAvailableProducts: availableProductsCount,
@@ -1754,21 +1695,21 @@ var AdminController = /*#__PURE__*/function () {
                 numberOfVerifiedTransactions: verifiedTransactionsCount,
                 numberOfUsers: usersCount
               });
-              _context27.next = 27;
+              _context26.next = 27;
               break;
             case 22:
-              _context27.prev = 22;
-              _context27.t0 = _context27["catch"](0);
-              console.log('error here', _context27.t0, 'error here');
-              _context27.t0.payoorDevErrorMessage = 'Failed to retrieve dashboard data';
-              next(_context27.t0);
+              _context26.prev = 22;
+              _context26.t0 = _context26["catch"](0);
+              console.log('error here', _context26.t0, 'error here');
+              _context26.t0.payoorDevErrorMessage = 'Failed to retrieve dashboard data';
+              next(_context26.t0);
             case 27:
             case "end":
-              return _context27.stop();
+              return _context26.stop();
           }
-        }, _callee27, null, [[0, 22]]);
+        }, _callee26, null, [[0, 22]]);
       }));
-      function getDashboardAggregateData(_x77, _x78, _x79) {
+      function getDashboardAggregateData(_x74, _x75, _x76) {
         return _getDashboardAggregateData.apply(this, arguments);
       }
       return getDashboardAggregateData;
@@ -1784,36 +1725,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x80, _x81) {
+function processExcelSheetData(_x77, _x78) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee28(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee27(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee28$(_context28) {
-      while (1) switch (_context28.prev = _context28.next) {
+    return _regeneratorRuntime().wrap(function _callee27$(_context27) {
+      while (1) switch (_context27.prev = _context27.next) {
         case 0:
-          _context28.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context27.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context28.t1 = _context28.t0()).done) {
-            _context28.next = 8;
+          if ((_context27.t1 = _context27.t0()).done) {
+            _context27.next = 8;
             break;
           }
-          index = _context28.t1.value;
+          index = _context27.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context28.next = 6;
+          _context27.next = 6;
           return productData.save();
         case 6:
-          _context28.next = 1;
+          _context27.next = 1;
           break;
         case 8:
         case "end":
-          return _context28.stop();
+          return _context27.stop();
       }
-    }, _callee28);
+    }, _callee27);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }
