@@ -131,6 +131,65 @@ var TransactionController = /*#__PURE__*/function () {
       }
       return getTransaction;
     }()
+  }, {
+    key: "getTransactionStatusAndOrderDetails",
+    value: function () {
+      var _getTransactionStatusAndOrderDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+        var transactionRef, transaction;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              transactionRef = req.query.tx_ref;
+              if (transactionRef) {
+                _context3.next = 4;
+                break;
+              }
+              return _context3.abrupt("return", res.status(400).send({
+                message: "Transaction reference is required"
+              }));
+            case 4:
+              _context3.next = 6;
+              return _transaction["default"].findOne({
+                reference: transactionRef
+              }).populate('orderId').populate('initiatorId').lean();
+            case 6:
+              transaction = _context3.sent;
+              if (transaction) {
+                _context3.next = 9;
+                break;
+              }
+              return _context3.abrupt("return", res.status(404).json({
+                success: false,
+                message: 'Transaction not found'
+              }));
+            case 9:
+              res.status(200).send({
+                success: true,
+                data: {
+                  message: 'Transaction found',
+                  transaction: transaction
+                }
+              });
+              _context3.next = 17;
+              break;
+            case 12:
+              _context3.prev = 12;
+              _context3.t0 = _context3["catch"](0);
+              console.log('error here', _context3.t0, 'error here');
+              _context3.t0.payoorDevErrorMessage = 'Failed to retrieve transaction';
+              next(_context3.t0);
+            case 17:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 12]]);
+      }));
+      function getTransactionStatusAndOrderDetails(_x7, _x8, _x9) {
+        return _getTransactionStatusAndOrderDetails.apply(this, arguments);
+      }
+      return getTransactionStatusAndOrderDetails;
+    }()
   }]);
 }();
 var _default = exports["default"] = new TransactionController();

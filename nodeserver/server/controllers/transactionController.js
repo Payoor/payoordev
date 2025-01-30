@@ -62,6 +62,40 @@ class TransactionController {
             next(error);
         }
     }
+
+    async getTransactionStatusAndOrderDetails(req, res, next) {
+        try {
+            const transactionRef = req.query.tx_ref;
+
+            if (!transactionRef) {
+                return res.status(400).send({ message: "Transaction reference is required" });
+            }
+
+            const transaction = await Transaction.findOne({reference : transactionRef})
+            .populate('orderId')
+            .populate('initiatorId')
+            .lean();
+
+            if (!transaction) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Transaction not found'
+                });
+            }
+
+            res.status(200).send({
+                success: true,
+                data: {
+                    message: 'Transaction found',
+                    transaction: transaction
+                }
+            });
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to retrieve transaction';
+            next(error);
+        }
+    }
 }
 
 export default new TransactionController();
