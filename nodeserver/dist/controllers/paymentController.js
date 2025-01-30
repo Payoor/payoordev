@@ -235,8 +235,8 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
-        var email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest, errorResponse;
+      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
+        var email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
@@ -344,23 +344,16 @@ var PaymentController = /*#__PURE__*/function () {
             case 17:
               _context5.prev = 17;
               _context5.t0 = _context5["catch"](0);
-              console.log(_context5.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context5.t0.message || 'Failed to generate payment link',
-                  error: process.env.NODE_ENV === 'development' ? _context5.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
+              console.log('error here', _context5.t0, 'error here');
+              _context5.t0.payoorDevErrorMessage = 'Failed to generate payment link';
+              next(_context5.t0);
             case 22:
             case "end":
               return _context5.stop();
           }
         }, _callee5, null, [[0, 17]]);
       }));
-      function generatePaymentLink(_x7, _x8) {
+      function generatePaymentLink(_x7, _x8, _x9) {
         return _generatePaymentLink.apply(this, arguments);
       }
       return generatePaymentLink;
@@ -369,7 +362,7 @@ var PaymentController = /*#__PURE__*/function () {
     key: "handlePayStackPaymentResponse",
     value: function () {
       var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
-        var paystackSignature, hash, event, paymentData, mailResponse, errorResponse;
+        var paystackSignature, hash, event, paymentData, mailResponse;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
@@ -415,7 +408,7 @@ var PaymentController = /*#__PURE__*/function () {
               _context6.next = 20;
               return (0, _sendTransactionVerification["default"])({
                 email: paymentData.customer.email,
-                amount: formatAmount(paymentData.amount)
+                amount: formatAmount(paymentData.amount / 100)
               });
             case 20:
               mailResponse = _context6.sent;
@@ -426,23 +419,16 @@ var PaymentController = /*#__PURE__*/function () {
             case 24:
               _context6.prev = 24;
               _context6.t1 = _context6["catch"](0);
-              console.error('Webhook processing error:', _context6.t1);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context6.t1.message || 'Error handling payment response',
-                  error: process.env.NODE_ENV === 'development' ? _context6.t1.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              return _context6.abrupt("return", res.status(500).json(errorResponse));
+              console.log('error here', _context6.t1, 'error here');
+              _context6.t1.payoorDevErrorMessage = 'Failed verify payment';
+              next(_context6.t1);
             case 29:
             case "end":
               return _context6.stop();
           }
         }, _callee6, null, [[0, 24]]);
       }));
-      function handlePayStackPaymentResponse(_x9, _x10) {
+      function handlePayStackPaymentResponse(_x10, _x11) {
         return _handlePayStackPaymentResponse.apply(this, arguments);
       }
       return handlePayStackPaymentResponse;
@@ -532,7 +518,7 @@ var PaymentController = /*#__PURE__*/function () {
           }
         }, _callee7, null, [[0, 13]]);
       }));
-      function verifyPayment(_x11, _x12) {
+      function verifyPayment(_x12, _x13) {
         return _verifyPayment.apply(this, arguments);
       }
       return verifyPayment;

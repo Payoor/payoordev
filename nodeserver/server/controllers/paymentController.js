@@ -183,7 +183,7 @@ class PaymentController {
         }
     }
 
-    async generatePaymentLink(req, res) {
+    async generatePaymentLink(req, res, next) {
         try {
             const { email, total, orderId, userId } = req;
             const { delivery_fee, service_charge } = req.body;
@@ -290,17 +290,9 @@ class PaymentController {
             paystackRequest.end();
 
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to generate payment link',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to generate payment link';
+            next(error);
         }
     }
 
@@ -352,7 +344,7 @@ class PaymentController {
 
             const mailResponse = await sendTransactionVerification({
                 email: paymentData.customer.email,
-                amount: formatAmount(paymentData.amount)
+                amount: formatAmount(paymentData.amount / 100)
             });
 
             return res.status(200).json({ 
@@ -362,17 +354,9 @@ class PaymentController {
     
 
         } catch (error) {
-            console.error('Webhook processing error:', error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Error handling payment response',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            return res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed verify payment';
+            next(error);
         }
     }
 
