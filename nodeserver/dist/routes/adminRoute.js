@@ -9,6 +9,7 @@ var _multer = _interopRequireDefault(require("multer"));
 var _fs = _interopRequireDefault(require("fs"));
 var _adminController = _interopRequireDefault(require("../controllers/adminController"));
 var _orderController = _interopRequireDefault(require("../controllers/orderController"));
+var _verifyToken = _interopRequireDefault(require("../services/payoor/verifyToken"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var _require = require('../services/payoor/admin/auth'),
   authenticate = _require.authenticate,

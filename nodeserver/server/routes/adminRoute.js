@@ -4,6 +4,7 @@ import fs from "fs";
 
 import AdminController from "../controllers/adminController";
 import OrderController from '../controllers/orderController';
+import verifyToken from '../services/payoor/verifyToken';
 
 const { authenticate, isFirstAdmin } = require('../services/payoor/admin/auth');
 

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = void 0;
 var _transaction = _interopRequireDefault(require("../models/transaction"));
 var _order = _interopRequireDefault(require("../models/order"));
+var _sendTransactionVerification = _interopRequireDefault(require("../services/resend/sendTransactionVerification"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
@@ -16,6 +17,8 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var https = require('https');
+var crypto = require('crypto');
 if (process.env.NODE_ENV !== 'production') {
   require("dotenv").config();
 }
@@ -29,36 +32,36 @@ var PaymentController = /*#__PURE__*/function () {
     key: "generateTransferDetails",
     value: function () {
       var _generateTransferDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
-        var https, email, total, orderId, userId, name, _req$body, delivery_fee, service_charge, amount, amountTotal, params, options, flutterwaveReq;
+        var email, total, orderId, userId, name, _req$body, delivery_fee, service_charge, amount, amountTotal, tx_ref, params, options, flutterwaveReq;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
-              https = require('https');
               email = req.email, total = req.total, orderId = req.orderId, userId = req.userId, name = req.name;
               _req$body = req.body, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge;
               amount = total;
               if (!(!email || !amount)) {
-                _context2.next = 8;
+                _context2.next = 7;
                 break;
               }
               console.log('email and amount are required');
               return _context2.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 8:
+            case 7:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context2.next = 10;
+                _context2.next = 9;
                 break;
               }
               throw new Error('All amounts must be numbers');
-            case 10:
+            case 9:
               amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
+              tx_ref = generateTransactionReference();
               params = JSON.stringify({
                 amount: amountTotal,
                 email: email,
                 currency: "NGN",
-                tx_ref: generateTransactionReference(),
+                tx_ref: tx_ref,
                 fullname: name
               });
               console.log(params);
@@ -100,28 +103,29 @@ var PaymentController = /*#__PURE__*/function () {
                         response.data.bank = JSON.parse(data).meta.authorization.transfer_bank;
                         response.data.amount = JSON.parse(data).meta.authorization.transfer_amount;
                         response.data.transfer_reference = transfer_reference;
+                        response.data.transaction_reference = tx_ref;
                         res.status(200).json(response);
                         transaction = new _transaction["default"]({
                           initiatorId: userId,
                           orderId: orderId,
                           amount: amount,
-                          reference: transfer_reference
+                          reference: tx_ref
                         });
-                        _context.next = 10;
+                        _context.next = 11;
                         return transaction.save();
-                      case 10:
-                        _context.next = 12;
+                      case 11:
+                        _context.next = 13;
                         return _order["default"].findOneAndUpdate({
                           _id: orderId
                         }, {
                           $set: {
-                            reference: transfer_reference
+                            reference: tx_ref
                           }
                         }, {
                           "new": true,
                           runValidators: true
                         });
-                      case 12:
+                      case 13:
                       case "end":
                         return _context.stop();
                     }
@@ -156,33 +160,105 @@ var PaymentController = /*#__PURE__*/function () {
       return generateTransferDetails;
     }()
   }, {
+    key: "handleFlutterwavePaymentResponse",
+    value: function () {
+      var _handleFlutterwavePaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+        var secretHash, signature, event, paymentData, txRef, mailResponse;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
+              signature = req.headers["verif-hash"];
+              if (!(!signature || signature !== secretHash)) {
+                _context3.next = 5;
+                break;
+              }
+              return _context3.abrupt("return", res.status(401).json({
+                success: false,
+                message: "Unauthorized request"
+              }));
+            case 5:
+              event = req.body;
+              paymentData = req.body.data;
+              if (!(event.event === "charge.completed" && event.data.status === "successful")) {
+                _context3.next = 16;
+                break;
+              }
+              txRef = paymentData.tx_ref;
+              console.log("Payment received for:", txRef);
+              _context3.next = 12;
+              return _transaction["default"].findOneAndUpdate({
+                reference: txRef
+              }, {
+                $set: {
+                  status: "verified"
+                }
+              }, {
+                "new": true,
+                runValidators: true
+              });
+            case 12:
+              _context3.next = 14;
+              return (0, _sendTransactionVerification["default"])({
+                email: paymentData.customer.email,
+                amount: formatAmount(paymentData.amount)
+              });
+            case 14:
+              mailResponse = _context3.sent;
+              return _context3.abrupt("return", res.status(200).json({
+                success: true,
+                message: "Payment verified successfully",
+                mailResponse: mailResponse
+              }));
+            case 16:
+              console.log('Unhandled event type:', event.event);
+              _context3.next = 24;
+              break;
+            case 19:
+              _context3.prev = 19;
+              _context3.t0 = _context3["catch"](0);
+              console.log('error here', _context3.t0, 'error here');
+              _context3.t0.payoorDevErrorMessage = 'Failed verify payment';
+              next(_context3.t0);
+            case 24:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 19]]);
+      }));
+      function handleFlutterwavePaymentResponse(_x4, _x5, _x6) {
+        return _handleFlutterwavePaymentResponse.apply(this, arguments);
+      }
+      return handleFlutterwavePaymentResponse;
+    }()
+  }, {
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
-        var https, email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
+        var email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.prev = 0;
-              https = require('https');
+              _context5.prev = 0;
               email = req.email, total = req.total, orderId = req.orderId, userId = req.userId;
               _req$body2 = req.body, delivery_fee = _req$body2.delivery_fee, service_charge = _req$body2.service_charge; //const { order, user } = res.locals;
               amount = total; //console.log('amount', amount);
               if (!(!email || !amount)) {
-                _context4.next = 8;
+                _context5.next = 7;
                 break;
               }
               console.log('email and amount are required');
-              return _context4.abrupt("return", res.status(400).json({
+              return _context5.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
-            case 8:
+            case 7:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context4.next = 10;
+                _context5.next = 9;
                 break;
               }
               throw new Error('All amounts must be numbers');
-            case 10:
+            case 9:
               amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
               params = JSON.stringify({
                 "email": email,
@@ -215,10 +291,10 @@ var PaymentController = /*#__PURE__*/function () {
                     }
                   }
                 };
-                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
                   var transaction_reference, transaction, order_update;
-                  return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-                    while (1) switch (_context3.prev = _context3.next) {
+                  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+                    while (1) switch (_context4.prev = _context4.next) {
                       case 0:
                         console.log('data here', data);
                         transaction_reference = JSON.parse(data).data.reference;
@@ -236,7 +312,7 @@ var PaymentController = /*#__PURE__*/function () {
                           reference: transaction_reference
                         });
                         transaction.save();
-                        _context3.next = 10;
+                        _context4.next = 10;
                         return _order["default"].findOneAndUpdate({
                           _id: orderId
                         }, {
@@ -248,12 +324,12 @@ var PaymentController = /*#__PURE__*/function () {
                           runValidators: true
                         });
                       case 10:
-                        order_update = _context3.sent;
+                        order_update = _context4.sent;
                       case 11:
                       case "end":
-                        return _context3.stop();
+                        return _context4.stop();
                     }
-                  }, _callee3);
+                  }, _callee4);
                 })));
               }).on('error', function (error) {
                 console.log(error);
@@ -263,28 +339,21 @@ var PaymentController = /*#__PURE__*/function () {
               });
               paystackRequest.write(params);
               paystackRequest.end();
-              _context4.next = 23;
+              _context5.next = 22;
               break;
-            case 18:
-              _context4.prev = 18;
-              _context4.t0 = _context4["catch"](0);
-              console.log(_context4.t0);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context4.t0.message || 'Failed to generate payment link',
-                  error: process.env.NODE_ENV === 'development' ? _context4.t0.toString() : undefined,
-                  timestamp: new Date().toISOString()
-                }
-              };
-              res.status(500).json(errorResponse);
-            case 23:
+            case 17:
+              _context5.prev = 17;
+              _context5.t0 = _context5["catch"](0);
+              console.log('error here', _context5.t0, 'error here');
+              _context5.t0.payoorDevErrorMessage = 'Failed to generate payment link';
+              next(_context5.t0);
+            case 22:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
-        }, _callee4, null, [[0, 18]]);
+        }, _callee5, null, [[0, 17]]);
       }));
-      function generatePaymentLink(_x4, _x5) {
+      function generatePaymentLink(_x7, _x8, _x9) {
         return _generatePaymentLink.apply(this, arguments);
       }
       return generatePaymentLink;
@@ -292,62 +361,74 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
-        var crypto, paystackSignature, hash, event, paymentData, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+        var paystackSignature, hash, event, paymentData, mailResponse;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
-              crypto = require('crypto');
+              _context6.prev = 0;
               paystackSignature = req.headers['x-paystack-signature'];
               hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY).update(JSON.stringify(req.body)).digest('hex');
               if (!(hash !== paystackSignature)) {
-                _context5.next = 6;
+                _context6.next = 5;
                 break;
               }
-              return _context5.abrupt("return", res.status(401).json({
+              return _context6.abrupt("return", res.status(401).json({
                 message: 'Unauthorized request'
               }));
-            case 6:
+            case 5:
               event = req.body;
               paymentData = event.data;
-              _context5.t0 = event.event;
-              _context5.next = _context5.t0 === 'charge.success' ? 11 : _context5.t0 === 'transfer.success' ? 13 : _context5.t0 === 'charge.failed' ? 15 : 16;
+              _context6.t0 = event.event;
+              _context6.next = _context6.t0 === 'charge.success' ? 10 : _context6.t0 === 'transfer.success' ? 12 : _context6.t0 === 'charge.failed' ? 14 : 15;
               break;
-            case 11:
+            case 10:
               console.log('charge successful:', paymentData);
-              return _context5.abrupt("break", 17);
-            case 13:
+              return _context6.abrupt("break", 16);
+            case 12:
               console.log('transfer successful:', paymentData);
-              return _context5.abrupt("break", 17);
+              return _context6.abrupt("break", 16);
+            case 14:
+              return _context6.abrupt("break", 16);
             case 15:
-              return _context5.abrupt("break", 17);
-            case 16:
               console.log('Unhandled event type:', event.event);
-            case 17:
-              return _context5.abrupt("return", res.status(200).json({
-                message: 'Webhook processed successfully'
-              }));
-            case 20:
-              _context5.prev = 20;
-              _context5.t1 = _context5["catch"](0);
-              console.error('Webhook processing error:', _context5.t1);
-              errorResponse = {
-                success: false,
-                data: {
-                  message: _context5.t1.message || 'Error handling payment response',
-                  error: process.env.NODE_ENV === 'development' ? _context5.t1.toString() : undefined,
-                  timestamp: new Date().toISOString()
+            case 16:
+              _context6.next = 18;
+              return _transaction["default"].findOneAndUpdate({
+                reference: paymentData.reference
+              }, {
+                $set: {
+                  status: "verified"
                 }
-              };
-              return _context5.abrupt("return", res.status(500).json(errorResponse));
-            case 25:
+              }, {
+                "new": true,
+                runValidators: true
+              });
+            case 18:
+              _context6.next = 20;
+              return (0, _sendTransactionVerification["default"])({
+                email: paymentData.customer.email,
+                amount: formatAmount(paymentData.amount / 100)
+              });
+            case 20:
+              mailResponse = _context6.sent;
+              return _context6.abrupt("return", res.status(200).json({
+                message: 'Webhook processed successfully',
+                mailResponse: mailResponse
+              }));
+            case 24:
+              _context6.prev = 24;
+              _context6.t1 = _context6["catch"](0);
+              console.log('error here', _context6.t1, 'error here');
+              _context6.t1.payoorDevErrorMessage = 'Failed verify payment';
+              next(_context6.t1);
+            case 29:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
-        }, _callee5, null, [[0, 20]]);
+        }, _callee6, null, [[0, 24]]);
       }));
-      function handlePayStackPaymentResponse(_x6, _x7) {
+      function handlePayStackPaymentResponse(_x10, _x11) {
         return _handlePayStackPaymentResponse.apply(this, arguments);
       }
       return handlePayStackPaymentResponse;
@@ -355,13 +436,13 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "verifyPayment",
     value: function () {
-      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
-        var https, transactionReference, options, transaction, verificationRequest, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+        var _https, transactionReference, options, transaction, verificationRequest, errorResponse;
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context6.prev = 0;
-              https = require('https');
+              _context7.prev = 0;
+              _https = require('https');
               transactionReference = req.body.transactionReference;
               options = {
                 hostname: 'api.paystack.co',
@@ -372,21 +453,21 @@ var PaymentController = /*#__PURE__*/function () {
                   Authorization: "Bearer ".concat(PAYSTACK_SECRET_KEY)
                 }
               };
-              _context6.next = 6;
+              _context7.next = 6;
               return _transaction["default"].findOne({
                 reference: transactionReference
               });
             case 6:
-              transaction = _context6.sent;
+              transaction = _context7.sent;
               if (transaction) {
-                _context6.next = 9;
+                _context7.next = 9;
                 break;
               }
-              return _context6.abrupt("return", res.status(404).json({
+              return _context7.abrupt("return", res.status(404).json({
                 message: 'Transaction not found.'
               }));
             case 9:
-              verificationRequest = https.request(options, function (verificationResponse) {
+              verificationRequest = _https.request(options, function (verificationResponse) {
                 var data = '';
                 verificationResponse.on('data', function (chunk) {
                   data += chunk;
@@ -416,28 +497,28 @@ var PaymentController = /*#__PURE__*/function () {
                 });
               });
               verificationRequest.end();
-              _context6.next = 18;
+              _context7.next = 18;
               break;
             case 13:
-              _context6.prev = 13;
-              _context6.t0 = _context6["catch"](0);
-              console.log(_context6.t0);
+              _context7.prev = 13;
+              _context7.t0 = _context7["catch"](0);
+              console.log(_context7.t0);
               errorResponse = {
                 success: false,
                 data: {
-                  message: _context6.t0.message || 'Failed to verify payment',
-                  error: process.env.NODE_ENV === 'development' ? _context6.t0.toString() : undefined,
+                  message: _context7.t0.message || 'Failed to verify payment',
+                  error: process.env.NODE_ENV === 'development' ? _context7.t0.toString() : undefined,
                   timestamp: new Date().toISOString()
                 }
               };
               res.status(500).json(errorResponse);
             case 18:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
-        }, _callee6, null, [[0, 13]]);
+        }, _callee7, null, [[0, 13]]);
       }));
-      function verifyPayment(_x8, _x9) {
+      function verifyPayment(_x12, _x13) {
         return _verifyPayment.apply(this, arguments);
       }
       return verifyPayment;
@@ -450,4 +531,12 @@ var generateTransactionReference = function generateTransactionReference() {
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (var i = 0; i < 10; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
+};
+var formatAmount = function formatAmount(amount) {
+  var formatter = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0
+  });
+  return formatter.format(amount);
 };

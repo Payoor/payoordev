@@ -1,5 +1,9 @@
 import Transaction from "../models/transaction";
 import Order from "../models/order";
+import sendTransactionVerification from "../services/resend/sendTransactionVerification";
+
+const https = require('https');
+const crypto = require('crypto');
 
 if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
@@ -11,8 +15,6 @@ const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY;
 class PaymentController {
     async generateTransferDetails(req, res, next) {
         try {
-            const https = require('https');
-    
             const { email, total, orderId, userId, name } = req;
             const { delivery_fee, service_charge } = req.body;
     
@@ -30,12 +32,12 @@ class PaymentController {
             }
     
             const amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
-    
+            const tx_ref = generateTransactionReference()
             const params = JSON.stringify({
                 amount:amountTotal,
                 email: email,
                 currency: "NGN",
-                tx_ref: generateTransactionReference(),
+                tx_ref: tx_ref,
                 fullname: name,
             });
 
@@ -81,6 +83,7 @@ class PaymentController {
                     response.data.bank = JSON.parse(data).meta.authorization.transfer_bank;
                     response.data.amount = JSON.parse(data).meta.authorization.transfer_amount;
                     response.data.transfer_reference = transfer_reference;
+                    response.data.transaction_reference = tx_ref;
 
                     res.status(200).json(response);       
                     
@@ -88,7 +91,7 @@ class PaymentController {
                         initiatorId: userId,
                         orderId: orderId,
                         amount: amount,
-                        reference: transfer_reference
+                        reference: tx_ref
                     });
 
                     await transaction.save();
@@ -97,7 +100,7 @@ class PaymentController {
                         { _id: orderId },
                         {
                             $set: {
-                                reference: transfer_reference
+                                reference: tx_ref
                             }
                         },
                         {
@@ -126,10 +129,62 @@ class PaymentController {
 
     }
 
-    async generatePaymentLink(req, res) {
+    async handleFlutterwavePaymentResponse(req, res, next) {
         try {
-            const https = require('https');
+            const secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
+            const signature = req.headers["verif-hash"];
 
+            if (!signature || signature !== secretHash) {
+                return res.status(401).json({ 
+                    success: false, 
+                    message: "Unauthorized request" 
+                });
+            }
+
+            const event = req.body;
+            const paymentData = req.body.data;
+            
+            if (event.event === "charge.completed" && event.data.status === "successful") {
+                const txRef = paymentData.tx_ref;
+
+                console.log("Payment received for:", txRef);
+
+                await Transaction.findOneAndUpdate(
+                    { reference: txRef },
+                    {
+                        $set: {
+                            status: "verified"
+                        }
+                    },
+                    {
+                        new: true,
+                        runValidators: true,
+                    },
+                );
+                
+                const mailResponse = await sendTransactionVerification({
+                    email: paymentData.customer.email,
+                    amount: formatAmount(paymentData.amount)
+                });
+
+                return res.status(200).json({ 
+                    success: true, 
+                    message: "Payment verified successfully",
+                    mailResponse 
+                });
+            }
+
+            console.log('Unhandled event type:', event.event);
+
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed verify payment';
+            next(error);
+        }
+    }
+
+    async generatePaymentLink(req, res, next) {
+        try {
             const { email, total, orderId, userId } = req;
             const { delivery_fee, service_charge } = req.body;
             //const { order, user } = res.locals;
@@ -235,23 +290,14 @@ class PaymentController {
             paystackRequest.end();
 
         } catch (error) {
-            console.log(error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Failed to generate payment link',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to generate payment link';
+            next(error);
         }
     }
 
     async handlePayStackPaymentResponse(req, res) {
         try {
-            const crypto = require('crypto');
             const paystackSignature = req.headers['x-paystack-signature'];
 
             const hash = crypto
@@ -264,7 +310,6 @@ class PaymentController {
             }
 
             const event = req.body;
-
             const paymentData = event.data;
 
             switch (event.event) {
@@ -284,21 +329,34 @@ class PaymentController {
                     console.log('Unhandled event type:', event.event);
             }
 
-            return res.status(200).json({ message: 'Webhook processed successfully' });
+            await Transaction.findOneAndUpdate(
+                { reference: paymentData.reference },
+                {
+                    $set: {
+                        status: "verified"
+                    }
+                },
+                {
+                    new: true,
+                    runValidators: true,
+                },
+            );
+
+            const mailResponse = await sendTransactionVerification({
+                email: paymentData.customer.email,
+                amount: formatAmount(paymentData.amount / 100)
+            });
+
+            return res.status(200).json({ 
+                message: 'Webhook processed successfully',
+                mailResponse
+            });
     
 
         } catch (error) {
-            console.error('Webhook processing error:', error);
-            const errorResponse = {
-                success: false,
-                data: {
-                    message: error.message || 'Error handling payment response',
-                    error: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            return res.status(500).json(errorResponse);
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed verify payment';
+            next(error);
         }
     }
 
@@ -391,4 +449,14 @@ const generateTransactionReference = () => {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+}
+
+const formatAmount = (amount) => {
+  const formatter = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+  });
+
+  return formatter.format(amount);
 }

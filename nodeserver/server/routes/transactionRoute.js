@@ -8,4 +8,6 @@ transactionRoute.get('/user/get/transactions', verifyToken, TransactionControlle
 
 transactionRoute.get('/user/get/transaction', verifyToken, TransactionController.getTransaction);
 
+transactionRoute.get('/user/get/transaction-and-order-details', verifyToken, TransactionController.getTransactionStatusAndOrderDetails);
+
 export default transactionRoute;

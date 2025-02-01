@@ -11,4 +11,5 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var transactionRoute = (0, _express["default"])();
 transactionRoute.get('/user/get/transactions', _verifyToken["default"], _transactionController["default"].getUserTransactions);
 transactionRoute.get('/user/get/transaction', _verifyToken["default"], _transactionController["default"].getTransaction);
+transactionRoute.get('/user/get/transaction-and-order-details', _verifyToken["default"], _transactionController["default"].getTransactionStatusAndOrderDetails);
 var _default = exports["default"] = transactionRoute;

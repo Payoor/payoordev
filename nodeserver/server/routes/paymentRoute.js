@@ -14,4 +14,6 @@ paymentRoute.post('/paystack/verify-payment', PaymentController.verifyPayment);
 
 paymentRoute.post('/flutter/transfer', verifyToken, OrderController.createOrder, PaymentController.generateTransferDetails);
 
+paymentRoute.post('/flutter/verify-payment', PaymentController.handleFlutterwavePaymentResponse);
+
 export default paymentRoute;
