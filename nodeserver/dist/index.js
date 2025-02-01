@@ -52,7 +52,18 @@ if (!_fs["default"].existsSync(uploadDir)) {
 }
 console.log(process.env.NODE_ENV);
 var corsOptions = {
-  origin: process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development,
+  origin: function origin(_origin, callback) {
+    var allowedOrigins = process.env.NODE_ENV === 'production' ? _corsOriginArray["default"].production : _corsOriginArray["default"].development;
+
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!_origin) return callback(null, true);
+    if (allowedOrigins.indexOf(_origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', _origin, 'Current environment:', process.env.NODE_ENV);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true

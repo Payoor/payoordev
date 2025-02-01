@@ -7,7 +7,7 @@ const winstonLogger = winston.createLogger({
         new winston.transports.Http({
             host: process.env.ERROR_SERVER_HOST || 'localhost',
             port: process.env.ERROR_SERVER_PORT || 3032,
-            path: '/log',
+            path: '/log/node',
             ssl: false,
             batch: true,
             batchCount: 10,

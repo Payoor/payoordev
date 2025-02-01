@@ -11,21 +11,43 @@ const io = require('socket.io')(http, {
 const path = require('path');
 import cors from 'cors';
 
-import corsOrginArray from './corsOriginArray';
+import corsOriginArray from './corsOriginArray';
 
 import { initSocket } from './utils/socketio_util';
 
 import paymentRoute from './routes/paymentRoute';
 import googleApiRoute from './routes/googleApiRoute';
 
-if (process.env.NODE_ENV !== 'production') {
-    const corsOptions = {
-        origin: process.env.NODE_ENV === 'production' ? corsOrginArray.production : corsOrginArray.development,
-        optionsSuccessStatus: 200,
-    };
+console.log(process.env.NODE_ENV);
 
-    app.use(cors(corsOptions));
-}
+const corsOptions = {
+  origin: function (origin, callback) {
+      const allowedOrigins = process.env.NODE_ENV === 'production' 
+          ? corsOriginArray.production 
+          : corsOriginArray.development;
+      
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+      } else {
+          console.log('Blocked origin:', origin, 'Current environment:', process.env.NODE_ENV);
+          callback(new Error('Not allowed by CORS'));
+      }
+  },
+  methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
+  allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization'
+  ],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());

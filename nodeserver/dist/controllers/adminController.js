@@ -59,31 +59,35 @@ var AdminController = /*#__PURE__*/function () {
     key: "deleteAllProducts",
     value: function () {
       var _deleteAllProducts = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-        var result;
+        var result, resultVariant;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               _context.next = 3;
-              return _product["default"].deleteMany({});
+              return _newProduct["default"].deleteMany({});
             case 3:
               result = _context.sent;
-              if (!(result.deletedCount === 0)) {
-                _context.next = 6;
+              _context.next = 6;
+              return _productVariant["default"].deleteMany({});
+            case 6:
+              resultVariant = _context.sent;
+              if (!(result.deletedCount === 0 && resultVariant === 0)) {
+                _context.next = 9;
                 break;
               }
               return _context.abrupt("return", res.status(404).json({
                 success: false,
                 message: "No products found to delete"
               }));
-            case 6:
+            case 9:
               return _context.abrupt("return", res.status(200).json({
                 success: true,
-                message: "Successfully deleted ".concat(result.deletedCount, " products"),
+                message: "Successfully deleted ".concat(result.deletedCount, " products and ").concat(resultVariant.deletedCount, " variants"),
                 deletedCount: result.deletedCount
               }));
-            case 9:
-              _context.prev = 9;
+            case 12:
+              _context.prev = 12;
               _context.t0 = _context["catch"](0);
               console.error('Error in deleteAllProducts:', _context.t0);
               return _context.abrupt("return", res.status(500).json({
@@ -91,11 +95,11 @@ var AdminController = /*#__PURE__*/function () {
                 message: "Error deleting products",
                 error: _context.t0.message
               }));
-            case 13:
+            case 16:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 9]]);
+        }, _callee, null, [[0, 12]]);
       }));
       function deleteAllProducts(_x, _x2) {
         return _deleteAllProducts.apply(this, arguments);

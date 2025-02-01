@@ -32,8 +32,7 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
   }
 
   Future<void> _loadVariants() async {
-    List<dynamic> variants =
-        await _getProductVariants(widget.productId);
+    List<dynamic> variants = await _getProductVariants(widget.productId);
     setState(() {
       productData = variants;
     });
@@ -62,7 +61,9 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.productName, // Your text here
+                    widget.productName.length > 20
+                        ? '${widget.productName.substring(0, 20)}...'
+                        : widget.productName, // Your text here
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -112,6 +113,7 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
                 itemCount: productData.length,
                 itemBuilder: (context, index) {
                   final item = productData[index];
+                  final itemPrice = (item["price"] != null && item["price"] is num) ? item["price"] : 1;
 
                   return Container(
                     padding:
@@ -132,7 +134,7 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
                           ),
                         ),
                         Text(
-                          "₦${item["price"].toStringAsFixed(2)}",
+                          "'₦$itemPrice",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -195,7 +197,7 @@ class _ProductSizeSelectorState extends State<ProductSizeSelector> {
                                   id: widget.productId,
                                   name: widget.productName,
                                   unit: item['unit'],
-                                  price: item['price'],
+                                  price: itemPrice,
                                 );
                               },
                               child: Container(

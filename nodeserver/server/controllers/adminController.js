@@ -37,9 +37,10 @@ class AdminController {
 
     async deleteAllProducts(req, res) {
         try {
-            const result = await Product.deleteMany({});
+            const result = await NewProduct.deleteMany({});
+            const resultVariant = await ProductVariant.deleteMany({});
 
-            if (result.deletedCount === 0) {
+            if (result.deletedCount === 0 && resultVariant === 0) {
                 return res.status(404).json({
                     success: false,
                     message: "No products found to delete"
@@ -48,7 +49,7 @@ class AdminController {
 
             return res.status(200).json({
                 success: true,
-                message: `Successfully deleted ${result.deletedCount} products`,
+                message: `Successfully deleted ${result.deletedCount} products and ${resultVariant.deletedCount} variants`,
                 deletedCount: result.deletedCount
             });
         } catch (error) {

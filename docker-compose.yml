@@ -1,40 +1,74 @@
 version: '3.8'
 services:
+  payoordb:
+    container_name: payoordb
+    image: mongo
+    ports:
+      - "27017:27017" 
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - payoor_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "'db.runCommand(\"ping\").ok'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
   payoorserver:
     container_name: payoorserver
-    build: ./nginx
+    build: ${NGINX_CONTEXT:-./nginx}
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/data/certs:/etc/nginx/certs
+      - ./nginx/data/certs:/etc/nginx/data/certs
     depends_on:
-      - nodeserver
-      - adminui
-      - chatuiserver
+      payoordb:
+        condition: service_healthy
+      nodeserver:
+        condition: service_started
+      adminui:
+        condition: service_started
+      chatuiserver:
+        condition: service_started
+      llmserver:
+        condition: service_started
+      services:
+        condition: service_started
     networks:
-      - payoor_network
-    
-  payoordb:
-    container_name: payoordb
-    image: mongo
-    environment:
-      - PORT=27017
+      - payoor_network      
+
+  redisdb:
+    container_name: redisdb
+    image: redis:latest
+    command: redis-server --appendonly yes --save 900 1 300 10 60 10000
+    ports:
+      - "6379:6379"  
     volumes:
-      - /data-vol:/data/payoordb
+      - redis_data:/data  
     networks:
       - payoor_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nodeserver:
     container_name: nodeserver
     restart: always
     build: ./nodeserver
-    environment:
-      - PORT=8080
-      - NODE_ENV=production
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
-      - payoordb
+      payoordb:
+        condition: service_healthy
+      redisdb:
+        condition: service_healthy
     networks:
       - payoor_network
 
@@ -42,9 +76,8 @@ services:
     container_name: adminui
     restart: always
     build: ./adminui
-    environment:
-      - PORT=8082
-      - NODE_ENV=production
+    depends_on:
+      - nodeserver
     networks:
       - payoor_network
 
@@ -52,12 +85,42 @@ services:
     container_name: chatuiserver
     restart: always
     build: ./chatuiserver
-    environment:
-      - PORT=8083
-      - NODE_ENV=production
+    depends_on:
+      - nodeserver
     networks:
       - payoor_network
+
+  llmserver:
+    container_name: llmserver
+    build: ./llmserver
+    restart: always
+    depends_on:
+      - nodeserver
+    networks:
+      - payoor_network
+
+  services:
+    container_name: services
+    restart: always
+    build: ./services
+    depends_on:
+      - nodeserver
+    networks:
+      - payoor_network 
+
+  errorserver:
+    container_name: errorserver
+    restart: always
+    build: ./errorlogs
+    depends_on:
+      - nodeserver
+    networks:
+      - payoor_network   
 
 networks:
   payoor_network:
     driver: bridge
+
+volumes:
+  redis_data: 
+  mongo_data:

@@ -178,25 +178,30 @@ class _ProductCardState extends State<ProductCard> {
                               )),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.productName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    overflow: TextOverflow.ellipsis,
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.productName,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
                   ),
-                  maxLines: 2,
-                ),
+                )
               ],
             ),
           ),
