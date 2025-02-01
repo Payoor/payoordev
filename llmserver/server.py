@@ -337,7 +337,7 @@ def initialize_app():
 if __name__ == '__main__':
     app.debug = False
     
-    #initialize_app()
+    initialize_app()
     
     app.run(
         host='0.0.0.0', 
