@@ -47,14 +47,28 @@ if (!fs.existsSync(uploadDir)) {
 console.log(process.env.NODE_ENV);
 
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' ? corsOriginArray.production : corsOriginArray.development,
+  origin: function (origin, callback) {
+      const allowedOrigins = process.env.NODE_ENV === 'production' 
+          ? corsOriginArray.production 
+          : corsOriginArray.development;
+      
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+      } else {
+          console.log('Blocked origin:', origin, 'Current environment:', process.env.NODE_ENV);
+          callback(new Error('Not allowed by CORS'));
+      }
+  },
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
   allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization'
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization'
   ],
   credentials: true
 };
