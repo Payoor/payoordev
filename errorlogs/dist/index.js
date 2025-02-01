@@ -16,7 +16,8 @@ if (process.env.NODE_ENV !== 'production') {
 var express = require('express');
 var Redis = require('redis');
 var mongoose = require('mongoose');
-var ErrorLog = require('./models/ErrorLog');
+var ErrorLogNode = require('./models/ErrorLogNode');
+var ErrorLogFlask = require('./models/ErrorLogFlask');
 var redis = Redis.createClient({
   url: process.env.REDIS_URL
 });
@@ -37,7 +38,7 @@ var app = express();
 app.use(express.json({
   limit: '1mb'
 }));
-app.post('/log', /*#__PURE__*/function () {
+app.post('/log/node', /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
     var logData;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -49,7 +50,7 @@ app.post('/log', /*#__PURE__*/function () {
           return redis.set("error:".concat(Date.now()), JSON.stringify(logData));
         case 4:
           _context.next = 6;
-          return ErrorLog.create(logData);
+          return ErrorLogNode.create(logData);
         case 6:
           res.sendStatus(200);
           _context.next = 13;
@@ -69,106 +70,138 @@ app.post('/log', /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }());
-app.get('/logs/mongo', /*#__PURE__*/function () {
+app.post('/log/flask', /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
-    var page, limit, skip, logs, total;
+    var logData;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
-          _context2.prev = 0;
+          logData = req.body;
+          _context2.prev = 1;
+          _context2.next = 4;
+          return redis.set("error:".concat(Date.now()), JSON.stringify(logData));
+        case 4:
+          _context2.next = 6;
+          return ErrorLogFlask.create(logData);
+        case 6:
+          res.sendStatus(200);
+          _context2.next = 13;
+          break;
+        case 9:
+          _context2.prev = 9;
+          _context2.t0 = _context2["catch"](1);
+          console.error('Failed to store error log:', _context2.t0);
+          res.sendStatus(500);
+        case 13:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2, null, [[1, 9]]);
+  }));
+  return function (_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}());
+app.get('/logs/mongo', /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
+    var page, limit, skip, logs, total;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.prev = 0;
           page = parseInt(req.query.page) || 1;
           limit = parseInt(req.query.limit) || 10;
           skip = (page - 1) * limit;
-          _context2.next = 6;
-          return ErrorLog.find().sort({
+          _context3.next = 6;
+          return ErrorLogNode.find().sort({
             createdAt: -1
           }).skip(skip).limit(limit);
         case 6:
-          logs = _context2.sent;
-          _context2.next = 9;
-          return ErrorLog.countDocuments();
+          logs = _context3.sent;
+          _context3.next = 9;
+          return ErrorLogNode.countDocuments();
         case 9:
-          total = _context2.sent;
+          total = _context3.sent;
           res.json({
             logs: logs,
             currentPage: page,
             totalPages: Math.ceil(total / limit),
             totalLogs: total
           });
-          _context2.next = 17;
+          _context3.next = 17;
           break;
         case 13:
-          _context2.prev = 13;
-          _context2.t0 = _context2["catch"](0);
-          console.error('Failed to fetch MongoDB logs:', _context2.t0);
+          _context3.prev = 13;
+          _context3.t0 = _context3["catch"](0);
+          console.error('Failed to fetch MongoDB logs:', _context3.t0);
           res.sendStatus(500);
         case 17:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
-    }, _callee2, null, [[0, 13]]);
+    }, _callee3, null, [[0, 13]]);
   }));
-  return function (_x3, _x4) {
-    return _ref2.apply(this, arguments);
+  return function (_x5, _x6) {
+    return _ref3.apply(this, arguments);
   };
 }());
 app.get('/logs/redis', /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
+  var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
     var keys, logs;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
         case 0:
-          _context4.prev = 0;
-          _context4.next = 3;
+          _context5.prev = 0;
+          _context5.next = 3;
           return redis.keys('error:*');
         case 3:
-          keys = _context4.sent;
-          _context4.next = 6;
+          keys = _context5.sent;
+          _context5.next = 6;
           return Promise.all(keys.map(/*#__PURE__*/function () {
-            var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(key) {
+            var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(key) {
               var log;
-              return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-                while (1) switch (_context3.prev = _context3.next) {
+              return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+                while (1) switch (_context4.prev = _context4.next) {
                   case 0:
-                    _context3.next = 2;
+                    _context4.next = 2;
                     return redis.get(key);
                   case 2:
-                    log = _context3.sent;
-                    return _context3.abrupt("return", _objectSpread({
+                    log = _context4.sent;
+                    return _context4.abrupt("return", _objectSpread({
                       timestamp: parseInt(key.split(':')[1])
                     }, JSON.parse(log)));
                   case 4:
                   case "end":
-                    return _context3.stop();
+                    return _context4.stop();
                 }
-              }, _callee3);
+              }, _callee4);
             }));
-            return function (_x7) {
-              return _ref4.apply(this, arguments);
+            return function (_x9) {
+              return _ref5.apply(this, arguments);
             };
           }()));
         case 6:
-          logs = _context4.sent;
+          logs = _context5.sent;
           //helps us sort by timestamp in descending time order, so basicalkly the most recent error first. we[ll improve later
           logs.sort(function (a, b) {
             return b.timestamp - a.timestamp;
           });
           res.json(logs);
-          _context4.next = 15;
+          _context5.next = 15;
           break;
         case 11:
-          _context4.prev = 11;
-          _context4.t0 = _context4["catch"](0);
-          console.error('Failed to fetch Redis logs:', _context4.t0);
+          _context5.prev = 11;
+          _context5.t0 = _context5["catch"](0);
+          console.error('Failed to fetch Redis logs:', _context5.t0);
           res.sendStatus(500);
         case 15:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
-    }, _callee4, null, [[0, 11]]);
+    }, _callee5, null, [[0, 11]]);
   }));
-  return function (_x5, _x6) {
-    return _ref3.apply(this, arguments);
+  return function (_x7, _x8) {
+    return _ref4.apply(this, arguments);
   };
 }());
 app.get('/health', function (req, res) {
@@ -180,21 +213,21 @@ var PORT = process.env.PORT || 3032;
 app.listen(PORT, function () {
   console.log("Error logging server running on port ".concat(PORT));
 });
-process.on('SIGTERM', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-  return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-    while (1) switch (_context5.prev = _context5.next) {
+process.on('SIGTERM', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+  return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+    while (1) switch (_context6.prev = _context6.next) {
       case 0:
         console.log('SIGTERM received, shutting down gracefully');
-        _context5.next = 3;
+        _context6.next = 3;
         return redis.quit();
       case 3:
-        _context5.next = 5;
+        _context6.next = 5;
         return mongoose.connection.close();
       case 5:
         process.exit(0);
       case 6:
       case "end":
-        return _context5.stop();
+        return _context6.stop();
     }
-  }, _callee5);
+  }, _callee6);
 })));

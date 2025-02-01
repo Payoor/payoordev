@@ -1,7 +1,7 @@
 "use strict";
 
 var mongoose = require('mongoose');
-var errorLogSchema = new mongoose.Schema({
+var errorLogNodeSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     "default": Date.now
@@ -18,5 +18,5 @@ var errorLogSchema = new mongoose.Schema({
 }, {
   timestamps: true // Adds createdAt and updatedAt
 });
-var ErrorLog = mongoose.model('ErrorLog', errorLogSchema);
-module.exports = ErrorLog;
+var ErrorLogNode = mongoose.model('ErrorLogNode', errorLogNodeSchema);
+module.exports = ErrorLogNode;

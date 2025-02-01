@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import os
 import re
+import json
 
 from pprint import pprint
 
@@ -8,24 +9,28 @@ import asyncio
 from dotenv import load_dotenv
 from flask_cors import CORS
 from datetime import datetime
-import logging
-import time
 from threading import Timer
 
-from config.mongoose import ObjectId, productCollection, productVariant 
-from config.algolia import search_algolia_product_index, sync_to_algolia_in_batches, update_algolia_item, delete_algolia_item
-from config.redis import toggle_bookmark, check_bookmarks_for_product
+from configurations.mongoose_configuration import ObjectId, productCollection, productVariant 
+from configurations.redis_configuration import toggle_bookmark, check_bookmarks_for_product
 
-from payoordata import run_data_processing
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from classes.logginghandler_class import LoggingHandler
+from classes.payoorproducts_processor_class import PayoorExcelProductsDataProcessor
+from classes.payooringredients_processor_class import PayoorExcelIngredientsProcessor
+from classes.algolia_class import AlgoliaManager
+from classes.algolia_class import AlgoliaManager
+from classes.search_class import SearchManager
 
 load_dotenv()
 
 app = Flask(__name__)
 port = int(os.getenv('PORT')) 
 
+logging_handler = LoggingHandler(__name__ )
+algolia_manager = AlgoliaManager()
+excel_products_processor = PayoorExcelProductsDataProcessor()
+excel_ingredients_processor = PayoorExcelIngredientsProcessor()
+search_manager = SearchManager()
 
 ALLOWED_ORIGINS = [
     'http://localhost:63882',
@@ -63,8 +68,6 @@ def add_product_to_bookmark():
         user_id = request.args.get('user_id')
         
         bookmark_message = toggle_bookmark(product_id, user_id)
-
-        print(bookmark_message)
         
         response_data = {
             "success": True,
@@ -78,7 +81,7 @@ def add_product_to_bookmark():
         response.status_code = 200
         return response
     except Exception as e:
-        print(e)
+        logging_handler.logger.info(e)
         return jsonify({"error": str(e)}), 500 
 
 @app.route('/product/bookmark/check', methods=['GET'])
@@ -109,7 +112,7 @@ def add_product_to_algolia():
     try:
         product_id = request.args.get('product_id')
 
-        sync_to_algolia_in_batches()
+        algolia_manager.sync_to_algolia_in_batches()
 
         response_data = {
             "success": True,
@@ -131,7 +134,7 @@ def update_product_in_algolia():
         product_id = request.json.get('product_id')
         product_name = request.json.get('product_name')
 
-        update_algolia_item(product_id, { "name": product_name })
+        algolia_manager.update_algolia_item(product_id, { "name": product_name })
         response_data = {
             "success": True,
             "data": {
@@ -151,7 +154,7 @@ def delete_product_from_algolia():
     product_id = request.args.get('product_id')
 
     try:
-        delete_algolia_item(product_id)
+        algolia_manager.delete_algolia_item(product_id)
         response_data = {
             "success": True,
             "data": {
@@ -188,6 +191,9 @@ def get_product_variant():
             "success": True,
             "data": data
         }
+
+        print("product variants=======")
+        print(product_variants)
 
         response = jsonify(response_data)
         response.status_code = 200
@@ -233,7 +239,7 @@ def query_data():
     data = request.json
     user_query = data.get('text', '').lower()
 
-    def process_search_string(user_query):
+    '''def process_search_string(user_query):
         char_array = re.split('[,\s]+', user_query.strip())
 
         return char_array
@@ -242,7 +248,7 @@ def query_data():
         results_array = []
 
         for item in char_array:
-            results = search_algolia_product_index(item)
+            results = search_manager.search_algolia_product_index(item)
 
             if len(results) > 0:
                 for result in results:
@@ -264,25 +270,50 @@ def query_data():
                 final_result.add(product['_id'])
                 unique_products.append(product)
 
-        return unique_products
+        return unique_products'''
 
     try:
-        char_array = process_search_string(user_query)
-        results_array = search_using_algolia(char_array)
-        product_search_result = remove_duplicates_from_results(results_array)
+        search_manager.search_ingredients_from_chroma(user_query)
+
+        response_array = []
+        nlp_response = "I found some items that might be relevant to your query"
+        intent_render = "product"
+
+        intent = search_manager.infer_intent(user_query)
+
+        if isinstance(intent, str):
+            intent = json.loads(intent)
+        
+        primary_item = intent['primary_item']
+
+        print(intent["intent"])
+
+        if (intent['intent'] == "ingredient"):
+            print('ingredient')
+            ingredients_result = search_manager.search_ingredients_from_chroma(primary_item)
+            response_body = search_manager.format_ingredients_response(ingredients_result, user_query)
+            nlp_response = response_body["nlp_response"]
+            response_array = response_body["response_array"]
+        else:
+            print('search')
+            char_array = search_manager.process_search_string(primary_item)
+            results_array = search_manager.search_using_algolia(char_array)
+            response_array = search_manager.remove_duplicates_from_results(results_array)
+            nlp_response = "I found some items that might be relevant to your query"
+
+        print(response_array)
 
         data = {
             "message": "Success response",
             "chatresponse": {
-                "text": "I found some items that might be relevant to your query",
-                "results": product_search_result,
+                "text": nlp_response,
+                "results": response_array, #product_search_result
                 "suggested_prompts": [],
                 "isClient": False,
-                "isRead": False
+                "isRead": False,
+                "intent_render": intent_render
             }
         }
-
-        pprint(product_search_result)
 
         response_data = {
             "success": True,
@@ -295,12 +326,21 @@ def query_data():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500 
-with app.app_context():
-    run_data_processing()
     
+def initialize_app():
+    with app.app_context():
+        print('app is running now')
+        excel_products_processor.run_data_processing()
+        excel_ingredients_processor.process_excel()
+        algolia_manager.sync_to_algolia_in_batches()
+
 if __name__ == '__main__':
+    app.debug = False
+    
+    #initialize_app()
+    
     app.run(
         host='0.0.0.0', 
-        port=port,      
-        debug=True     
+        port=port,
+        debug=False 
     )

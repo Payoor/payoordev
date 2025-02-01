@@ -6,8 +6,9 @@ import "regenerator-runtime";
 const express = require('express');
 const Redis = require('redis');
 const mongoose = require('mongoose');
-const ErrorLog = require('./models/ErrorLog');
 
+const ErrorLogNode = require('./models/ErrorLogNode');
+const ErrorLogFlask = require('./models/ErrorLogFlask');
 
 const redis = Redis.createClient({
     url: process.env.REDIS_URL
@@ -35,13 +36,28 @@ const app = express();
 
 app.use(express.json({ limit: '1mb' }));
 
-app.post('/log', async (req, res) => {
+app.post('/log/node', async (req, res) => {
     const logData = req.body;
 
     try {
         await redis.set(`error:${Date.now()}`, JSON.stringify(logData));
 
-        await ErrorLog.create(logData);
+        await ErrorLogNode.create(logData);
+
+        res.sendStatus(200);
+    } catch (error) {
+        console.error('Failed to store error log:', error);
+        res.sendStatus(500);
+    }
+});
+
+app.post('/log/flask', async (req, res) => {
+    const logData = req.body;
+
+    try {
+        await redis.set(`error:${Date.now()}`, JSON.stringify(logData));
+
+        await ErrorLogFlask.create(logData);
 
         res.sendStatus(200);
     } catch (error) {
@@ -56,12 +72,12 @@ app.get('/logs/mongo', async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const logs = await ErrorLog.find()
+        const logs = await ErrorLogNode.find()
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
-        const total = await ErrorLog.countDocuments();
+        const total = await ErrorLogNode.countDocuments();
 
         res.json({
             logs,

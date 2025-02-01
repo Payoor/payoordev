@@ -17,7 +17,7 @@ var winstonLogger = _winston["default"].createLogger({
   transports: [].concat(_toConsumableArray(process.env.NODE_ENV !== 'production' ? [new _winston["default"].transports.Console()] : []), [new _winston["default"].transports.Http({
     host: process.env.ERROR_SERVER_HOST || 'localhost',
     port: process.env.ERROR_SERVER_PORT || 3032,
-    path: '/log',
+    path: '/log/node',
     ssl: false,
     batch: true,
     batchCount: 10,
