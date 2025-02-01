@@ -9,4 +9,5 @@ const corsOriginArray = {
         'https://payoor.store'
     ]
 };
+
 export default corsOriginArray;
