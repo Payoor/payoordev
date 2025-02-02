@@ -56,7 +56,7 @@ var OrderController = /*#__PURE__*/function () {
                 items.push(product_data);
               });
               if (!user) {
-                _context.next = 27;
+                _context.next = 29;
                 break;
               }
               _context.next = 10;
@@ -66,7 +66,7 @@ var OrderController = /*#__PURE__*/function () {
             case 10:
               validUser = _context.sent;
               if (!validUser) {
-                _context.next = 24;
+                _context.next = 26;
                 break;
               }
               _order = new _order2["default"]({
@@ -86,41 +86,41 @@ var OrderController = /*#__PURE__*/function () {
               _context.next = 21;
               return _order.save();
             case 21:
-              //console.log(order);
-
+              console.log("=========================");
+              console.log(_order);
               next();
-              _context.next = 25;
+              _context.next = 27;
               break;
-            case 24:
+            case 26:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order invalid user',
                 error: error.message
               });
-            case 25:
-              _context.next = 28;
-              break;
             case 27:
+              _context.next = 30;
+              break;
+            case 29:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order',
                 error: error.message
               });
-            case 28:
-              _context.next = 36;
-              break;
             case 30:
-              _context.prev = 30;
+              _context.next = 38;
+              break;
+            case 32:
+              _context.prev = 32;
               _context.t0 = _context["catch"](0);
               console.log('error here', _context.t0, 'error here');
               _context.t0.statusCode = 400;
               _context.t0.payoorDevErrorMessage = 'Error creating order';
               next(_context.t0);
-            case 36:
+            case 38:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 30]]);
+        }, _callee, null, [[0, 32]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);

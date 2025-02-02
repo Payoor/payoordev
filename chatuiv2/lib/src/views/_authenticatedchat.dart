@@ -902,9 +902,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         context.read<MessageProvider>().addMessage(message);
         _scrollToBottom();
 
-        return;
+        _handlePaymentLinkGeneration();
 
-        // _handlePaymentLinkGeneration();
+        return;
       }
 
       try {

@@ -6,6 +6,7 @@ from collections import defaultdict
 from configurations.mongoose_configuration import productCollection, productVariant 
 from classes.algolia_class import AlgoliaManager
 from classes.logginghandler_class import LoggingHandler
+from configurations.chroma_configuration import chroma_client, openai_ef
 
 class PayoorExcelProductsDataProcessor:
     def __init__(self):
@@ -18,6 +19,9 @@ class PayoorExcelProductsDataProcessor:
         self.file_path = os.path.join(self.current_dir, "excelsheets", "PAYOOR_PRODUCTS.xlsx")
 
         self.algolia_manager = AlgoliaManager()
+        
+        self.collectionName = "product_collection"
+        self.collection = chroma_client.get_or_create_collection(name=self.collectionName, embedding_function=openai_ef)
 
     def add_product_to_mongodb(self, product):
         try:
@@ -52,6 +56,19 @@ class PayoorExcelProductsDataProcessor:
             self.logger.logger.error(f"Error adding product variants: {str(e)}")
             return []
 
+    def add_product_to_chroma(self, product):
+        try:
+            print('chroma')
+            print(product)
+
+            self.collection.upsert(
+                documents=[product.get("name", "")],
+                ids=product.get("id", "")
+            )
+        except Exception as e:
+            self.logger.logger.error(f"Error adding product variants: {str(e)}")
+            return False
+
     def process_excel_and_add_to_mongodb(self):
         try:
             df = pd.read_excel(self.file_path)
@@ -61,10 +78,11 @@ class PayoorExcelProductsDataProcessor:
             
             for row in df.itertuples():
                 item = {
-                    'product_name': getattr(row, 'NAME', "N/A"),
+                    'product_name': self.clean_product_name(getattr(row, 'NAME', "N/A")),
                     'unit': getattr(row, 'UNIT', "N/A"),
                     'price': getattr(row, 'UNITPRICE', "1"),
-                    'availability': getattr(row, 'AVAILABILITY', "NO")
+                    'availability': getattr(row, 'AVAILABILITY', "NO"),
+                    'db_tag': getattr(row, 'NAME', "N/A")
                 }
                 
                 all_items.append(item)
@@ -78,18 +96,26 @@ class PayoorExcelProductsDataProcessor:
                 try:
                     product_data = {
                         "product_name": product_name,
+                        "generatedCategories": [variant["db_tag"] for variant in variants],
                         "variants": variants
                     }
+
+                    #print(product_data)
 
                     new_product = {
                         "image": "",
                         "generatedDescription": "",
-                        "generatedCategories": [],
+                        "generatedCategories": product_data["generatedCategories"],
                         "synced_to_algolia": False,
                         "name": product_data["product_name"]
                     }
 
+                    #print(new_product)
                     product_id = self.add_product_to_mongodb(new_product)
+                    new_product["id"] = product_id.__str__()
+                    new_product["name"] = [variant["db_tag"] for variant in variants][0].lower()
+                    self.add_product_to_chroma(new_product)
+
                     if product_id:
                         variant_ids = self.add_product_variants_to_mongodb(product_data["variants"], product_id)
                         
@@ -121,6 +147,9 @@ class PayoorExcelProductsDataProcessor:
                 "success": False,
                 "message": f"Error processing file: {str(e)}"
             }
+
+    def clean_product_name(self, name):
+        return ''.join(char.lower() for char in name if char.isalnum())
 
     def run_data_processing(self):
         try:

@@ -7,7 +7,7 @@ const resend = new Resend(`${process.env.RESEND_API_KEY}`);
 async function sendTransactionVerification({ email, amount }) {
     try {
         const data = await resend.emails.send({
-            from: process.env.SENDER_EMAIL,
+            from: "Payoor <confirmation@order.payoor.store>",
             to: [`${email}`],
             subject: "Order transaction status",
             html: `
@@ -36,7 +36,7 @@ async function sendTransactionVerification({ email, amount }) {
                             Transaction Verified!
                           </h1>
                           <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 24px; text-align: center;">
-                            Your transfer of ${amount} has been recieved!
+                            Your transfer of ${amount} has been received!
                           </p>
                         </td>
                       </tr>

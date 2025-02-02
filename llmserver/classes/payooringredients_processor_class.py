@@ -44,14 +44,24 @@ class PayoorExcelIngredientsProcessor:
 
             #print(all_items)
             for doc in all_items:
+                ingredients_string = item["ingredients"]
+
+                ingredients = [ing.strip() for ing in ingredients_string.split(',')]
+
+                ingredients_string = ", ".join(ingredients)
+
                 self.collection.upsert(
                     documents=[doc.get("nameOfFood", "")],
-                    ids=doc.get("id", "")
+                    ids=doc.get("id", ""),
+                    metadatas=[{
+                        "tags": ingredients_string
+                    }],
                 )
-                self.algolia_manager.add_ingredient_to_algolia({
+
+                '''self.algolia_manager.add_ingredient_to_algolia({
                     'objectID': doc['id'],
                     'ingredients': doc.get("ingredients", "")
-                })
+                })'''
 
                 print(doc["nameOfFood"])
 

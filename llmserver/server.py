@@ -26,6 +26,20 @@ load_dotenv()
 app = Flask(__name__)
 port = int(os.getenv('PORT')) 
 
+if app.debug or os.environ.get('FLASK_ENV') == 'development':
+    CORS(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:63882"],  # Updated to match your frontend port
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": [
+                "Content-Type",
+                "Authorization",
+                "session-id"  # Added session-id header
+            ],
+            "expose_headers": ["session-id"]  # Allow the header to be exposed to the client
+        }
+    })
+
 logging_handler = LoggingHandler(__name__ )
 algolia_manager = AlgoliaManager()
 excel_products_processor = PayoorExcelProductsDataProcessor()
@@ -218,47 +232,34 @@ def query_data():
     data = request.json
     user_query = data.get('text', '').lower()
 
-    '''def process_search_string(user_query):
-        char_array = re.split('[,\s]+', user_query.strip())
-
-        return char_array
-
-    def search_using_algolia(char_array):
-        results_array = []
-
-        for item in char_array:
-            results = search_manager.search_algolia_product_index(item)
-
-            if len(results) > 0:
-                for result in results:
-                    product_item = {
-                        '_id': result.object_id,
-                        'product_name': result.name,
-                        'productImageUrl': result.image
-                    }
-
-                    results_array.append(product_item)
-
-        return results_array
-
-    def remove_duplicates_from_results(results_array):
-        final_result = set()
-        unique_products = []
-        for product in results_array:
-            if product['_id'] not in final_result:
-                final_result.add(product['_id'])
-                unique_products.append(product)
-
-        return unique_products'''
-
     try:
-        search_manager.search_ingredients_from_chroma(user_query)
-
         response_array = []
         nlp_response = "I found some items that might be relevant to your query"
         intent_render = "product"
 
         intent = search_manager.infer_intent(user_query)
+
+        if isinstance(intent, str):
+            intent = json.loads(intent)
+
+        primary_item = intent['primary_item']
+
+        print(intent)
+
+        if (intent['intent'] == "ingredient"):
+            ingredients_result = search_manager.search_ingredients_from_chroma(primary_item)
+            ingredients_string = ingredients_result["ingredients_array"][0]["tags"]
+            print(ingredients_result)
+            response_array = search_manager.search_products_from_chroma(ingredients_string, ingredients=True)
+        else:
+            response_array = search_manager.search_products_from_chroma(user_query)
+            nlp_response = "I found some items that might be relevant to your query"
+
+        #search_manager.search_products_from_chroma(user_query)
+
+        '''intent = search_manager.infer_intent(user_query)
+
+        print(intent)
 
         if isinstance(intent, str):
             intent = json.loads(intent)
@@ -280,7 +281,7 @@ def query_data():
             response_array = search_manager.remove_duplicates_from_results(results_array)
             nlp_response = "I found some items that might be relevant to your query"
 
-        print(response_array)
+        print(response_array)'''
 
         data = {
             "message": "Success response",
@@ -316,7 +317,9 @@ def initialize_app():
 if __name__ == '__main__':
     app.debug = False
     
-    initialize_app()
+    #initialize_app()
+    excel_products_processor.process_excel_and_add_to_mongodb()
+    excel_ingredients_processor.process_excel()
     
     app.run(
         host='0.0.0.0', 

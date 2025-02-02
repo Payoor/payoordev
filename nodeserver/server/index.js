@@ -35,6 +35,8 @@ import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 import errorHandler from './middleware/errorHandler';
 import requestLogger from './middleware/requestLogger';
 
+import sendTransactionVerification from "./services/resend/sendTransactionVerification";
+
 // 5. Constants and configurations
 const PORT = process.env.PORT;
 const uploadDir = path.resolve(__dirname, '..', '.', 'uploads');

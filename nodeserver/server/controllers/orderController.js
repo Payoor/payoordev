@@ -49,8 +49,9 @@ class OrderController {
 
 
                     await order.save();
-
-                    //console.log(order);
+                    
+                    console.log("=========================");
+                    console.log(order);
 
                     next();
                 } else {

@@ -18,6 +18,7 @@ import { initSocket } from './utils/socketio_util';
 import paymentRoute from './routes/paymentRoute';
 import googleApiRoute from './routes/googleApiRoute';
 
+
 console.log(process.env.NODE_ENV);
 
 const corsOptions = {

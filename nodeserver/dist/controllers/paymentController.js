@@ -259,7 +259,7 @@ var PaymentController = /*#__PURE__*/function () {
               }
               throw new Error('All amounts must be numbers');
             case 9:
-              amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
+              amountTotal = 1000; //(delivery_fee + service_charge + amount).toFixed(2);
               params = JSON.stringify({
                 "email": email,
                 "amount": Math.round(amountTotal * 100) // this conversion can be done either on the client side or server side.

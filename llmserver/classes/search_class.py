@@ -19,13 +19,15 @@ class SearchManager:
     def __init__(self):
         load_dotenv()
 
-        self.collectionName = "ingredient_collection"
+        self.chromaIngredientsCollectionName = "ingredient_collection"
+        self.chromaProductsCollectionName = "product_collection"
         self.app_id = os.getenv('ALGOLIA_APP_ID')
         self.app_key = os.getenv('ALGOLIA_APP_KEY')
         self.products_index = os.getenv('ALGOLIA_PRODUCTS_INDEX')
         self.ingredients_index = os.getenv('ALGOLIA_INGREDIENTS_INDEX')
         self.algolia_client = SearchClientSync(self.app_id, self.app_key)
-        self.collection = chroma_client.get_or_create_collection(name=self.collectionName, embedding_function=openai_ef)
+        self.chromaIngredientsCollection = chroma_client.get_or_create_collection(name=self.chromaIngredientsCollectionName, embedding_function=openai_ef)
+        self.chromaProductsCollection = chroma_client.get_or_create_collection(name=self.chromaProductsCollectionName, embedding_function=openai_ef)
 
     def process_search_string(self, user_query):
         char_array = re.split('[,\s]+', user_query.strip())
@@ -64,17 +66,69 @@ class SearchManager:
 
     def save_query_to_redis():
         print('saving to redis')
+        
+
+    def search_products_from_chroma(self, query_text, n_results=2, ingredients=False):
+        try:
+            # Split the query text by both commas and spaces
+            query_terms = [term.strip() for term in query_text.replace(',', ' ').split()]
+
+            if ingredients:
+                query_terms = [term.strip() for term in query_text.split(',')]
+        
+            all_product_names = []
+            all_product_ids = []
+            response_array = []
+        
+            # Search for each term
+            for term in query_terms:
+                results = self.chromaProductsCollection.query(
+                    query_texts=[term],
+                    n_results=n_results
+                )
+            
+                product_names = results["documents"][0]
+                product_ids = results["ids"][0]
+                all_product_names.extend(product_names)
+                all_product_ids.extend(product_ids)
+
+                #print(product_names)
+                #print(product_ids)
+                print(term)
+        
+            print("==========================")
+            #print(all_product_names)
+            #print(all_product_ids)
+            print("==========================")
+            unique_pairs = list(set(zip(all_product_names, all_product_ids)))
+            unique_items, unique_ids = zip(*unique_pairs)
+
+            products = [{"product_name": name, "_id": id} for name, id in zip(unique_items, unique_ids)]
+
+            for product in products:
+                product['productImageUrl'] = ""
+                print(product)
+                response_array.append(product)
+        
+            return response_array
+        except Exception as e:
+            print(f"Error searching recipes: {e}")
+            return None
 
     def search_ingredients_from_chroma(self, query_text, n_results=3):
         try:
-            results = self.collection.query(
+            results = self.chromaIngredientsCollection.query(
                 query_texts=[query_text],
                 n_results=n_results
             )
 
-            print(results)
+            print(results["metadatas"][0])
+            print(results["documents"][0])
 
-            return results
+            return {
+                "ingredients_array": results["metadatas"][0],
+                "documents_array": results["documents"][0]
+            }
         except Exception as e:
             print(f"Error searching recipes: {e}")
             return None

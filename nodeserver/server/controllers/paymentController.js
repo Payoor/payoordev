@@ -204,7 +204,7 @@ class PaymentController {
                 throw new Error('All amounts must be numbers');
             }
 
-            const amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
+            const amountTotal = 1000; //(delivery_fee + service_charge + amount).toFixed(2);
 
             const params = JSON.stringify({
                 "email": email,
