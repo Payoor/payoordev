@@ -89,6 +89,10 @@ flutter:
     - assets/gal2.jpg
     - assets/payoorcart.png
     - assets/twitter.svg
+    - assets/paper_basket.png
+    - assets/paper_box.png
+    - assets/sample_dish.png
+    - assets/loading.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

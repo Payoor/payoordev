@@ -55,23 +55,23 @@ class _LandingScreenState extends State<LandingScreen> {
 
   final List<ShopInfoItem> shopInfo = [
     ShopInfoItem(
-      header: 'Every meal deserves a great story',
-      description:
-          'We take away the hassle of market runs and deliver everything you need for your home cooked meals, whenever you want it.',
-      color: Color(0xFFA8D1F0),
-    ),
+        header: 'Every meal deserves a great story',
+        description:
+            "We deliver all you need for home-cooked meals, saving you market hassle and stress",
+        color: const Color(0xFFA8D1F0),
+        imageUrl: 'assets/sample_dish.png'),
     ShopInfoItem(
-      header: 'Best prices, great quality',
-      description:
-          'We offer unbeatable prices and the best quality you can find anywhere.',
-      color: Color(0xFFF0E7A8),
-    ),
+        header: 'Best prices, great quality',
+        description:
+            'We offer unbeatable prices and the best quality you can find anywhere.',
+        color: const Color(0xFFF0E7A8),
+        imageUrl: 'assets/paper_basket.png'),
     ShopInfoItem(
-      header: 'Packaged with love and care',
-      description:
-          'We ensure that all your order come in the cleanest and pristine condition possible.. we take extra effort to make your items extra clean and ready to use right off the box',
-      color: Color(0xFFF0BAA8),
-    ),
+        header: 'Packaged with love and care',
+        description:
+            "We deliver your order in pristine condition, ensuring it's clean and ready to use straight out of the box.",
+        color: const Color(0xFFF0BAA8),
+        imageUrl: 'assets/paper_box.png'),
   ];
 
   void handleInputChange(String value) {
@@ -80,6 +80,213 @@ class _LandingScreenState extends State<LandingScreen> {
       isCreateListBtnActive =
           value.trim().length >= 3 && value.trim().length <= 500;
     });
+  }
+
+  Positioned handleTextPosition(num index, item) {
+    switch (index) {
+      case 0:
+        return Positioned(
+          left: 15,
+          top: 15,
+          right: 120,
+          bottom: 15,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                item.header,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              const SizedBox(height: 13),
+              Text(
+                item.description,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.black,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        );
+      case 1:
+        return Positioned(
+          left: 15,
+          top: 15,
+          right: 140, // More space for the image
+          bottom: 20,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                item.header,
+                style: const TextStyle(
+                  fontSize: 17, // Slightly larger
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              const SizedBox(height: 13),
+              Text(
+                item.description,
+                style: const TextStyle(
+                  fontSize: 13, // Slightly larger
+                  color: AppColors.black,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        );
+      case 2:
+        return Positioned(
+          left: 15,
+          top: 15,
+          right: 160, // Even more space for the image
+          bottom: 10,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                item.header,
+                style: const TextStyle(
+                  fontSize: 17, // Largest
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              const SizedBox(height: 13),
+              Text(
+                item.description,
+                style: const TextStyle(
+                  fontSize: 13, // Largest
+                  color: AppColors.black,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        );
+      default:
+        return Positioned(
+          left: 15,
+          top: 15,
+          right: 120,
+          bottom: 15,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                item.header,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              const SizedBox(height: 13),
+              Text(
+                item.description,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.black,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        );
+    }
+  }
+
+  Positioned handleImageSize(num index, item) {
+    switch (index) {
+      case 0:
+        return Positioned(
+          right: -10,
+          top: -5,
+          bottom: -5,
+          width: 150,
+          child: Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: AssetImage(item.imageUrl),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        );
+      case 1:
+        return Positioned(
+          right: -10,
+          top: -10,
+          bottom: 0,
+          width: 150, // Different width for second item
+          child: Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: AssetImage(item.imageUrl),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        );
+      case 2:
+        return Positioned(
+          right: -25,
+          top: -20,
+          bottom: -30,
+          width: 200, // Different width for last item
+          child: Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: AssetImage(item.imageUrl),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        );
+      default:
+        return Positioned(
+          // Default case
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: 150,
+          child: Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: AssetImage(item.imageUrl),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        );
+    }
   }
 
   void handleInputBlur() {
@@ -278,56 +485,52 @@ class _LandingScreenState extends State<LandingScreen> {
                                   child: Column(
                                     children: [
                                       ...shopInfo
-                                          .map((item) => Column(
+                                          .toList()
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
+                                        final index = entry.key;
+                                        final item = entry.value;
+                                        final lastIndex = shopInfo.length - 1;
+
+                                        return Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: double.infinity,
+                                              height:
+                                                  180, // Fixed container height - adjust as needed
+                                              padding: const EdgeInsets.only(
+                                                  top: 0,
+                                                  left: 0,
+                                                  right: 0,
+                                                  bottom: 0),
+                                              /*const EdgeInsets.only(
+                                                            top: 20,
+                                                            left: 20,
+                                                            right: 0,
+                                                            bottom: 20),*/
+                                              decoration: BoxDecoration(
+                                                color: item.color,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Stack(
+                                                clipBehavior: Clip.none,
                                                 children: [
-                                                  Container(
-                                                    width: double.infinity,
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            20),
-                                                    decoration: BoxDecoration(
-                                                      color: item.color,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                    ),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          item.header,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color:
-                                                                AppColors.black,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 13),
-                                                        Text(
-                                                          item.description,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 14,
-                                                            color:
-                                                                AppColors.black,
-                                                            height: 1.5,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                      height:
-                                                          25), // Space between containers
+                                                  handleTextPosition(
+                                                      index, item),
+                                                  handleImageSize(index, item)
                                                 ],
-                                              ))
-                                          .toList(),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                                height:
+                                                    25), // Space between containers
+                                          ],
+                                        );
+                                      }),
                                     ],
                                   ))
                             ],
