@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <base href="/">
 
@@ -10,12 +11,11 @@
 
   <title>Payoor - AI Shopping Assistant</title>
   <link rel="manifest" href="manifest.json">
-  
+
   <style>
-    /* Splash screen styles */
     body {
       margin: 0;
-      background-color: #121212; /* Dark theme background */
+      background-color: #249B48;
     }
 
     #loading-screen {
@@ -30,11 +30,13 @@
     }
 
     #loading-gif {
-      width: 180px; /* Adjust size */
+      width: 180px;
+      /* Adjust size */
       height: auto;
     }
   </style>
 </head>
+
 <body>
   <!-- Splash screen -->
   <div id="loading-screen">
@@ -45,6 +47,24 @@
   <script src="flutter_bootstrap.js" async></script>
 
   <script>
+    const preloadImages = ["assets/assets/loading.gif", "assets/assets/paper_basket.png", "assets/assets/paper_box.png", "assets/assets/sample_dish.png"];
+
+    function preload(callback) {
+      let loaded = 0;
+      const total = preloadImages.length;
+
+      preloadImages.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          loaded++;
+          if (loaded === total) {
+            callback(); 
+          }
+        };
+      });
+    }
+
     window.addEventListener('load', function () {
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
@@ -53,10 +73,11 @@
       }).then(function (engineInitializer) {
         return engineInitializer.initializeEngine();
       }).then(function (appRunner) {
-        document.getElementById('loading-screen').style.display = 'none'; // Hide splash screen
+        document.getElementById('loading-screen').style.display = 'none';
         return appRunner.runApp();
       });
     });
   </script>
 </body>
+
 </html>
