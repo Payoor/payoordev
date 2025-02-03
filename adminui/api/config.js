@@ -25,4 +25,4 @@ export const getFileHeader = () => {
 
 export const NODE_ENVIRONMENT = 'development';
 
-export const serverUrl = 'https://server.payoor.store'
+export const serverUrl = NODE_ENVIRONMENT === 'development' ? 'http://localhost:3030' : 'https://server.payoor.store'
