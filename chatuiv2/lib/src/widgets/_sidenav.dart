@@ -55,7 +55,17 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                     Expanded(
                       child: ListView(
                         children: [
-                          // Your list items here
+                          ListTile(
+                            leading:
+                                Icon(Icons.info_outline, color: Colors.white),
+                            title: Text('About us', style: menuItem),
+                            onTap: () {
+                              // Use root navigator
+                              Navigator.of(context, rootNavigator: true)
+                                  .pushNamed('/about');
+                              sideNavVisible.value = false;
+                            },
+                          ),
                         ],
                       ),
                     ),

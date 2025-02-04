@@ -93,6 +93,13 @@ flutter:
     - assets/paper_box.png
     - assets/sample_dish.png
     - assets/loading.gif
+    - assets/bournvita.jpeg
+    - assets/chai_seed.jpeg
+    - assets/chicken_lap.png
+    - assets/fruit_basket.jpeg
+    - assets/fruits.png
+    - assets/like.png
+    - assets/pepper_container.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

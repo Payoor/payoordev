@@ -24,7 +24,7 @@ class PayStackRoutes {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin': 'https://chat.development.payoor.store',
+          'Origin': 'https://chat.payoor.store',
           'Authorization': 'Bearer $jwt',
         },
         body: jsonEncode({

@@ -7,12 +7,19 @@ class OrderController {
 
     async createOrder(req, res, next) {
         try {
-            const { order, order_address, delivery_fee, service_charge } = req.body;
+            const { order, order_address } = req.body;
             const { user } = req;
 
-            const total = order.totalAmount;
-            const order_items = order.items
+            console.log(order);
+
             const items = [];
+            const cart_total = order.totalAmount;
+            const delivery_fee = 3500;
+            const service_charge = cart_total * 0.05;
+            const order_items = order.items;
+            const order_total = cart_total + delivery_fee + service_charge
+
+            console.log(delivery_fee, service_charge, cart_total)
 
             Object.entries(order_items).forEach(([id, item]) => {
                 const product_data = {
@@ -28,43 +35,57 @@ class OrderController {
                 const validUser = await User.findOne({ _id: user.userId });
 
                 if (validUser) {
-
                     const order = new Order({
                         userId: validUser._id,
-                        total,
                         items,
                         order_address,
+                        cart_total,
                         delivery_fee,
-                        service_charge
+                        service_charge,
+                        total: order_total,
                     });
-
-                    //console.log(items)
-
-                    req.total = total;
-                    req.items = items;
-                    req.email = validUser.email;
-                    req.orderId = order._id;
-                    req.userId = validUser._id;
-                    req.name = validUser.name;
-
 
                     await order.save();
-                    
-                    console.log("=========================");
-                    console.log(order);
 
-                    next();
-                } else {
-                    res.status(500).json({
-                        success: false,
-                        message: 'Error creating order invalid user',
-                        error: error.message
-                    });
+                    console.log(order);
+                    items.forEach(item => {
+                        console.log(item.product_units)
+                    })
+
+                    const orderSummary = `Your order has been created. Below is your order summary:
+
+Order Details
+-----------------
+Cart Total: ₦${cart_total.toLocaleString()}
+Delivery Fee: ₦${delivery_fee.toLocaleString()}
+Service Charge: ₦${service_charge.toLocaleString()}
+Total Amount: ₦${order_total.toLocaleString()}
+
+Delivery Address: ${order_address}
+
+Please Click the Pay Button to make payment
+
+Thank you for your order! We will keep you updated on its status.`;
+
+                    const response = {
+                        success: true,
+                        data: {
+                            message: 'Success response',
+                            chatresponse: {
+                                text: orderSummary,
+                                isClient: false,
+                                isRead: false,
+                                payload: order
+                            }
+                        }
+                    };
+
+                    res.status(200).json(response);
                 }
             } else {
                 res.status(500).json({
                     success: false,
-                    message: 'Error creating order',
+                    message: 'Error creating order invalid user',
                     error: error.message
                 });
             }

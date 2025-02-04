@@ -34,16 +34,21 @@ var OrderController = /*#__PURE__*/function () {
     key: "createOrder",
     value: function () {
       var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var _req$body, order, order_address, delivery_fee, service_charge, user, total, order_items, items, validUser, _order;
+        var _req$body, order, order_address, user, items, cart_total, delivery_fee, service_charge, order_items, order_total, validUser, _order, orderSummary, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              _req$body = req.body, order = _req$body.order, order_address = _req$body.order_address, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge;
+              _req$body = req.body, order = _req$body.order, order_address = _req$body.order_address;
               user = req.user;
-              total = order.totalAmount;
-              order_items = order.items;
+              console.log(order);
               items = [];
+              cart_total = order.totalAmount;
+              delivery_fee = 3500;
+              service_charge = cart_total * 0.05;
+              order_items = order.items;
+              order_total = cart_total + delivery_fee + service_charge;
+              console.log(delivery_fee, service_charge, cart_total);
               Object.entries(order_items).forEach(function (_ref) {
                 var _ref2 = _slicedToArray(_ref, 2),
                   id = _ref2[0],
@@ -56,71 +61,73 @@ var OrderController = /*#__PURE__*/function () {
                 items.push(product_data);
               });
               if (!user) {
-                _context.next = 29;
+                _context.next = 27;
                 break;
               }
-              _context.next = 10;
+              _context.next = 15;
               return _user["default"].findOne({
                 _id: user.userId
               });
-            case 10:
+            case 15:
               validUser = _context.sent;
               if (!validUser) {
-                _context.next = 26;
+                _context.next = 25;
                 break;
               }
               _order = new _order2["default"]({
                 userId: validUser._id,
-                total: total,
                 items: items,
                 order_address: order_address,
+                cart_total: cart_total,
                 delivery_fee: delivery_fee,
-                service_charge: service_charge
-              }); //console.log(items)
-              req.total = total;
-              req.items = items;
-              req.email = validUser.email;
-              req.orderId = _order._id;
-              req.userId = validUser._id;
-              req.name = validUser.name;
-              _context.next = 21;
+                service_charge: service_charge,
+                total: order_total
+              });
+              _context.next = 20;
               return _order.save();
-            case 21:
-              console.log("=========================");
+            case 20:
               console.log(_order);
-              next();
-              _context.next = 27;
+              items.forEach(function (item) {
+                console.log(item.product_units);
+              });
+              orderSummary = "Your order has been created. Below is your order summary:\n\nOrder Details\n-----------------\nCart Total: \u20A6".concat(cart_total.toLocaleString(), "\nDelivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\nService Charge: \u20A6").concat(service_charge.toLocaleString(), "\nTotal Amount: \u20A6").concat(order_total.toLocaleString(), "\n\nDelivery Address: ").concat(order_address, "\n\nPlease Click the Pay Button to make payment\n\nThank you for your order! We will keep you updated on its status.");
+              response = {
+                success: true,
+                data: {
+                  message: 'Success response',
+                  chatresponse: {
+                    text: orderSummary,
+                    isClient: false,
+                    isRead: false,
+                    payload: _order
+                  }
+                }
+              };
+              res.status(200).json(response);
+            case 25:
+              _context.next = 28;
               break;
-            case 26:
+            case 27:
               res.status(500).json({
                 success: false,
                 message: 'Error creating order invalid user',
                 error: error.message
               });
-            case 27:
-              _context.next = 30;
+            case 28:
+              _context.next = 36;
               break;
-            case 29:
-              res.status(500).json({
-                success: false,
-                message: 'Error creating order',
-                error: error.message
-              });
             case 30:
-              _context.next = 38;
-              break;
-            case 32:
-              _context.prev = 32;
+              _context.prev = 30;
               _context.t0 = _context["catch"](0);
               console.log('error here', _context.t0, 'error here');
               _context.t0.statusCode = 400;
               _context.t0.payoorDevErrorMessage = 'Error creating order';
               next(_context.t0);
-            case 38:
+            case 36:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 32]]);
+        }, _callee, null, [[0, 30]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);

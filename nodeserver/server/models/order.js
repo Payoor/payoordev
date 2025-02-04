@@ -18,6 +18,11 @@ const OrderSchema = new mongoose.Schema({
     items: {
         type: Array
     },
+    cart_total: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     total: {
         type: Number,
         required: true,

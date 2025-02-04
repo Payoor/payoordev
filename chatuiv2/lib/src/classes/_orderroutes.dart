@@ -26,4 +26,32 @@ class OrdersRoute {
       throw Exception('Failed to send message: $e');
     }
   }
+
+  static Future<ServerResponse> createOrder(
+      Map<String, dynamic> items, String deliveryAddress) async {
+    try {
+      final uri = Uri.parse('${Urls.baseUrl}/user/create/order');
+      final jwt = JwtManager.getToken();
+
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': 'https://chat.payoor.store',
+          'Authorization': 'Bearer $jwt',
+        },
+        body: jsonEncode({"order": items, "order_address": deliveryAddress}),
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to send message. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to send message: $e');
+    }
+  }
 }

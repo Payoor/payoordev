@@ -29,6 +29,7 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
 import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
 import 'package:chatuiv2/src/classes/_paystackroutes.dart';
+import 'package:chatuiv2/src/classes/_orderroutes.dart';
 import 'package:chatuiv2/src/classes/_socketservice.dart';
 
 import 'package:chatuiv2/src/utils/_yeswords.dart';
@@ -59,6 +60,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   bool _showCart = false;
   bool _paying = false;
   bool _confirmingAddress = false;
+  bool _showPayButton = false;
 
   double _deliveryFee = 3700;
   double _serviceCharge = 0;
@@ -71,8 +73,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   final List<Map> pills = [
     {"label": "Cart", "action": "View Cart"},
-    {"label": "Orders", "action": "Proceed to orders view"},
     {"label": "Pay", "action": "Proceed to payment"},
+    {"label": "Checkout", "action": "Checkout"},
+    {"label": "Orders", "action": "Proceed to orders view"},
     {"label": "Support", "action": "Speak to an agent"},
   ];
 
@@ -564,6 +567,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           size: 15,
           color: AppColors.primaryColor,
         );
+      case 'Checkout':
+        return Icon(
+          Icons.shopping_cart_checkout,
+          size: 15,
+          color: AppColors.primaryColor,
+        );
       case 'Pay':
         return Icon(
           Icons.payment_outlined,
@@ -601,10 +610,22 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       pill_slide_array.length,
                       (index) => Consumer<CartProvider>(
                         builder: (context, cart, child) {
-                          return pill_slide_array[index]['label'] == "Cart" &&
-                                      cart.itemCount == 0 ||
-                                  pill_slide_array[index]['label'] == "Pay" &&
-                                      cart.itemCount == 0
+                          final isEmptyCart =
+                              pill_slide_array[index]['label'] == "Cart" &&
+                                  cart.itemCount == 0;
+
+                          final shouldShowPay = pill_slide_array[index]
+                                      ['label'] ==
+                                  "Pay" &&
+                              !_showPayButton; 
+
+                          final shouldShowCheckout =
+                              pill_slide_array[index]['label'] == "Checkout" &&
+                                  (cart.itemCount == 0 || _showPayButton);
+
+                          return isEmptyCart ||
+                                  shouldShowPay ||
+                                  shouldShowCheckout
                               ? SizedBox()
                               : Padding(
                                   padding:
@@ -618,7 +639,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                         closeProductSizeSelector();
                                         _handleCartQuery(cart);
                                       } else if (action != null &&
-                                          action == "Proceed to payment") {
+                                          action == "Checkout") {
                                         //print('handle payment');
                                         //_handlePayment();
                                         //_handlePaymentLinkGeneration();
@@ -820,6 +841,68 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
+  void _createOrder() async {
+    final cartData =
+        Provider.of<CartProvider>(context, listen: false).createCartPayload();
+
+    if (mounted) {
+      context.read<MessageProvider>().addMessage(Message(
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
+
+      _scrollToBottom();
+    }
+
+    try {
+      final response =
+          await OrdersRoute.createOrder(cartData, _deliveryAddress);
+
+      if (!mounted) return;
+
+      context.read<MessageProvider>().removeLastMessage();
+
+      if (response.success) {
+        if (response.data['chatresponse'] != null) {
+          final chatResponse = response.data['chatresponse'];
+
+          final aiMessage = Message(
+            text: chatResponse['text'] ?? 'Sorry, I could not process that.',
+            isClient: false,
+            isRead: false,
+            isOrderSummary: true,
+          );
+
+          context.read<MessageProvider>().addMessage(aiMessage);
+          setState(() {
+            _showPayButton = true;
+          });
+          _scrollToBottom(); // You might want to scroll after adding the new message
+        }
+      } else {
+        // Handle unsuccessful response
+        context.read<MessageProvider>().addMessage(Message(
+              text: 'Failed to create order. Please try again.',
+              isClient: false,
+              isRead: false,
+            ));
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      // Handle any errors during the order creation
+      context.read<MessageProvider>().removeLastMessage();
+      context.read<MessageProvider>().addMessage(Message(
+            text:
+                'An error occurred while creating your order. Please try again.',
+            isClient: false,
+            isRead: false,
+          ));
+    }
+  }
+
   void _handlePaymentLinkGeneration() async {
     setState(() {
       _paying = true;
@@ -902,7 +985,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         context.read<MessageProvider>().addMessage(message);
         _scrollToBottom();
 
-        _handlePaymentLinkGeneration();
+        //_handlePaymentLinkGeneration();
+        _createOrder();
 
         return;
       }

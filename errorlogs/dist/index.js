@@ -18,10 +18,10 @@ var Redis = require('redis');
 var mongoose = require('mongoose');
 var ErrorLogNode = require('./models/ErrorLogNode');
 var ErrorLogFlask = require('./models/ErrorLogFlask');
-var redis = Redis.createClient({
+var redisClient = Redis.createClient({
   url: process.env.REDIS_URL
 });
-redis.connect().then(function () {
+redisClient.connect().then(function () {
   console.log('Connected to Redis');
 })["catch"](function (err) {
   console.error('Redis Client Error:', err);
@@ -47,7 +47,7 @@ app.post('/log/node', /*#__PURE__*/function () {
           logData = req.body;
           _context.prev = 1;
           _context.next = 4;
-          return redis.set("error:".concat(Date.now()), JSON.stringify(logData));
+          return redisClient.set("error:".concat(Date.now()), JSON.stringify(logData));
         case 4:
           _context.next = 6;
           return ErrorLogNode.create(logData);
@@ -79,7 +79,7 @@ app.post('/log/flask', /*#__PURE__*/function () {
           logData = req.body;
           _context2.prev = 1;
           _context2.next = 4;
-          return redis.set("error:".concat(Date.now()), JSON.stringify(logData));
+          return redisClient.set("error:".concat(Date.now()), JSON.stringify(logData));
         case 4:
           _context2.next = 6;
           return ErrorLogFlask.create(logData);
@@ -153,7 +153,7 @@ app.get('/logs/redis', /*#__PURE__*/function () {
         case 0:
           _context5.prev = 0;
           _context5.next = 3;
-          return redis.keys('error:*');
+          return redisClient.keys('error:*');
         case 3:
           keys = _context5.sent;
           _context5.next = 6;
@@ -164,7 +164,7 @@ app.get('/logs/redis', /*#__PURE__*/function () {
                 while (1) switch (_context4.prev = _context4.next) {
                   case 0:
                     _context4.next = 2;
-                    return redis.get(key);
+                    return redisClient.get(key);
                   case 2:
                     log = _context4.sent;
                     return _context4.abrupt("return", _objectSpread({
@@ -219,7 +219,7 @@ process.on('SIGTERM', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRu
       case 0:
         console.log('SIGTERM received, shutting down gracefully');
         _context6.next = 3;
-        return redis.quit();
+        return redisClient.quit();
       case 3:
         _context6.next = 5;
         return mongoose.connection.close();

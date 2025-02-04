@@ -9,6 +9,8 @@ import generateJWT from "../services/payoor/generateJWT";
 
 import sendOtp from "../services/resend/sendOtp";
 
+import redisClient from "../configs/redisClient";
+
 class AuthController {
 
     async generateOtp(req, res, next) {
@@ -202,9 +204,14 @@ class AuthController {
 
             const validUser = await User.findOne({ _id: userId });
 
-            //console.log(validUser)
+            //console.log(req.session)
+            //console.log(req.session.user)
+            console.log("=========session=========")
+
+            //console.log('Session ID:', req.sessionID);
 
             if (validUser) {
+                //console.log(validUser, 'validUser')
                 const userResponse = {
                     _id: validUser._id,
                     email: validUser.email,
@@ -212,6 +219,26 @@ class AuthController {
                     phoneNumber: validUser.phoneNumber,
                     userAddress: validUser.location
                 };
+
+                await redisClient.hSet(
+                    `user:${validUser._id.toString()}`, // Convert ObjectId to string
+                    {
+                        token: tokenId.toString(), // Convert to string if it's an ObjectId
+                        user: validUser._id.toString(),
+                        lastLogin: new Date().toISOString(),
+                        recent_queries: JSON.stringify([]),
+                        llm_user_conversation: JSON.stringify([])
+                    }
+                );
+
+                await redisClient.expire(
+                    `user:${validUser._id}`,
+                    30 * 24 * 60 * 60
+                );
+
+                const userData = await redisClient.hGetAll(`user:${validUser._id}`);
+
+                console.log(userData, 'userData')
 
                 const response = {
                     success: true,

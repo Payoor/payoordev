@@ -74,6 +74,33 @@ class _LandingScreenState extends State<LandingScreen> {
         imageUrl: 'assets/paper_box.png'),
   ];
 
+  final List<Map<String, String>> groceryItems = [
+    {
+      'image': 'assets/chicken_lap.png',
+      'text': 'Rice & Grains',
+    },
+    {
+      'image': 'assets/chai_seed.jpeg',
+      'text': 'Oils & Fats',
+    },
+    {
+      'image': 'assets/bournvita.jpeg',
+      'text': 'Spices & Seasonings',
+    },
+    {
+      'image': 'assets/fruits.png',
+      'text': 'Vegetables',
+    },
+    {
+      'image': 'assets/fruit_basket.jpeg',
+      'text': 'Proteins & Meat',
+    },
+    {
+      'image': 'assets/pepper_container.png',
+      'text': 'Spices and packaged foods',
+    },
+  ];
+
   void handleInputChange(String value) {
     setState(() {
       listInput = value;
@@ -484,6 +511,131 @@ class _LandingScreenState extends State<LandingScreen> {
                                       top: 25, left: 15, right: 15, bottom: 15),
                                   child: Column(
                                     children: [
+                                      const Text(
+                                        'Shop for Food ingredients and Groceries at the lowest possible prices',
+                                        style: TextStyle(
+                                          color: AppColors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w500,
+                                          height: 1.3, // 21.61px ÷ 24px = ~0.9
+                                          letterSpacing: 0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      Container(
+                                        constraints: BoxConstraints(
+                                          minHeight: 48,
+                                          maxHeight: double.infinity,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primaryColor
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 12),
+                                        child: GridView.count(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          crossAxisCount: 3,
+                                          mainAxisSpacing: 12,
+                                          crossAxisSpacing: 12,
+                                          childAspectRatio: 0.8,
+                                          children: groceryItems.map((item) {
+                                            return Column(
+                                              children: [
+                                                Container(
+                                                  width: double.infinity,
+                                                  height:
+                                                      80, // Increased height
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: Center(
+                                                    // Centers the image in the container
+                                                    child: Image.asset(
+                                                      item['image']!,
+                                                      height:
+                                                          60, // Increased image size
+                                                      width:
+                                                          60, // Increased image size to maintain aspect ratio
+                                                      fit: BoxFit
+                                                          .contain, // Ensures image scales properly
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  item['text']!,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    height:
+                                                        1.2, // Controls line height (12px × 1.2 = 14.4px line height)
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              ],
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      Text(
+                                        'Why Payoor?',
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w600,
+                                            height:
+                                                1.2, // Controls line height (12px × 1.2 = 14.4px line height)
+                                            color: AppColors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        clipBehavior: Clip
+                                            .hardEdge, // This ensures the image respects the border radius
+                                        child: Image.asset(
+                                          'assets/like.png',
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Text(
+                                        'Psst... Here is why we are your best buddy for fresh food stuff and quality grocery.',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            height:
+                                                1.2, // Controls line height (12px × 1.2 = 14.4px line height)
+                                            color: AppColors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(
+                                        height: 40,
+                                      ),
                                       ...shopInfo
                                           .toList()
                                           .asMap()

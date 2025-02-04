@@ -8,6 +8,7 @@ class Message {
   final bool isCartView;
   final bool isAdressPhoneNumber;
   final bool isProductsDisplay;
+  final bool isOrderSummary;
   final List<Map<String, dynamic>> results;
   final String? paymentUrl;  // Added non-required paymentUrl
 
@@ -21,6 +22,7 @@ class Message {
     this.isCartView = false,
     this.isProductsDisplay = false,
     this.isAdressPhoneNumber = false,
+    this.isOrderSummary = false,
     this.results = const [],
     this.paymentUrl,  // Optional parameter
   }) : clienttimestamp = clienttimestamp ?? DateTime.now();
@@ -50,6 +52,7 @@ class Message {
       isCartView: map['isCartView'] ?? false,
       isAdressPhoneNumber: map['isAdressPhoneNumber'] ?? false,
       isProductsDisplay: map['isProductsDisplay'] ?? false,
+      isOrderSummary: map['isOrderSummary'] ?? false,
       clienttimestamp: map['clienttimestamp'] != null
           ? DateTime.parse(map['clienttimestamp'])
           : DateTime.now(),

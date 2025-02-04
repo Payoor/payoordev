@@ -153,9 +153,7 @@ class _MessageContentState extends State<MessageContent> {
                                       key: ValueKey(
                                           'message_${widget.message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
                                       text:
-                                          "Service Fee: ₦ ${cartProvider.serviceCharge}\n"
-                                          "Delivery Fee: ₦ ${widget.deliveryFee}\n"
-                                          "Total: ₦ ${cartProvider.serviceCharge + widget.deliveryFee + cartProvider.totalAmount}\n",
+                                          "Cart Total: ₦ ${cartProvider.totalAmount}\n",
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.white.withOpacity(0.8),

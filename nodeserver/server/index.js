@@ -14,6 +14,7 @@ const app = express();
 const server = require('http').createServer(app);
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const session = require('express-session');
 
 // 2. Import models
 import File from './models/file';
@@ -35,8 +36,6 @@ import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 import errorHandler from './middleware/errorHandler';
 import requestLogger from './middleware/requestLogger';
 
-import sendTransactionVerification from "./services/resend/sendTransactionVerification";
-
 // 5. Constants and configurations
 const PORT = process.env.PORT;
 const uploadDir = path.resolve(__dirname, '..', '.', 'uploads');
@@ -50,27 +49,27 @@ console.log(process.env.NODE_ENV);
 
 const corsOptions = {
   origin: function (origin, callback) {
-      const allowedOrigins = process.env.NODE_ENV === 'production' 
-          ? corsOriginArray.production 
-          : corsOriginArray.development;
-      
-      // Allow requests with no origin (like mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-          callback(null, true);
-      } else {
-          console.log('Blocked origin:', origin, 'Current environment:', process.env.NODE_ENV);
-          callback(new Error('Not allowed by CORS'));
-      }
+    const allowedOrigins = process.env.NODE_ENV === 'production'
+      ? corsOriginArray.production
+      : corsOriginArray.development;
+
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin, 'Current environment:', process.env.NODE_ENV);
+      callback(new Error('Not allowed by CORS'));
+    }
   },
   methods: ['POST', 'OPTIONS', 'GET', 'PATCH', 'DELETE'],
   allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization'
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
   ],
   credentials: true
 };
@@ -86,6 +85,7 @@ app.use(express.urlencoded({
     return !req.headers['content-type']?.includes('multipart/form-data');
   }
 }));
+
 app.use(requestLogger);
 
 // 9. Routes

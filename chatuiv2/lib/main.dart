@@ -7,6 +7,7 @@ import 'package:chatuiv2/src/views/_authpage.dart';
 import 'package:chatuiv2/src/views/_welcome.dart';
 import 'package:chatuiv2/src/views/_authenticatedchat.dart';
 import 'package:chatuiv2/src/views/_authloading.dart';
+import 'package:chatuiv2/src/views/_aboutus.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const StackWithNav(child: AuthLoading()),
         '/auth': (context) => const StackWithNav(child: AuthPage()),
         '/welcome': (context) => const StackWithNav(child: Welcome()),
+        '/about': (context) => const StackWithNav(child: AboutPayoor()),
         '/authchat': (context) =>
             const StackWithNav(child: AuthenticatedChat()),
       },

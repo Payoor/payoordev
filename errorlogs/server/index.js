@@ -10,11 +10,11 @@ const mongoose = require('mongoose');
 const ErrorLogNode = require('./models/ErrorLogNode');
 const ErrorLogFlask = require('./models/ErrorLogFlask');
 
-const redis = Redis.createClient({
+const redisClient = Redis.createClient({
     url: process.env.REDIS_URL
 });
 
-redis.connect().then(() => {
+redisClient.connect().then(() => {
     console.log('Connected to Redis');
 }).catch((err) => {
     console.error('Redis Client Error:', err);
@@ -40,7 +40,7 @@ app.post('/log/node', async (req, res) => {
     const logData = req.body;
 
     try {
-        await redis.set(`error:${Date.now()}`, JSON.stringify(logData));
+        await redisClient.set(`error:${Date.now()}`, JSON.stringify(logData));
 
         await ErrorLogNode.create(logData);
 
@@ -55,7 +55,7 @@ app.post('/log/flask', async (req, res) => {
     const logData = req.body;
 
     try {
-        await redis.set(`error:${Date.now()}`, JSON.stringify(logData));
+        await redisClient.set(`error:${Date.now()}`, JSON.stringify(logData));
 
         await ErrorLogFlask.create(logData);
 
@@ -94,12 +94,12 @@ app.get('/logs/mongo', async (req, res) => {
 app.get('/logs/redis', async (req, res) => {
     try {
         // Get all the keys matching error:*
-        const keys = await redis.keys('error:*');
+        const keys = await redisClient.keys('error:*');
 
         // Get all logs for these keys
         const logs = await Promise.all(
             keys.map(async (key) => {
-                const log = await redis.get(key);
+                const log = await redisClient.get(key);
                 return {
                     timestamp: parseInt(key.split(':')[1]),
                     ...JSON.parse(log)
@@ -129,7 +129,7 @@ app.listen(PORT, () => {
 
 process.on('SIGTERM', async () => {
     console.log('SIGTERM received, shutting down gracefully');
-    await redis.quit();
+    await redisClient.quit();
     await mongoose.connection.close();
     process.exit(0);
 });
