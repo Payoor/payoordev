@@ -1,21 +1,5 @@
 version: '3.8'
 services:
-  payoordb:
-    container_name: payoordb
-    image: mongo
-    ports:
-      - "27017:27017" 
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - payoor_network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "'db.runCommand(\"ping\").ok'"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-
   payoorserver:
     container_name: payoorserver
     build: ${NGINX_CONTEXT:-./nginx}
@@ -122,5 +106,4 @@ networks:
     driver: bridge
 
 volumes:
-  redis_data: 
-  mongo_data:
+  redis_data:

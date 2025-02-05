@@ -36,7 +36,7 @@
     "express": "^4.19.2",
     "moment": "^2.22.1",
     "mongodb": "^3.6.0",
-    "mongoose": "^5.10.0",
+    "mongoose": "^8.0.0",
     "redis": "^4.7.0"
   },
   "devDependencies": {
