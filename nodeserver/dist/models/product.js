@@ -20,8 +20,7 @@ var productSchema = new mongoose.Schema({
   generatedCategories: {
     type: [String],
     "default": []
-  },
-  vector_created: false
+  }
 }, {
   timestamps: true
 });

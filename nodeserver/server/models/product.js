@@ -20,7 +20,6 @@ const productSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
-    vector_created: false
 }, {
     timestamps: true
 });
