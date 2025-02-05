@@ -10,8 +10,6 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/data/certs:/etc/nginx/data/certs
     depends_on:
-      payoordb:
-        condition: service_healthy
       nodeserver:
         condition: service_started
       adminui:
@@ -49,8 +47,6 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     depends_on:
-      payoordb:
-        condition: service_healthy
       redisdb:
         condition: service_healthy
     networks:
