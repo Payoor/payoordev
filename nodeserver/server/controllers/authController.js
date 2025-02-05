@@ -238,7 +238,7 @@ class AuthController {
 
                 const userData = await redisClient.hGetAll(`user:${validUser._id}`);
 
-                console.log(userData, 'userData')
+                //console.log(userData, 'userData')
 
                 const response = {
                     success: true,

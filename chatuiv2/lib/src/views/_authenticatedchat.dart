@@ -66,6 +66,10 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   double _serviceCharge = 0;
   String _deliveryAddress = "";
 
+  String currentSuggestion = "";
+
+  List<String> resultTags = [];
+
   final List<String> _chatInputModes = ['address_confirmation'];
 
   String _currentChatInputMode = "";
@@ -218,6 +222,15 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     Provider.of<CartProvider>(context, listen: false).clear();
 
     SocketService.disconnectFromSocketServer();
+  }
+
+  void _getSuggestions(current_suggestion) {
+    setState(() {
+      currentSuggestion = current_suggestion;
+    });
+
+    //print(currentSuggestion);
+    context.read<ResultListProvider>().setCurrentSuggestions(suggestion: currentSuggestion);
   }
 
   void confirmOrderDetails(order_reference) async {
@@ -586,7 +599,11 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           color: AppColors.primaryColor,
         );
       default:
-        return const Icon(Icons.help_outline);
+        return const Icon(
+          Icons.local_offer,
+          size: 15,
+          color: AppColors.primaryColor,
+        );
     }
   }
 
@@ -599,10 +616,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           children: [
             Consumer<ResultListProvider>(
               builder: (context, resultList, child) {
-                final pill_slide_array = [
-                  ...pills,
-                  ...resultList.suggested_prompts
-                ];
+                final pill_slide_array = [...pills, ...resultTags];
 
                 return Row(
                   children: [
@@ -610,18 +624,21 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       pill_slide_array.length,
                       (index) => Consumer<CartProvider>(
                         builder: (context, cart, child) {
+                          final currentPill = pill_slide_array[index];
+                          final String label = currentPill is Map
+                              ? currentPill['label'] ?? ''
+                              : '${currentPill.toString()} suggestions';
+
+                          final String action = currentPill is Map
+                              ? currentPill['action'] ?? ''
+                              : currentPill.toString();
+
                           final isEmptyCart =
-                              pill_slide_array[index]['label'] == "Cart" &&
-                                  cart.itemCount == 0;
-
-                          final shouldShowPay = pill_slide_array[index]
-                                      ['label'] ==
-                                  "Pay" &&
-                              !_showPayButton; 
-
-                          final shouldShowCheckout =
-                              pill_slide_array[index]['label'] == "Checkout" &&
-                                  (cart.itemCount == 0 || _showPayButton);
+                              label == "Cart" && cart.itemCount == 0;
+                          final shouldShowPay =
+                              label == "Pay" && !_showPayButton;
+                          final shouldShowCheckout = label == "Checkout" &&
+                              (cart.itemCount == 0 || _showPayButton);
 
                           return isEmptyCart ||
                                   shouldShowPay ||
@@ -632,27 +649,24 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                       const EdgeInsets.symmetric(horizontal: 4),
                                   child: InkWell(
                                     onTap: () {
-                                      final action =
-                                          pill_slide_array[index]['action'];
-                                      if (action != null &&
-                                          action == "View Cart") {
+                                      if (action == "View Cart") {
                                         closeProductSizeSelector();
                                         _handleCartQuery(cart);
-                                      } else if (action != null &&
-                                          action == "Checkout") {
+                                      } else if (action == "Checkout") {
                                         //print('handle payment');
                                         //_handlePayment();
                                         //_handlePaymentLinkGeneration();
                                         //_confirmAddress();
                                         // _handleCartQuery(cart);
                                         _handleAddressConfirmation();
-                                      } else if (action != null &&
-                                          action == "Proceed to orders view") {
+                                      } else if (action ==
+                                          "Proceed to orders view") {
                                         _toggleUserOrders();
                                       } else {
                                         _selectedPillIndex = index;
+
                                         //print(suggested_prompts[index]['text']);
-                                        setState(() {});
+                                        _getSuggestions(currentPill);
                                       }
                                     },
                                     child: Stack(
@@ -674,25 +688,24 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                           child: Row(
                                             children: [
                                               Text(
-                                                pill_slide_array[index]
-                                                        ['label'] ??
-                                                    '',
+                                                label,
                                                 style: TextStyle(
-                                                  color: Colors.white
-                                                      .withOpacity(.6),
+                                                  color: currentPill ==
+                                                          currentSuggestion
+                                                      ? AppColors.primaryColor
+                                                      : Colors.white
+                                                          .withOpacity(.6),
                                                 ),
                                               ),
                                               SizedBox(
                                                 width: 10,
                                               ),
                                               conditionalIconForPillsSlide(
-                                                  pill_slide_array[index]
-                                                      ['label'])
+                                                  label)
                                             ],
                                           ),
                                         ),
-                                        if (pill_slide_array[index]['label'] ==
-                                                'Cart' &&
+                                        if (label == 'Cart' &&
                                             cart.itemCount > 0)
                                           Positioned(
                                             top: -8,
@@ -1023,34 +1036,36 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         if (response?.data?['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
 
+          print(chatResponse);
+
           Message aiMessage;
           if (chatResponse['results'] != null) {
-            List<Map<String, dynamic>> parsedResults = [];
-            List<Map<String, dynamic>> suggestedPrompts = [];
+            List<String> results = (chatResponse['results'] as List)
+                .map((item) => item.toString())
+                .toList();
 
-            if (chatResponse['results'] is List) {
-              parsedResults = (chatResponse['results'] as List).map((item) {
-                return Map<String, dynamic>.from(item);
-              }).toList();
-            }
+            List<String> result_tags = (chatResponse['result_tags'] as List)
+                .map((item) => item.toString())
+                .toList();
 
-            if (chatResponse['suggested_prompts'] is List) {
-              suggestedPrompts =
-                  (chatResponse['suggested_prompts'] as List).map((item) {
-                return Map<String, dynamic>.from(item);
-              }).toList();
-            }
+            print(results);
+            print(result_tags);
+
+            setState(() {
+              resultTags = result_tags;
+              currentSuggestion = result_tags[0];
+            });
 
             context.read<ResultListProvider>().updateResults(
-                total: parsedResults.length,
-                results: parsedResults,
-                suggested_prompts: suggestedPrompts);
+                total: results.length,
+                results: results,
+                suggested_prompts: result_tags);
 
-            final results = context.read<ResultListProvider>().results;
+            final resultsRender = context.read<ResultListProvider>().results;
 
             aiMessage = Message(
               text: chatResponse['text'] ?? 'Sorry, I could not process that.',
-              results: results,
+              results: resultsRender.isNotEmpty ? resultsRender : [],
               isProductsDisplay: true,
               isClient: false,
               isRead: false,

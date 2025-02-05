@@ -331,7 +331,7 @@ var AuthController = /*#__PURE__*/function () {
 
               //console.log('Session ID:', req.sessionID);
               if (!validUser) {
-                _context5.next = 20;
+                _context5.next = 19;
                 break;
               }
               //console.log(validUser, 'validUser')
@@ -361,7 +361,7 @@ var AuthController = /*#__PURE__*/function () {
               return _redisClient["default"].hGetAll("user:".concat(validUser._id));
             case 14:
               userData = _context5.sent;
-              console.log(userData, 'userData');
+              //console.log(userData, 'userData')
               response = {
                 success: true,
                 data: {
@@ -370,9 +370,9 @@ var AuthController = /*#__PURE__*/function () {
                 }
               }; //console.log(response);
               res.status(200).json(response);
-              _context5.next = 22;
+              _context5.next = 21;
               break;
-            case 20:
+            case 19:
               notFoundResponse = {
                 success: false,
                 data: {
@@ -381,20 +381,20 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(404).json(notFoundResponse);
-            case 22:
-              _context5.next = 29;
+            case 21:
+              _context5.next = 28;
               break;
-            case 24:
-              _context5.prev = 24;
+            case 23:
+              _context5.prev = 23;
               _context5.t0 = _context5["catch"](0);
               console.log('error here', _context5.t0, 'error here');
               _context5.t0.payoorDevErrorMessage = 'Failed to retrieve user';
               next(_context5.t0);
-            case 29:
+            case 28:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 24]]);
+        }, _callee5, null, [[0, 23]]);
       }));
       function getValidUser(_x13, _x14, _x15) {
         return _getValidUser.apply(this, arguments);

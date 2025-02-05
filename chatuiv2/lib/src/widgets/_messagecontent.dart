@@ -181,14 +181,13 @@ class _MessageContentState extends State<MessageContent> {
               if (widget.message.isProductsDisplay &&
                   widget.message.results.isNotEmpty)
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Container(
                       padding: const EdgeInsets.all(8),
                       child: Visibility(
-                          visible:
-                              _showProducts,
+                          visible: _showProducts,
                           maintainState: true,
-                          child: ProductDisplay())),
+                          child: ProductDisplay(showProducts: _showProducts))),
                 ),
             ]);
       },

@@ -69,6 +69,10 @@ class PayoorExcelProductsDataProcessor:
             self.logger.logger.error(f"Error adding product variants: {str(e)}")
             return False
 
+    def clean_text(self, text: str) -> str:
+        """Clean text by removing extra spaces and standardizing format."""
+        return ' '.join(text.lower().split())
+
     def process_excel_and_add_to_mongodb(self):
         try:
             df = pd.read_excel(self.file_path)
@@ -78,7 +82,7 @@ class PayoorExcelProductsDataProcessor:
             
             for row in df.itertuples():
                 item = {
-                    'product_name': self.clean_product_name(getattr(row, 'NAME', "N/A")),
+                    'product_name': self.clean_text(getattr(row, 'NAME', "N/A")),
                     'unit': getattr(row, 'UNIT', "N/A"),
                     'price': getattr(row, 'UNITPRICE', "1"),
                     'availability': getattr(row, 'AVAILABILITY', "NO"),
@@ -110,21 +114,21 @@ class PayoorExcelProductsDataProcessor:
                         "name": product_data["product_name"]
                     }
 
-                    #print(new_product)
                     product_id = self.add_product_to_mongodb(new_product)
+                    print(new_product["name"])
                     new_product["id"] = product_id.__str__()
                     new_product["name"] = [variant["db_tag"] for variant in variants][0].lower()
-                    self.add_product_to_chroma(new_product)
 
                     if product_id:
                         variant_ids = self.add_product_variants_to_mongodb(product_data["variants"], product_id)
-                        
-                        added_products.append({
-                            "product_id": product_id,
-                            "name": product_data["product_name"],
-                            "variant_count": len(variant_ids)
-                        })
-                
+
+                    added_products.append({
+                        "product_id": product_id,
+                        "name": product_data["product_name"],
+                        "variant_count": len(variant_ids)
+                    })
+
+                    #print(added_products)
                 except Exception as product_error:
                     self.logger.logger.error(f"Error processing product {product_name}: {str(product_error)}")
                     continue
@@ -153,7 +157,7 @@ class PayoorExcelProductsDataProcessor:
 
     def run_data_processing(self):
         try:
-            success, result = self.process_excel_and_add_to_mongodb()
+            #success, result = self.process_excel_and_add_to_mongodb()
             
             '''if success:
                 print("Excel processing completed successfully")

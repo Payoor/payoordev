@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/providers/_authprov.dart';
+import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_productroutes.dart';
@@ -9,7 +10,7 @@ import 'package:chatuiv2/src/classes/_serverresponse.dart';
 
 class ProductCard extends StatefulWidget {
   final String productName;
-  final String productId;
+  //final String productId;
   final void Function()? onProductTap;
   final void Function()? onFavoriteTap;
   static final Map<String, String> _imageCache = {};
@@ -17,7 +18,7 @@ class ProductCard extends StatefulWidget {
   const ProductCard(
       {super.key,
       required this.productName,
-      required this.productId,
+      //required this.productId,
       this.onProductTap,
       this.onFavoriteTap});
 
@@ -29,12 +30,34 @@ class _ProductCardState extends State<ProductCard> {
   late Future<String> _imageUrlFuture;
   bool _isbookmarked = false;
   bool _togglingBookMarks = false;
+  late String productId;
 
   @override
   void initState() {
     super.initState();
-    _imageUrlFuture = _getImageUrl();
-    _checkIfProductInBookMarks(widget.productId);
+    _getProductByName();
+  }
+
+  Future<void> _getProductByName() async {
+    try {
+      ServerResponse response =
+          await ProductRoute.getProductByName(widget.productName);
+
+      if (response.data['product_data'] != null) {
+        Map<String, dynamic> product_data = response.data['product_data'];
+        String product_id = product_data['_id'];
+
+        setState(() {
+          productId = product_id;
+        });
+
+        _checkIfProductInBookMarks(productId);
+        _imageUrlFuture = _getImageUrl();
+      }
+    } catch (e) {
+      print('Error fetching product: $e');
+      // Handle error appropriately
+    }
   }
 
   void _checkIfProductInBookMarks(productId) async {
@@ -66,16 +89,16 @@ class _ProductCardState extends State<ProductCard> {
 
   Future<String> _getImageUrl() async {
     // Check cache first
-    if (ProductCard._imageCache.containsKey(widget.productId)) {
-      return ProductCard._imageCache[widget.productId]!;
+    if (ProductCard._imageCache.containsKey(productId)) {
+      return ProductCard._imageCache[productId]!;
     }
 
     // Fetch if not in cache
-    final response = await ProductRoute.getProductImage(widget.productId);
+    final response = await ProductRoute.getProductImage(productId);
     final imageUrl = response.data['images'][0]["imageUrl"];
 
     // Store in cache
-    ProductCard._imageCache[widget.productId] = imageUrl;
+    ProductCard._imageCache[productId] = imageUrl;
 
     return imageUrl;
   }
@@ -143,7 +166,7 @@ class _ProductCardState extends State<ProductCard> {
                   left: 8,
                   child: GestureDetector(
                     onTap: () {
-                      _addProductToBookMarks(widget.productId);
+                      _addProductToBookMarks(productId);
                     },
                     child: Container(
                         padding: const EdgeInsets.all(4),
@@ -206,7 +229,10 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
           GestureDetector(
-            onTap: widget.onProductTap,
+            onTap: () {
+              context.read<ResultListProvider>().setCurrentProduct(
+                  productId: productId, productName: widget.productName);
+            },
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),

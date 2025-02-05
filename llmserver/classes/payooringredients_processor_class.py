@@ -50,13 +50,13 @@ class PayoorExcelIngredientsProcessor:
 
                 ingredients_string = ", ".join(ingredients)
 
-                self.collection.upsert(
+                '''self.collection.upsert(
                     documents=[doc.get("nameOfFood", "")],
                     ids=doc.get("id", ""),
                     metadatas=[{
                         "tags": ingredients_string
                     }],
-                )
+                )'''
 
                 '''self.algolia_manager.add_ingredient_to_algolia({
                     'objectID': doc['id'],

@@ -1,13 +1,15 @@
 import os
 import re
+import json
+from typing import List, Dict
 from algoliasearch.search.client import SearchClientSync
 from dotenv import load_dotenv
 from openai import OpenAI
 
 from configurations.chroma_configuration import chroma_client, openai_ef
+from configurations.mongoose_configuration import productCollection
 from classes.algolia_class import AlgoliaManager
 from classes.logginghandler_class import LoggingHandler
-
 
 load_dotenv()
 
@@ -34,6 +36,25 @@ class SearchManager:
 
         return char_array
 
+    def search_product_in_mongodb(self, product_name):
+        try:
+            product = productCollection.find_one({
+                "name": product_name
+            })
+        
+            if product:
+                #print(product)
+                return product
+            else:
+                print('none here')
+                print(product_name)
+                return None
+            
+            
+        except Exception as e:
+            print(f"Error searching for product: {e}")
+            return None
+
     def search_using_algolia(self, char_array):
         results_array = []
 
@@ -50,7 +71,50 @@ class SearchManager:
 
                     results_array.append(product_item)
 
+        print("========")
+        print(results)
+        print("===========")
+
         return results_array
+
+    def search_algolia_product_index(self, search_terms: List[str]) -> List[Dict]:
+        """
+        Search Algolia with the extracted terms.
+        """
+        try:
+            #search_query = " ".join(search_terms)
+            print(search_terms)
+            response = self.algolia_client.search(
+                search_method_params={
+                    "requests": [
+                        {
+                            "indexName": self.products_index,
+                            "typoTolerance": True,
+                            "query": search_terms,
+                            "hitsPerPage": 50,
+                            "queryType": "prefixLast", 
+                            "removeWordsIfNoResults": "allOptional",
+                            # Optional: Add relevance settings
+                            "distinct": True,  # Avoid duplicates
+                            "attributesToRetrieve": [
+                                "object_id",
+                                "name",
+                                "image"
+                            ]
+                        },
+                    ],
+                },
+            )
+
+            print(response.results[0])
+
+            if response.results[0].actual_instance.hits:
+                return self._process_results(response.results[0].actual_instance.hits)
+            return []
+
+        except Exception as e:
+            print(f"Error searching Algolia: {str(e)}")
+            return []
 
     def remove_duplicates_from_results(self, results_array):
         final_result = set()
@@ -207,7 +271,104 @@ class SearchManager:
 
             return response_body
 
-  
+    def find_food_words(self, query_text):
+        response = openai.chat.completions.create(
+            model = "gpt-4o-mini",
+            messages=[
+                {
+                     "role": "system", "content": '''
+                        Your task is to list the words in {query_text} that pass for food items and then simply return them in a list that can be used as a query
+                     '''
+                },
+                {
+                    "role": "user",
+                    "content": query_text
+                }
+            ],
+            temperature=0,
+            max_tokens=100
+        )
+
+        content = response.choices[0].message.content
+        #print(content)
+        return content
+
+    def analyze_text(self, text: str) -> Dict:
+        """
+        Use GPT-4 to analyze word types in the given text.
+        """
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
+                    You are a specialized word analyzer. Your role is to determine:
+                    1. Function words (grammatical words like i, some, you, an, in, on, was, have, is, for, to, and, etc.)
+                    2. Action words (verbs like want, buy, etc.)
+                    3. Other words (nouns and content words)
+
+                    For each query, analyze:
+                    - Function word indicators (prepositions, articles, conjunctions)
+                    - Action word indicators (verbs and their forms)
+                    - Context of usage
+                    - Correct any perceived mispellings
+
+                    Return a JSON response with:
+                    {   
+                        "other_words": "remaining words"
+                        "function_words": {
+                            "words": [list of function words found]
+                        },
+                        "action_words": {
+                            "words": [list of action words found]
+                        }
+                    }
+                    """
+                },
+                {
+                    "role": "user",
+                    "content": text
+                }
+            ],
+            temperature=0,
+            max_tokens=150
+        )
+        
+        try:
+            content = response.choices[0].message.content
+            match = re.search(r'\{.*\}', content, re.DOTALL)
+            if match:
+                json_part = match.group(0)
+                analysis = json.loads(json_part)
+                print(analysis)
+
+            return analysis
+        except Exception as e:
+            print(f"Error during analysis: {str(e)}")
+            return {"error": str(e)}
+
+    def format_results(self, analysis: Dict) -> str:
+        """Format the analysis results into readable text."""
+        output = []
+        
+        if "function_words" in analysis:
+            output.append("Function Words:")
+            for word, word_type in analysis["function_words"]["types"].items():
+                output.append(f"  {word}: {word_type}")
+        
+        if "action_words" in analysis:
+            output.append("\nAction Words:")
+            for word, word_type in analysis["action_words"]["types"].items():
+                output.append(f"  {word}: {word_type}")
+        
+        if "other_words" in analysis:
+            output.append("\nOther Words:")
+            output.append("  " + ", ".join(analysis["other_words"]))
+        
+        return "\n".join(output)
+        
+
     def infer_intent(self, query_text):
         response = openai.chat.completions.create(
             model = "gpt-4o-mini",
@@ -218,6 +379,7 @@ class SearchManager:
                         You are a specialized food query analyzer. Your role is to determine if a user is:
                         1. Searching to purchase specific grocery items (grocery intent)
                         2. Searching to understand ingredients as components of dishes (ingredient intent)
+                        3. Quering using a list (list intent)
 
                         For each query, analyze:
                         - Shopping indicators (buy, get, store, shop, price, cost, where)
@@ -273,7 +435,7 @@ class SearchManager:
             print(f"Error searching recipes: {e}")
             return None
 
-    def search_algolia_product_index(self, search_query):
+    '''def search_algolia_product_index(self, search_query):
         try:
             response = self.algolia_client.search(
                 search_method_params={
@@ -288,10 +450,12 @@ class SearchManager:
                 },
             )
 
+            print(response)
+
             if response.results[0].actual_instance.hits and len(response.results[0].actual_instance.hits) > 0:
                 return response.results[0].actual_instance.hits
             return []
             
         except Exception as e:
             self.logger.logger.error(f"Error searching products: {str(e)}")
-            return []
+            return []'''

@@ -57,10 +57,11 @@ class ProductRoute {
     }
   }
 
-  static Future<ServerResponse> addProductToBookMarks(String productId, String? userId) async {
+  static Future<ServerResponse> addProductToBookMarks(
+      String productId, String? userId) async {
     try {
-      final uri =
-          Uri.parse('${Urls.llmUrl}/product/bookmark?product_id=$productId&user_id=$userId');
+      final uri = Uri.parse(
+          '${Urls.llmUrl}/product/bookmark?product_id=$productId&user_id=$userId');
 
       final response = await http.post(
         uri,
@@ -83,10 +84,11 @@ class ProductRoute {
     }
   }
 
-  static Future<ServerResponse> checkIfProductInBookMarks(String productId, String? userId) async {
+  static Future<ServerResponse> checkIfProductInBookMarks(
+      String productId, String? userId) async {
     try {
-      final uri =
-          Uri.parse('${Urls.llmUrl}/product/bookmark/check?product_id=$productId&user_id=$userId');
+      final uri = Uri.parse(
+          '${Urls.llmUrl}/product/bookmark/check?product_id=$productId&user_id=$userId');
 
       final response = await http.get(
         uri,
@@ -94,6 +96,58 @@ class ProductRoute {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Origin': 'https://chat.development.payoor.store'
+          //'Authorization': 'Bearer $jwt',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to send message. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to send message: $e');
+    }
+  }
+
+  static Future<ServerResponse> getProductByName(String productName) async {
+    try {
+      final uri =
+          Uri.parse('${Urls.llmUrl}/product/get?productname=$productName');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': 'https://chat.payoor.store'
+          //'Authorization': 'Bearer $jwt',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to send message. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to send message: $e');
+    }
+  }
+
+  static Future<ServerResponse> getSuggestion(String suggestion) async {
+    try {
+      final uri =
+          Uri.parse('${Urls.llmUrl}/products/suggestion/get?suggestion=$suggestion');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': 'https://chat.payoor.store'
           //'Authorization': 'Bearer $jwt',
         },
       );

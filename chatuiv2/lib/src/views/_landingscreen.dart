@@ -531,8 +531,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                           maxHeight: double.infinity,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.primaryColor
-                                              .withOpacity(0.1),
+                                          color: AppColors.customGreen,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -554,7 +553,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                                   height:
                                                       80, // Increased height
                                                   decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: AppColors.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             8),

@@ -9,8 +9,8 @@ class Message {
   final bool isAdressPhoneNumber;
   final bool isProductsDisplay;
   final bool isOrderSummary;
-  final List<Map<String, dynamic>> results;
-  final String? paymentUrl;  // Added non-required paymentUrl
+  final List<String> results; // Changed to List<String>
+  final String? paymentUrl;
 
   Message({
     required this.text,
@@ -23,24 +23,16 @@ class Message {
     this.isProductsDisplay = false,
     this.isAdressPhoneNumber = false,
     this.isOrderSummary = false,
-    this.results = const [],
-    this.paymentUrl,  // Optional parameter
+    this.results = const [], // Default empty List<String>
+    this.paymentUrl,
   }) : clienttimestamp = clienttimestamp ?? DateTime.now();
 
   factory Message.fromMap(Map<String, dynamic> map) {
-    var rawProducts = map['results'] ?? [];
-    List<Map<String, dynamic>> parsedProducts = [];
+    var rawResults = map['results'] ?? [];
+    List<String> parsedResults = [];
 
-    if (rawProducts is List) {
-      parsedProducts = rawProducts.map<Map<String, dynamic>>((product) {
-        return {
-          '_id': product['_id'] ?? '',
-          'data': Map<String, dynamic>.from(product['data'] ?? {}),
-          'images': List<String>.from(product['images'] ?? []),
-          'generatedDescription': product['generatedDescription'] ?? '',
-          'generatedCategories': List<String>.from(product['generatedCategories'] ?? []),
-        };
-      }).toList();
+    if (rawResults is List) {
+      parsedResults = rawResults.map((item) => item.toString()).toList();
     }
 
     return Message(
@@ -56,8 +48,25 @@ class Message {
       clienttimestamp: map['clienttimestamp'] != null
           ? DateTime.parse(map['clienttimestamp'])
           : DateTime.now(),
-      results: parsedProducts,
-      paymentUrl: map['paymentUrl'],  // Added to fromMap constructor
+      results: parsedResults,
+      paymentUrl: map['paymentUrl'],
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'text': text,
+      'clienttimestamp': clienttimestamp.toIso8601String(),
+      'isClient': isClient,
+      'isRead': isRead,
+      'isLoading': isLoading,
+      'isPayStackView': isPayStackView,
+      'isCartView': isCartView,
+      'isAdressPhoneNumber': isAdressPhoneNumber,
+      'isProductsDisplay': isProductsDisplay,
+      'isOrderSummary': isOrderSummary,
+      'results': results,
+      'paymentUrl': paymentUrl,
+    };
   }
 }
