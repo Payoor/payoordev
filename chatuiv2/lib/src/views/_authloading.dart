@@ -37,8 +37,7 @@ class _AuthLoadingState extends State<AuthLoading> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                CircularProgressIndicator(
-                    color: Colors.white),
+                CircularProgressIndicator(color: Colors.white),
                 SizedBox(height: 16),
                 Text(
                   "Loading...",
@@ -85,6 +84,15 @@ class _AuthLoadingState extends State<AuthLoading> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    print(screenWidth);
+    print("==========screen width========");
+
+    if (screenWidth >= 1024) {
+      print('screen width has approached desktop');
+    }
+
     return Consumer<AuthProv>(
       builder: (context, authProv, child) {
         return AnimatedSwitcher(

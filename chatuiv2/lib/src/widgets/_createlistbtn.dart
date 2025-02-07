@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CreateListBtn extends StatelessWidget {
   final bool isCreateListBtnActive;
-  final VoidCallback onTap; 
+  final VoidCallback onTap;
 
   const CreateListBtn({
     super.key,
@@ -12,6 +12,8 @@ class CreateListBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDesktop = MediaQuery.of(context).size.width >= 1024;
+
     return MouseRegion(
       cursor: isCreateListBtnActive
           ? SystemMouseCursors.click
@@ -19,7 +21,10 @@ class CreateListBtn extends StatelessWidget {
       child: GestureDetector(
         onTap: isCreateListBtnActive ? onTap : null,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 32 : 24,
+            vertical: isDesktop ? 16 : 12,
+          ),
           decoration: BoxDecoration(
             color: Colors.transparent,
             border: Border.all(
@@ -31,12 +36,12 @@ class CreateListBtn extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              'Create list',
+              'Get started',
               style: TextStyle(
                 color: isCreateListBtnActive
                     ? Colors.white
                     : Colors.white.withOpacity(0.5),
-                fontSize: 16,
+                fontSize: isDesktop ? 20 : 16,
               ),
             ),
           ),

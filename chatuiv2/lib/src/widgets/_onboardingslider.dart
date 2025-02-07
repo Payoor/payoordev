@@ -57,7 +57,7 @@ class _OnboardingSliderState extends State<OnboardingSlider> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.5, // Set a specific height
+      height: MediaQuery.of(context).size.height * 0.3, // Set a specific height
       child: PageView.builder(
         controller: _pageController,
         itemCount: widget.reviews.length,

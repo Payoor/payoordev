@@ -6,7 +6,7 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 class OnboardInput extends StatefulWidget {
   final void Function(String) onInputChanged;
   final void Function() onInputFocus;
-  final void Function() onInputBlur; // Added for focus out
+  final void Function() onInputBlur;
 
   const OnboardInput({
     super.key,
@@ -36,49 +36,52 @@ class _OnboardInputState extends State<OnboardInput> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isDesktop = screenWidth >= 1024;
+
     return TextField(
       focusNode: _focusNode,
       maxLines: null,
-      minLines: 3,
+      minLines: isDesktop ? 7 : 3,
       maxLength: 500,
+      textAlignVertical: TextAlignVertical.top,
       onChanged: widget.onInputChanged,
       enableInteractiveSelection: true,
       onSubmitted: (_) {
-        _focusNode.unfocus(); // Unfocus when done is pressed
+        _focusNode.unfocus();
       },
       style: TextStyle(
         color: Colors.white,
-        fontSize: 16,
+        fontSize: isDesktop ? 20 : 16,
       ),
       decoration: InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.backgroundColor, // Background color
+        fillColor: AppColors.backgroundColor,
         contentPadding: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
+          horizontal: isDesktop ? 24 : 16,
+          vertical: isDesktop ? 20 : 12,
         ),
-        constraints: BoxConstraints(
-          maxHeight: 200, // Maximum height it can grow to
-        ),
+        isDense: true, // This helps reduce extra padding
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none, // Removes the default border
+          borderRadius: BorderRadius.circular(isDesktop ? 20 : 12),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(isDesktop ? 20 : 12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(isDesktop ? 20 : 12),
           borderSide: BorderSide(
             color: Colors.transparent,
-            width: 2,
+            width: isDesktop ? 3 : 2,
           ),
         ),
         hintText: 'Create a list...',
         hintStyle: TextStyle(
-          color: AppColors.primaryColor.withOpacity(.5),
+          color: AppColors.white,
+          fontSize: isDesktop ? 20 : 16,
         ),
       ),
     );
