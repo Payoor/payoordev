@@ -38,7 +38,22 @@ class _ProductCardState extends State<ProductCard> {
     _getProductByName();
   }
 
+  @override
+  void didUpdateWidget(ProductCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.productName != widget.productName) {
+      _getProductByName();
+    } else if (productId != null) {
+      _checkIfProductInBookMarks(productId);
+    }
+  }
+
   Future<void> _getProductByName() async {
+    setState(() {
+      _isbookmarked = false;
+    });
+
     try {
       ServerResponse response =
           await ProductRoute.getProductByName(widget.productName);
