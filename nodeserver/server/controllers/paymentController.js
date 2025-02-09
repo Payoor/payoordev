@@ -1,6 +1,5 @@
 import Transaction from "../models/transaction";
 import Order from "../models/order";
-import sendTransactionVerification from "../services/resend/sendTransactionVerification";
 
 const https = require('https');
 const crypto = require('crypto');
@@ -17,24 +16,24 @@ class PaymentController {
         try {
             const { email, total, orderId, userId, name } = req;
             const { delivery_fee, service_charge } = req.body;
-    
+
             const amount = total;
-    
+
             if (!email || !amount) {
                 console.log('email and amount are required')
                 return res.status(400).json({
                     message: 'email and amount are required'
                 })
             }
-    
+
             if (typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number') {
                 throw new Error('All amounts must be numbers');
             }
-    
+
             const amountTotal = (delivery_fee + service_charge + amount).toFixed(2);
             const tx_ref = generateTransactionReference()
             const params = JSON.stringify({
-                amount:amountTotal,
+                amount: amountTotal,
                 email: email,
                 currency: "NGN",
                 tx_ref: tx_ref,
@@ -42,7 +41,7 @@ class PaymentController {
             });
 
             console.log(params)
-    
+
             const options = {
                 hostname: 'api.flutterwave.com',
                 port: 443,
@@ -54,10 +53,10 @@ class PaymentController {
                     'accept': 'application/json'
                 }
             };
-    
+
             const flutterwaveReq = https.request(options, (flutterwaveRes) => {
                 let data = '';
-    
+
                 flutterwaveRes.on('data', (chunk) => {
                     data += chunk;
                 });
@@ -73,8 +72,8 @@ class PaymentController {
                         }
                     }
                 };
-    
-                flutterwaveRes.on('end',  async() => {
+
+                flutterwaveRes.on('end', async () => {
                     console.log('Response:', data);
 
                     const transfer_reference = JSON.parse(data).meta.authorization.transfer_reference;
@@ -85,8 +84,8 @@ class PaymentController {
                     response.data.transfer_reference = transfer_reference;
                     response.data.transaction_reference = tx_ref;
 
-                    res.status(200).json(response);       
-                    
+                    res.status(200).json(response);
+
                     const transaction = new Transaction({
                         initiatorId: userId,
                         orderId: orderId,
@@ -110,17 +109,17 @@ class PaymentController {
                     );
                 });
             });
-    
+
             flutterwaveReq.on('error', (error) => {
                 console.log(error)
                 return res.status(400).json({
                     message: 'Error generating bank transfer details'
                 });
             });
-    
+
             flutterwaveReq.write(params);
             flutterwaveReq.end();
-            
+
         } catch (error) {
             console.log('error here', error, 'error here')
             error.payoorDevErrorMessage = 'Failed to generate bank transfer details';
@@ -135,15 +134,15 @@ class PaymentController {
             const signature = req.headers["verif-hash"];
 
             if (!signature || signature !== secretHash) {
-                return res.status(401).json({ 
-                    success: false, 
-                    message: "Unauthorized request" 
+                return res.status(401).json({
+                    success: false,
+                    message: "Unauthorized request"
                 });
             }
 
             const event = req.body;
             const paymentData = req.body.data;
-            
+
             if (event.event === "charge.completed" && event.data.status === "successful") {
                 const txRef = paymentData.tx_ref;
 
@@ -161,16 +160,16 @@ class PaymentController {
                         runValidators: true,
                     },
                 );
-                
-                const mailResponse = await sendTransactionVerification({
+
+                /*const mailResponse = await sendTransactionVerification({
                     email: paymentData.customer.email,
                     amount: formatAmount(paymentData.amount)
-                });
+                });*/
 
-                return res.status(200).json({ 
-                    success: true, 
+                return res.status(200).json({
+                    success: true,
                     message: "Payment verified successfully",
-                    mailResponse 
+                    mailResponse
                 });
             }
 
@@ -347,11 +346,11 @@ class PaymentController {
                 amount: formatAmount(paymentData.amount / 100)
             });
 
-            return res.status(200).json({ 
+            return res.status(200).json({
                 message: 'Webhook processed successfully',
                 mailResponse
             });
-    
+
 
         } catch (error) {
             console.log('error here', error, 'error here')
@@ -438,13 +437,56 @@ class PaymentController {
 
     }
 
-    async generateBaniPayLink(req, res) {
+    async handleBaniPayment(req, res) {
         try {
-            const { email, total, orderId, userId } = req;
-            
-            console.log(userId, total)
+            const merchant_private_key = "2CPfiSxHPUVxV3UapBrwDg";
+            const headers = req.headers;
+            const body = req.rawBody;
+
+            if (!headers["bani-hook-signature"]) {
+                return res.status(401).json({
+                    status: false,
+                    message: "No signature provided"
+                });
+            }
+
+            const sig = Buffer.from(headers["bani-hook-signature"], "utf8");
+
+            // Calculate HMAC
+            const hmac = crypto.createHmac("sha256", merchant_private_key);
+            const digest = Buffer.from(hmac.update(body).digest("hex"), "utf8");
+
+            // Verify signature
+            if (sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
+                return res.status(401).json({
+                    status: false,
+                    message: "Invalid signature"
+                });
+            }
+
+            // Process the webhook payload here
+            const webhookData = JSON.parse(body);
+
+            console.log(webhookData, 'webhookData========')
+
+            // Add your webhook processing logic here
+            // For example:
+            // - Update order status
+            // - Send confirmation emails
+            // - Update database records
+
+            return res.status(200).json({
+                status: true,
+                message: "Webhook processed successfully"
+            });
+
         } catch (error) {
-            console.log(error)
+            console.error('Webhook processing error:', error);
+            return res.status(500).json({
+                status: false,
+                message: "Error processing webhook",
+                error: error.message
+            });
         }
     }
 }
@@ -462,11 +504,11 @@ const generateTransactionReference = () => {
 }
 
 const formatAmount = (amount) => {
-  const formatter = new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-  });
+    const formatter = new Intl.NumberFormat("en-NG", {
+        style: "currency",
+        currency: "NGN",
+        minimumFractionDigits: 0,
+    });
 
-  return formatter.format(amount);
+    return formatter.format(amount);
 }

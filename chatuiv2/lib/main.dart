@@ -18,6 +18,7 @@ import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_googleplaces.dart';
+import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
@@ -28,7 +29,8 @@ void main() {
     ChangeNotifierProvider(create: (_) => MessageProvider()),
     ChangeNotifierProvider(create: (_) => ResultListProvider()),
     ChangeNotifierProvider(create: (_) => CartProvider()),
-    ChangeNotifierProvider(create: (_) => GooglePlaces())
+    ChangeNotifierProvider(create: (_) => GooglePlaces()),
+    ChangeNotifierProvider(create: (_) => BaniPayProvider())
   ], child: MyApp()));
 }
 

@@ -26,7 +26,7 @@ async function sendOtp({ email, otp }) {
                       <!-- Header -->
                       <tr>
                         <td style="background-color: rgba(36, 155, 72, 1); padding: 30px 0; text-align: center;">
-                          <img src="/api/placeholder/40/40" alt="Logo" style="width: 40px; height: 40px;" />
+                          <img src="https://payoorimages.s3.ap-southeast-2.amazonaws.com/payoorlogo.png" alt="Logo" style="width: 40px; height: 40px;" />
                         </td>
                       </tr>
                       

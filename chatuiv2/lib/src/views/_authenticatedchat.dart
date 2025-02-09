@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 //import 'dart:html' as html;
 import 'dart:async';
 
@@ -16,6 +13,8 @@ import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
 import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
 import 'package:chatuiv2/src/widgets/_messagecontent.dart';
 import 'package:chatuiv2/src/widgets/_addresseslist.dart';
+import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
+import 'package:chatuiv2/src/widgets/_banipay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
@@ -23,6 +22,7 @@ import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_googleplaces.dart';
+import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
@@ -48,6 +48,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  final GlobalKey<SwipeUpWidgetState> _swipeKey =
+      GlobalKey<SwipeUpWidgetState>();
+
   int _selectedPillIndex = 0;
   bool _isDrawerOpen = true;
   bool _showProducts = false;
@@ -70,14 +73,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   final List<String> _chatInputModes = ['address_confirmation'];
 
   String _currentChatInputMode = "";
-  double _totalCartAmount = 0;
 
   final List<Map> pills = [
-    /*{"label": "Cart", "action": "View Cart"},*/
-    /*{"label": "Pay", "action": "Proceed to payment"},*/
     {"label": "Checkout", "action": "Checkout"},
-    /*{"label": "Orders", "action": "Proceed to orders view"},*/
-    /*{"label": "Support", "action": "Speak to an agent"},*/
   ];
 
   @override
@@ -721,6 +719,67 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     );
   }
 
+  Widget buildCartButton() {
+    return Positioned(
+        bottom: 140,
+        right: 20,
+        child: Consumer<CartProvider>(
+          builder: (context, cart, child) => Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: cart.itemCount > 0
+                      ? AppColors.primaryColor.withOpacity(1)
+                      : AppColors.primaryColor.withOpacity(.5),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.shopping_cart),
+                  color: cart.itemCount > 0
+                      ? Colors.white.withOpacity(1)
+                      : Colors.white.withOpacity(.5),
+                  iconSize: 20,
+                  onPressed: () {
+                    if (cart.itemCount > 0) {
+                      _handleCartQuery(cart);
+                    }
+                  },
+                ),
+              ),
+              cart.itemCount > 0
+                  ? Positioned(
+                      top: -8,
+                      right: -8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${cart.itemCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+        ));
+  }
+
   Widget _buildTextField() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -1167,6 +1226,27 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     );
   }
 
+  Widget buildBaniPaySwipeUp() {
+    return Consumer<BaniPayProvider>(
+      builder: (context, baniPayProvider, child) {
+        if (baniPayProvider.currentOrder != null) {
+          return Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SwipeUpWidget(
+              key: _swipeKey,
+              minHeight: 100,
+              maxHeight: MediaQuery.of(context).size.height * 0.7,
+              child: BaniPay(orderId: baniPayProvider.currentOrder),
+            ),
+          );
+        }
+        return const SizedBox();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1177,56 +1257,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           _buildDrawer(),
           _buildWatermarkOverlay(),
           _buildMainContent(),
-          Positioned(
-              bottom: 140,
-              right: 20,
-              child: Consumer<CartProvider>(
-                builder: (context, cart, child) => Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: cart.itemCount > 0 ? AppColors.primaryColor.withOpacity(1) : AppColors.primaryColor.withOpacity(.5),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.shopping_cart),
-                        color: cart.itemCount > 0 ? Colors.white.withOpacity(1) : Colors.white.withOpacity(.5),
-                        iconSize: 20,
-                        onPressed: () {
-                          _handleCartQuery(cart);
-                        },
-                      ),
-                    ),
-                    cart.itemCount > 0 ? Positioned(
-                      top: -8,
-                      right: -8,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${cart.itemCount}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ) : SizedBox(),
-                  ],
-                ),
-              )),
+          buildCartButton(),
+          buildBaniPaySwipeUp()
         ],
       ),
     );

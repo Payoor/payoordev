@@ -121,7 +121,7 @@ class _BaniPayState extends State<BaniPay> {
             console.log('Bani Close Event:', response);
             window.parent.postMessage({type: 'onClose', data: response}, '*');
         },
-callback: function(response) {
+        callback: function(response) {
             console.log('Bani Success Event:', response);
             window.parent.postMessage({type: 'onSuccess', data: response}, '*');
         }

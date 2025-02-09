@@ -36,6 +36,9 @@ import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 import errorHandler from './middleware/errorHandler';
 import requestLogger from './middleware/requestLogger';
 
+import sendPaymentConfirmation from './services/resend/sendPaymentConfirmation';
+import getOrderDetails from './services/payoor/getOrderDetails';
+
 // 5. Constants and configurations
 const PORT = process.env.PORT;
 const uploadDir = path.resolve(__dirname, '..', '.', 'uploads');
@@ -175,3 +178,7 @@ server.listen(PORT, (error) => {
 
 // 15. Initialize WebSocket
 initSocket(server);
+
+//sendPaymentConfirmation({ email: 'nerdyemmanuel@gmail.com', orderdetails: { _id: '12345' }, orderid: '12345' });
+
+//getOrderDetails('67a90beb86e01b825ffd3bdd');

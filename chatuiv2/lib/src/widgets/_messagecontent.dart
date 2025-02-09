@@ -7,10 +7,10 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_productdisplay.dart';
 import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
-import 'package:chatuiv2/src/widgets/_banipay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
+import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 //cart.itemCount > 0
 class MessageContent extends StatefulWidget {
@@ -56,7 +56,8 @@ class _MessageContentState extends State<MessageContent> {
     }
   }
 
-  void openBaniPay() {
+  void openBaniPay(String? orderId) {
+    context.read<BaniPayProvider>().setCurrentOrder('$orderId');
     setState(() {
       isBaniPayOpen = true;
     });
@@ -150,8 +151,9 @@ class _MessageContentState extends State<MessageContent> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     print(widget.message.orderId);
-                                    // final String? newOrderId = widget.message.orderId;
-                                    openBaniPay();
+                                    final String? newOrderId =
+                                        widget.message.orderId;
+                                    openBaniPay(newOrderId);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primaryColor,
@@ -177,14 +179,6 @@ class _MessageContentState extends State<MessageContent> {
                           ),
                         ),
                       )
-                    : SizedBox(),
-                isBaniPayOpen
-                    ? Positioned(
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: BaniPay(orderId: widget.message.orderId))
                     : SizedBox(),
               ]),
               if (widget.message.isCartView && _showCart)
