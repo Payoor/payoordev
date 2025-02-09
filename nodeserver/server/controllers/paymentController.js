@@ -437,6 +437,16 @@ class PaymentController {
         }
 
     }
+
+    async generateBaniPayLink(req, res) {
+        try {
+            const { email, total, orderId, userId } = req;
+            
+            console.log(userId, total)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 export default new PaymentController();

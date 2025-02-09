@@ -14,7 +14,6 @@ import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
 import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
 import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
-import 'package:chatuiv2/src/widgets/_ordersdisplay.dart';
 import 'package:chatuiv2/src/widgets/_messagecontent.dart';
 import 'package:chatuiv2/src/widgets/_addresseslist.dart';
 
@@ -31,8 +30,6 @@ import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
 import 'package:chatuiv2/src/classes/_paystackroutes.dart';
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
 import 'package:chatuiv2/src/classes/_socketservice.dart';
-
-import 'package:chatuiv2/src/utils/_yeswords.dart';
 
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
@@ -76,11 +73,11 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   double _totalCartAmount = 0;
 
   final List<Map> pills = [
-    {"label": "Cart", "action": "View Cart"},
-    {"label": "Pay", "action": "Proceed to payment"},
+    /*{"label": "Cart", "action": "View Cart"},*/
+    /*{"label": "Pay", "action": "Proceed to payment"},*/
     {"label": "Checkout", "action": "Checkout"},
-    {"label": "Orders", "action": "Proceed to orders view"},
-    {"label": "Support", "action": "Speak to an agent"},
+    /*{"label": "Orders", "action": "Proceed to orders view"},*/
+    /*{"label": "Support", "action": "Speak to an agent"},*/
   ];
 
   @override
@@ -230,7 +227,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
 
     //print(currentSuggestion);
-    context.read<ResultListProvider>().setCurrentSuggestions(suggestion: currentSuggestion);
+    context
+        .read<ResultListProvider>()
+        .setCurrentSuggestions(suggestion: currentSuggestion);
   }
 
   void confirmOrderDetails(order_reference) async {
@@ -705,36 +704,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                             ],
                                           ),
                                         ),
-                                        if (label == 'Cart' &&
-                                            cart.itemCount > 0)
-                                          Positioned(
-                                            top: -8,
-                                            right: -8,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors
-                                                    .red, // or any color you prefer
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Consumer<CartProvider>(
-                                                builder:
-                                                    (context, cart, child) =>
-                                                        Text(
-                                                  '${cart.itemCount}',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
                                       ],
                                     ),
                                   ),
@@ -881,10 +850,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         if (response.data['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
 
+          print(chatResponse);
+
           final aiMessage = Message(
             text: chatResponse['text'] ?? 'Sorry, I could not process that.',
             isClient: false,
             isRead: false,
+            orderId: chatResponse['orderId'],
             isOrderSummary: true,
           );
 
@@ -1205,10 +1177,56 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           _buildDrawer(),
           _buildWatermarkOverlay(),
           _buildMainContent(),
-          if (_userOrdersOpen)
-            Positioned(child: OrderDisplay(onBackTap: (context) {
-              _toggleUserOrders();
-            })),
+          Positioned(
+              bottom: 140,
+              right: 20,
+              child: Consumer<CartProvider>(
+                builder: (context, cart, child) => Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: cart.itemCount > 0 ? AppColors.primaryColor.withOpacity(1) : AppColors.primaryColor.withOpacity(.5),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.shopping_cart),
+                        color: cart.itemCount > 0 ? Colors.white.withOpacity(1) : Colors.white.withOpacity(.5),
+                        iconSize: 20,
+                        onPressed: () {
+                          _handleCartQuery(cart);
+                        },
+                      ),
+                    ),
+                    cart.itemCount > 0 ? Positioned(
+                      top: -8,
+                      right: -8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${cart.itemCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ) : SizedBox(),
+                  ],
+                ),
+              )),
         ],
       ),
     );

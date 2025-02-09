@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter_web/webview_flutter_web.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'package:chatuiv2/src/widgets/_sidenav.dart';
 
@@ -8,6 +10,7 @@ import 'package:chatuiv2/src/views/_welcome.dart';
 import 'package:chatuiv2/src/views/_authenticatedchat.dart';
 import 'package:chatuiv2/src/views/_authloading.dart';
 import 'package:chatuiv2/src/views/_aboutus.dart';
+import 'package:chatuiv2/src/views/_ordersdisplay.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -49,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/about': (context) => const StackWithNav(child: AboutPayoor()),
         '/authchat': (context) =>
             const StackWithNav(child: AuthenticatedChat()),
+        '/orders': (context) => const OrderDisplay()
       },
     );
   }

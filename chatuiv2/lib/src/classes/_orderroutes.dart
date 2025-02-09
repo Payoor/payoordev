@@ -27,6 +27,32 @@ class OrdersRoute {
     }
   }
 
+  static Future<ServerResponse> getUserOrder(String orderId) async {
+    try {
+      final uri = Uri.parse('${Urls.baseUrl}/user/get/client/order').replace(
+        queryParameters: {'orderId': orderId},
+      );
+      final jwt = JwtManager.getToken();
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $jwt',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to send message. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to send message: $e');
+    }
+  }
+
   static Future<ServerResponse> createOrder(
       Map<String, dynamic> items, String deliveryAddress) async {
     try {

@@ -7,6 +7,7 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_productdisplay.dart';
 import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
+import 'package:chatuiv2/src/widgets/_banipay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
@@ -35,6 +36,7 @@ class MessageContent extends StatefulWidget {
 class _MessageContentState extends State<MessageContent> {
   bool _showProducts = false;
   bool _showCart = false;
+  bool isBaniPayOpen = false;
   int value = 0;
   int previousMessageLength = 0;
 
@@ -52,6 +54,12 @@ class _MessageContentState extends State<MessageContent> {
         _showCart = false;
       });
     }
+  }
+
+  void openBaniPay() {
+    setState(() {
+      isBaniPayOpen = true;
+    });
   }
 
   @override
@@ -82,7 +90,10 @@ class _MessageContentState extends State<MessageContent> {
                   child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: widget.message.isOrderSummary
+                              ? EdgeInsets.only(
+                                  top: 8, left: 8, right: 7, bottom: 80)
+                              : EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: AppColors.greyBlack.withOpacity(.5),
                             borderRadius: BorderRadius.circular(12),
@@ -124,6 +135,56 @@ class _MessageContentState extends State<MessageContent> {
                           size: 17,
                         ),
                       )
+                    : SizedBox(),
+                widget.message.isOrderSummary
+                    ? Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    print(widget.message.orderId);
+                                    // final String? newOrderId = widget.message.orderId;
+                                    openBaniPay();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primaryColor,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          6), // Reduced border radius (default is 4)
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Pay Now',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                            ],
+                          ),
+                        ),
+                      )
+                    : SizedBox(),
+                isBaniPayOpen
+                    ? Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: BaniPay(orderId: widget.message.orderId))
                     : SizedBox(),
               ]),
               if (widget.message.isCartView && _showCart)

@@ -331,7 +331,7 @@ var AuthController = /*#__PURE__*/function () {
 
               //console.log('Session ID:', req.sessionID);
               if (!validUser) {
-                _context5.next = 19;
+                _context5.next = 20;
                 break;
               }
               //console.log(validUser, 'validUser')
@@ -362,6 +362,8 @@ var AuthController = /*#__PURE__*/function () {
             case 14:
               userData = _context5.sent;
               //console.log(userData, 'userData')
+
+              console.log(userResponse);
               response = {
                 success: true,
                 data: {
@@ -370,9 +372,9 @@ var AuthController = /*#__PURE__*/function () {
                 }
               }; //console.log(response);
               res.status(200).json(response);
-              _context5.next = 21;
+              _context5.next = 22;
               break;
-            case 19:
+            case 20:
               notFoundResponse = {
                 success: false,
                 data: {
@@ -381,20 +383,20 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(404).json(notFoundResponse);
-            case 21:
-              _context5.next = 28;
+            case 22:
+              _context5.next = 29;
               break;
-            case 23:
-              _context5.prev = 23;
+            case 24:
+              _context5.prev = 24;
               _context5.t0 = _context5["catch"](0);
               console.log('error here', _context5.t0, 'error here');
               _context5.t0.payoorDevErrorMessage = 'Failed to retrieve user';
               next(_context5.t0);
-            case 28:
+            case 29:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 23]]);
+        }, _callee5, null, [[0, 24]]);
       }));
       function getValidUser(_x13, _x14, _x15) {
         return _getValidUser.apply(this, arguments);

@@ -66,6 +66,28 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                               sideNavVisible.value = false;
                             },
                           ),
+                          if (userData != null) ListTile(
+                            leading:
+                                Icon(Icons.receipt_long_outlined, color: Colors.white),
+                            title: Text('Orders', style: menuItem),
+                            onTap: () {
+                              // Use root navigator
+                              Navigator.of(context, rootNavigator: true)
+                                  .pushNamed('/orders');
+                              sideNavVisible.value = false;
+                            },
+                          ),
+                          if (userData != null) ListTile(
+                            leading:
+                                Icon(Icons.headset_mic_outlined, color: Colors.white),
+                            title: Text('Support', style: menuItem),
+                            onTap: () {
+                              // Use root navigator
+                              Navigator.of(context, rootNavigator: true)
+                                  .pushNamed('/orders');
+                              sideNavVisible.value = false;
+                            },
+                          )
                         ],
                       ),
                     ),

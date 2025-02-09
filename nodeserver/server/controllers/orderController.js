@@ -60,12 +60,12 @@ Cart Total: ₦${cart_total.toLocaleString()}
 Delivery Fee: ₦${delivery_fee.toLocaleString()}
 Service Charge: ₦${service_charge.toLocaleString()}
 Total Amount: ₦${order_total.toLocaleString()}
-
+Status: Pending Payment
 Delivery Address: ${order_address}
 
 Please Click the Pay Button to make payment
 
-Thank you for your order! We will keep you updated on its status.`;
+Click the pay now button to complete payment.`;
 
                     const response = {
                         success: true,
@@ -73,6 +73,8 @@ Thank you for your order! We will keep you updated on its status.`;
                             message: 'Success response',
                             chatresponse: {
                                 text: orderSummary,
+                                orderStatus: order.status,
+                                orderId: order._id,
                                 isClient: false,
                                 isRead: false,
                                 payload: order
@@ -161,6 +163,43 @@ Thank you for your order! We will keep you updated on its status.`;
             console.log('error here', error, 'error here')
             error.statusCode = 400;
             error.payoorDevErrorMessage = 'Error fetching orders';
+            next(error);
+        }
+    }
+
+    async getUserOrder(req, res, next) {
+        try {
+            console.log(req.query)
+            console.log('check query here =======')
+            const { orderId } = req.query;
+
+            if (!orderId) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'Order ID is required'
+                });
+            }
+
+            const order = await Order.findOne({ _id: orderId });
+
+            if (!order) {
+                console.log('no order')
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'Order not found'
+                });
+            }
+
+            console.log(order, 'order here');
+
+            return res.status(200).json({
+                status: 'success',
+                data: order
+            });
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Error fetching order';
             next(error);
         }
     }

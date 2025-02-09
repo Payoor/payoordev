@@ -240,6 +240,8 @@ class AuthController {
 
                 //console.log(userData, 'userData')
 
+                console.log(userResponse)
+
                 const response = {
                     success: true,
                     data: {

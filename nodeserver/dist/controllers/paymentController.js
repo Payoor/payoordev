@@ -523,6 +523,31 @@ var PaymentController = /*#__PURE__*/function () {
       }
       return verifyPayment;
     }()
+  }, {
+    key: "generateBaniPayLink",
+    value: function () {
+      var _generateBaniPayLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
+        var email, total, orderId, userId;
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
+            case 0:
+              try {
+                email = req.email, total = req.total, orderId = req.orderId, userId = req.userId;
+                console.log(userId, total);
+              } catch (error) {
+                console.log(error);
+              }
+            case 1:
+            case "end":
+              return _context8.stop();
+          }
+        }, _callee8);
+      }));
+      function generateBaniPayLink(_x14, _x15) {
+        return _generateBaniPayLink.apply(this, arguments);
+      }
+      return generateBaniPayLink;
+    }()
   }]);
 }();
 var _default = exports["default"] = new PaymentController();

@@ -11,6 +11,7 @@ class Message {
   final bool isOrderSummary;
   final List<String> results; // Changed to List<String>
   final String? paymentUrl;
+  final String? orderId;
 
   Message({
     required this.text,
@@ -25,6 +26,7 @@ class Message {
     this.isOrderSummary = false,
     this.results = const [], // Default empty List<String>
     this.paymentUrl,
+    this.orderId,
   }) : clienttimestamp = clienttimestamp ?? DateTime.now();
 
   factory Message.fromMap(Map<String, dynamic> map) {
@@ -50,6 +52,7 @@ class Message {
           : DateTime.now(),
       results: parsedResults,
       paymentUrl: map['paymentUrl'],
+      orderId: map['text'] ?? '',
     );
   }
 
@@ -67,6 +70,7 @@ class Message {
       'isOrderSummary': isOrderSummary,
       'results': results,
       'paymentUrl': paymentUrl,
+      'orderId': orderId,
     };
   }
 }

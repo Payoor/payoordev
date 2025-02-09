@@ -90,13 +90,15 @@ var OrderController = /*#__PURE__*/function () {
               items.forEach(function (item) {
                 console.log(item.product_units);
               });
-              orderSummary = "Your order has been created. Below is your order summary:\n\nOrder Details\n-----------------\nCart Total: \u20A6".concat(cart_total.toLocaleString(), "\nDelivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\nService Charge: \u20A6").concat(service_charge.toLocaleString(), "\nTotal Amount: \u20A6").concat(order_total.toLocaleString(), "\n\nDelivery Address: ").concat(order_address, "\n\nPlease Click the Pay Button to make payment\n\nThank you for your order! We will keep you updated on its status.");
+              orderSummary = "Your order has been created. Below is your order summary:\n\nOrder Details\n-----------------\nCart Total: \u20A6".concat(cart_total.toLocaleString(), "\nDelivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\nService Charge: \u20A6").concat(service_charge.toLocaleString(), "\nTotal Amount: \u20A6").concat(order_total.toLocaleString(), "\nStatus: Pending Payment\nDelivery Address: ").concat(order_address, "\n\nPlease Click the Pay Button to make payment\n\nClick the pay now button to complete payment.");
               response = {
                 success: true,
                 data: {
                   message: 'Success response',
                   chatresponse: {
                     text: orderSummary,
+                    orderStatus: _order.status,
+                    orderId: _order._id,
                     isClient: false,
                     isRead: false,
                     payload: _order
@@ -240,6 +242,66 @@ var OrderController = /*#__PURE__*/function () {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;
+    }()
+  }, {
+    key: "getUserOrder",
+    value: function () {
+      var _getUserOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res, next) {
+        var orderId, order;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.prev = 0;
+              console.log(req.query);
+              console.log('check query here =======');
+              orderId = req.query.orderId;
+              if (orderId) {
+                _context4.next = 6;
+                break;
+              }
+              return _context4.abrupt("return", res.status(400).json({
+                status: 'error',
+                message: 'Order ID is required'
+              }));
+            case 6:
+              _context4.next = 8;
+              return _order2["default"].findOne({
+                _id: orderId
+              });
+            case 8:
+              order = _context4.sent;
+              if (order) {
+                _context4.next = 12;
+                break;
+              }
+              console.log('no order');
+              return _context4.abrupt("return", res.status(404).json({
+                status: 'error',
+                message: 'Order not found'
+              }));
+            case 12:
+              console.log(order, 'order here');
+              return _context4.abrupt("return", res.status(200).json({
+                status: 'success',
+                data: order
+              }));
+            case 16:
+              _context4.prev = 16;
+              _context4.t0 = _context4["catch"](0);
+              console.log('error here', _context4.t0, 'error here');
+              _context4.t0.statusCode = 400;
+              _context4.t0.payoorDevErrorMessage = 'Error fetching order';
+              next(_context4.t0);
+            case 22:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, null, [[0, 16]]);
+      }));
+      function getUserOrder(_x10, _x11, _x12) {
+        return _getUserOrder.apply(this, arguments);
+      }
+      return getUserOrder;
     }()
   }]);
 }();
