@@ -331,15 +331,15 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Expanded(
-                  child: Column(
+              child: Column(
+                // ✅ Moved Column outside of Expanded
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAnimatedHeader(),
                   Expanded(
+                    // ✅ Now it's properly placed inside Column
                     child: Stack(
-                      fit: StackFit
-                          .expand, // Add this to ensure Stack fills available space
+                      fit: StackFit.expand,
                       children: [
                         Positioned.fill(
                           child: _renderMessages(),
@@ -353,8 +353,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                               constraints: BoxConstraints(
                                 maxHeight:
                                     MediaQuery.of(context).size.height * 0.3,
-                                minHeight:
-                                    100, // Ensure it has a minimum height
+                                minHeight: 100,
                               ),
                               child: AddressesList(
                                 onLocationSelected: (updatedAddress) {
@@ -379,7 +378,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                   _buildPillsSlide(),
                   _buildTextField(),
                 ],
-              )),
+              ),
             ),
           );
         }
@@ -562,7 +561,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                   child: InkWell(
                                     onTap: () {
                                       if (action == "View Cart") {
-                                        
                                       } else if (action == "Checkout") {
                                         //print('handle payment');
                                         //_handlePayment();
@@ -1103,11 +1101,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         children: [
           _buildWatermarkOverlay(),
           Positioned.fill(child: _buildMainContent()),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: buildCartButton(),
-          ),
+          buildCartButton(),
         ],
       ),
     );
