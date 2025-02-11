@@ -67,7 +67,7 @@ class OrdersRoute {
           'Origin': 'https://chat.payoor.store',
           'Authorization': 'Bearer $jwt',
         },
-        body: jsonEncode({"order": items, "order_address": deliveryAddress}),
+        body: jsonEncode({"order": items, "order_address": "deliveryAddress"}),
       );
 
       if (response.statusCode == 200) {

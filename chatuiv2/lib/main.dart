@@ -11,6 +11,7 @@ import 'package:chatuiv2/src/views/_authenticatedchat.dart';
 import 'package:chatuiv2/src/views/_authloading.dart';
 import 'package:chatuiv2/src/views/_aboutus.dart';
 import 'package:chatuiv2/src/views/_ordersdisplay.dart';
+import 'package:chatuiv2/src/views/_orderconfirm.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
         '/about': (context) => const StackWithNav(child: AboutPayoor()),
         '/authchat': (context) =>
             const StackWithNav(child: AuthenticatedChat()),
-        '/orders': (context) => const OrderDisplay()
+        '/orders': (context) => const StackWithNav(child: OrderDisplay()),
+        '/confirmorder': (context) => const StackWithNav(child: OrderConfirm()),
       },
     );
   }

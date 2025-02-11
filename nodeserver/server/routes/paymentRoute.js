@@ -16,4 +16,6 @@ paymentRoute.post('/flutter/transfer', verifyToken, OrderController.createOrder,
 
 paymentRoute.post('/flutter/verify-payment', PaymentController.handleFlutterwavePaymentResponse);
 
+paymentRoute.post('/bani/payment-response', PaymentController.handleBaniPayment);
+
 export default paymentRoute;

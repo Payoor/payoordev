@@ -6,7 +6,6 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_productdisplay.dart';
-import 'package:chatuiv2/src/widgets/_cartdisplay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_cartprov.dart';
@@ -186,7 +185,6 @@ class _MessageContentState extends State<MessageContent> {
                   builder: (context, cartProvider, child) {
                     return Column(
                       children: [
-                        CartDisplay(),
                         cartProvider.itemCount > 0
                             ? Container(
                                 width: double.infinity,

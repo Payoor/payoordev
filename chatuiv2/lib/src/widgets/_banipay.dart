@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:html' as html;
 import 'dart:ui' as ui;
 
@@ -8,6 +9,9 @@ import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_authapiroutes.dart';
 import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
+
+import 'package:chatuiv2/src/providers/_banipayprov.dart';
+import 'package:chatuiv2/src/providers/_cartprov.dart';
 
 class BaniPay extends StatefulWidget {
   final String? orderId;
@@ -37,6 +41,31 @@ class _BaniPayState extends State<BaniPay> {
   void initState() {
     super.initState();
     _fetchData();
+
+    html.window.onMessage.listen((event) {
+      print('Received message event:');
+      print('Event data: ${event.data}');
+      print('Event type: ${event.type}');
+      print('Event source: ${event.source}');
+
+      // Check if the event.data is a Map and contains the success message
+      if (event.data is Map) {
+        final data = event.data as Map;
+        // Only call _handlePaymentSuccess if it's a success message
+        if (data['type'] == 'onSuccess') {
+          _handlePaymentSuccess(widget.orderId);
+        }
+      }
+    });
+  }
+
+  void _handlePaymentSuccess(dynamic orderId) {
+    //print(orderId);
+    context.read<BaniPayProvider>().setCurrentOrder(null);
+
+    context.read<CartProvider>().clear();
+
+    Navigator.pushNamed(context, '/');
   }
 
   Future<void> _fetchData() async {
@@ -112,7 +141,7 @@ class _BaniPayState extends State<BaniPay> {
         email: document.getElementById('email').value,
         firstName: document.getElementById('first-name').value,
         lastName: document.getElementById('last-name').value,
-        merchantKey: "pub_test_WXKQ08RC7YQDN0KR5JS39",
+        merchantKey: "pub_prod_5AXXSMJ492485SQ4BTEPSY3EQPYTKD",
         metadata: {
           order_ref: "${widget.orderId}",
         },
@@ -123,7 +152,10 @@ class _BaniPayState extends State<BaniPay> {
         },
         callback: function(response) {
             console.log('Bani Success Event:', response);
-            window.parent.postMessage({type: 'onSuccess', data: response}, '*');
+            const message = {type: 'onSuccess', data: response};
+            console.log('Sending message to parent:', message);
+            window.parent.postMessage(message, '*');
+            console.log('Message sent to parent');
         }
       });
       handler;

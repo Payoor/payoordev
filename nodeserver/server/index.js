@@ -14,7 +14,6 @@ const app = express();
 const server = require('http').createServer(app);
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-const session = require('express-session');
 
 // 2. Import models
 import File from './models/file';
@@ -36,8 +35,7 @@ import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 import errorHandler from './middleware/errorHandler';
 import requestLogger from './middleware/requestLogger';
 
-import sendPaymentConfirmation from './services/resend/sendPaymentConfirmation';
-import getOrderDetails from './services/payoor/getOrderDetails';
+
 
 // 5. Constants and configurations
 const PORT = process.env.PORT;
@@ -47,8 +45,6 @@ const uploadDir = path.resolve(__dirname, '..', '.', 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
-
-console.log(process.env.NODE_ENV);
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -80,7 +76,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // 8. Global middleware (order matters!)
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({
+  limit: '2mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
+
 app.use(express.urlencoded({
   limit: '1mb',
   extended: true,

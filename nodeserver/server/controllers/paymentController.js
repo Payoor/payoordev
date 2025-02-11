@@ -1,6 +1,9 @@
 import Transaction from "../models/transaction";
 import Order from "../models/order";
 
+import getOrderDetails from '../services/payoor/getOrderDetails';
+
+
 const https = require('https');
 const crypto = require('crypto');
 
@@ -439,9 +442,17 @@ class PaymentController {
 
     async handleBaniPayment(req, res) {
         try {
-            const merchant_private_key = "2CPfiSxHPUVxV3UapBrwDg";
+            const merchant_private_key = process.env.MERCHANT_PRIVATE_KEY_BANI;
             const headers = req.headers;
             const body = req.rawBody;
+
+            if (!body) {
+                console.log('no body');
+                return res.status(400).json({
+                    status: false,
+                    message: "No body provided"
+                });
+            }
 
             if (!headers["bani-hook-signature"]) {
                 return res.status(401).json({
@@ -468,6 +479,20 @@ class PaymentController {
             const webhookData = JSON.parse(body);
 
             console.log(webhookData, 'webhookData========')
+
+            const orderRef = webhookData.data.custom_data.order_ref;
+            const paymentStatus = webhookData.data.pay_status;
+
+            if (paymentStatus === 'paid') {
+                // Update order status, send confirmation email, etc using orderRef
+                // Example:
+                await Order.findByIdAndUpdate(orderRef, {
+                    reference: webhookData.data.transaction_ref,
+                    status: 'processing'
+                });
+
+                getOrderDetails(orderRef)
+            }
 
             // Add your webhook processing logic here
             // For example:

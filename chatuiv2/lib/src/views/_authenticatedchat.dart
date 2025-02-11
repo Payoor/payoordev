@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:chatuiv2/src/views/_landingscreen.dart';
+import 'package:chatuiv2/src/views/_cartdisplay.dart';
 
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
 import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
-import 'package:chatuiv2/src/widgets/_productsizeselector.dart';
 import 'package:chatuiv2/src/widgets/_messagecontent.dart';
 import 'package:chatuiv2/src/widgets/_addresseslist.dart';
 import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
@@ -74,9 +74,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   String _currentChatInputMode = "";
 
-  final List<Map> pills = [
-    {"label": "Checkout", "action": "Checkout"},
-  ];
+  final List<Map> pills = [];
 
   @override
   void initState() {
@@ -202,13 +200,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
   }
 
-  void closeProductSizeSelector() {
-    //print('view cart items');
-    context
-        .read<ResultListProvider>()
-        .setCurrentProduct(productId: "", productName: "");
-  }
-
   void closePaystackView(BuildContext context) {
     setState(() {
       _payStackViewOpen = false;
@@ -262,54 +253,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       context.read<MessageProvider>().addMessage(aiMessage);
       _scrollToBottom();
     }
-  }
-
-  Widget _buildDrawer() {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(-300 + (300 * _animationController.value), 0),
-          child: Container(
-            width: 300,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              color: AppColors.red,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 5,
-                )
-              ],
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 50),
-                ListTile(
-                  title: Text(
-                    'Menu Item 1',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onTap: () {
-                    _toggleDrawer();
-                  },
-                ),
-                ListTile(
-                  title: Text(
-                    'Menu Item 2',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onTap: () {
-                    _toggleDrawer();
-                    // Add navigation logic
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   InputDecoration get _inputDecoration => InputDecoration(
@@ -388,7 +331,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
+              child: Expanded(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAnimatedHeader(),
@@ -397,8 +341,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       fit: StackFit
                           .expand, // Add this to ensure Stack fills available space
                       children: [
-                        _renderMessages(),
-                        _renderProductVariants(),
+                        Positioned.fill(
+                          child: _renderMessages(),
+                        ),
                         if (_confirmingAddress)
                           Positioned(
                             bottom: 0,
@@ -406,22 +351,26 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                             right: 0,
                             child: Container(
                               constraints: BoxConstraints(
-                                maxHeight: MediaQuery.of(context).size.height *
-                                    0.3, // Example: 30% of screen height
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.3,
+                                minHeight:
+                                    100, // Ensure it has a minimum height
                               ),
                               child: AddressesList(
-                                  onLocationSelected: (updatedAddress) {
-                                //print(updatedAddress);
-                                _setInputText(updatedAddress);
-                              }, onAddressSelected: (addressData) {
-                                String value = addressData['address']!;
-                                _setInputText(value);
-                                setState(() {
-                                  // _paying = true;
-                                  _confirmingAddress = false;
-                                });
-                                context.read<GooglePlaces>().clearPredictions();
-                              }),
+                                onLocationSelected: (updatedAddress) {
+                                  _setInputText(updatedAddress);
+                                },
+                                onAddressSelected: (addressData) {
+                                  String value = addressData['address']!;
+                                  _setInputText(value);
+                                  setState(() {
+                                    _confirmingAddress = false;
+                                  });
+                                  context
+                                      .read<GooglePlaces>()
+                                      .clearPredictions();
+                                },
+                              ),
                             ),
                           )
                       ],
@@ -430,7 +379,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                   _buildPillsSlide(),
                   _buildTextField(),
                 ],
-              ),
+              )),
             ),
           );
         }
@@ -446,40 +395,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         return LandingScreen();
       },
     );
-  }
-
-  Widget _renderProductVariants() {
-    return Consumer<ResultListProvider>(
-        builder: (context, resultListProvider, child) {
-      String _current_product_name = resultListProvider.current_product_name;
-      String _current_product_id = resultListProvider.current_product_id;
-
-      return Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: resultListProvider.current_product_id.isEmpty
-              ? 0
-              : MediaQuery.of(context).size.height,
-          child: resultListProvider.current_product_id.isEmpty
-              ? const SizedBox.shrink()
-              : SingleChildScrollView(
-                  child: Container(
-                      constraints: BoxConstraints(
-                        minHeight: MediaQuery.of(context).size.height * 0.8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: ProductSizeSelector(
-                        productId: _current_product_id,
-                        productName: _current_product_name,
-                        closeWidget: () {
-                          closeProductSizeSelector();
-                        },
-                      ))));
-    });
   }
 
   Widget _renderMessages() {
@@ -647,15 +562,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                   child: InkWell(
                                     onTap: () {
                                       if (action == "View Cart") {
-                                        closeProductSizeSelector();
-                                        _handleCartQuery(cart);
+                                        
                                       } else if (action == "Checkout") {
                                         //print('handle payment');
                                         //_handlePayment();
                                         //_handlePaymentLinkGeneration();
                                         //_confirmAddress();
-                                        // _handleCartQuery(cart);
-                                        _handleAddressConfirmation();
                                       } else if (action ==
                                           "Proceed to orders view") {
                                         _toggleUserOrders();
@@ -749,7 +661,15 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                   iconSize: 20,
                   onPressed: () {
                     if (cart.itemCount > 0) {
-                      _handleCartQuery(cart);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartDisplayScreen(
+                            closeWidget: () => Navigator.pop(context),
+                            //totalAmount: cart.totalAmount,
+                          ),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -858,28 +778,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
       _focusNode.requestFocus();
     });
-  }
-
-  void _handleAddressConfirmation() async {
-    final userData = context.read<AuthProv>().userData;
-
-    if (mounted) {
-      context.read<MessageProvider>().addMessage(Message(
-            text: "Please confirm your current delivery address",
-            isClient: false,
-            isRead: false,
-          ));
-
-      _scrollToBottom();
-    }
-
-    if (mounted) {
-      setState(() {
-        _currentChatInputMode = _chatInputModes[0];
-      });
-
-      _setInputText(userData!['userAddress']);
-    }
   }
 
   void _createOrder() async {
@@ -1150,36 +1048,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     }
   }
 
-  void _handleCartQuery(CartProvider cartProvider) async {
-    try {
-      context.read<MessageProvider>().addMessage(Message(
-            text: '',
-            isClient: false,
-            isRead: false,
-            isLoading: true,
-          ));
-
-      _scrollToBottom();
-
-      Message aiMessage;
-
-      aiMessage = Message(
-        text: "This is what your cart looks like at the moment",
-        isCartView: true,
-        isClient: false,
-        isRead: false,
-      );
-
-      if (mounted) {
-        context.read<MessageProvider>().removeLastMessage();
-        context.read<MessageProvider>().addMessage(aiMessage);
-        _scrollToBottom();
-      }
-    } catch (e) {
-      print('Error handling cart query: $e');
-    }
-  }
-
   Widget _buildWatermarkOverlay() {
     return Positioned.fill(
       child: Container(
@@ -1226,27 +1094,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     );
   }
 
-  Widget buildBaniPaySwipeUp() {
-    return Consumer<BaniPayProvider>(
-      builder: (context, baniPayProvider, child) {
-        if (baniPayProvider.currentOrder != null) {
-          return Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SwipeUpWidget(
-              key: _swipeKey,
-              minHeight: 100,
-              maxHeight: MediaQuery.of(context).size.height * 0.7,
-              child: BaniPay(orderId: baniPayProvider.currentOrder),
-            ),
-          );
-        }
-        return const SizedBox();
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1254,11 +1101,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          _buildDrawer(),
           _buildWatermarkOverlay(),
-          _buildMainContent(),
-          buildCartButton(),
-          buildBaniPaySwipeUp()
+          Positioned.fill(child: _buildMainContent()),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: buildCartButton(),
+          ),
         ],
       ),
     );

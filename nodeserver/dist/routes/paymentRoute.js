@@ -15,4 +15,5 @@ paymentRoute.post('/paystack/payment-response', _paymentController["default"].ha
 paymentRoute.post('/paystack/verify-payment', _paymentController["default"].verifyPayment);
 paymentRoute.post('/flutter/transfer', _verifyToken["default"], _orderController["default"].createOrder, _paymentController["default"].generateTransferDetails);
 paymentRoute.post('/flutter/verify-payment', _paymentController["default"].handleFlutterwavePaymentResponse);
+paymentRoute.post('/bani/payment-response', _paymentController["default"].handleBaniPayment);
 var _default = exports["default"] = paymentRoute;

@@ -27,16 +27,16 @@ class _AuthLoadingState extends State<AuthLoading> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: AppColors.primaryColorDark,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 CircularProgressIndicator(color: Colors.white),
                 SizedBox(height: 16),
                 Text(
@@ -85,9 +85,6 @@ class _AuthLoadingState extends State<AuthLoading> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-
-    print(screenWidth);
-    print("==========screen width========");
 
     if (screenWidth >= 1024) {
       print('screen width has approached desktop');
