@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 
@@ -26,14 +27,21 @@ class _OrderConfirmState extends State<OrderConfirm> {
   final GlobalKey<SwipeUpWidgetState> _swipeKey =
       GlobalKey<SwipeUpWidgetState>();
 
-  String selectedTime = '24 hours from now';
+  String selectedTime = '';
   String selectedAddress = "";
 
-  final List<String> deliveryTimes = [
-    '24 hours from now',
-    '48 hours from now',
-    '96 hours from now'
-  ];
+  final List<String> deliveryTimes = () {
+    final List<String> dates = [];
+    final DateTime tomorrow = DateTime.now().add(const Duration(days: 2));
+    final DateFormat formatter = DateFormat('EEEE d MMM');
+
+    for (int i = 0; i < 7; i++) {
+      final DateTime date = tomorrow.add(Duration(days: i));
+      dates.add(formatter.format(date));
+    }
+
+    return dates;
+  }();
 
   bool _confirmingAddress = false;
   bool _openBaniPay = false;
@@ -255,7 +263,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                         ),
                                         child: Column(
                                           children: [
-                                            Text('Pick a Delivery Timeline',
+                                            Text('Pick a Delivery Date',
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w500,
@@ -547,18 +555,33 @@ class _OrderConfirmState extends State<OrderConfirm> {
                   child: Consumer<CartProvider>(
                     builder: (context, cart, child) {
                       return ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _openBaniPay = true;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 25,
-                              horizontal: 20), // Added horizontal padding
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                        onPressed:
+                            selectedAddress.isEmpty || selectedTime.isEmpty
+                                ? null
+                                : () {
+                                    setState(() {
+                                      _openBaniPay = true;
+                                    });
+                                  },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.disabled)) {
+                                return AppColors.primaryColor.withAlpha(128);
+                              }
+                              return AppColors.primaryColor;
+                            },
+                          ),
+                          padding:
+                              MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                  const EdgeInsets.symmetric(
+                                      vertical: 25, horizontal: 20)),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ),
                         child: Text('Confirm Order',

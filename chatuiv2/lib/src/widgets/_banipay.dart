@@ -142,6 +142,7 @@ class _BaniPayState extends State<BaniPay> {
         firstName: document.getElementById('first-name').value,
         lastName: document.getElementById('last-name').value,
         merchantKey: "pub_prod_5AXXSMJ492485SQ4BTEPSY3EQPYTKD",
+        bankTransferOnly: true,
         metadata: {
           order_ref: "${widget.orderId}",
         },

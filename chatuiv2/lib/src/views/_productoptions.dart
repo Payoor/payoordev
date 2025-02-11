@@ -245,24 +245,39 @@ class _ProductOptionsState extends State<ProductOptions> {
                     child: Consumer<CartProvider>(
                       builder: (context, cart, child) {
                         return ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CartDisplayScreen(
-                                  closeWidget: () => Navigator.pop(context),
-                                  //totalAmount: cart.totalAmount,
-                                ),
+                          onPressed: cart.totalAmount == 0
+                              ? null
+                              : () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CartDisplayScreen(
+                                        closeWidget: () =>
+                                            Navigator.pop(context),
+                                      ),
+                                    ),
+                                  );
+                                },
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) {
+                                  return AppColors.primaryColor.withAlpha(128);
+                                }
+                                return AppColors.primaryColor;
+                              },
+                            ),
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              const EdgeInsets.symmetric(
+                                  vertical: 25, horizontal: 20),
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 25,
-                                horizontal: 20), // Added horizontal padding
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           child: Row(
@@ -277,9 +292,8 @@ class _ProductOptionsState extends State<ProductOptions> {
                                 ),
                               ),
                               Text(
-                                '₦${cart.totalAmount}', // Fixed string interpolation
+                                '₦${cart.totalAmount}',
                                 style: const TextStyle(
-                                  // Added const
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
