@@ -122,59 +122,63 @@ class _ProductCardState extends State<ProductCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
+          Expanded(
+              child: Container(
             color: Colors.transparent,
             height: 200,
             child: Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: double.infinity,
-                    height: 150,
-                    child: _imageUrlFuture == null
-                        ? const Center(child: CircularProgressIndicator())
-                        : FutureBuilder<String>(
-                            future: _imageUrlFuture,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-
-                              if (snapshot.hasError || !snapshot.hasData) {
-                                return const Center(
-                                  child: Icon(
-                                    Icons.image,
-                                    size: 40,
-                                    color: Colors.grey,
-                                  ),
-                                );
-                              }
-
-                              return Image.network(
-                                snapshot.data!,
-                                fit: BoxFit.cover,
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
+                  child: LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
+                    return Container(
+                      width: double.infinity,
+                      height: constraints.maxHeight * 0.8,
+                      child: _imageUrlFuture == null
+                          ? const Center(child: CircularProgressIndicator())
+                          : FutureBuilder<String>(
+                              future: _imageUrlFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
                                   return const Center(
                                     child: CircularProgressIndicator(),
                                   );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.image,
-                                    size: 40,
-                                    color: Colors.grey,
+                                }
+
+                                if (snapshot.hasError || !snapshot.hasData) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.image,
+                                      size: 40,
+                                      color: Colors.grey,
+                                    ),
                                   );
-                                },
-                              );
-                            },
-                          ),
-                  ),
+                                }
+
+                                return Image.network(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.image,
+                                      size: 40,
+                                      color: Colors.grey,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                    );
+                  }),
                 ),
                 Positioned(
                   top: 8,
@@ -245,7 +249,7 @@ class _ProductCardState extends State<ProductCard> {
                 )
               ],
             ),
-          ),
+          )),
           GestureDetector(
             onTap: () {
               if (productId != null) {

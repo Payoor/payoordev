@@ -208,83 +208,199 @@ class _OrderConfirmState extends State<OrderConfirm> {
                 final num deliveryFee = 3500;
 
                 return Positioned(
-                    top: 80,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Expanded(
-                      child: SingleChildScrollView(
-                          child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Column(
-                                    children: [
-                                      const Text('Your Order Summary',
-                                          style: TextStyle(
-                                            color: AppColors.white,
-                                            fontSize: 20,
-                                          )),
-                                      const SizedBox(
-                                        height: 40,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          openAddressList();
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 16, 0, 16),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.location_on,
-                                                    color:
-                                                        AppColors.primaryColor,
-                                                    size: 10,
-                                                  ),
-                                                  const SizedBox(
-                                                      width:
-                                                          10), // spacing between icon and text
-                                                  Expanded(
-                                                    child: Text(
-                                                      selectedAddress,
-                                                      style: const TextStyle(
-                                                        color: AppColors.white,
-                                                        fontSize: 14,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                  top: 80,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Column(children: [
+                    Expanded(
+                        child: SingleChildScrollView(
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        const Text('Your Order Summary',
+                                            style: TextStyle(
+                                              color: AppColors.white,
+                                              fontSize: 20,
+                                            )),
+                                        const SizedBox(
+                                          height: 40,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            openAddressList();
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 16, 0, 16),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.location_on,
+                                                      color: AppColors
+                                                          .primaryColor,
+                                                      size: 10,
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 2,
-                                              ),
-                                              const Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text('Delivery Address',
-                                                      style: TextStyle(
-                                                        color: AppColors
-                                                            .primaryColor,
-                                                        fontSize: 10,
-                                                      )),
-                                                  SizedBox()
-                                                ],
-                                              )
-                                            ],
+                                                    const SizedBox(
+                                                        width:
+                                                            10), // spacing between icon and text
+                                                    Expanded(
+                                                      child: Text(
+                                                        selectedAddress,
+                                                        style: const TextStyle(
+                                                          color:
+                                                              AppColors.white,
+                                                          fontSize: 14,
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 2,
+                                                ),
+                                                const Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text('Delivery Address',
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .primaryColor,
+                                                          fontSize: 10,
+                                                        )),
+                                                    SizedBox()
+                                                  ],
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
+                                        Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 16, 0, 16),
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                top: BorderSide(
+                                                  color: Colors.grey[300]!,
+                                                  width: 0.5,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Text('Pick a Delivery Date',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: AppColors.white,
+                                                    )),
+                                                const SizedBox(
+                                                  height: 30,
+                                                ),
+                                                Column(
+                                                  children: deliveryTimes
+                                                      .map(
+                                                          (time) =>
+                                                              GestureDetector(
+                                                                onTap: _isSettingDeliveryDate
+                                                                    ? null
+                                                                    : () async {
+                                                                        setState(
+                                                                            () {
+                                                                          _isSettingDeliveryDate =
+                                                                              true;
+                                                                        });
+                                                                        try {
+                                                                          await setOrderDeliveryDate(
+                                                                              time);
+                                                                          setState(
+                                                                              () {
+                                                                            selectedTime =
+                                                                                time;
+                                                                          });
+                                                                        } finally {
+                                                                          setState(
+                                                                              () {
+                                                                            _isSettingDeliveryDate =
+                                                                                false;
+                                                                          });
+                                                                        }
+                                                                      },
+                                                                child: Opacity(
+                                                                  opacity:
+                                                                      _isSettingDeliveryDate
+                                                                          ? 0.5
+                                                                          : 1.0,
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        bottom:
+                                                                            16),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Container(
+                                                                          height:
+                                                                              18,
+                                                                          width:
+                                                                              18,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            border:
+                                                                                Border.all(
+                                                                              color: AppColors.primaryColor,
+                                                                              width: 2,
+                                                                            ),
+                                                                          ),
+                                                                          child:
+                                                                              Center(
+                                                                            child:
+                                                                                Container(
+                                                                              height: 10,
+                                                                              width: 10,
+                                                                              decoration: BoxDecoration(
+                                                                                shape: BoxShape.circle,
+                                                                                color: selectedTime == time ? AppColors.primaryColor : Colors.transparent,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              10,
+                                                                        ),
+                                                                        Text(
+                                                                            time,
+                                                                            style:
+                                                                                const TextStyle(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w500,
+                                                                              color: AppColors.white,
+                                                                            ))
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                      .toList(),
+                                                )
+                                              ],
+                                            )),
+                                        Container(
                                           padding: const EdgeInsets.fromLTRB(
                                               0, 16, 0, 16),
                                           decoration: BoxDecoration(
@@ -297,222 +413,115 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                           ),
                                           child: Column(
                                             children: [
-                                              Text('Pick a Delivery Date',
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: AppColors.white,
-                                                  )),
-                                              const SizedBox(
-                                                height: 30,
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text('Sub-total',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      )),
+                                                  Text(
+                                                    '₦${cart.totalAmount}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                ],
                                               ),
-                                              Column(
-                                                children: deliveryTimes
-                                                    .map(
-                                                        (time) =>
-                                                            GestureDetector(
-                                                              onTap:
-                                                                  _isSettingDeliveryDate
-                                                                      ? null
-                                                                      : () async {
-                                                                          setState(
-                                                                              () {
-                                                                            _isSettingDeliveryDate =
-                                                                                true;
-                                                                          });
-                                                                          try {
-                                                                            await setOrderDeliveryDate(time);
-                                                                            setState(() {
-                                                                              selectedTime = time;
-                                                                            });
-                                                                          } finally {
-                                                                            setState(() {
-                                                                              _isSettingDeliveryDate = false;
-                                                                            });
-                                                                          }
-                                                                        },
-                                                              child: Opacity(
-                                                                opacity:
-                                                                    _isSettingDeliveryDate
-                                                                        ? 0.5
-                                                                        : 1.0,
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          bottom:
-                                                                              16),
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        height:
-                                                                            18,
-                                                                        width:
-                                                                            18,
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                          border:
-                                                                              Border.all(
-                                                                            color:
-                                                                                AppColors.primaryColor,
-                                                                            width:
-                                                                                2,
-                                                                          ),
-                                                                        ),
-                                                                        child:
-                                                                            Center(
-                                                                          child:
-                                                                              Container(
-                                                                            height:
-                                                                                10,
-                                                                            width:
-                                                                                10,
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              shape: BoxShape.circle,
-                                                                              color: selectedTime == time ? AppColors.primaryColor : Colors.transparent,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(width: 10,),
-                                                                      Text(time,
-                                                                          style:
-                                                                              const TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            color:
-                                                                                AppColors.white,
-                                                                          ))
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ))
-                                                    .toList(),
+                                              const SizedBox(height: 15),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text('Delivery Fee',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      )),
+                                                  Text(
+                                                    '₦$deliveryFee',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 15),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text('Service Charge',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      )),
+                                                  Text(
+                                                    '₦${cart.totalAmount * 0.05}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 15),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text('Total',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      )),
+                                                  Text(
+                                                    '₦${(cart.totalAmount * 0.05) + deliveryFee + cart.totalAmount}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                ],
                                               )
                                             ],
-                                          )),
-                                      Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 16, 0, 16),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              color: Colors.grey[300]!,
-                                              width: 0.5,
-                                            ),
                                           ),
                                         ),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text('Sub-total',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    )),
-                                                Text(
-                                                  '₦${cart.totalAmount}',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 15),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text('Delivery Fee',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    )),
-                                                Text(
-                                                  '₦$deliveryFee',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 15),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text('Service Charge',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    )),
-                                                Text(
-                                                  '₦${cart.totalAmount * 0.05}',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 15),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text('Total',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    )),
-                                                Text(
-                                                  '₦${(cart.totalAmount * 0.05) + deliveryFee + cart.totalAmount}',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ))),
-                    ));
+                                        SizedBox(height: 150,)
+                                      ],
+                                    ),
+                                  ],
+                                ))))
+                  ]),
+                );
               }),
               if (_confirmingAddress)
                 Positioned(
