@@ -18,15 +18,54 @@ class AuthLoading extends StatefulWidget {
 }
 
 class _AuthLoadingState extends State<AuthLoading> {
+  static const _animationDuration = Duration(milliseconds: 300);
+
   @override
   void initState() {
     super.initState();
+    _checkForUser();
+  }
+
+  void _checkForUser() {
     Future.microtask(
       () => context.read<AuthProv>().checkForUser(),
     );
   }
 
-  Widget _buildLoadingIndicator() {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProv>(
+      builder: (context, authProv, _) {
+        return AnimatedSwitcher(
+          duration: _animationDuration,
+          child: _buildPage(authProv),
+        );
+      },
+    );
+  }
+
+  Widget _buildPage(AuthProv authProv) {
+    if (authProv.isLoading) {
+      return const _LoadingIndicator();
+    }
+
+    if (authProv.error) {
+      return const LandingScreen();
+    }
+
+    if (authProv.userData != null) {
+      return const AuthenticatedChat();
+    }
+
+    return const LandingScreen();
+  }
+}
+
+class _LoadingIndicator extends StatelessWidget {
+  const _LoadingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppColors.primaryColorDark,
       resizeToAvoidBottomInset: false,
@@ -52,67 +91,5 @@ class _AuthLoadingState extends State<AuthLoading> {
         ),
       ),
     );
-  }
-
-  Widget _buildError() {
-    return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 48),
-              const SizedBox(height: 16),
-              const Text(
-                'Error: There was an error. Please try again',
-                style: TextStyle(color: Colors.red),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => context.read<AuthProv>().checkForUser(),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    if (screenWidth >= 1024) {
-      print('screen width has approached desktop');
-    }
-
-    return Consumer<AuthProv>(
-      builder: (context, authProv, child) {
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: _buildPage(authProv),
-        );
-      },
-    );
-  }
-
-  Widget _buildPage(AuthProv authProv) {
-    if (authProv.isLoading) {
-      return _buildLoadingIndicator();
-    }
-
-    if (authProv.error) {
-      return LandingScreen();
-    }
-
-    if (authProv.userData != null) {
-      return const AuthenticatedChat();
-    }
-
-    return const LandingScreen();
   }
 }

@@ -169,8 +169,6 @@ Click the pay now button to complete payment.`;
 
     async getUserOrder(req, res, next) {
         try {
-            console.log(req.query)
-            console.log('check query here =======')
             const { orderId } = req.query;
 
             if (!orderId) {
@@ -200,6 +198,46 @@ Click the pay now button to complete payment.`;
             console.log('error here', error, 'error here')
             error.statusCode = 400;
             error.payoorDevErrorMessage = 'Error fetching order';
+            next(error);
+        }
+    }
+
+    async updateDeliveryDate(req, res, next) {
+        try {
+            const { order_id, delivery_date } = req.body;
+
+            //console.log('Updating delivery date:', order_id, delivery_date);
+
+            if (!order_id || !delivery_date) {
+                const error = new Error('Order ID and delivery date are required');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const updatedOrder = await Order.findByIdAndUpdate(
+                order_id,
+                { delivery_date: delivery_date },
+                { new: true }
+            );
+
+            if (!updatedOrder) {
+                const error = new Error('Order not found');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Delivery date updated successfully',
+                data: {
+                    order: updatedOrder
+                }
+            });
+
+        } catch (error) {
+            console.log('error here', error, 'error here');
+            error.statusCode = error.statusCode || 400;
+            error.payoorDevErrorMessage = 'Error setting order delivery date';
             next(error);
         }
     }

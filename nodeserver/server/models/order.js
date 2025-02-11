@@ -42,6 +42,9 @@ const OrderSchema = new mongoose.Schema({
     },
     reference: {
         type: String,
+    },
+    delivery_date: {
+        type: String,
     }
 });
 

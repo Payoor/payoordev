@@ -12,4 +12,6 @@ orderRoute.get('/user/get/client/order', verifyToken, OrderController.getUserOrd
 
 orderRoute.post('/user/create/order', verifyToken, OrderController.createOrder)
 
+orderRoute.post('/user/update/order/delivery-date', verifyToken, OrderController.updateDeliveryDate)
+
 export default orderRoute;

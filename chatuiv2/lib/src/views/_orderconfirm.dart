@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
+import 'package:chatuiv2/src/classes/_orderroutes.dart';
 
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_addresseslist.dart';
@@ -29,6 +30,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
 
   String selectedTime = '';
   String selectedAddress = "";
+  bool _isSettingDeliveryDate = false;
 
   final List<String> deliveryTimes = () {
     final List<String> dates = [];
@@ -45,6 +47,35 @@ class _OrderConfirmState extends State<OrderConfirm> {
 
   bool _confirmingAddress = false;
   bool _openBaniPay = false;
+
+  setOrderDeliveryDate(String selectedDate) async {
+    try {
+      final orderId = context.read<BaniPayProvider>().currentOrder;
+      if (orderId == null) {
+        throw Exception('No order ID available');
+      }
+
+      final DateFormat inputFormatter = DateFormat('EEEE d MMM');
+      final DateTime parsedDate = inputFormatter.parse(selectedDate);
+
+      final DateTime dateWithYear =
+          DateTime(DateTime.now().year, parsedDate.month, parsedDate.day);
+
+      final String formattedDate = dateWithYear.toIso8601String();
+
+      final response =
+          await OrdersRoute.updateDeliveryDate(orderId, formattedDate);
+
+      if (response?.data != null) {
+        //print(response.data);
+      } else {
+        throw Exception('Failed to update delivery date.');
+      }
+    } catch (e) {
+      print('Error setting delivery date: $e');
+      rethrow;
+    }
+  }
 
   void openAddressList() {
     setState(() {
@@ -274,71 +305,99 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                             ),
                                             Column(
                                               children: deliveryTimes
-                                                  .map((time) =>
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            selectedTime = time;
-                                                          });
-                                                        },
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  bottom: 16),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Container(
-                                                                height: 18,
-                                                                width: 18,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: AppColors
-                                                                        .primaryColor,
-                                                                    width: 2,
-                                                                  ),
-                                                                ),
-                                                                child: Center(
-                                                                  child:
-                                                                      Container(
-                                                                    height: 10,
-                                                                    width: 10,
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      shape: BoxShape
-                                                                          .circle,
-                                                                      color: selectedTime ==
-                                                                              time
-                                                                          ? AppColors
-                                                                              .primaryColor
-                                                                          : Colors
-                                                                              .transparent,
+                                                  .map(
+                                                      (time) => GestureDetector(
+                                                            onTap:
+                                                                _isSettingDeliveryDate
+                                                                    ? null
+                                                                    : () async {
+                                                                        setState(
+                                                                            () {
+                                                                          _isSettingDeliveryDate =
+                                                                              true;
+                                                                        });
+                                                                        try {
+                                                                          await setOrderDeliveryDate(
+                                                                              time);
+                                                                          setState(
+                                                                              () {
+                                                                            selectedTime =
+                                                                                time;
+                                                                          });
+                                                                        } finally {
+                                                                          setState(
+                                                                              () {
+                                                                            _isSettingDeliveryDate =
+                                                                                false;
+                                                                          });
+                                                                        }
+                                                                      },
+                                                            child: Opacity(
+                                                              opacity:
+                                                                  _isSettingDeliveryDate
+                                                                      ? 0.5
+                                                                      : 1.0,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        bottom:
+                                                                            16),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Container(
+                                                                      height:
+                                                                          18,
+                                                                      width: 18,
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                        border:
+                                                                            Border.all(
+                                                                          color:
+                                                                              AppColors.primaryColor,
+                                                                          width:
+                                                                              2,
+                                                                        ),
+                                                                      ),
+                                                                      child:
+                                                                          Center(
+                                                                        child:
+                                                                            Container(
+                                                                          height:
+                                                                              10,
+                                                                          width:
+                                                                              10,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            color: selectedTime == time
+                                                                                ? AppColors.primaryColor
+                                                                                : Colors.transparent,
+                                                                          ),
+                                                                        ),
+                                                                      ),
                                                                     ),
-                                                                  ),
+                                                                    Text(time,
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          color:
+                                                                              AppColors.white,
+                                                                        ))
+                                                                  ],
                                                                 ),
                                                               ),
-                                                              Text(time,
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: AppColors
-                                                                        .white,
-                                                                  ))
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ))
+                                                            ),
+                                                          ))
                                                   .toList(),
                                             )
                                           ],

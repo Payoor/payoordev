@@ -252,26 +252,24 @@ var OrderController = /*#__PURE__*/function () {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               _context4.prev = 0;
-              console.log(req.query);
-              console.log('check query here =======');
               orderId = req.query.orderId;
               if (orderId) {
-                _context4.next = 6;
+                _context4.next = 4;
                 break;
               }
               return _context4.abrupt("return", res.status(400).json({
                 status: 'error',
                 message: 'Order ID is required'
               }));
-            case 6:
-              _context4.next = 8;
+            case 4:
+              _context4.next = 6;
               return _order2["default"].findOne({
                 _id: orderId
               });
-            case 8:
+            case 6:
               order = _context4.sent;
               if (order) {
-                _context4.next = 12;
+                _context4.next = 10;
                 break;
               }
               console.log('no order');
@@ -279,29 +277,90 @@ var OrderController = /*#__PURE__*/function () {
                 status: 'error',
                 message: 'Order not found'
               }));
-            case 12:
+            case 10:
               console.log(order, 'order here');
               return _context4.abrupt("return", res.status(200).json({
                 status: 'success',
                 data: order
               }));
-            case 16:
-              _context4.prev = 16;
+            case 14:
+              _context4.prev = 14;
               _context4.t0 = _context4["catch"](0);
               console.log('error here', _context4.t0, 'error here');
               _context4.t0.statusCode = 400;
               _context4.t0.payoorDevErrorMessage = 'Error fetching order';
               next(_context4.t0);
-            case 22:
+            case 20:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[0, 16]]);
+        }, _callee4, null, [[0, 14]]);
       }));
       function getUserOrder(_x10, _x11, _x12) {
         return _getUserOrder.apply(this, arguments);
       }
       return getUserOrder;
+    }()
+  }, {
+    key: "updateDeliveryDate",
+    value: function () {
+      var _updateDeliveryDate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
+        var _req$body2, order_id, delivery_date, _error, updatedOrder, _error2;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _context5.prev = 0;
+              _req$body2 = req.body, order_id = _req$body2.order_id, delivery_date = _req$body2.delivery_date; //console.log('Updating delivery date:', order_id, delivery_date);
+              if (!(!order_id || !delivery_date)) {
+                _context5.next = 6;
+                break;
+              }
+              _error = new Error('Order ID and delivery date are required');
+              _error.statusCode = 400;
+              throw _error;
+            case 6:
+              _context5.next = 8;
+              return _order2["default"].findByIdAndUpdate(order_id, {
+                delivery_date: delivery_date
+              }, {
+                "new": true
+              });
+            case 8:
+              updatedOrder = _context5.sent;
+              if (updatedOrder) {
+                _context5.next = 13;
+                break;
+              }
+              _error2 = new Error('Order not found');
+              _error2.statusCode = 404;
+              throw _error2;
+            case 13:
+              res.status(200).json({
+                status: 'success',
+                message: 'Delivery date updated successfully',
+                data: {
+                  order: updatedOrder
+                }
+              });
+              _context5.next = 22;
+              break;
+            case 16:
+              _context5.prev = 16;
+              _context5.t0 = _context5["catch"](0);
+              console.log('error here', _context5.t0, 'error here');
+              _context5.t0.statusCode = _context5.t0.statusCode || 400;
+              _context5.t0.payoorDevErrorMessage = 'Error setting order delivery date';
+              next(_context5.t0);
+            case 22:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[0, 16]]);
+      }));
+      function updateDeliveryDate(_x13, _x14, _x15) {
+        return _updateDeliveryDate.apply(this, arguments);
+      }
+      return updateDeliveryDate;
     }()
   }]);
 }();
