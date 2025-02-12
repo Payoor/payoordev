@@ -28,10 +28,11 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  Future<String>? _imageUrlFuture; // Changed from late to nullable
+  Future<String>? _imageUrlFuture;
+  num variantCount = 0;
   bool _isbookmarked = false;
   bool _togglingBookMarks = false;
-  String? productId; // Changed from late to nullable
+  String? productId;
 
   @override
   void initState() {
@@ -62,9 +63,11 @@ class _ProductCardState extends State<ProductCard> {
       if (response.data['product_data'] != null) {
         Map<String, dynamic> product_data = response.data['product_data'];
         String product_id = product_data['_id'];
+        int variant_count = response.data['product_data']['variantCount'] ?? 0;
 
         setState(() {
           productId = product_id;
+          variantCount = variant_count;
         });
 
         _checkIfProductInBookMarks(product_id);
@@ -118,6 +121,15 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: AppColors.greyBackground.withOpacity(.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Colors.transparent, // Makes the border faint
+          width: 1.0, // Thin border width
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -218,13 +230,13 @@ class _ProductCardState extends State<ProductCard> {
                               size: 20,
                               color: _isbookmarked
                                   ? AppColors.primaryColor
-                                  : AppColors.white,
+                                  : AppColors.primaryColor,
                             ),
                     ),
                   ),
                 ),
                 Positioned(
-                  bottom: 0,
+                  bottom: 20,
                   left: 0,
                   right: 0,
                   child: Container(
@@ -238,7 +250,7 @@ class _ProductCardState extends State<ProductCard> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: Colors.black,
                             overflow: TextOverflow.ellipsis,
                           ),
                           maxLines: 2,
@@ -273,21 +285,29 @@ class _ProductCardState extends State<ProductCard> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors.black,
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(19),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "View Options",
+                    "View $variantCount ${variantCount > 1 ? 'Options' : 'Option'}",
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                  SizedBox(
+                    width: 4,
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: Colors.white,
+                    size: 16, // Optional: adjust size
+                  )
                 ],
               ),
             ),

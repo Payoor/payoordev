@@ -1,9 +1,10 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var JWTTokenSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var JWTTokenSchema = new _db["default"].Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
@@ -20,4 +21,4 @@ var JWTTokenSchema = new mongoose.Schema({
     "default": Date.now
   }
 });
-module.exports = mongoose.model('JwtToken', JWTTokenSchema);
+module.exports = _db["default"].model('JwtToken', JWTTokenSchema);

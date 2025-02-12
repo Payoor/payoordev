@@ -119,7 +119,7 @@ class _ProductOptionsState extends State<ProductOptions> {
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w500,
                                               fontSize: 16,
-                                              color: AppColors.white,
+                                              color: AppColors.black,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
@@ -128,7 +128,7 @@ class _ProductOptionsState extends State<ProductOptions> {
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
-                                              color: AppColors.white,
+                                              color: AppColors.black,
                                             ),
                                           ),
                                         ],
@@ -162,7 +162,7 @@ class _ProductOptionsState extends State<ProductOptions> {
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
-                                                color: AppColors.white,
+                                                color: AppColors.black,
                                               ),
                                             ),
                                           ),
@@ -179,7 +179,7 @@ class _ProductOptionsState extends State<ProductOptions> {
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
-                                                color: AppColors.white,
+                                                color: AppColors.black,
                                               ),
                                             ),
                                           ),

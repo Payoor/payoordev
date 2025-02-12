@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from '../db';
 
 const fileSchema = new mongoose.Schema({
     uploadedAt: {

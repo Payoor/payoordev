@@ -93,9 +93,9 @@ class _MessageContentState extends State<MessageContent> {
                           padding: widget.message.isOrderSummary
                               ? EdgeInsets.only(
                                   top: 8, left: 8, right: 7, bottom: 80)
-                              : EdgeInsets.all(8),
+                              : EdgeInsets.all(17),
                           decoration: BoxDecoration(
-                            color: AppColors.greyBlack.withOpacity(.5),
+                            color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TypewriterText(

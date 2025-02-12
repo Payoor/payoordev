@@ -1,10 +1,10 @@
 "use strict";
 
+var _db = _interopRequireDefault(require("../db"));
 var _bcryptjs = _interopRequireDefault(require("bcryptjs"));
 var _jsonwebtoken = _interopRequireDefault(require("jsonwebtoken"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-var mongoose = require('mongoose');
-var AdminSchema = new mongoose.Schema({
+var AdminSchema = new _db["default"].Schema({
   username: {
     type: String,
     trim: true,
@@ -92,4 +92,4 @@ AdminSchema.pre('save', function (next) {
     next();
   }
 });
-module.exports = mongoose.model('Admin', AdminSchema);
+module.exports = _db["default"].model('Admin', AdminSchema);

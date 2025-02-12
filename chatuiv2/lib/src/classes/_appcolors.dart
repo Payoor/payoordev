@@ -18,5 +18,6 @@ class AppColors {
   static const Color twitterColor = Colors.black;
   static const Color instagramColor = Colors.purple;
   static const Color customGreen = Color(0xFF65D587);
-  static const Color primaryColorDark = Color(0xFF001F14);
+  static const Color primaryColorDark = Color(0xFFFAFAFA);
+  static const Color greenDark = Color(0xFF001F14);
 }

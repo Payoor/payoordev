@@ -1,7 +1,8 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var imageSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var imageSchema = new _db["default"].Schema({
   imageUrl: {
     type: String,
     required: true
@@ -12,11 +13,11 @@ var imageSchema = new mongoose.Schema({
     "default": 'newProduct'
   },
   modelId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     refPath: 'modelName',
     required: true
   }
 }, {
   timestamps: true
 });
-module.exports = mongoose.model('Image', imageSchema);
+module.exports = _db["default"].model('Image', imageSchema);

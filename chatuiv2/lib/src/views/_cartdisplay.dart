@@ -178,7 +178,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                               Text(
                                                 item.name,
                                                 style: const TextStyle(
-                                                  color: Colors.white,
+                                                  color: Colors.black,
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.w400,
                                                 ),
@@ -201,7 +201,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                   child: Text(
                                                     'Units',
                                                     style: TextStyle(
-                                                      color: Colors.white,
+                                                      color: Colors.black,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -230,7 +230,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                               style:
                                                                   const TextStyle(
                                                                 color: Colors
-                                                                    .white,
+                                                                    .black,
                                                                 fontSize: 14,
                                                                 fontWeight:
                                                                     FontWeight
@@ -248,7 +248,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                               style:
                                                                   const TextStyle(
                                                                 color: Colors
-                                                                    .white,
+                                                                    .black,
                                                                 fontSize: 15,
                                                                 fontWeight:
                                                                     FontWeight
@@ -298,7 +298,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                               border:
                                                                   Border.all(
                                                                 color: Colors
-                                                                    .white,
+                                                                    .black,
                                                                 width: .5,
                                                               ),
                                                               borderRadius:
@@ -329,7 +329,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                                       Icons
                                                                           .remove,
                                                                       color: Colors
-                                                                          .white,
+                                                                          .black,
                                                                       size: 20,
                                                                     ),
                                                                   ),
@@ -342,12 +342,12 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                                         Border(
                                                                       left: BorderSide(
                                                                           color: Colors
-                                                                              .white,
+                                                                              .black,
                                                                           width:
                                                                               1),
                                                                       right: BorderSide(
                                                                           color: Colors
-                                                                              .white,
+                                                                              .black,
                                                                           width:
                                                                               1),
                                                                     ),
@@ -358,7 +358,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                                       style:
                                                                           const TextStyle(
                                                                         color: Colors
-                                                                            .white,
+                                                                            .black,
                                                                         fontSize:
                                                                             14,
                                                                         fontWeight:
@@ -384,7 +384,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                                                                     child: Icon(
                                                                       Icons.add,
                                                                       color: Colors
-                                                                          .white,
+                                                                          .black,
                                                                       size: 20,
                                                                     ),
                                                                   ),

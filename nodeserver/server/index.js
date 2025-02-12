@@ -6,13 +6,14 @@ if (process.env.NODE_ENV !== 'production') {
 import "regenerator-runtime";
 import path from 'path';
 import cors from 'cors';
+import cron from 'node-cron';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const crypto = require('crypto');
 
 // 2. Import models
@@ -35,7 +36,7 @@ import { initSocket } from './services/payoor/chatWithAdminSocketInit';
 import errorHandler from './middleware/errorHandler';
 import requestLogger from './middleware/requestLogger';
 
-
+import updateAllVariantCounts from './utils/updateAllVariantCounts';
 
 // 5. Constants and configurations
 const PORT = process.env.PORT;
@@ -157,19 +158,6 @@ async function dropIndex(indexName) {
   }
 }
 
-// 13. Database connection
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => {
-    console.log(`database connection on ${process.env.MONGO_URL}`);
-    // dropIndex('filepath_1');
-  })
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-  });
-
 // 14. Start server
 server.listen(PORT, (error) => {
   if (error) {
@@ -181,6 +169,22 @@ server.listen(PORT, (error) => {
 // 15. Initialize WebSocket
 initSocket(server);
 
-//sendPaymentConfirmation({ email: 'nerdyemmanuel@gmail.com', orderdetails: { _id: '12345' }, orderid: '12345' });
+setTimeout(async () => {
+  console.log('[Cron] Starting initial variant count update');
+  const result = await updateAllVariantCounts();
+  if (!result.success) {
+    console.error('[Cron] Failed to update variant counts:', result.error);
+  }
+}, 1000);
 
-//getOrderDetails('67a90beb86e01b825ffd3bdd');
+const updateAllVariantCountsCronJob = cron.schedule('0 0 * * *', async () => {
+  console.log('[Cron] Starting daily variant count update');
+  const result = await updateAllVariantCounts();
+  if (!result.success) {
+    console.error('[Cron] Failed to update variant counts:', result.error);
+  }
+}, {
+  scheduled: false
+});
+
+updateAllVariantCountsCronJob.start();

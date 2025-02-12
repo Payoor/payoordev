@@ -1,7 +1,8 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var newProductSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var newProductSchema = new _db["default"].Schema({
   name: {
     type: String
   },
@@ -20,6 +21,10 @@ var newProductSchema = new mongoose.Schema({
   synced_to_algolia: {
     type: Boolean,
     "default": false
+  },
+  variantCount: {
+    type: Number,
+    "default": 0
   }
 }, {
   timestamps: true
@@ -27,4 +32,4 @@ var newProductSchema = new mongoose.Schema({
 newProductSchema.index({
   name: 'text'
 });
-module.exports = mongoose.model('newProduct', newProductSchema);
+module.exports = _db["default"].model('newProduct', newProductSchema);

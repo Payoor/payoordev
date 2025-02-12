@@ -143,7 +143,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
         ),
         hintText: "Enter an address",
         hintStyle: TextStyle(
-          color: AppColors.primaryColor.withOpacity(.5),
+          color: AppColors.white,
         ),
       );
 
@@ -225,7 +225,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                       children: [
                                         const Text('Your Order Summary',
                                             style: TextStyle(
-                                              color: AppColors.white,
+                                              color: AppColors.black,
                                               fontSize: 20,
                                             )),
                                         const SizedBox(
@@ -256,7 +256,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                         selectedAddress,
                                                         style: const TextStyle(
                                                           color:
-                                                              AppColors.white,
+                                                              AppColors.black,
                                                           fontSize: 14,
                                                         ),
                                                         overflow: TextOverflow
@@ -304,7 +304,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      color: AppColors.white,
+                                                      color: AppColors.black,
                                                     )),
                                                 const SizedBox(
                                                   height: 30,
@@ -389,7 +389,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                                                 const TextStyle(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w500,
-                                                                              color: AppColors.white,
+                                                                              color: AppColors.black,
                                                                             ))
                                                                       ],
                                                                     ),
@@ -432,7 +432,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      color: Colors.white,
+                                                      color: Colors.black,
                                                     ),
                                                   )
                                                 ],
@@ -457,7 +457,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      color: Colors.white,
+                                                      color: Colors.black,
                                                     ),
                                                   )
                                                 ],
@@ -482,7 +482,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      color: Colors.white,
+                                                      color: Colors.black,
                                                     ),
                                                   )
                                                 ],
@@ -507,7 +507,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      color: Colors.white,
+                                                      color: Colors.black,
                                                     ),
                                                   )
                                                 ],
@@ -553,7 +553,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                   overflow: TextOverflow
                                       .ellipsis, // Added overflow handling
@@ -565,7 +565,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                 },
                                 child: const Icon(
                                   Icons.close,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   size: 17,
                                 ),
                               )
@@ -578,8 +578,8 @@ class _OrderConfirmState extends State<OrderConfirm> {
                             textInputAction: TextInputAction.newline,
                             controller: _controller,
                             decoration: _inputDecoration,
-                            style: const TextStyle(color: Colors.white),
-                            cursorColor: Colors.white,
+                            style: const TextStyle(color: Colors.black),
+                            cursorColor: Colors.black,
                             onChanged: (value) {
                               print(value);
                             },

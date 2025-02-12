@@ -1,9 +1,10 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var productVariant = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var productVariant = new _db["default"].Schema({
   productId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'newProduct',
     required: true
   },
@@ -29,4 +30,4 @@ var productVariant = new mongoose.Schema({
 }, {
   timestamps: false
 });
-module.exports = mongoose.model('ProductVariant', productVariant);
+module.exports = _db["default"].model('ProductVariant', productVariant);

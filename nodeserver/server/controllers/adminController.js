@@ -175,6 +175,8 @@ class AdminController {
                 .limit(limit)
                 .lean();
 
+            console.log(products);
+
             const productIds = products.map((product) => product._id);
 
             const variants = await ProductVariant.find({

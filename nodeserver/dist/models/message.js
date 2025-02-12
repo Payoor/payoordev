@@ -1,9 +1,10 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var messageSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var messageSchema = new _db["default"].Schema({
   roomId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'Room',
     required: true
   },
@@ -31,5 +32,5 @@ var messageSchema = new mongoose.Schema({
 }, {
   timestamps: false
 });
-var Message = mongoose.model('Message', messageSchema);
+var Message = _db["default"].model('Message', messageSchema);
 module.exports = Message;

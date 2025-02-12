@@ -14,7 +14,6 @@ import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
 import 'package:chatuiv2/src/widgets/_messagecontent.dart';
 import 'package:chatuiv2/src/widgets/_addresseslist.dart';
 import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
-import 'package:chatuiv2/src/widgets/_banipay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
@@ -22,7 +21,6 @@ import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_googleplaces.dart';
-import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_message.dart';
@@ -282,7 +280,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         ),
         hintText: "Create a list",
         hintStyle: TextStyle(
-          color: AppColors.primaryColor.withOpacity(.5),
+          color: AppColors.white,
         ),
       );
 
@@ -433,9 +431,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(17),
           decoration: BoxDecoration(
-            color: AppColors.black.withOpacity(.5),
+            color: AppColors.black,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -583,10 +581,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 16, vertical: 8),
                                           decoration: BoxDecoration(
-                                            color: Colors.transparent,
+                                            color:
+                                                currentPill == currentSuggestion
+                                                    ? AppColors.primaryColor
+                                                    : Colors.transparent,
                                             border: Border.all(
-                                              color:
-                                                  Colors.white.withOpacity(0.6),
+                                              color: AppColors.primaryColor,
                                               width: 0.5,
                                             ),
                                             borderRadius:
@@ -599,9 +599,9 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                                                 style: TextStyle(
                                                   color: currentPill ==
                                                           currentSuggestion
-                                                      ? AppColors.primaryColor
-                                                      : Colors.white
-                                                          .withOpacity(.6),
+                                                      ? AppColors.white
+                                                      : AppColors.primaryColor,
+                                                  fontWeight: FontWeight.w700,
                                                 ),
                                               ),
                                               SizedBox(
@@ -1052,7 +1052,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         color: Colors.transparent,
         child: Center(
           child: Opacity(
-            opacity: 0.1,
+            opacity: 0.3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1068,7 +1068,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
                       height: 1.2,
-                      color: AppColors.white,
+                      color: AppColors.greenDark,
                     ),
                   ),
                 ),
@@ -1081,7 +1081,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       width: 40,
                       height: 40,
                       fit: BoxFit.contain,
-                      color: Colors.black.withOpacity(0.5),
+                      color: AppColors.greenDark,
                       colorBlendMode: BlendMode.srcATop,
                     ))
               ],

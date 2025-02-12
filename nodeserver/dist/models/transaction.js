@@ -1,19 +1,20 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var transactionSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var transactionSchema = new _db["default"].Schema({
   initiatorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   orderId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'Order',
     required: true
   },
   amount: {
-    type: mongoose.Schema.Types.Decimal128,
+    type: _db["default"].Schema.Types.Decimal128,
     required: true
   },
   status: {
@@ -33,4 +34,4 @@ var transactionSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-module.exports = mongoose.model('Transactions', transactionSchema);
+module.exports = _db["default"].model('Transactions', transactionSchema);

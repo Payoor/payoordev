@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 
@@ -18,7 +19,7 @@ class SideNavWidget extends StatefulWidget {
 
 class _SideNavWidgetState extends State<SideNavWidget> {
   final TextStyle menuItem = const TextStyle(
-    color: Colors.white,
+    color: Colors.black,
     fontSize: 13,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.15,
@@ -30,6 +31,19 @@ class _SideNavWidgetState extends State<SideNavWidget> {
   Widget build(BuildContext context) {
     return Consumer<AuthProv>(builder: (context, authProv, child) {
       final userData = authProv.userData;
+
+      void openWhatsApp(String phoneNumber) async {
+        String formattedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+        // Create the WhatsApp URL
+        final url = "https://wa.me/$formattedNumber";
+
+        if (await canLaunchUrl(Uri.parse(url))) {
+          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        } else {
+          throw 'Could not launch WhatsApp';
+        }
+      }
 
       return Container(
         color: AppColors.black,
@@ -57,7 +71,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                         children: [
                           ListTile(
                             leading:
-                                Icon(Icons.info_outline, color: Colors.white),
+                                Icon(Icons.info_outline, color: Colors.black),
                             title: Text('About us', style: menuItem),
                             onTap: () {
                               // Use root navigator
@@ -66,28 +80,28 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                               sideNavVisible.value = false;
                             },
                           ),
-                          if (userData != null) ListTile(
-                            leading:
-                                Icon(Icons.receipt_long_outlined, color: Colors.white),
-                            title: Text('Orders', style: menuItem),
-                            onTap: () {
-                              // Use root navigator
-                              Navigator.of(context, rootNavigator: true)
-                                  .pushNamed('/orders');
-                              sideNavVisible.value = false;
-                            },
-                          ),
-                          if (userData != null) ListTile(
-                            leading:
-                                Icon(Icons.headset_mic_outlined, color: Colors.white),
-                            title: Text('Support', style: menuItem),
-                            onTap: () {
-                              // Use root navigator
-                              Navigator.of(context, rootNavigator: true)
-                                  .pushNamed('/orders');
-                              sideNavVisible.value = false;
-                            },
-                          )
+                          if (userData != null)
+                            ListTile(
+                              leading: Icon(Icons.receipt_long_outlined,
+                                  color: Colors.black),
+                              title: Text('Orders', style: menuItem),
+                              onTap: () {
+                                // Use root navigator
+                                Navigator.of(context, rootNavigator: true)
+                                    .pushNamed('/orders');
+                                sideNavVisible.value = false;
+                              },
+                            ),
+                          if (userData != null)
+                            ListTile(
+                              leading: Icon(Icons.headset_mic_outlined,
+                                  color: Colors.black),
+                              title: Text('Support', style: menuItem),
+                              onTap: () {
+                                openWhatsApp("08138718022");
+                                sideNavVisible.value = false;
+                              },
+                            )
                         ],
                       ),
                     ),
@@ -98,7 +112,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                       decoration: BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.black.withOpacity(0.1),
                             width: 1,
                           ),
                         ),
@@ -109,7 +123,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                           if (userData == null) ...[
                             ListTile(
                               leading: Icon(Icons.person_outline,
-                                  color: Colors.white),
+                                  color: AppColors.primaryColor),
                               title: Text('Sign In', style: menuItem),
                               onTap: () {
                                 // Use root navigator
@@ -120,7 +134,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                             ),
                             ListTile(
                               leading: Icon(Icons.person_outline,
-                                  color: Colors.white),
+                                  color: AppColors.primaryColor),
                               title: Text('Sign up', style: menuItem),
                               onTap: () {
                                 // Use root navigator
@@ -133,14 +147,14 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                           if (userData != null) ...[
                             ListTile(
                               leading: Icon(Icons.person_outline,
-                                  color: Colors.white),
+                                  color: AppColors.primaryColor),
                               title: Text(userData['email'], style: menuItem),
                               onTap: () {
                                 // Handle settings
                               },
                             ),
                             ListTile(
-                              leading: Icon(Icons.logout, color: Colors.white),
+                              leading: Icon(Icons.logout, color: Colors.black),
                               title: Text('Signout', style: menuItem),
                               onTap: () async {
                                 await authProv.logout();

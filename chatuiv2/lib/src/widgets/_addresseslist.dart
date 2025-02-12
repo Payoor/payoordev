@@ -87,7 +87,7 @@ class _AddressesListState extends State<AddressesList> {
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppColors.white.withOpacity(0.1),
+                                color: AppColors.black.withOpacity(0.1),
                                 width: 1,
                               ),
                             ),
@@ -132,7 +132,7 @@ class _AddressesListState extends State<AddressesList> {
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: AppColors.white.withOpacity(0.1),
+                                  color: AppColors.black.withOpacity(0.1),
                                   width: 1,
                                 ),
                               ),

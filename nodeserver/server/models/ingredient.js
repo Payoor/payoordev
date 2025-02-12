@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from '../db';
 
 const FoodModelSchema = new mongoose.Schema({
     nameOfFood: { type: String, required: true, default: "N/A" },

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from '../db';
 
 const userSchema = new mongoose.Schema({
     name: {

@@ -1,9 +1,10 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var OrderSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var OrderSchema = new _db["default"].Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
@@ -48,4 +49,4 @@ var OrderSchema = new mongoose.Schema({
     type: String
   }
 });
-module.exports = mongoose.model('Order', OrderSchema);
+module.exports = _db["default"].model('Order', OrderSchema);

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from '../db';
 
 const productVariant = new mongoose.Schema({
     productId: {

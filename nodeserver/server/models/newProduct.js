@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from '../db';
 
 const newProductSchema = new mongoose.Schema({
     name: {
@@ -19,6 +19,10 @@ const newProductSchema = new mongoose.Schema({
     synced_to_algolia: {
         type: Boolean,
         default: false
+    },
+    variantCount: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

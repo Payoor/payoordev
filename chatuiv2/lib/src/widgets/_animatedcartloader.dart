@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:chatuiv2/src/classes/_appcolors.dart';
+
 class AnimatedCartLoader extends StatefulWidget {
   const AnimatedCartLoader({
     super.key,
@@ -46,9 +48,11 @@ class _AnimatedCartLoaderState extends State<AnimatedCartLoader>
       ).animate(_animation),
       child: Image.asset(
         'assets/payoorcart.png',
-        width: widget.size,
-        height: widget.size,
-        color: Colors.white,
+        width: 40,
+        height: 40,
+        fit: BoxFit.contain,
+        color: AppColors.primaryColor,
+        colorBlendMode: BlendMode.srcATop,
       ),
     );
   }

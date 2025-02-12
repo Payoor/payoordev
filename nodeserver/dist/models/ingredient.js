@@ -1,7 +1,8 @@
 "use strict";
 
-var mongoose = require("mongoose");
-var FoodModelSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var FoodModelSchema = new _db["default"].Schema({
   nameOfFood: {
     type: String,
     required: true,
@@ -18,5 +19,5 @@ var FoodModelSchema = new mongoose.Schema({
     "default": "N/A"
   }
 });
-var FoodModel = mongoose.model("FoodModel", FoodModelSchema);
+var FoodModel = _db["default"].model("FoodModel", FoodModelSchema);
 module.exports = FoodModel;

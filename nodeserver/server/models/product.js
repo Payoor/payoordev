@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from '../db';
 
 const productSchema = new mongoose.Schema({
     product_name: {

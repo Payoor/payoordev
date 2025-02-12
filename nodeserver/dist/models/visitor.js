@@ -4,8 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-var mongoose = require('mongoose');
-var visitorSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var visitorSchema = new _db["default"].Schema({
   username: {
     type: String,
     "default": 'Visitor'
@@ -21,5 +22,5 @@ var visitorSchema = new mongoose.Schema({
     type: String
   }
 });
-var Visitor = mongoose.model('Visitor', visitorSchema);
+var Visitor = _db["default"].model('Visitor', visitorSchema);
 var _default = exports["default"] = Visitor;

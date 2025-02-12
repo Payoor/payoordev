@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from '../db';
 
 const imageSchema = new mongoose.Schema({
     imageUrl: {

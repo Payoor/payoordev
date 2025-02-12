@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from '../db';
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';

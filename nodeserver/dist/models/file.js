@@ -1,13 +1,14 @@
 "use strict";
 
-var mongoose = require("mongoose");
-var fileSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var fileSchema = new _db["default"].Schema({
   uploadedAt: {
     type: Date,
     "default": Date.now
   },
   uploadedBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _db["default"].Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
@@ -22,5 +23,5 @@ var fileSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-var File = mongoose.model('File', fileSchema);
+var File = _db["default"].model('File', fileSchema);
 module.exports = File;

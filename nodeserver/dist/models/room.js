@@ -1,7 +1,8 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var roomSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var roomSchema = new _db["default"].Schema({
   userid: {
     type: String,
     trim: true,
@@ -26,5 +27,5 @@ var roomSchema = new mongoose.Schema({
     "default": Date.now
   }
 });
-var Room = mongoose.model('Room', roomSchema);
+var Room = _db["default"].model('Room', roomSchema);
 module.exports = Room;

@@ -44,6 +44,7 @@ class SearchManager:
         
             if product:
                 #print(product)
+                #print("==========product==========")
                 return product
             else:
                 print('none here')

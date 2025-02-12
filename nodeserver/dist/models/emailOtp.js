@@ -1,7 +1,8 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var emailOtpSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var emailOtpSchema = new _db["default"].Schema({
   email: {
     type: String,
     required: true
@@ -33,5 +34,5 @@ emailOtpSchema.methods.isExpired = function () {
   var diffInMinutes = (now - createdAt) / (1000 * 60);
   return diffInMinutes > 5;
 };
-var EmailOtp = mongoose.model('EmailOtp', emailOtpSchema);
+var EmailOtp = _db["default"].model('EmailOtp', emailOtpSchema);
 module.exports = EmailOtp;

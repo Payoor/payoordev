@@ -1,12 +1,13 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var productSchema = new mongoose.Schema({
+var _db = _interopRequireDefault(require("../db"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+var productSchema = new _db["default"].Schema({
   product_name: {
     type: String
   },
   data: {
-    type: mongoose.Schema.Types.Mixed,
+    type: _db["default"].Schema.Types.Mixed,
     "default": {}
   },
   images: {
@@ -31,4 +32,4 @@ productSchema.index({
   'data.AVAILABILITY': 1,
   'data.UNIT': 1
 });
-module.exports = mongoose.model('Product', productSchema);
+module.exports = _db["default"].model('Product', productSchema);

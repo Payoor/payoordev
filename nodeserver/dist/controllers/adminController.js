@@ -295,10 +295,11 @@ var AdminController = /*#__PURE__*/function () {
               }).skip(skip).limit(limit).lean();
             case 9:
               products = _context5.sent;
+              console.log(products);
               productIds = products.map(function (product) {
                 return product._id;
               });
-              _context5.next = 13;
+              _context5.next = 14;
               return _productVariant["default"].find({
                 productId: {
                   $in: productIds
@@ -306,7 +307,7 @@ var AdminController = /*#__PURE__*/function () {
               }, {
                 __v: 0
               }).lean();
-            case 13:
+            case 14:
               variants = _context5.sent;
               productsWithVariants = products.map(function (product) {
                 return _objectSpread(_objectSpread({}, product), {}, {
@@ -315,9 +316,9 @@ var AdminController = /*#__PURE__*/function () {
                   })
                 });
               });
-              _context5.next = 17;
+              _context5.next = 18;
               return _newProduct["default"].countDocuments(query);
-            case 17:
+            case 18:
               totalCount = _context5.sent;
               //console.log(products);
 
@@ -328,20 +329,20 @@ var AdminController = /*#__PURE__*/function () {
                 totalCount: totalCount,
                 products: productsWithVariants
               });
-              _context5.next = 27;
+              _context5.next = 28;
               break;
-            case 21:
-              _context5.prev = 21;
+            case 22:
+              _context5.prev = 22;
               _context5.t0 = _context5["catch"](0);
               console.log('error here', _context5.t0, 'error here');
               _context5.t0.statusCode = 400;
               _context5.t0.payoorDevErrorMessage = 'Failed to retrieve products';
               next(_context5.t0);
-            case 27:
+            case 28:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 21]]);
+        }, _callee5, null, [[0, 22]]);
       }));
       function getProducts(_x11, _x12, _x13) {
         return _getProducts.apply(this, arguments);
