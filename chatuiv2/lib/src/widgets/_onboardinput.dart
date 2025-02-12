@@ -57,7 +57,7 @@ class _OnboardInputState extends State<OnboardInput> {
       decoration: InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.backgroundColor,
+        fillColor: AppColors.black,
         contentPadding: EdgeInsets.symmetric(
           horizontal: isDesktop ? 24 : 16,
           vertical: isDesktop ? 20 : 12,

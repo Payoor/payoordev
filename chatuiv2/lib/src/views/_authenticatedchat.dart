@@ -256,7 +256,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   InputDecoration get _inputDecoration => InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.backgroundColor,
+        fillColor: AppColors.black,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 23,

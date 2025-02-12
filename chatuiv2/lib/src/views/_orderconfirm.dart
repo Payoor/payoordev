@@ -119,7 +119,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
   InputDecoration get _inputDecoration => InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.backgroundColor,
+        fillColor: AppColors.black,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 23,
@@ -515,7 +515,9 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                             ],
                                           ),
                                         ),
-                                        SizedBox(height: 150,)
+                                        SizedBox(
+                                          height: 150,
+                                        )
                                       ],
                                     ),
                                   ],
@@ -578,8 +580,11 @@ class _OrderConfirmState extends State<OrderConfirm> {
                             textInputAction: TextInputAction.newline,
                             controller: _controller,
                             decoration: _inputDecoration,
-                            style: const TextStyle(color: Colors.black),
-                            cursorColor: Colors.black,
+                            style: const TextStyle(
+                                color: Colors
+                                    .white), // Changed from Colors.black to Colors.white
+                            cursorColor: Colors.white,
+
                             onChanged: (value) {
                               print(value);
                             },

@@ -53,7 +53,6 @@ class AuthApiRoutes {
     required String otp,
     required String phone,
     required String location,
-    required String shoppingList,
   }) async {
     try {
       final response = await http.post(
@@ -67,7 +66,7 @@ class AuthApiRoutes {
           'otp': otp,
           'phone': phone,
           'location': location,
-          'shoppingList': shoppingList,
+          'shoppingList': "leave as empty",
         }),
       );
 

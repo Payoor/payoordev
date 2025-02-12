@@ -74,7 +74,7 @@ class _AddressesListState extends State<AddressesList> {
           children: [
             Container(
               height: 600, // Fixed height for the container
-              color: AppColors.primaryColorDark,
+              color: Colors.transparent,
               child: Column(
                 children: [
                   GestureDetector(
@@ -96,7 +96,7 @@ class _AddressesListState extends State<AddressesList> {
                             children: [
                               Icon(
                                 Icons.navigation,
-                                color: AppColors.primaryColor,
+                                color: AppColors.black,
                                 size: 15,
                               ),
                               SizedBox(width: 12),
@@ -105,7 +105,7 @@ class _AddressesListState extends State<AddressesList> {
                                   'Use your current location',
                                   style: const TextStyle(
                                     fontSize: 14,
-                                    color: AppColors.primaryColor,
+                                    color: AppColors.black,
                                     fontWeight: FontWeight.w400,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -141,7 +141,7 @@ class _AddressesListState extends State<AddressesList> {
                               children: [
                                 Icon(
                                   Icons.location_on,
-                                  color: AppColors.primaryColor,
+                                  color: AppColors.black,
                                   size: 15,
                                 ),
                                 SizedBox(width: 12),
@@ -150,7 +150,7 @@ class _AddressesListState extends State<AddressesList> {
                                     prediction['formatted_address'],
                                     style: const TextStyle(
                                       fontSize: 14,
-                                      color: AppColors.white,
+                                      color: AppColors.black,
                                       fontWeight: FontWeight.w400,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -174,7 +174,7 @@ class _AddressesListState extends State<AddressesList> {
                 child: Center(
                   // Additional Center widget
                   child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
+                    color: AppColors.black,
                   ),
                 ),
               ),

@@ -42,7 +42,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   String otp = '';
   String phone = '';
   String location = '';
-  String shoppingList = '';
+  //String shoppingList = '';
 
   bool isLoading = false;
   String? errorMessage;
@@ -65,8 +65,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
         return phone.isNotEmpty && submittedResponses[3] == true;
       case 4:
         return location.isNotEmpty && submittedResponses[4] == true;
-      case 5:
-        return shoppingList.isNotEmpty && submittedResponses[5] == true;
       default:
         return false;
     }
@@ -110,26 +108,20 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
       curve: Curves.easeOut,
     ));
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    /*WidgetsBinding.instance.addPostFrameCallback((_) {
       //final onboardingProv =
       Provider.of<OnboardingProv>(context, listen: false);
       //shoppingList = onboardingProv.onboardingMessage;
       if (shoppingList.isNotEmpty) {
         submittedResponses[5] = true;
       }
-    });
+    });*/
 
     _pageController.addListener(_handlePageChange);
   }
 
   void _handlePageChange() {
-    if (_pageController.hasClients && _pageController.page == 5.0) {
-      if (_inputController.text != shoppingList && shoppingList.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _inputController.text = shoppingList;
-        });
-      }
-    }
+    if (_pageController.hasClients && _pageController.page == 5.0) {}
   }
 
   @override
@@ -360,17 +352,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
             submittedResponses[4] = true;
           });
           _inputController.clear();
-          if (canMoveToNextPage()) {
-            nextPage();
-          }
-          break;
-
-        case 5:
-          setState(() {
-            shoppingList = value;
-            submittedResponses[5] = true;
-          });
-          _inputController.clear();
           _handleFormComplete();
           break;
       }
@@ -408,7 +389,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
       'otp': otp,
       'phone': phone,
       'location': location,
-      'shoppingList': shoppingList,
     };
 
     try {
@@ -418,7 +398,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
         otp: otp,
         phone: phone,
         location: location,
-        shoppingList: shoppingList,
       );
 
       //print(response.data['user']);
@@ -456,7 +435,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   }
 
   void nextPage() {
-    if (currentPage < 5 && canMoveToNextPage()) {
+    if (currentPage < 4 && canMoveToNextPage()) {
       _pageController.animateToPage(
         currentPage + 1,
         duration: Duration(milliseconds: 500),
@@ -489,8 +468,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
           return phone;
         case 4:
           return location;
-        case 5:
-          return shoppingList;
         default:
           return '';
       }
@@ -650,7 +627,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryColor,
       resizeToAvoidBottomInset: false,
       body: FadeTransition(
           opacity: _fadeAnimation,

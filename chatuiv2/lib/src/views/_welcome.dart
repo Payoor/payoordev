@@ -81,7 +81,7 @@ class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryColor,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
@@ -192,7 +192,7 @@ class _WelcomeState extends State<Welcome> {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.primaryColorDark,
+                                      color: AppColors.primaryColor,
                                     ),
                                   ),
                                 ),
@@ -209,7 +209,7 @@ class _WelcomeState extends State<Welcome> {
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    color: AppColors.primaryColorDark,
+                                    color: AppColors.primaryColor,
                                     strokeWidth: 2,
                                   ),
                                 )),
