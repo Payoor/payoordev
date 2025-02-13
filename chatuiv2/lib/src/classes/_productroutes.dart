@@ -112,9 +112,16 @@ class ProductRoute {
   }
 
   static Future<ServerResponse> getProductByName(String productName) async {
+    
     try {
-      final uri =
-          Uri.parse('${Urls.llmUrl}/product/get?productname=$productName');
+      // Create the base URI
+      final uri = Uri.parse(Urls.llmUrl).replace(
+        path: '/product/get',
+        queryParameters: {
+          'productname':
+              productName,
+        },
+      );
 
       final response = await http.get(
         uri,
@@ -122,7 +129,6 @@ class ProductRoute {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Origin': 'https://chat.payoor.store'
-          //'Authorization': 'Bearer $jwt',
         },
       );
 
@@ -139,8 +145,8 @@ class ProductRoute {
 
   static Future<ServerResponse> getSuggestion(String suggestion) async {
     try {
-      final uri =
-          Uri.parse('${Urls.llmUrl}/products/suggestion/get?suggestion=$suggestion');
+      final uri = Uri.parse(
+          '${Urls.llmUrl}/products/suggestion/get?suggestion=$suggestion');
 
       final response = await http.get(
         uri,

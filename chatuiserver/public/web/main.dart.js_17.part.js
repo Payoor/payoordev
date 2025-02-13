@@ -6,7 +6,7 @@ KA(d){return B.aR4(d)},
 aR4(d){var x=0,w=A.I(y.e),v,u=2,t,s,r,q,p,o,n
 var $async$KA=A.J(function(e,f){if(e===1){t=f
 x=u}while(true)switch(x){case 0:u=4
-s=A.cv($.lU()+"/auth/genjwt",0,null).rb(0,A.a3(["id",d],y.g,y.b))
+s=A.cv($.lU()+"/auth/genjwt",0,null).rd(0,A.a3(["id",d],y.g,y.b))
 x=7
 return A.R(A.qg(s,null,null),$async$KA)
 case 7:r=f
@@ -36,4 +36,4 @@ B=a.updateHolder(c[11],B)
 var z=a.updateTypes([])
 var y={e:A.U("n1"),g:A.U("e"),b:A.U("@")}};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_17",e:"endPart",h:b})})($__dart_deferred_initializers__,"ZhBARE2LM41yiwvYumdzfj9bagU=");
+a.eventLog.push({p:"main.dart.js_17",e:"endPart",h:b})})($__dart_deferred_initializers__,"vbYmOC4Hx7hN2bxYF9dvxzioPWI=");

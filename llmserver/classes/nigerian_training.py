@@ -95,6 +95,9 @@ class NigerianGrocerySearch:
         
         # Add category terms if found
         for term in query_terms:
+            print('term')
+            print(term)
+            print('++++=========')
             for category, related_terms in self.category_words.items():
                 if term in related_terms or term == category:
                     enhanced_terms.append(category)
@@ -102,7 +105,7 @@ class NigerianGrocerySearch:
                     
         return ' '.join(set(enhanced_terms))  # Remove duplicates
         
-    def search(self, query: str, top_k: int = 6, threshold: float = 0.2) -> List[Tuple[str, float]]:
+    def search(self, query: str, top_k: int = 6, threshold: float = 0.3) -> List[Tuple[str, float]]:
         """Search for grocery items using saved embeddings."""
         try:
             # Load saved embeddings if we don't have them in memory
@@ -128,6 +131,7 @@ class NigerianGrocerySearch:
                 similarity = np.dot(query_embedding, item_embedding) / (
                     np.linalg.norm(query_embedding) * np.linalg.norm(item_embedding)
                 )
+
                 if similarity >= threshold:
                     similarities.append((self.items[idx], float(similarity)))
         

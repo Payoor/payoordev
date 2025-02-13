@@ -23,7 +23,7 @@ xm(d,e){var x=null,w=e?32:24
 return new A.bo(new A.a1(0,w,0,w),A.aE(d,x,x,x,x,x,A.b2(x,x,B.e,x,x,x,x,x,x,x,x,e?48:32,x,x,B.am,x,1.2,!0,x,-0.5,x,x,x,x,x,x),x,x),x)},
 xl(d,e){var x=null,w=e?32:24
 return new A.bo(new A.a1(0,0,0,w),A.aE(d,x,x,x,x,x,A.b2(x,x,B.e,x,x,x,x,x,x,x,x,e?20:16,x,x,B.q,x,1.6,!0,x,0.2,x,x,x,x,x,x),x,x),x)},
-a5D(d,e){var x=null,w=e?24:16,v=e?180:d.b*0.22,u=y.e
+a5E(d,e){var x=null,w=e?24:16,v=e?180:d.b*0.22,u=y.e
 v=A.a([A.eA(A.cd(x,A.jZ("assets/payoorlogo.png",x,x,B.c1,e?48:d.d*0.06,v),B.B,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,new C.amT(this),x,x,x,x,x,x),B.aw,x,x,x,x)],u)
 if(!e)v.push(A.cd(x,A.au(A.jZ("assets/burger.png",x,x,B.c1,d.d*0.12,d.b*0.12),B.l,x,x,x,x,x,x,F.fU,x),B.B,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,new C.amU(),x,x,x,x,x,x))
 if(e)v.push(A.ck(A.a([A.eA(A.cd(x,A.aE("Sign Up/Sign In",x,x,x,x,x,A.b2(x,x,B.e,x,x,x,x,x,x,x,x,20,x,x,B.A,x,x,!0,x,x,x,x,x,x,x,x),x,x),B.B,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,new C.amV(this),x,x,x,x,x,x),B.aw,x,x,x,x)],u),B.p,B.t,B.o))
@@ -48,7 +48,7 @@ $S:0}
 C.amW.prototype={
 $2(d,e){var x,w,v,u,t,s,r,q,p=null,o=e.b,n=o>=1024,m=this.a,l=n?120:24,k=n?32:16,j=y.h,i=A.bp(d,p,j).w,h=n?1200:1/0
 j=A.bp(d,p,j).w
-x=m.a5D(e,n)
+x=m.a5E(e,n)
 w=A.bi(p,n?32:16,p)
 v=n?80:0
 u=m.xm("About Payoor",n)
@@ -68,4 +68,4 @@ x(C.amW,A.fU)})()
 A.hh(b.typeUniverse,JSON.parse('{"nI":{"T":[],"h":[]},"SA":{"a0":["nI"]}}'))
 var y={c:A.U("n<cW>"),e:A.U("n<h>"),h:A.U("h3"),a:A.U("D?")}};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_19",e:"endPart",h:b})})($__dart_deferred_initializers__,"BfIDBt3InQvDDNOVKzQu2Hff1m4=");
+a.eventLog.push({p:"main.dart.js_19",e:"endPart",h:b})})($__dart_deferred_initializers__,"EWr5lFJus3WXOXoCBwbjoEglt2E=");

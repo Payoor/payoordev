@@ -116,6 +116,7 @@ def get_product():
             product['_id'] = str(product['_id']) 
         else:
             print("fuck!!")
+            print(product_name)
 
         data = {
             "message": "Success response",
@@ -261,6 +262,7 @@ def query_data():
         
         for item, score in results:
             print(item)
+            print(score)
             search_results.append(item)
     
         data = {
