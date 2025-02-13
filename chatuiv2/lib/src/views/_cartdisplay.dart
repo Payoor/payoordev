@@ -85,13 +85,13 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryBackgroundWhite,
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            color: AppColors.primaryColorDark,
+            color: AppColors.primaryBackgroundWhite,
             child: Stack(
               children: [
                 // Header
@@ -100,7 +100,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    color: AppColors.primaryColorDark,
+                    color: AppColors.primaryBackgroundWhite,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: HeaderRow(
                       headerName: "Cart",
@@ -423,7 +423,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColorDark,
+                      color: AppColors.primaryBackgroundWhite,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),

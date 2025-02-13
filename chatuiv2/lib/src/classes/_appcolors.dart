@@ -20,4 +20,7 @@ class AppColors {
   static const Color customGreen = Color(0xFF65D587);
   static const Color primaryColorDark = Color(0xFFFAFAFA);
   static const Color greenDark = Color(0xFF001F14);
+  static const Color primaryBackgroundWhite = Color(0xFFE0E7E2);
+  static const Color appSkyBlue = Color(0xFFA8D1F0);
+  static const Color inputBlack = Color(0xFF333333);
 }

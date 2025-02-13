@@ -256,7 +256,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   InputDecoration get _inputDecoration => InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.black,
+        fillColor: AppColors.inputBlack,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 23,
@@ -288,7 +288,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide(
-        color: Colors.transparent.withOpacity(opacity),
+        color: AppColors.inputBlack,
         width: width,
       ),
     );
@@ -296,7 +296,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   Widget _buildLoadingIndicator() {
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryBackgroundWhite,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
@@ -433,12 +433,15 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         child: Container(
           padding: const EdgeInsets.all(17),
           decoration: BoxDecoration(
-            color: AppColors.black,
+            color: AppColors.appSkyBlue,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             message.text,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(
+              color: AppColors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       );
@@ -1050,43 +1053,47 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     return Positioned.fill(
       child: Container(
         color: Colors.transparent,
-        child: Center(
-          child: Opacity(
-            opacity: 0.3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  constraints: BoxConstraints(maxWidth: 320),
-                  width: MediaQuery.of(context).size.width * 0.55,
-                  child: TypewriterText(
-                    text: "How may I help with your shopping list?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      fontStyle: FontStyle.italic,
-                      height: 1.2,
-                      color: AppColors.greenDark,
+        child: Consumer<MessageProvider>(
+          builder: (context, messageProvider, child) {
+            return Center(
+              child: Opacity(
+                opacity: messageProvider.messages.isNotEmpty ? 0.0 : 0.3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 320),
+                      width: MediaQuery.of(context).size.width * 0.55,
+                      child: TypewriterText(
+                        text: "How may I help with your shopping list?",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          fontStyle: FontStyle.italic,
+                          height: 1.2,
+                          color: AppColors.greenDark,
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 10),
+                    AnimatedOpacity(
+                        opacity: isInitialAnimationComplete ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Image.asset(
+                          'assets/payoorcart.png',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                          color: AppColors.greenDark,
+                          colorBlendMode: BlendMode.srcATop,
+                        ))
+                  ],
                 ),
-                SizedBox(width: 10),
-                AnimatedOpacity(
-                    opacity: isInitialAnimationComplete ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 500),
-                    child: Image.asset(
-                      'assets/payoorcart.png',
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.contain,
-                      color: AppColors.greenDark,
-                      colorBlendMode: BlendMode.srcATop,
-                    ))
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -1095,7 +1102,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryBackgroundWhite,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [

@@ -143,7 +143,7 @@ class _CustomInputState extends State<CustomInput> {
     return InputDecoration(
       counterText: "",
       filled: true,
-      fillColor: AppColors.black,
+      fillColor: AppColors.inputBlack,
       contentPadding: EdgeInsets.symmetric(
         horizontal: 16,
         vertical: widget.inputType == CustomInputType.multiline ? 20 : 30,
@@ -162,7 +162,7 @@ class _CustomInputState extends State<CustomInput> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.transparent,
+          color: AppColors.inputBlack,
           width: 2,
         ),
       ),

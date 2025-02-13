@@ -169,13 +169,13 @@ server.listen(PORT, (error) => {
 // 15. Initialize WebSocket
 initSocket(server);
 
-setTimeout(async () => {
+/*setTimeout(async () => {
   console.log('[Cron] Starting initial variant count update');
   const result = await updateAllVariantCounts();
   if (!result.success) {
     console.error('[Cron] Failed to update variant counts:', result.error);
   }
-}, 1000);
+}, 1000);*/
 
 const updateAllVariantCountsCronJob = cron.schedule('0 0 * * *', async () => {
   console.log('[Cron] Starting daily variant count update');
@@ -187,4 +187,4 @@ const updateAllVariantCountsCronJob = cron.schedule('0 0 * * *', async () => {
   scheduled: false
 });
 
-updateAllVariantCountsCronJob.start();
+//updateAllVariantCountsCronJob.start();

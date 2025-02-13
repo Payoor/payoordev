@@ -123,7 +123,7 @@ class _ProductCardState extends State<ProductCard> {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: AppColors.greyBackground.withOpacity(.5),
+        color: AppColors.appSkyBlue.withOpacity(.5),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: Colors.transparent, // Makes the border faint

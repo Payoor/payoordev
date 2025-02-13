@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:chatuiv2/src/classes/_appcolors.dart';
+
 class OrderItem extends StatelessWidget {
   final dynamic order;
 
@@ -13,7 +15,7 @@ class OrderItem extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Colors.grey[300]!, // Light grey color for the border
+            color: AppColors.black.withOpacity(.5), // Light grey color for the border
             width: .4,
           ),
         ),
@@ -29,7 +31,7 @@ class OrderItem extends StatelessWidget {
                 Text(
                   'Reference: ${order['reference'] ?? 'N/A'}',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -40,7 +42,7 @@ class OrderItem extends StatelessWidget {
                 Text(
                   '${order['createdAt']}',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.black,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
@@ -53,7 +55,7 @@ class OrderItem extends StatelessWidget {
                 Text(
                   'Status: ${order['status']}',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -64,7 +66,7 @@ class OrderItem extends StatelessWidget {
                 Text(
                   'Total: ${order['total']}',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.black,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),

@@ -56,14 +56,14 @@ class _ProductOptionsState extends State<ProductOptions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryBackgroundWhite,
       resizeToAvoidBottomInset: true,
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            color: AppColors.primaryColorDark,
+            color: AppColors.primaryBackgroundWhite,
             child: Stack(
               children: [
                 Positioned(
@@ -71,7 +71,7 @@ class _ProductOptionsState extends State<ProductOptions> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    color: AppColors.primaryColorDark,
+                    color: AppColors.primaryBackgroundWhite,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: HeaderRow(
                       headerName: widget.productName,
@@ -233,7 +233,7 @@ class _ProductOptionsState extends State<ProductOptions> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColorDark,
+                      color: AppColors.primaryBackgroundWhite,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),

@@ -57,7 +57,7 @@ class _OnboardInputState extends State<OnboardInput> {
       decoration: InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.black,
+        fillColor: AppColors.inputBlack,
         contentPadding: EdgeInsets.symmetric(
           horizontal: isDesktop ? 24 : 16,
           vertical: isDesktop ? 20 : 12,
@@ -74,7 +74,7 @@ class _OnboardInputState extends State<OnboardInput> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(isDesktop ? 20 : 12),
           borderSide: BorderSide(
-            color: Colors.transparent,
+            color: AppColors.inputBlack,
             width: isDesktop ? 3 : 2,
           ),
         ),

@@ -53,13 +53,13 @@ class _OrderDisplayState extends State<OrderDisplay> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryBackgroundWhite,
       resizeToAvoidBottomInset: true,
       body: LayoutBuilder(builder: (context, constraints) {
         return Container(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
-          color: AppColors.primaryColorDark,
+          color: AppColors.primaryBackgroundWhite,
           child: Stack(
             children: [
               Positioned(
@@ -67,7 +67,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  color: AppColors.primaryColorDark,
+                  color: AppColors.primaryBackgroundWhite,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: HeaderRow(
                     headerName: "Orders",
@@ -107,14 +107,14 @@ class _OrderDisplayState extends State<OrderDisplay> {
                                 Icon(
                                   Icons.assignment_outlined,
                                   size: 64,
-                                  color: Colors.grey,
+                                  color: AppColors.black,
                                 ),
                                 SizedBox(height: 16),
                                 Text(
                                   'No orders made yet',
                                   style: TextStyle(
                                     fontSize: 18,
-                                    color: Colors.grey,
+                                    color: AppColors.black,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),

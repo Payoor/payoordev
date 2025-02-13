@@ -67,7 +67,7 @@ class _LoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: AppColors.primaryColorDark,
+      backgroundColor: AppColors.primaryBackgroundWhite,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(

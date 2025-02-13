@@ -119,7 +119,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
   InputDecoration get _inputDecoration => InputDecoration(
         counterText: "",
         filled: true,
-        fillColor: AppColors.black,
+        fillColor: AppColors.inputBlack,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 23,
@@ -151,7 +151,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide(
-        color: Colors.transparent.withOpacity(opacity),
+        color: AppColors.inputBlack,
         width: width,
       ),
     );
@@ -185,14 +185,14 @@ class _OrderConfirmState extends State<OrderConfirm> {
         return Container(
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            color: AppColors.primaryColorDark,
+            color: AppColors.primaryBackgroundWhite,
             child: Stack(children: [
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
                 child: Container(
-                  color: AppColors.primaryColorDark,
+                  color: AppColors.primaryBackgroundWhite,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: HeaderRow(
                     headerName: "Order Confirmation",
@@ -531,7 +531,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    color: AppColors.primaryColorDark,
+                    color: AppColors.primaryBackgroundWhite,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.of(context).size.height *
@@ -620,7 +620,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColorDark,
+                    color: AppColors.primaryBackgroundWhite,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
