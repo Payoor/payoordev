@@ -91,22 +91,19 @@ class MyApp extends StatelessWidget {
             case ConnectionState.waiting:
               return StackWithNav(
                 child: loadingWidget ??
-                    Center(
+                    StackWithNav(
+                        child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
+                          CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         ],
                       ),
-                    ),
+                    )),
               );
 
             default:
