@@ -9,7 +9,6 @@ import 'package:chatuiv2/src/widgets/_headerrow.dart';
 
 import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
-import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 class CartDisplayScreen extends StatefulWidget {
   final VoidCallback closeWidget;
@@ -24,6 +23,7 @@ class CartDisplayScreen extends StatefulWidget {
 }
 
 class _CartDisplayScreenState extends State<CartDisplayScreen> {
+  Map<String, dynamic> order = {};
   final List<bool> _visibleItems = [];
   bool isLoading = false;
 
@@ -70,7 +70,9 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
           final chatResponse = response.data['chatresponse'];
           final orderId = chatResponse['orderId']?.toString();
           if (orderId != null) {
-            context.read<BaniPayProvider>().setCurrentOrder(orderId);
+            setState(() {
+              order = chatResponse['payload'];
+            });
             return true;
           }
         }
@@ -443,8 +445,9 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
 
                             try {
                               await _createOrder();
-                              if (mounted) {
-                                Navigator.pushNamed(context, '/confirmorder');
+                              if (mounted && order.isNotEmpty) {
+                                Navigator.pushNamed(context, '/confirmorder',
+                                    arguments: {'orderId': order['_id']});
                               }
                             } catch (e) {
                               if (mounted) {

@@ -5,13 +5,22 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import 'package:chatuiv2/src/widgets/_sidenav.dart';
 
-import 'package:chatuiv2/src/views/_authpage.dart';
+/*import 'package:chatuiv2/src/views/_authpage.dart';
 import 'package:chatuiv2/src/views/_welcome.dart';
 import 'package:chatuiv2/src/views/_authenticatedchat.dart';
 import 'package:chatuiv2/src/views/_authloading.dart';
 import 'package:chatuiv2/src/views/_aboutus.dart';
 import 'package:chatuiv2/src/views/_ordersdisplay.dart';
-import 'package:chatuiv2/src/views/_orderconfirm.dart';
+import 'package:chatuiv2/src/views/_orderconfirm.dart';*/
+
+import 'package:chatuiv2/src/views/_authloading.dart' deferred as authLoading;
+import 'package:chatuiv2/src/views/_authpage.dart' deferred as auth;
+import 'package:chatuiv2/src/views/_welcome.dart' deferred as welcome;
+import 'package:chatuiv2/src/views/_aboutus.dart' deferred as about;
+import 'package:chatuiv2/src/views/_authenticatedchat.dart'
+    deferred as authChat;
+import 'package:chatuiv2/src/views/_ordersdisplay.dart' deferred as orders;
+import 'package:chatuiv2/src/views/_orderconfirm.dart' deferred as orderConfirm;
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -40,6 +49,78 @@ final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  MaterialPageRoute deferredRoute({
+    required Future<void> Function() loadLibrary,
+    required Widget Function() buildWidget,
+    Widget? loadingWidget,
+    Widget? errorWidget,
+  }) {
+    return MaterialPageRoute(
+      builder: (context) => FutureBuilder(
+        future: loadLibrary(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return StackWithNav(
+                  child: errorWidget ??
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error_outline,
+                                size: 48, color: Colors.red),
+                            SizedBox(height: 16),
+                            Text(
+                              'Error loading page: ${snapshot.error}',
+                              style: TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text('Go Back'),
+                            ),
+                          ],
+                        ),
+                      ),
+                );
+              }
+              return StackWithNav(child: buildWidget());
+
+            case ConnectionState.waiting:
+              return StackWithNav(
+                child: loadingWidget ??
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text(
+                            'Loading...',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+              );
+
+            default:
+              return StackWithNav(
+                child: Center(
+                  child: Text('Something went wrong'),
+                ),
+              );
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -48,15 +129,56 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       title: 'Payoor',
       debugShowCheckedModeBanner: false,
-      routes: {
-        '/': (context) => const StackWithNav(child: AuthLoading()),
-        '/auth': (context) => const StackWithNav(child: AuthPage()),
-        '/welcome': (context) => const StackWithNav(child: Welcome()),
-        '/about': (context) => const StackWithNav(child: AboutPayoor()),
-        '/authchat': (context) =>
-            const StackWithNav(child: AuthenticatedChat()),
-        '/orders': (context) => const StackWithNav(child: OrderDisplay()),
-        '/confirmorder': (context) => const StackWithNav(child: OrderConfirm()),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/':
+            return deferredRoute(
+              loadLibrary: authLoading.loadLibrary,
+              buildWidget: () => authLoading.AuthLoading(),
+            );
+
+          case '/auth':
+            return deferredRoute(
+              loadLibrary: auth.loadLibrary,
+              buildWidget: () => auth.AuthPage(),
+            );
+
+          case '/welcome':
+            return deferredRoute(
+              loadLibrary: welcome.loadLibrary,
+              buildWidget: () => welcome.Welcome(),
+            );
+
+          case '/about':
+            return deferredRoute(
+              loadLibrary: about.loadLibrary,
+              buildWidget: () => about.AboutPayoor(),
+            );
+
+          case '/authchat':
+            return deferredRoute(
+              loadLibrary: authChat.loadLibrary,
+              buildWidget: () => authChat.AuthenticatedChat(),
+            );
+
+          case '/orders':
+            return deferredRoute(
+              loadLibrary: orders.loadLibrary,
+              buildWidget: () => orders.OrderDisplay(),
+            );
+        }
+
+        final name = settings.name;
+        if (name != null && name.startsWith('/confirmorder')) {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return deferredRoute(
+            loadLibrary: orderConfirm.loadLibrary,
+            buildWidget: () =>
+                orderConfirm.OrderConfirm(orderId: args?['orderId']),
+          );
+        }
+
+        return null;
       },
     );
   }

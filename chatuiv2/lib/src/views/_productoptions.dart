@@ -49,7 +49,7 @@ class _ProductOptionsState extends State<ProductOptions> {
 
   Future<List<dynamic>> _getProductVariants() async {
     final response = await ProductRoute.getProductVariants(widget.productId);
-    print("API Response: ${response.data}");
+    //print("API Response: ${response.data}");
     return response.data["product_variants"];
   }
 
@@ -92,11 +92,9 @@ class _ProductOptionsState extends State<ProductOptions> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: productData.isEmpty
                         ? const Center(child: CircularProgressIndicator())
-                        : ListView.separated(
+                        : ListView.builder(
                             padding: const EdgeInsets.all(16),
                             itemCount: productData.length,
-                            separatorBuilder: (context, index) =>
-                                const Divider(height: 24),
                             itemBuilder: (context, index) {
                               final item = productData[index];
                               final itemPrice = (item["price"] != null &&
@@ -104,124 +102,146 @@ class _ProductOptionsState extends State<ProductOptions> {
                                   ? item["price"]
                                   : 1;
 
-                              return Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            item["unit"],
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16,
-                                              color: AppColors.black,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '₦$itemPrice',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: AppColors.black,
-                                            ),
-                                          ),
-                                        ],
+                              return Consumer<CartProvider>(
+                                builder: (context, cart, child) {
+                                  final int quantity = cart.quantityAmount(
+                                    unit: item['unit'],
+                                    id: widget.productId,
+                                  );
+
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(13),
+                                    decoration: BoxDecoration(
+                                      color: quantity > 0
+                                          ? AppColors.primaryColor
+                                          : Colors.transparent,
+                                      border: Border.all(
+                                        width: 1.0,
+                                        color: AppColors.primaryColor
+                                            .withOpacity(0.6),
                                       ),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    Row(
+                                    child: Row(
                                       children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Provider.of<CartProvider>(context,
-                                                    listen: false)
-                                                .decreaseItem(
-                                              id: widget.productId,
-                                              unit: item["unit"],
-                                            );
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey[400]!),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.transparent,
-                                            ),
-                                            child: Text(
-                                              "-",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppColors.black,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                item["unit"],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 16,
+                                                  color: quantity > 0
+                                                      ? Colors.white
+                                                      : AppColors.black,
+                                                ),
                                               ),
-                                            ),
+                                              const SizedBox(height: 14),
+                                              Text(
+                                                '₦$itemPrice',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  color: quantity > 0
+                                                      ? Colors.white
+                                                      : AppColors.black,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 6,
-                                          ),
-                                          child: Consumer<CartProvider>(
-                                            builder: (context, cart, child) =>
-                                                Text(
-                                              "${cart.quantityAmount(unit: item['unit'], id: widget.productId)}",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppColors.black,
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => cart.decreaseItem(
+                                                id: widget.productId,
+                                                unit: item["unit"],
+                                              ),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 6,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.grey[400]!),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  color: Colors.transparent,
+                                                ),
+                                                child: Text(
+                                                  "-",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: quantity > 0
+                                                        ? Colors.white
+                                                        : AppColors.black,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Provider.of<CartProvider>(context,
-                                                    listen: false)
-                                                .addItem(
-                                              id: widget.productId,
-                                              name: widget.productName,
-                                              unit: item['unit'],
-                                              price: itemPrice,
-                                            );
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey[400]!),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.green[100],
-                                            ),
-                                            child: Text(
-                                              "+",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppColors.primaryColor,
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 6,
+                                              ),
+                                              child: Text(
+                                                "$quantity",
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: quantity > 0
+                                                      ? Colors.white
+                                                      : AppColors.black,
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                            GestureDetector(
+                                              onTap: () => cart.addItem(
+                                                id: widget.productId,
+                                                name: widget.productName,
+                                                unit: item['unit'],
+                                                price: itemPrice,
+                                              ),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 6,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.grey[400]!),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  color: Colors.green[100],
+                                                ),
+                                                child: Text(
+                                                  "+",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color:
+                                                        AppColors.primaryColor,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               );
+                              ;
                             },
                           ),
                   ),

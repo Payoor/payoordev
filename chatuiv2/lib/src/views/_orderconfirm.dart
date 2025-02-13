@@ -16,7 +16,9 @@ import 'package:chatuiv2/src/providers/_googleplaces.dart';
 import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 class OrderConfirm extends StatefulWidget {
-  const OrderConfirm({Key? key}) : super(key: key);
+  final String? orderId;
+
+  const OrderConfirm({this.orderId, super.key});
 
   @override
   State<OrderConfirm> createState() => _OrderConfirmState();
@@ -103,6 +105,8 @@ class _OrderConfirmState extends State<OrderConfirm> {
         authProvider.userData?['userAddress'] ?? 'Set delivery address';
 
     selectAddress(userAddress);
+    context.read<BaniPayProvider>().setCurrentOrder(widget.orderId);
+    
 
     _controller.addListener(() {
       context.read<GooglePlaces>().searchPlaces(_controller.text);
@@ -155,6 +159,12 @@ class _OrderConfirmState extends State<OrderConfirm> {
         width: width,
       ),
     );
+  }
+
+  void handleBaniPayOpen(String? orderId) {
+    setState(() {
+      _openBaniPay = true;
+    });
   }
 
   Widget buildBaniPaySwipeUp() {
@@ -636,9 +646,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                             selectedAddress.isEmpty || selectedTime.isEmpty
                                 ? null
                                 : () {
-                                    setState(() {
-                                      _openBaniPay = true;
-                                    });
+                                    handleBaniPayOpen(widget.orderId);
                                   },
                         style: ButtonStyle(
                           backgroundColor:

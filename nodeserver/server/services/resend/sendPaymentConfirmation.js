@@ -79,7 +79,7 @@ async function sendPaymentConfirmation({ email, orderdetails }) {
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #249B48;">
                                     <tr>
                                         <td align="center" style="padding: 40px 0;">
-                                            <img src="https://payoorimages.s3.ap-southeast-2.amazonaws.com/payoorlogo.png" alt="Payoor Logo" style="height: 70px; width: auto;" />
+                                            
                                         </td>
                                     </tr>
                                 </table>
@@ -116,7 +116,7 @@ async function sendPaymentConfirmation({ email, orderdetails }) {
                                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                                 <tr>
                                                     <td align="center">
-                                                        <img src="https://payoorimages.s3.ap-southeast-2.amazonaws.com/bike.png" alt="Delivery Bike" style="max-width: 230px; height: auto;" />
+                                                       
                                                     </td>
                                                 </tr>
                                             </table>

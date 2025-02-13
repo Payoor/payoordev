@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-//import 'dart:html' as html;
 import 'dart:async';
 
 import 'package:chatuiv2/src/views/_landingscreen.dart';

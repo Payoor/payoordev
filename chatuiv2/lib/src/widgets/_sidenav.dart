@@ -18,15 +18,6 @@ class SideNavWidget extends StatefulWidget {
 }
 
 class _SideNavWidgetState extends State<SideNavWidget> {
-  final TextStyle menuItem = const TextStyle(
-    color: Colors.black,
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.15,
-    height: 1.5,
-    fontFamily: 'Roboto',
-  );
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProv>(builder: (context, authProv, child) {
@@ -45,13 +36,24 @@ class _SideNavWidgetState extends State<SideNavWidget> {
         }
       }
 
+      final TextStyle menuItem = TextStyle(
+        color: userData == null ? AppColors.black : AppColors.white,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.15,
+        height: 1.5,
+        fontFamily: 'Roboto',
+      );
+
       return Container(
-        color: AppColors.black,
+        color: AppColors.black.withOpacity(.5),
         child: Row(
           children: [
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
-              color: AppColors.primaryColorDark,
+              color: userData == null
+                  ? AppColors.primaryColorDark
+                  : AppColors.primaryColor,
               child: Material(
                 type: MaterialType.transparency,
                 child: Column(
@@ -71,7 +73,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                         children: [
                           ListTile(
                             leading:
-                                Icon(Icons.info_outline, color: Colors.black),
+                                Icon(Icons.info_outline, color: userData == null ? AppColors.black : AppColors.white),
                             title: Text('About us', style: menuItem),
                             onTap: () {
                               // Use root navigator
@@ -83,7 +85,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                           if (userData != null)
                             ListTile(
                               leading: Icon(Icons.receipt_long_outlined,
-                                  color: Colors.black),
+                                  color:  AppColors.white),
                               title: Text('Orders', style: menuItem),
                               onTap: () {
                                 // Use root navigator
@@ -95,7 +97,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                           if (userData != null)
                             ListTile(
                               leading: Icon(Icons.headset_mic_outlined,
-                                  color: Colors.black),
+                                  color: AppColors.white),
                               title: Text('Support', style: menuItem),
                               onTap: () {
                                 openWhatsApp("08138718022");
@@ -147,14 +149,14 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                           if (userData != null) ...[
                             ListTile(
                               leading: Icon(Icons.person_outline,
-                                  color: AppColors.primaryColor),
+                                  color: AppColors.white),
                               title: Text(userData['email'], style: menuItem),
                               onTap: () {
                                 // Handle settings
                               },
                             ),
                             ListTile(
-                              leading: Icon(Icons.logout, color: Colors.black),
+                              leading: Icon(Icons.logout, color: AppColors.white),
                               title: Text('Signout', style: menuItem),
                               onTap: () async {
                                 await authProv.logout();
