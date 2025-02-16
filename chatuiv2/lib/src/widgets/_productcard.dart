@@ -58,11 +58,11 @@ class _ProductCardState extends State<ProductCard> {
   Future<void> _getTagResults(tag) async {
     try {
       context.read<MessageProvider>().addMessage(Message(
-                text: '',
-                isClient: false,
-                isRead: false,
-                isLoading: true,
-              ));
+            text: '',
+            isClient: false,
+            isRead: false,
+            isLoading: true,
+          ));
 
       ServerResponse response = await ProductRoute.getSuggestion(tag);
 
@@ -71,14 +71,20 @@ class _ProductCardState extends State<ProductCard> {
             .map((item) => Map<String, String>.from(item))
             .toList();
 
-        final suggestions =
+        List<String> suggestions =
             context.read<ResultListProvider>().suggested_prompts;
+        context
+            .read<ResultListProvider>()
+            .updateSuggestedPrompts([tag, ...suggestions]);
+
+        suggestions = context.read<ResultListProvider>().suggested_prompts;
 
         Message aiMessage;
 
         aiMessage = Message(
           text: 'Found some items in the $tag category',
           isProductsDisplay: true,
+          tags: suggestions,
           isClient: false,
           isRead: false,
         );

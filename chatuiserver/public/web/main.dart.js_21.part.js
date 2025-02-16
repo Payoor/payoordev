@@ -2,7 +2,7 @@
 a[b][c]=a[b][c]||[]
 a[b][c].push({p:"main.dart.js_21",e:"beginPart"})})(self,"$__dart_deferred_initializers__","eventLog")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,B,D={
-aVh(){return new D.oL(null)},
+aVi(){return new D.oL(null)},
 oL:function oL(d){this.a=d},
 WT:function WT(d,e){var _=this
 _.w=!0
@@ -31,7 +31,7 @@ this.a=e},
 af9(){var x=0,w=A.K(y.W),v,u=2,t,s,r,q,p,o,n,m
 var $async$af9=A.L(function(d,e){if(d===1){t=e
 x=u}while(true)switch(x){case 0:u=4
-s=A.cz($.lW()+"/user/get/orders",0,null)
+s=A.cA($.lW()+"/user/get/orders",0,null)
 r=window.localStorage.getItem("jwtToken")
 o=y.N
 x=7
@@ -103,8 +103,8 @@ D.oM.prototype={
 a8(){return new D.WU()}}
 D.WU.prototype={
 tn(d){if(d==null)return"0.00"
-return J.aRe(J.aQH(d,100),2)},
-a8K(d){var x,w
+return J.aRf(J.aQH(d,100),2)},
+a8L(d){var x,w
 try{x=d.split("T")[0]
 return x}catch(w){return d}},
 OK(d){switch(d==null?null:d.toLowerCase()){case"pending":return C.G2
@@ -112,7 +112,7 @@ case"processing":return B.j1
 case"completed":return E.FT
 case"cancelled":return B.j_
 default:return B.cL}},
-I(d){var x,w,v,u=this,t=null,s="status",r="delivery_date",q=A.b9(8),p=A.a([new A.cq(1,B.bf,A.ah(B.d.ah(25.5),B.hw.gl(0)>>>16&255,B.hw.gl(0)>>>8&255,B.hw.gl(0)&255),I.hA,4)],y.V),o=A.b9(8),n=A.aB("Order #"+B.c.bJ(J.dL(J.a6(u.a.c,"_id")),J.dL(J.a6(u.a.c,"_id")).length-6),t,t,t,t,t,C.ie,t,t),m=u.OK(J.a6(u.a.c,s))
+I(d){var x,w,v,u=this,t=null,s="status",r="delivery_date",q=A.b9(8),p=A.a([new A.cq(1,B.be,A.ah(B.d.ah(25.5),B.hw.gl(0)>>>16&255,B.hw.gl(0)>>>8&255,B.hw.gl(0)&255),I.hA,4)],y.V),o=A.b9(8),n=A.aB("Order #"+B.c.bJ(J.dL(J.a6(u.a.c,"_id")),J.dL(J.a6(u.a.c,"_id")).length-6),t,t,t,t,t,C.ie,t,t),m=u.OK(J.a6(u.a.c,s))
 m=A.ah(51,m.gl(0)>>>16&255,m.gl(0)>>>8&255,m.gl(0)&255)
 x=A.b9(12)
 w=J.a6(u.a.c,s)
@@ -138,8 +138,8 @@ m.push(A.c8(A.a([C.YX,A.aB("$"+u.tn(J.a6(u.a.c,"service_charge")),t,t,t,t,t,t,t,
 m.push(C.H9)
 m.push(A.c8(A.a([C.YP,A.aB("$"+u.tn(J.a6(u.a.c,"total")),t,t,t,t,t,B.fa,t,t)],v),B.p,B.ao,B.n))
 x=J.a6(u.a.c,s)
-if(J.d(x==null?t:J.aRc(x),"pending"))B.b.F(m,A.a([E.f5,A.bh(A.My(C.YH,new D.aus(u,d),A.aHc(t,t,E.Go,t,t,t,t,t,t,B.e,t,t,C.HQ,t,new A.d6(A.b9(8),B.o),t,t,t,t)),t,1/0)],v))
-if(J.a6(u.a.c,r)!=null)B.b.F(m,A.a([E.f5,C.YM,C.kZ,A.aB("Delivery Date: "+u.a8K(J.a6(u.a.c,r)),t,t,t,t,t,C.A2,t,t)],v))
+if(J.d(x==null?t:J.aRd(x),"pending"))B.b.F(m,A.a([E.f5,A.bh(A.My(C.YH,new D.aus(u,d),A.aHc(t,t,E.Go,t,t,t,t,t,t,B.e,t,t,C.HQ,t,new A.d6(A.b9(8),B.o),t,t,t,t)),t,1/0)],v))
+if(J.a6(u.a.c,r)!=null)B.b.F(m,A.a([E.f5,C.YM,C.kZ,A.aB("Delivery Date: "+u.a8L(J.a6(u.a.c,r)),t,t,t,t,t,C.A2,t,t)],v))
 B.b.F(n,A.a([C.H8,new A.bb(B.cp,A.bu(m,B.a0,t,B.r,B.n),t)],v))}return A.dr(B.ae,A.a([A.av(t,A.oF(B.ab,t,A.BC(!1,o,!0,A.bu(n,B.a0,t,B.r,B.n),t,!0,t,t,t,t,t,t,t,t,t,new D.aut(u),t,t,t,t),B.l,B.C,0,t,t,t,t,t,B.d_),B.l,t,t,new A.b2(B.e,t,t,q,p,t,B.z),t,t,t,F.ju,t,t,t,t)],v),B.D,B.af)}}
 D.Az.prototype={
 I(d){var x,w,v,u,t,s,r,q=null
@@ -159,7 +159,7 @@ v.toString
 s=v}r=x.e
 if(r==null){v=w.e
 v.toString
-r=v}return A.bh(A.dM(A.av(q,q,B.l,q,q,new A.b2(q,q,new A.cW(B.o,B.o,G.aSX(d,q,t),B.o),q,q,q,B.z),q,t,q,new A.dw(s,0,r,0),q,q,q,q),q,q),u,q)}}
+r=v}return A.bh(A.dM(A.av(q,q,B.l,q,q,new A.b2(q,q,new A.cW(B.o,B.o,G.aSY(d,q,t),B.o),q,q,q,B.z),q,t,q,new A.dw(s,0,r,0),q,q,q,q),q,q),u,q)}}
 var z=a.updateTypes(["oM(@)"])
 D.aul.prototype={
 $3(d,e,f){var x,w=null
@@ -216,7 +216,7 @@ $1(d){var x=null,w=d.b,v=J.aG(w)
 return new A.bb(C.HY,A.aB(A.j(d.a)+": "+A.j(v.i(w,"quantity"))+"x $"+this.a.tn(v.i(w,"price")),x,x,x,x,x,C.A2,x,x),x)},
 $S:506}
 D.aus.prototype={
-$0(){var x=A.bI(this.b,!1,y.B)
+$0(){var x=A.bG(this.b,!1,y.B)
 x.a=J.a6(this.a.a.c,"_id")
 x.ac()},
 $S:0};(function inheritance(){var x=a.inheritMany,w=a.inherit
@@ -261,4 +261,4 @@ C.YP=new A.db("Total",null,B.fa,null,null,null,null,null,null,null)
 C.YX=new A.db("Service Charge",null,null,null,null,null,null,null,null,null)
 C.YY=new A.db("Order Summary",null,C.ie,null,null,null,null,null,null,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_21",e:"endPart",h:b})})($__dart_deferred_initializers__,"ifVYBqV1InC+rKgIJAT/UBCCKYw=");
+a.eventLog.push({p:"main.dart.js_21",e:"endPart",h:b})})($__dart_deferred_initializers__,"jmT0bI1imAMp8xQvowCa0sY3aoU=");
