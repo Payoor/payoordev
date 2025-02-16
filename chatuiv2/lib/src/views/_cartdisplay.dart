@@ -79,7 +79,7 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
       }
       return false;
     } catch (e) {
-      print('Error creating order: $e');
+      //print('Error creating order: $e');
       return false;
     }
   }

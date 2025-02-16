@@ -25,7 +25,7 @@ class GooglePlaces with ChangeNotifier {
       final response = await GoogleApiRoutes.searchPlaces(query);
       _predictions = response?.data?["placesResponse"] ?? [];
     } catch (error) {
-      print('Error searching places: $error');
+      //print('Error searching places: $error');
       _predictions = [];
     } finally {
       _isLoading = false;

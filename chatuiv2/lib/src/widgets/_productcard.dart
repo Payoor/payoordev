@@ -3,15 +3,18 @@ import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/providers/_authprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
+import 'package:chatuiv2/src/providers/_messageprov.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_productroutes.dart';
 import 'package:chatuiv2/src/classes/_serverresponse.dart';
+import 'package:chatuiv2/src/classes/_message.dart';
 
 import 'package:chatuiv2/src/views/_productoptions.dart';
 
 class ProductCard extends StatefulWidget {
   final String productName;
+  final String productTags;
   final void Function()? onProductTap;
   final void Function()? onFavoriteTap;
   static final Map<String, String> _imageCache = {};
@@ -19,6 +22,7 @@ class ProductCard extends StatefulWidget {
   const ProductCard({
     super.key,
     required this.productName,
+    required this.productTags,
     this.onProductTap,
     this.onFavoriteTap,
   });
@@ -51,6 +55,49 @@ class _ProductCardState extends State<ProductCard> {
     }
   }
 
+  Future<void> _getTagResults(tag) async {
+    try {
+      context.read<MessageProvider>().addMessage(Message(
+                text: '',
+                isClient: false,
+                isRead: false,
+                isLoading: true,
+              ));
+
+      ServerResponse response = await ProductRoute.getSuggestion(tag);
+
+      if (response.data['results'] != null) {
+        final results = (response.data['results'] as List)
+            .map((item) => Map<String, String>.from(item))
+            .toList();
+
+        final suggestions =
+            context.read<ResultListProvider>().suggested_prompts;
+
+        Message aiMessage;
+
+        aiMessage = Message(
+          text: 'Found some items in the $tag category',
+          isProductsDisplay: true,
+          isClient: false,
+          isRead: false,
+        );
+
+        context.read<MessageProvider>().removeLastMessage();
+
+        context.read<MessageProvider>().addMessage(aiMessage);
+
+        context.read<ResultListProvider>().updateResults(
+            total: results.length,
+            results: results,
+            suggested_prompts: suggestions);
+      }
+    } catch (e) {
+      //print('Error fetching product: $e');
+      // Handle error appropriately
+    }
+  }
+
   Future<void> _getProductByName() async {
     setState(() {
       _isbookmarked = false;
@@ -76,7 +123,7 @@ class _ProductCardState extends State<ProductCard> {
         });
       }
     } catch (e) {
-      print('Error fetching product: $e');
+      //print('Error fetching product: $e');
     }
   }
 
@@ -312,6 +359,47 @@ class _ProductCardState extends State<ProductCard> {
               ),
             ),
           ),
+          SizedBox(height: 10),
+          if (widget.productTags.isNotEmpty)
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: widget.productTags.split(',').map((tag) {
+                return GestureDetector(
+                    onTap: () {
+                      _getTagResults(tag.trim());
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: AppColors.primaryColor.withOpacity(0.2),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        tag.trim(),
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ));
+              }).toList(),
+            ),
           SizedBox(height: 10),
         ],
       ),

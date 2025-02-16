@@ -43,10 +43,10 @@ class _BaniPayState extends State<BaniPay> {
     _fetchData();
 
     html.window.onMessage.listen((event) {
-      print('Received message event:');
-      print('Event data: ${event.data}');
-      print('Event type: ${event.type}');
-      print('Event source: ${event.source}');
+      //print('Received message event:');
+      //print('Event data: ${event.data}');
+      //print('Event type: ${event.type}');
+      //print('Event source: ${event.source}');
 
       // Check if the event.data is a Map and contains the success message
       if (event.data is Map) {

@@ -57,6 +57,22 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def split_at_last_space(text):
+    if ' ' in text:
+        last_space_index = text.rindex(' ')
+        before = text[:last_space_index]
+        after = text[last_space_index + 1:]
+        
+        return {
+            "name": before,
+            "tags": after
+        }
+        
+    return {
+        "name": text,
+        "tags": ""
+    }
+
 @app.route('/product/bookmark', methods=['POST'])
 def add_product_to_bookmark():
     try:
@@ -213,7 +229,10 @@ def get_by_suggestion():
         results = search_engine.search(suggestion)
         
         for item, score in results:
-                search_results.append(item)
+            print(split_at_last_space(item))
+            name_tags = split_at_last_space(item)
+            print(score)
+            search_results.append(name_tags)
 
         data = {
             "message": "Success response",
@@ -232,8 +251,11 @@ def get_by_suggestion():
         print(e)
         return jsonify({"error": str(e)}), 500 
 
+
+
 @app.route('/message/user/send', methods=['POST'])
 def query_data():
+
     data = request.json
     user_query = data.get('text', '').lower()
 
@@ -261,9 +283,13 @@ def query_data():
         results = search_engine.search(search_queries[0])
         
         for item, score in results:
-            print(item)
+            print(split_at_last_space(item))
+            name_tags = split_at_last_space(item)
             print(score)
-            search_results.append(item)
+            search_results.append(name_tags)
+            #result_tags.append(name_tags['tags'])
+
+        print(search_results)
     
         data = {
             "message": "Success response",

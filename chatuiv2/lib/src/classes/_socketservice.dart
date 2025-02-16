@@ -27,7 +27,7 @@ class SocketService {
 
       socket?.onConnect((_) {
         isConnected = true;
-        print('Connected to socket server');
+        //print('Connected to socket server');
       });
 
       socket?.on('transaction.success', (data) {
@@ -36,7 +36,7 @@ class SocketService {
         }
       });
     } catch (e) {
-      print('Socket connection error: $e');
+      //print('Socket connection error: $e');
       disconnectFromSocketServer();
     }
   }

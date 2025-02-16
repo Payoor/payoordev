@@ -3,13 +3,15 @@ import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/classes/_message.dart';
 import 'package:chatuiv2/src/classes/_appcolors.dart';
+import 'package:chatuiv2/src/classes/_productroutes.dart';
+import 'package:chatuiv2/src/classes/_serverresponse.dart';
 
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_productdisplay.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
-import 'package:chatuiv2/src/providers/_cartprov.dart';
 import 'package:chatuiv2/src/providers/_banipayprov.dart';
+import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 
 //cart.itemCount > 0
 class MessageContent extends StatefulWidget {
@@ -18,25 +20,26 @@ class MessageContent extends StatefulWidget {
   final int index;
   final List<Message> messagesList;
   final double deliveryFee;
+  final List<String> tags;
 
-  const MessageContent(
-      {Key? key,
-      required this.message,
-      required this.scrollController,
-      required this.index,
-      required this.messagesList,
-      required this.deliveryFee})
-      : super(key: key);
+  const MessageContent({
+    Key? key,
+    required this.message,
+    required this.scrollController,
+    required this.index,
+    required this.messagesList,
+    required this.deliveryFee,
+    required this.tags,
+  }) : super(key: key);
 
   @override
   State<MessageContent> createState() => _MessageContentState();
 }
 
 class _MessageContentState extends State<MessageContent> {
-  bool _showProducts = false;
-  bool _showCart = false;
+  bool _showProducts = true;
   bool isBaniPayOpen = false;
-  int value = 0;
+  //int value = 0;
   int previousMessageLength = 0;
 
   @override
@@ -48,10 +51,44 @@ class _MessageContentState extends State<MessageContent> {
     if (messageProvider.messages.length != previousMessageLength) {
       previousMessageLength = messageProvider.messages.length;
       setState(() {
-        value = value + 1;
-        _showProducts = false;
-        _showCart = false;
+        //value = value + 1;
+        //_showProducts = false;
       });
+    }
+  }
+
+  void _setCurrentMessage(int index) {
+    context.read<MessageProvider>().setCurrentMessage(index);
+  }
+
+  void _handleMessageInteraction() {
+    context.read<ResultListProvider>().updateSuggestedPrompts(widget.tags);
+    _getSuggestions(widget.tags[0]);
+    _setCurrentMessage(widget.index);
+  }
+
+  Future<void> _getSuggestions(String suggestion) async {
+    try {
+      ServerResponse response = await ProductRoute.getSuggestion(suggestion);
+      if (response.data['results'] != null) {
+        final results = (response.data['results'] as List)
+            .map((item) => Map<String, String>.from(item))
+            .toList();
+
+        final suggestions =
+            context.read<ResultListProvider>().suggested_prompts;
+
+        context
+            .read<ResultListProvider>()
+            .setCurrentSuggestions(suggestion: suggestion);
+
+        context.read<ResultListProvider>().updateResults(
+            total: results.length,
+            results: results,
+            suggested_prompts: suggestions);
+      }
+    } catch (e) {
+      // Handle error appropriately
     }
   }
 
@@ -66,13 +103,18 @@ class _MessageContentState extends State<MessageContent> {
   void initState() {
     super.initState();
     _showProducts = widget.message.isProductsDisplay;
-    _showCart = widget.message.isCartView;
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Consumer<MessageProvider>(
       builder: (context, messageProvider, child) {
+        final isLastMessage = widget.index == widget.messagesList.length - 1;
+        final isCurrentMessage =
+            messageProvider.currentMessageIndex == widget.index;
+        final shouldShowProducts = isLastMessage;
+
         return Column(
             key: ValueKey(
                 'message_content_${widget.message.clienttimestamp?.millisecondsSinceEpoch}'),
@@ -90,10 +132,7 @@ class _MessageContentState extends State<MessageContent> {
                   child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Container(
-                          padding: widget.message.isOrderSummary
-                              ? EdgeInsets.only(
-                                  top: 8, left: 8, right: 7, bottom: 80)
-                              : EdgeInsets.all(17),
+                          padding: EdgeInsets.all(17),
                           decoration: BoxDecoration(
                             color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(12),
@@ -111,19 +150,25 @@ class _MessageContentState extends State<MessageContent> {
                             scrollController: widget.scrollController,
                             onTap: () {
                               setState(() {
-                                _showProducts = !_showProducts;
+                                //_showProducts = !_showProducts;
                               });
+
+                              _handleMessageInteraction();
                             },
                             onComplete: () {
                               setState(() {
                                 _showProducts =
                                     widget.message.isProductsDisplay;
-                                _showCart = widget.message.isCartView;
                               });
+
+                              _handleMessageInteraction();
                             },
                           ))),
                 ),
-                widget.message.isProductsDisplay
+                widget.message.isProductsDisplay &&
+                            shouldShowProducts &&
+                            isCurrentMessage ||
+                        isCurrentMessage
                     ? Positioned(
                         top: 13,
                         right: 10,
@@ -136,112 +181,23 @@ class _MessageContentState extends State<MessageContent> {
                         ),
                       )
                     : SizedBox(),
-                widget.message.isOrderSummary
-                    ? Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    print(widget.message.orderId);
-                                    final String? newOrderId =
-                                        widget.message.orderId;
-                                    openBaniPay(newOrderId);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryColor,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 18),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          6), // Reduced border radius (default is 4)
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Pay Now',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                            ],
-                          ),
-                        ),
-                      )
-                    : SizedBox(),
               ]),
-              if (widget.message.isCartView && _showCart)
-                Consumer<CartProvider>(
-                  builder: (context, cartProvider, child) {
-                    return Column(
-                      children: [
-                        cartProvider.itemCount > 0
-                            ? Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          AppColors.greyBlack.withOpacity(.5),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: TypewriterText(
-                                      key: ValueKey(
-                                          'message_${widget.message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
-                                      text:
-                                          "Cart Total: ₦ ${cartProvider.totalAmount}\n",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white.withOpacity(0.8),
-                                      ),
-                                      duration: Duration(milliseconds: 1500),
-                                      showCursor: true,
-                                      scrollController: widget.scrollController,
-                                      onTap: () {},
-                                      onComplete: () {
-                                        setState(() {
-                                          _showProducts =
-                                              widget.message.isProductsDisplay;
-                                          _showCart = widget.message.isCartView;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : SizedBox()
-                      ],
-                    );
-                  },
-                ),
-              if (widget.message.isProductsDisplay &&
-                  widget.message.results.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Container(
-                      padding: const EdgeInsets.all(8),
-                      child: Visibility(
-                          visible: _showProducts,
-                          maintainState: true,
-                          child: ProductDisplay(showProducts: _showProducts))),
-                ),
+              widget.message.isProductsDisplay &&
+                          shouldShowProducts &&
+                          isCurrentMessage ||
+                      isCurrentMessage
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: Visibility(
+                              visible: _showProducts || isCurrentMessage,
+                              maintainState: true,
+                              child: shouldShowProducts || isCurrentMessage
+                                  ? ProductDisplay(showProducts: _showProducts)
+                                  : SizedBox())),
+                    )
+                  : SizedBox(),
             ]);
       },
     );

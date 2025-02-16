@@ -105,8 +105,6 @@ class _OrderConfirmState extends State<OrderConfirm> {
         authProvider.userData?['userAddress'] ?? 'Set delivery address';
 
     selectAddress(userAddress);
-    context.read<BaniPayProvider>().setCurrentOrder(widget.orderId);
-    
 
     _controller.addListener(() {
       context.read<GooglePlaces>().searchPlaces(_controller.text);
@@ -162,6 +160,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
   }
 
   void handleBaniPayOpen(String? orderId) {
+    //context.read<BaniPayProvider>().setCurrentOrder(orderId);
     setState(() {
       _openBaniPay = true;
     });
@@ -596,7 +595,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                             cursorColor: Colors.white,
 
                             onChanged: (value) {
-                              print(value);
+                              //print(value);
                             },
                             enableInteractiveSelection: true,
                             enableSuggestions: true,

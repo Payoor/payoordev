@@ -680,8 +680,8 @@ class _LandingScreenState extends State<LandingScreen> {
                                                 onboardingProv
                                                         .onboardingMessage =
                                                     listInput;
-                                                print(
-                                                    'Button tapped with input: ${onboardingProv.onboardingMessage}');
+                                                /*print(
+                                                    'Button tapped with input: ${onboardingProv.onboardingMessage}');*/
                                                 Navigator.pushNamed(
                                                     context, '/auth');
                                               },

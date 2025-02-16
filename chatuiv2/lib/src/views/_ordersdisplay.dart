@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 
+import 'package:chatuiv2/src/providers/_banipayprov.dart';
+
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_orderitem.dart';
+import 'package:chatuiv2/src/widgets/_banipay.dart';
+import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
 
 class OrderDisplay extends StatefulWidget {
   const OrderDisplay({
@@ -22,11 +27,34 @@ class _OrderDisplayState extends State<OrderDisplay> {
   int _itemsPerPage = 0;
   bool _isLoading = true;
   List<dynamic> _orders = [];
+  final GlobalKey<SwipeUpWidgetState> _swipeKeyOrderItem =
+      GlobalKey<SwipeUpWidgetState>();
 
   @override
   void initState() {
     super.initState();
     _getUserOrders();
+  }
+
+  Widget buildBaniPaySwipeUp() {
+    return Consumer<BaniPayProvider>(
+      builder: (context, baniPayProvider, child) {
+        if (baniPayProvider.currentOrder != null) {
+          return Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SwipeUpWidget(
+              key: _swipeKeyOrderItem,
+              minHeight: 15,
+              maxHeight: MediaQuery.of(context).size.height * 0.7,
+              child: BaniPay(orderId: baniPayProvider.currentOrder),
+            ),
+          );
+        }
+        return const SizedBox();
+      },
+    );
   }
 
   void _getUserOrders() async {
@@ -41,6 +69,9 @@ class _OrderDisplayState extends State<OrderDisplay> {
           _orders = response.data['orders'];
           _isLoading = false;
         });
+
+
+        //print(_orders);
       }
     } catch (e) {
       setState(() {
@@ -79,6 +110,9 @@ class _OrderDisplayState extends State<OrderDisplay> {
                   ),
                 ),
               ),
+
+
+
               Positioned(
                 top: 80,
                 left: 0,
@@ -129,6 +163,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                   ),
                 ),
               ),
+              buildBaniPaySwipeUp(),
             ],
           ),
         );

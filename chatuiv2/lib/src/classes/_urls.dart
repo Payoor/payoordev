@@ -14,7 +14,7 @@ class Urls {
     if (kIsWeb) {
       var location = html.window.location.href;
 
-      print(location);
+      //print(location);
 
       if (location.contains('localhost')) {
         return 'http://localhost:3031';
@@ -34,7 +34,7 @@ class Urls {
     if (kIsWeb) {
       var location = html.window.location.href;
 
-      print(location);
+      //print(location);
 
       if (location.contains('localhost')) {
         return 'http://localhost:3030';

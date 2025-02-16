@@ -38,19 +38,26 @@ class SearchManager:
 
     def search_product_in_mongodb(self, product_name):
         try:
+            if not product_name or not isinstance(product_name, str):
+                print(f"Invalid product name: {product_name}")
+                return None
+            
+            cleaned_name = product_name.strip()
+            print(cleaned_name)
+            if not cleaned_name:
+                print("Product name is empty after cleaning")
+                return None
+
             product = productCollection.find_one({
-                "name": product_name
+                "name": cleaned_name
             })
         
             if product:
-                #print(product)
-                #print("==========product==========")
                 return product
             else:
                 print('none here')
-                print(product_name)
+                print(cleaned_name)
                 return None
-            
             
         except Exception as e:
             print(f"Error searching for product: {e}")

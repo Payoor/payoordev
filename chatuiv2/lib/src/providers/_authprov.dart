@@ -52,7 +52,7 @@ class AuthProv extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (error) {
-      print('Error checking for user: $error');
+      //print('Error checking for user: $error');
       _resetState(hasError: true, clearData: true);
     }
   }
@@ -73,7 +73,7 @@ class AuthProv extends ChangeNotifier {
 
       _resetState(clearData: true);
     } catch (error) {
-      print('Error during logout: $error');
+      //print('Error during logout: $error');
       JwtManager.removeToken();
       _resetState(clearData: true, hasError: true);
     }

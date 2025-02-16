@@ -405,7 +405,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
       authProv.userId = response.data['user']['id'];
       authProv.userData = response.data['user'];
 
-      print(authProv.userData);
+      //print(authProv.userData);
 
       if (response.success) {
         await _fadeController.forward();

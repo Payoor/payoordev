@@ -23,12 +23,12 @@ class CartProvider with ChangeNotifier {
 
   void printCartItems() {
     _items.forEach((id, item) {
-      print('\nItem ID: $id');
-      print('Name: ${item.name}');
+      //print('\nItem ID: $id');
+      //print('Name: ${item.name}');
       item.units.forEach((unit, details) {
-        print('Unit: $unit');
-        print('Price: ${details.price}');
-        print('Quantity: ${details.quantity}');
+        //print('Unit: $unit');
+        //print('Price: ${details.price}');
+        //print('Quantity: ${details.quantity}');
       });
     });
     print('\nTotal Amount: $totalAmount');

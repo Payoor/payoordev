@@ -491,7 +491,7 @@ class PaymentController {
                     status: 'processing'
                 });
 
-                getOrderDetails(orderRef)
+                getOrderDetails(orderRef);
             }
 
             // Add your webhook processing logic here

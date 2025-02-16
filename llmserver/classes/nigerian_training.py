@@ -18,53 +18,138 @@ class NigerianGrocerySearch:
         
         # Define category relationships based on the complete data
         self.category_words = {
-            'rice': [
-                'long grain', 'short grain', 'ofada', 'basmati', 'tropical sun', 
-                'tilda', 'abakaliki'
-            ],
-            'fish': [
-                'kote', 'titus', 'hake', 'sawa', 'croaker', 'crayfish', 'panla',
-                'catfish', 'stock fish', 'sardine', 'sole fish', 'abo'
-            ],
-            'meat': [
-                'chicken', 'turkey', 'goat', 'beef', 'liver', 'lap', 'wings',
-                'breast', 'sausage', 'ponmo'
-            ],
-            'pepper': [
-                'rodo', 'tatase', 'shombo', 'cameroun', 'bell pepper', 
-                'ata rodo', 'suya pepper', 'negro pepper'
-            ],
-            'tomato': [
-                'fresh tomato', 'gino original', 'gino jollof', 'paste'
-            ],
-            'garri': [
-                'yellow garri', 'white garri', 'ijebu'
-            ],
-            'oil': [
-                'vegetable oil', 'kings', 'power oil', 'palm oil'
-            ],
-            'noodles': [
-                'indomie', 'spaghetti', 'pasta', 'honeywell'
-            ],
-            'fruits': [
-                'apple', 'grape', 'pineapple', 'banana', 'lemon', 'watermelon',
-                'orange', 'avocado', 'agbalumo'
-            ],
-            'vegetables': [
-                'ugu', 'ewedu', 'bitter leaf', 'tete', 'garden egg',
-                'cucumber', 'carrot', 'cabbage', 'lettuce', 'leaves'
-            ],
-            'spices': [
-                'curry', 'thyme', 'garlic', 'ginger', 'nutmeg',
-                'seasoning', 'knorr', 'maggi'
-            ],
-            'beans': [
-                'oloyin', 'white beans'
-            ],
-            'tubers': [
-                'yam', 'potato', 'sweet potato', 'irish potato', 'cocoyam'
-            ]
+            'grains': {
+            'terms': ['rice', 'beans', 'chia seed'],
+            'meta': ['grain', 'rice', 'beans'],
+            'subcategories': {
+                'rice': ['long grain', 'short grain', 'ofada', 'basmati', 'abakaliki'],
+                'beans': ['oloyin', 'white beans']
+            }
+        },
+        
+        # Proteins
+        'proteins': {
+            'terms': ['chicken', 'turkey', 'beef', 'fish', 'snail'],
+            'meta': ['meat', 'chicken', 'fish', 'protein', 'seafood'],
+            'subcategories': {
+                'meat': ['chicken', 'turkey', 'goat', 'beef', 'liver', 'ponmo'],
+                'fish': ['kote', 'titus', 'hake', 'sawa', 'croaker', 'panla', 'catfish'],
+                'dried_fish': ['crayfish', 'stock fish', 'smoked panla'],
+                'seafood': ['shrimp', 'prawn', 'periwinkle']
+            }
+        },
+        
+        # Soup Ingredients
+        'soup_ingredients': {
+            'terms': ['ogbono', 'egusi', 'okazi', 'okro', 'ewedu'],
+            'meta': ['soups', 'soup'],
+            'subcategories': {
+                'thickeners': ['ogbono', 'egusi', 'achi'],
+                'vegetables': ['okazi', 'okro', 'ewedu', 'ugu', 'uziza'],
+                'spices': ['uda', 'ehuru', 'locust beans', 'ogiri']
+            }
+        },
+        
+        # Stew Base
+        'stew_ingredients': {
+            'terms': ['tomato', 'pepper', 'onions'],
+            'meta': ['stew', 'tomato', 'pepper'],
+            'subcategories': {
+                'tomatoes': ['fresh tomato', 'tin tomato', 'paste'],
+                'peppers': ['rodo', 'tatase', 'shombo', 'bell pepper'],
+                'basics': ['onions', 'garlic', 'ginger']
+            }
+        },
+        
+        # Vegetables and Leaves
+        'vegetables': {
+            'terms': ['ugu', 'ewedu', 'bitter leaf', 'scent leaf', 'green'],
+            'meta': ['vegetable', 'vegetables', 'leaves'],
+            'subcategories': {
+                'leafy': ['ugu', 'ewedu', 'bitter leaf', 'scent leaf'],
+                'others': ['cabbage', 'lettuce', 'cucumber', 'carrot'],
+                'specialty': ['garden egg', 'sweet corn', 'green peas']
+            }
+        },
+        
+        # Fruits
+        'fruits': {
+            'terms': ['apple', 'orange', 'banana', 'pineapple'],
+            'meta': ['fruit'],
+            'varieties': {
+                'local': ['agbalumo', 'garden egg'],
+                'imported': ['apple', 'grape', 'lemon'],
+                'tropical': ['pineapple', 'banana', 'watermelon', 'orange']
+            }
+        },
+        
+        # Swallow (Solid Foods)
+        'swallow': {
+            'terms': ['garri', 'amala', 'poundo', 'semovita'],
+            'meta': ['swallow'],
+            'types': {
+                'garri': ['yellow', 'white', 'ijebu'],
+                'amala': ['black', 'white'],
+                'others': ['poundo', 'semovita']
+            }
+        },
+        
+        # Seasonings and Spices
+        'seasonings': {
+            'terms': ['curry', 'thyme', 'garlic', 'ginger', 'seasoning'],
+            'meta': ['seasoning', 'spice'],
+            'categories': {
+                'powders': ['curry', 'thyme', 'garlic powder', 'ginger powder'],
+                'cubes': ['knorr', 'maggi', 'royco'],
+                'natural': ['garlic', 'ginger', 'bay leaf']
+            }
+        },
+        
+        # Processed Foods
+        'processed_foods': {
+            'terms': ['noodles', 'spaghetti', 'cornflakes', 'sardine'],
+            'meta': ['noodles', 'spaghetti', 'can food', 'cornflakes'],
+            'categories': {
+                'noodles': ['indomie', 'super pack', 'hungry man'],
+                'pasta': ['spaghetti', 'macaroni', 'pasta'],
+                'cereals': ['cornflakes', 'golden morn'],
+                'canned': ['sardine', 'sweet corn', 'milk']
+            }
+        },
+        
+        # Beverages
+        'beverages': {
+            'terms': ['tea', 'milk', 'bournvita', 'juice'],
+            'meta': ['beverage', 'juice', 'milk'],
+            'types': {
+                'tea': ['lipton', 'top tea'],
+                'milk': ['peak', 'hollandia', 'three crown'],
+                'drinks': ['bournvita', 'milo', 'ovaltine'],
+                'juices': ['capri-sun', 'chi', 'five alive']
+            }
+        },
+        
+        # Oils
+        'oils': {
+            'terms': ['vegetable oil', 'palm oil'],
+            'meta': ['oil'],
+            'types': {
+                'vegetable': ['kings', 'power oil', 'devon kings'],
+                'palm': ['local', 'special', 'pure']
+            }
+        },
+        
+        # Tubers
+        'tubers': {
+            'terms': ['yam', 'potato', 'cocoyam'],
+            'meta': ['tuber', 'tubers'],
+            'varieties': {
+                'yam': ['regular', 'water yam'],
+                'potato': ['irish', 'sweet potato'],
+                'others': ['cocoyam']
+            }
         }
+    }
         
     def clean_text(self, text: str) -> str:
         """Clean text by removing extra spaces and standardizing format."""
@@ -150,15 +235,15 @@ class NigerianGrocerySearch:
         # Return non-empty items
         return [item for item in items if item]
 
-'''def main():
+def main():
     # Your complete list of items
-    #grocery_items = load_grocery_data(file_path)
+    grocery_items = load_grocery_data(file_path)
     
     # Initialize search engine
     search_engine = NigerianGrocerySearch()
     
     # Load items
-    #search_engine.load_items(grocery_items)
+    search_engine.load_items(grocery_items)
 
     query = "i want to get plantain, eggs, rice, chicken, ugu leaves"
     
@@ -172,4 +257,4 @@ class NigerianGrocerySearch:
             print(f"{item}: {score:.4f}")
 
 if __name__ == "__main__":
-    main()'''
+    main()

@@ -16,7 +16,13 @@ grocery_items = []
 
 for row in df.itertuples():
     grocery_item = getattr(row, 'NAME', "N/A")
-    grocery_items.append(grocery_item)
+    grocery_meta = getattr(row, 'Meta', "N/A")
+    grocery_data= {
+        'name': grocery_item,
+        'meta': grocery_meta
+    }
+
+    grocery_items.append(grocery_data)
 
 print(grocery_items)
 

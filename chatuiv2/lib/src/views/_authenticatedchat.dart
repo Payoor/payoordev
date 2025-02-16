@@ -27,6 +27,8 @@ import 'package:chatuiv2/src/classes/_chatapiroutes.dart';
 import 'package:chatuiv2/src/classes/_paystackroutes.dart';
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
 import 'package:chatuiv2/src/classes/_socketservice.dart';
+import 'package:chatuiv2/src/classes/_productroutes.dart';
+import 'package:chatuiv2/src/classes/_serverresponse.dart';
 
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
@@ -67,10 +69,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   List<String> resultTags = [];
 
-  final List<String> _chatInputModes = ['address_confirmation'];
-
-  String _currentChatInputMode = "";
-
   final List<Map> pills = [];
 
   @override
@@ -87,55 +85,13 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MessageProvider>().addListener(() {
-        _scrollToBottom();
+        // _scrollToBottom();
       });
     });
 
     _handleOnboardingMessage();
 
-    _controller.addListener(() {
-      //print(_controller.text);
-
-      if (_currentChatInputMode == _chatInputModes[0]) {
-        if (!_confirmingAddress) {
-          setState(() {
-            _confirmingAddress = true;
-          });
-        }
-        context.read<GooglePlaces>().searchPlaces(_controller.text);
-      }
-    });
-
-    _subscription = SocketService.transactionStream.listen((data) {
-      if (data["reference"] == null) return;
-      final String orderReference = data["reference"];
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Payment successful!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-
-        closePaystackView(context);
-        SocketService.disconnectFromSocketServer();
-
-        Future(() {
-          if (mounted) {
-            confirmOrderDetails(orderReference);
-            setState(() {
-              _paying = false;
-              _currentChatInputMode = "";
-              _deliveryAddress = "";
-            });
-          }
-        });
-      }
-    }, onError: (error) {
-      print('Socket error: $error');
-    });
+    _controller.addListener(() {});
   }
 
   @override
@@ -180,75 +136,38 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     _setInputText(message);
   }
 
-  void _toggleDrawer() {
-    if (_isDrawerOpen) {
-      _animationController.reverse();
-    } else {
-      _animationController.forward();
-    }
-    setState(() {
-      _isDrawerOpen = !_isDrawerOpen;
-    });
-  }
-
   void _toggleUserOrders() {
     setState(() {
       _userOrdersOpen = !_userOrdersOpen;
     });
   }
 
-  void closePaystackView(BuildContext context) {
-    setState(() {
-      _payStackViewOpen = false;
-    });
+  Future<void> _getSuggestions(String suggestion) async {
+    try {
+      ServerResponse response = await ProductRoute.getSuggestion(suggestion);
+      if (response.data['results'] != null) {
+        final results = (response.data['results'] as List)
+            .map((item) => Map<String, String>.from(item))
+            .toList();
 
-    Provider.of<CartProvider>(context, listen: false).clear();
+        final suggestions =
+            context.read<ResultListProvider>().suggested_prompts;
 
-    SocketService.disconnectFromSocketServer();
-  }
+        context
+            .read<ResultListProvider>()
+            .setCurrentSuggestions(suggestion: suggestion);
 
-  void _getSuggestions(current_suggestion) {
-    setState(() {
-      currentSuggestion = current_suggestion;
-    });
+        setState(() {
+          currentSuggestion = suggestion;
+        });
 
-    //print(currentSuggestion);
-    context
-        .read<ResultListProvider>()
-        .setCurrentSuggestions(suggestion: currentSuggestion);
-  }
-
-  void confirmOrderDetails(order_reference) async {
-    if (mounted) {
-      setState(() {
-        _showProducts = false;
-      });
-
-      context.read<MessageProvider>().addMessage(Message(
-            text: '',
-            isClient: false,
-            isRead: false,
-            isLoading: true,
-          ));
-      _scrollToBottom();
-    }
-
-    final response = await ChatApiRoutes.getOrderDetails(order_reference);
-
-    if (response?.data != null && response.data['chatresponse'] != null) {
-      final chatResponse = response.data['chatresponse'];
-
-      Message aiMessage;
-
-      aiMessage = Message(
-        text: chatResponse['text'] ?? 'Sorry, I could not process that.',
-        isClient: false,
-        isRead: false,
-      );
-
-      context.read<MessageProvider>().removeLastMessage();
-      context.read<MessageProvider>().addMessage(aiMessage);
-      _scrollToBottom();
+        context.read<ResultListProvider>().updateResults(
+            total: results.length,
+            results: results,
+            suggested_prompts: suggestions);
+      }
+    } catch (e) {
+      // Handle error appropriately
     }
   }
 
@@ -412,9 +331,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
             return ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: 50, // Set a minimum height
-                maxHeight: message.isPayStackView && _payStackViewOpen
-                    ? MediaQuery.of(context).size.height * 0.7
-                    : double.infinity,
+                maxHeight: double.infinity,
               ),
               child: _buildMessageContent(message, index, messagesList),
             );
@@ -426,47 +343,48 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
   Widget _buildMessageContent(
       Message message, int index, List<Message> messagesList) {
-    if (message.isClient) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Container(
-          padding: const EdgeInsets.all(17),
-          decoration: BoxDecoration(
-            color: AppColors.appSkyBlue,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            message.text,
-            style: const TextStyle(
-              color: AppColors.black,
-              fontWeight: FontWeight.w600,
+    return Consumer<MessageProvider>(
+      builder: (context, messageProvider, child) {
+        if (message.isClient) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Container(
+              padding: const EdgeInsets.all(17),
+              decoration: BoxDecoration(
+                color: AppColors.appSkyBlue,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                message.text,
+                style: const TextStyle(
+                  color: AppColors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    }
+          );
+        }
 
-    if (message.isLoading) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: AiLoadingIndicator(),
-      );
-    }
+        if (message.isLoading) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: AiLoadingIndicator(),
+          );
+        }
 
-    if (message.isPayStackView && _payStackViewOpen) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: PayStackViewContainer(
-            url: message.paymentUrl ?? ''), // Add null check
-      );
-    }
+        /*if (index == messagesList.length - 1) {
+          messageProvider.setCurrentMessage(index);
+        }*/
 
-    return MessageContent(
-        message: message,
-        scrollController: _scrollController,
-        index: index,
-        messagesList: messagesList,
-        deliveryFee: _deliveryFee);
+        return MessageContent(
+            message: message,
+            scrollController: _scrollController,
+            index: index,
+            tags: message.tags,
+            messagesList: messagesList,
+            deliveryFee: _deliveryFee);
+      },
+    );
   }
 
   Widget _buildAnimatedHeader() {
@@ -527,7 +445,7 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           children: [
             Consumer<ResultListProvider>(
               builder: (context, resultList, child) {
-                final pill_slide_array = [...pills, ...resultTags];
+                final pill_slide_array = [...resultList.suggested_prompts];
 
                 return Row(
                   children: [
@@ -535,89 +453,68 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       pill_slide_array.length,
                       (index) => Consumer<CartProvider>(
                         builder: (context, cart, child) {
-                          final currentPill = pill_slide_array[index];
-                          final String label = currentPill is Map
-                              ? currentPill['label'] ?? ''
-                              : '${currentPill.toString()} suggestions';
+                          final String tag = pill_slide_array[index];
 
-                          final String action = currentPill is Map
-                              ? currentPill['action'] ?? ''
-                              : currentPill.toString();
-
-                          final isEmptyCart =
-                              label == "Cart" && cart.itemCount == 0;
-                          final shouldShowPay =
-                              label == "Pay" && !_showPayButton;
-                          final shouldShowCheckout = label == "Checkout" &&
-                              (cart.itemCount == 0 || _showPayButton);
-
-                          return isEmptyCart ||
-                                  shouldShowPay ||
-                                  shouldShowCheckout
-                              ? SizedBox()
-                              : Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 4),
-                                  child: InkWell(
-                                    onTap: () {
-                                      if (action == "View Cart") {
-                                      } else if (action == "Checkout") {
-                                        //print('handle payment');
-                                        //_handlePayment();
-                                        //_handlePaymentLinkGeneration();
-                                        //_confirmAddress();
-                                      } else if (action ==
-                                          "Proceed to orders view") {
-                                        _toggleUserOrders();
-                                      } else {
-                                        _selectedPillIndex = index;
-
-                                        //print(suggested_prompts[index]['text']);
-                                        _getSuggestions(currentPill);
-                                      }
-                                    },
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                currentPill == currentSuggestion
-                                                    ? AppColors.primaryColor
-                                                    : Colors.transparent,
-                                            border: Border.all(
-                                              color: AppColors.primaryColor,
-                                              width: 0.5,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: InkWell(
+                              onTap: () {
+                                _getSuggestions(tag);
+                              },
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Consumer<ResultListProvider>(
+                                    builder: (context, provider, child) {
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              tag == provider.current_suggestion
+                                                  ? AppColors.primaryColor
+                                                  : Colors.transparent,
+                                          border: Border.all(
+                                            color: AppColors.primaryColor,
+                                            width: 0.5,
                                           ),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                label,
-                                                style: TextStyle(
-                                                  color: currentPill ==
-                                                          currentSuggestion
-                                                      ? AppColors.white
-                                                      : AppColors.primaryColor,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              conditionalIconForPillsSlide(
-                                                  label)
-                                            ],
-                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
-                                      ],
-                                    ),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              tag,
+                                              style: TextStyle(
+                                                color: tag ==
+                                                        provider
+                                                            .current_suggestion
+                                                    ? AppColors.white
+                                                    : AppColors.primaryColor,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Icon(
+                                              Icons.local_offer,
+                                              size: 15,
+                                              color: tag ==
+                                                      provider
+                                                          .current_suggestion
+                                                  ? AppColors.white
+                                                  : AppColors.primaryColor,
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
+                                ],
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -780,159 +677,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     });
   }
 
-  void _createOrder() async {
-    final cartData =
-        Provider.of<CartProvider>(context, listen: false).createCartPayload();
-
-    if (mounted) {
-      context.read<MessageProvider>().addMessage(Message(
-            text: '',
-            isClient: false,
-            isRead: false,
-            isLoading: true,
-          ));
-
-      _scrollToBottom();
-    }
-
-    try {
-      final response =
-          await OrdersRoute.createOrder(cartData, _deliveryAddress);
-
-      if (!mounted) return;
-
-      context.read<MessageProvider>().removeLastMessage();
-
-      if (response.success) {
-        if (response.data['chatresponse'] != null) {
-          final chatResponse = response.data['chatresponse'];
-
-          print(chatResponse);
-
-          final aiMessage = Message(
-            text: chatResponse['text'] ?? 'Sorry, I could not process that.',
-            isClient: false,
-            isRead: false,
-            orderId: chatResponse['orderId'],
-            isOrderSummary: true,
-          );
-
-          context.read<MessageProvider>().addMessage(aiMessage);
-          setState(() {
-            _showPayButton = true;
-          });
-          _scrollToBottom(); // You might want to scroll after adding the new message
-        }
-      } else {
-        // Handle unsuccessful response
-        context.read<MessageProvider>().addMessage(Message(
-              text: 'Failed to create order. Please try again.',
-              isClient: false,
-              isRead: false,
-            ));
-      }
-    } catch (e) {
-      if (!mounted) return;
-
-      // Handle any errors during the order creation
-      context.read<MessageProvider>().removeLastMessage();
-      context.read<MessageProvider>().addMessage(Message(
-            text:
-                'An error occurred while creating your order. Please try again.',
-            isClient: false,
-            isRead: false,
-          ));
-    }
-  }
-
-  void _handlePaymentLinkGeneration() async {
-    setState(() {
-      _paying = true;
-      _currentChatInputMode = "";
-    });
-
-    final cartData =
-        Provider.of<CartProvider>(context, listen: false).createCartPayload();
-    if (mounted) {
-      context.read<MessageProvider>().addMessage(Message(
-            text: '',
-            isClient: false,
-            isRead: false,
-            isLoading: true,
-          ));
-
-      _scrollToBottom();
-    }
-
-    final response = await PayStackRoutes.generatePaymentLink(
-        cartData, _deliveryAddress, _deliveryFee, _serviceCharge);
-
-    if (response.success) {
-      final String? paymentUrl = response.data['authorization_url'];
-      //final transactionReference = response.data['transaction_reference'];
-
-      if (paymentUrl != null) {
-        context.read<MessageProvider>().removeLastMessage();
-
-        setState(() {
-          _payStackViewOpen = true;
-        });
-
-        initializeSocket();
-
-        if (mounted) {
-          context.read<MessageProvider>().addMessage(Message(
-                text: "Creating Payment link",
-                paymentUrl: paymentUrl,
-                isClient: false,
-                isRead: false,
-                isPayStackView: true,
-              ));
-
-          _scrollToBottom();
-        }
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Opening payment link...'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
   void _handleSend() async {
     if (_controller.text.trim().isNotEmpty) {
-      if (_chatInputModes.isNotEmpty &&
-          _currentChatInputMode == _chatInputModes[0]) {
-        //print('just sent the address');
-        final messageText = _controller.text.trim();
-
-        setState(() {
-          _deliveryAddress = messageText;
-          _confirmingAddress = false;
-          _currentChatInputMode = "";
-        });
-
-        final message = Message(
-          text: messageText,
-          isClient: true,
-          isRead: false,
-        );
-
-        _controller.clear();
-
-        context.read<MessageProvider>().addMessage(message);
-        _scrollToBottom();
-
-        //_handlePaymentLinkGeneration();
-        _createOrder();
-
-        return;
-      }
-
       try {
         final messageText = _controller.text.trim();
         final message = Message(
@@ -965,36 +711,37 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         if (response?.data?['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
 
-          print(chatResponse);
+          //print(chatResponse);
 
           Message aiMessage;
           if (chatResponse['results'] != null) {
-            List<String> results = (chatResponse['results'] as List)
-                .map((item) => item.toString())
-                .toList();
+            List<Map<String, String>> results =
+                (chatResponse['results'] as List)
+                    .map((item) => Map<String, String>.from(item))
+                    .toList();
 
             List<String> result_tags = (chatResponse['result_tags'] as List)
                 .map((item) => item.toString())
                 .toList();
 
-            print(results);
-            print(result_tags);
+            //print(results);
+            //print(result_tags);
 
             setState(() {
               resultTags = result_tags;
               currentSuggestion = result_tags[0];
             });
 
+            //print(results);
+
             context.read<ResultListProvider>().updateResults(
                 total: results.length,
                 results: results,
                 suggested_prompts: result_tags);
 
-            final resultsRender = context.read<ResultListProvider>().results;
-
             aiMessage = Message(
               text: chatResponse['text'] ?? 'Sorry, I could not process that.',
-              results: resultsRender.isNotEmpty ? resultsRender : [],
+              tags: result_tags,
               isProductsDisplay: true,
               isClient: false,
               isRead: false,

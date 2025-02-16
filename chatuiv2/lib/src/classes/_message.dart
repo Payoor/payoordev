@@ -4,14 +4,11 @@ class Message {
   final bool isLoading;
   final bool isRead;
   final bool isClient;
-  final bool isPayStackView;
   final bool isCartView;
   final bool isAdressPhoneNumber;
   final bool isProductsDisplay;
-  final bool isOrderSummary;
-  final List<String> results; // Changed to List<String>
-  final String? paymentUrl;
   final String? orderId;
+  final List<String> tags; // Add tags property
 
   Message({
     required this.text,
@@ -19,40 +16,27 @@ class Message {
     this.isRead = false,
     this.isClient = true,
     this.isLoading = false,
-    this.isPayStackView = false,
     this.isCartView = false,
     this.isProductsDisplay = false,
     this.isAdressPhoneNumber = false,
-    this.isOrderSummary = false,
-    this.results = const [], // Default empty List<String>
-    this.paymentUrl,
     this.orderId,
+    this.tags = const [], 
   }) : clienttimestamp = clienttimestamp ?? DateTime.now();
 
   factory Message.fromMap(Map<String, dynamic> map) {
-    var rawResults = map['results'] ?? [];
-    List<String> parsedResults = [];
-
-    if (rawResults is List) {
-      parsedResults = rawResults.map((item) => item.toString()).toList();
-    }
-
     return Message(
       text: map['text'] ?? '',
       isClient: map['isClient'] ?? true,
       isRead: map['isRead'] ?? false,
       isLoading: map['isLoading'] ?? false,
-      isPayStackView: map['isPayStackView'] ?? false,
       isCartView: map['isCartView'] ?? false,
       isAdressPhoneNumber: map['isAdressPhoneNumber'] ?? false,
       isProductsDisplay: map['isProductsDisplay'] ?? false,
-      isOrderSummary: map['isOrderSummary'] ?? false,
       clienttimestamp: map['clienttimestamp'] != null
           ? DateTime.parse(map['clienttimestamp'])
           : DateTime.now(),
-      results: parsedResults,
-      paymentUrl: map['paymentUrl'],
-      orderId: map['text'] ?? '',
+      orderId: map['orderId'] ?? '', // Fixed from map['text'] to map['orderId']
+      tags: List<String>.from(map['tags'] ?? []), // Add tags conversion
     );
   }
 
@@ -63,14 +47,11 @@ class Message {
       'isClient': isClient,
       'isRead': isRead,
       'isLoading': isLoading,
-      'isPayStackView': isPayStackView,
       'isCartView': isCartView,
       'isAdressPhoneNumber': isAdressPhoneNumber,
       'isProductsDisplay': isProductsDisplay,
-      'isOrderSummary': isOrderSummary,
-      'results': results,
-      'paymentUrl': paymentUrl,
       'orderId': orderId,
+      'tags': tags, // Add tags to map
     };
   }
 }
