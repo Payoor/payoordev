@@ -150,6 +150,27 @@ class AuthController {
 
                 await user.save();
 
+                const user_data_redis_store = `userdata:${user._id.toString()}`;
+
+                let userData = {
+                    _id: user._id.toString(),
+                    email: user.email,
+                    name: user.name,
+                    phoneNumber: user.phoneNumber,
+                    userAddress: user.location,
+                };
+
+                await redisClient.hSet(
+                    user_data_redis_store,
+                    JSON.parse(JSON.stringify(userData))
+                );
+
+                await redisClient.expire(user_data_redis_store, 86400);
+
+                userData = await redisClient.hGetAll(user_data_redis_store);
+
+                console.log(userData, 'userData here signup')
+
                 const response = {
                     success: true,
                     data: {

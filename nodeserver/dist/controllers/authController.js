@@ -193,7 +193,7 @@ var AuthController = /*#__PURE__*/function () {
     key: "handleSignUp",
     value: function () {
       var _handleSignUp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
-        var _req$body2, name, email, phone, location, shoppingList, existingUser, duplicateResponse, user, response;
+        var _req$body2, name, email, phone, location, shoppingList, existingUser, duplicateResponse, user, user_data_redis_store, userData, response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -229,6 +229,25 @@ var AuthController = /*#__PURE__*/function () {
               _context3.next = 13;
               return user.save();
             case 13:
+              user_data_redis_store = "userdata:".concat(user._id.toString());
+              userData = {
+                _id: user._id.toString(),
+                email: user.email,
+                name: user.name,
+                phoneNumber: user.phoneNumber,
+                userAddress: user.location
+              };
+              _context3.next = 17;
+              return _redisClient["default"].hSet(user_data_redis_store, JSON.parse(JSON.stringify(userData)));
+            case 17:
+              _context3.next = 19;
+              return _redisClient["default"].expire(user_data_redis_store, 86400);
+            case 19:
+              _context3.next = 21;
+              return _redisClient["default"].hGetAll(user_data_redis_store);
+            case 21:
+              userData = _context3.sent;
+              console.log(userData, 'userData here signup');
               response = {
                 success: true,
                 data: {
@@ -246,20 +265,20 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(200).json(response);
-            case 15:
-              _context3.next = 22;
+            case 25:
+              _context3.next = 32;
               break;
-            case 17:
-              _context3.prev = 17;
+            case 27:
+              _context3.prev = 27;
               _context3.t0 = _context3["catch"](0);
               console.log('error here', _context3.t0, 'error here');
               _context3.t0.payoorDevErrorMessage = 'Failed to create user';
               next(_context3.t0);
-            case 22:
+            case 32:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 17]]);
+        }, _callee3, null, [[0, 27]]);
       }));
       function handleSignUp(_x7, _x8, _x9) {
         return _handleSignUp.apply(this, arguments);
