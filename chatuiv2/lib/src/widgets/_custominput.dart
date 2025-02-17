@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 
-enum CustomInputType {
-  name,
-  email,
-  otp, // Added OTP type
-  phoneNumber,
-  location,
-  multiline
-}
+enum CustomInputType { name, email, otp, phoneNumber, location, multiline }
 
 class CustomInput extends StatefulWidget {
   final void Function(String) onInputChanged;
   final void Function() onInputFocus;
   final void Function() onInputBlur;
-  final void Function(String) onSubmit; // New submit handler
+  final void Function(String) onSubmit;
   final CustomInputType inputType;
   final String? hintText;
   final String? errorText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
 
-  const CustomInput(
-      {super.key,
-      required this.onInputChanged,
-      required this.onInputFocus,
-      required this.onInputBlur,
-      required this.onSubmit, // New required parameter
-      required this.inputType,
-      this.hintText,
-      this.errorText,
-      this.controller,
-      this.focusNode});
+  const CustomInput({
+    super.key,
+    required this.onInputChanged,
+    required this.onInputFocus,
+    required this.onInputBlur,
+    required this.onSubmit,
+    required this.inputType,
+    this.hintText,
+    this.errorText,
+    this.controller,
+    this.focusNode,
+  });
 
   @override
   State<CustomInput> createState() => _CustomInputState();
@@ -43,6 +38,7 @@ class _CustomInputState extends State<CustomInput> {
   late final TextEditingController _controller;
   String? _errorText;
   bool _isValid = false;
+  bool _hasClipboardContent = false;
 
   @override
   void initState() {
@@ -52,6 +48,7 @@ class _CustomInputState extends State<CustomInput> {
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         _validateInput(_controller.text);
+        _checkClipboard();
         widget.onInputFocus();
       } else {
         widget.onInputBlur();
@@ -62,35 +59,64 @@ class _CustomInputState extends State<CustomInput> {
       _validateInput(_controller.text);
       widget.onInputChanged(_controller.text);
     });
+
+    // Initial clipboard check
+    _checkClipboard();
+  }
+
+  Future<void> _checkClipboard() async {
+    ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+    setState(() {
+      _hasClipboardContent = data?.text?.isNotEmpty ?? false;
+    });
+  }
+
+  Future<void> _pasteContent() async {
+    ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data?.text != null) {
+      final currentPosition = _controller.selection.baseOffset;
+      final text = _controller.text;
+      final newText = text.replaceRange(
+        currentPosition >= 0 ? currentPosition : text.length,
+        currentPosition >= 0 ? _controller.selection.extentOffset : text.length,
+        data!.text!,
+      );
+
+      _controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(
+          offset: currentPosition >= 0
+              ? currentPosition + data.text!.length
+              : newText.length,
+        ),
+      );
+
+      _validateInput(newText);
+      widget.onInputChanged(newText);
+    }
   }
 
   void _validateInput(String value) {
-    //print('validate this $value');
     setState(() {
       _errorText = null;
 
       switch (widget.inputType) {
         case CustomInputType.email:
-          final emailRegex = RegExp(
-            r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
-          );
+          final emailRegex = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
           _errorText = !emailRegex.hasMatch(value.trim())
               ? 'Please enter a valid email address'
               : null;
           break;
 
-        case CustomInputType.otp: // Add OTP validation
-          final otpRegex = RegExp(r'^\d{6}$'); // Assuming 6-digit OTP
+        case CustomInputType.otp:
+          final otpRegex = RegExp(r'^\d{6}$');
           _errorText = !otpRegex.hasMatch(value.trim())
               ? 'Please enter a valid 6-digit OTP'
               : null;
           break;
 
         case CustomInputType.phoneNumber:
-          // Nigerian phone number format: +234 or 0 followed by 9 digits
-          final phoneRegex = RegExp(
-            r'^([0]|[\+]234)[789][01]\d{8}$',
-          );
+          final phoneRegex = RegExp(r'^([0]|[\+]234)[789][01]\d{8}$');
           _errorText = !phoneRegex.hasMatch(value.trim())
               ? 'Please enter a valid Nigerian phone number'
               : null;
@@ -101,8 +127,6 @@ class _CustomInputState extends State<CustomInput> {
             _errorText = 'Name must be at least 2 characters';
           } else if (value.trim().length > 50) {
             _errorText = 'Name must be less than 50 characters';
-          } else {
-            _errorText = null;
           }
           break;
 
@@ -111,16 +135,12 @@ class _CustomInputState extends State<CustomInput> {
             _errorText = 'Location cannot be empty';
           } else if (value.trim().length < 3) {
             _errorText = 'Location must be at least 3 characters';
-          } else {
-            _errorText = null;
           }
           break;
 
         case CustomInputType.multiline:
           if (value.trim().isEmpty) {
             _errorText = 'Text cannot be empty';
-          } else {
-            _errorText = null;
           }
           break;
       }
@@ -239,29 +259,46 @@ class _CustomInputState extends State<CustomInput> {
                       ? 14
                       : null,
           keyboardType: _getKeyboardType(),
-          onChanged: (value) {
-            //print('here $value');
-            //_validateInput(value);
-            //widget.onInputChanged(value);
-          },
+          onTap: _checkClipboard,
           enableInteractiveSelection: true,
-          onSubmitted: (_) {
-            _handleSubmit();
-          },
+          onSubmitted: (_) => _handleSubmit(),
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,
           ),
           decoration: _getInputDecoration().copyWith(
-            // Add padding to accommodate the button
             contentPadding: EdgeInsets.only(
               left: 16,
-              right: 56, // Space for button
+              right: _hasClipboardContent
+                  ? 96
+                  : 56, // Extra space for paste button
               top: widget.inputType == CustomInputType.multiline ? 12 : 8,
               bottom: widget.inputType == CustomInputType.multiline ? 12 : 8,
             ),
           ),
         ),
+        // Paste button
+        if (_hasClipboardContent)
+          Positioned(
+            right: 50,
+            top: 7,
+            child: GestureDetector(
+              onTap: _pasteContent,
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primaryColor.withOpacity(0.5),
+                ),
+                child: Icon(
+                  Icons.content_paste,
+                  color: Colors.white,
+                  size: 15,
+                ),
+              ),
+            ),
+          ),
         // Submit button
         Positioned(
           right: 8,

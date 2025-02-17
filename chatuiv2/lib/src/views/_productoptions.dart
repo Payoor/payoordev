@@ -1,3 +1,4 @@
+import 'package:chatuiv2/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -271,10 +272,10 @@ class _ProductOptionsState extends State<ProductOptions> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => CartDisplayScreen(
+                                      builder: (context) => StackWithNav(child: CartDisplayScreen(
                                         closeWidget: () =>
                                             Navigator.pop(context),
-                                      ),
+                                      )),
                                     ),
                                   );
                                 },

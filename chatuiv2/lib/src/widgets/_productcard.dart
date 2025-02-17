@@ -12,6 +12,8 @@ import 'package:chatuiv2/src/classes/_message.dart';
 
 import 'package:chatuiv2/src/views/_productoptions.dart';
 
+import 'package:chatuiv2/main.dart';
+
 class ProductCard extends StatefulWidget {
   final String productName;
   final String productTags;
@@ -325,11 +327,11 @@ class _ProductCardState extends State<ProductCard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProductOptions(
+                    builder: (context) => StackWithNav(child: ProductOptions(
                       closeWidget: () => Navigator.pop(context),
                       productName: widget.productName,
                       productId: productId!,
-                    ),
+                    )),
                   ),
                 );
               }

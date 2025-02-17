@@ -86,25 +86,24 @@ class MyApp extends StatelessWidget {
                       ),
                 );
               }
+              
               return StackWithNav(child: buildWidget());
 
             case ConnectionState.waiting:
-              return StackWithNav(
-                child: loadingWidget ??
-                    StackWithNav(
-                        child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ],
-                      ),
-                    )),
-              );
+              return loadingWidget ??
+                  StackWithNav(
+                      child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ],
+                    ),
+                  ));
 
             default:
               return StackWithNav(
