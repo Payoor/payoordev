@@ -17,6 +17,8 @@ import 'package:chatuiv2/src/classes/_socialmediapainters.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 
+import 'package:chatuiv2/src/utils/_global_keys.dart';
+
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
 
@@ -27,25 +29,11 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   bool isCreateListBtnActive = false;
   final ScrollController _scrollController = ScrollController();
-  final Map<String, GlobalKey> _keys = {
-    'contact': GlobalKey(),
-    'faq': GlobalKey(),
-  };
+  
 
   String listInput = "";
   final String twitterUrl = 'https://x.com/Mypayoor';
   final String instagramUrl = 'https://www.instagram.com/mypayoor/';
-
-  void scrollToSection(String section) {
-    final targetKey = _keys[section];
-    if (targetKey?.currentContext != null) {
-      Scrollable.ensureVisible(
-        targetKey!.currentContext!,
-        duration: Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
 
   List<Map<String, dynamic>> faqItems(bool isDesktop) {
     return [
@@ -987,7 +975,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                                   ),
                                                   SizedBox(height: 40),
                                                   Container(
-                                                    key: _keys['faq'],
+                                                    key: keys['faq'],
                                                     child: Column(
                                                       children:
                                                           faqItems(isDesktop)
@@ -1066,7 +1054,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                   )),
                               SizedBox(height: 40),
                               Container(
-                                  key: _keys['contact'],
+                                  key: keys['contact'],
                                   padding: EdgeInsets.symmetric(
                                       vertical: 24, horizontal: 16),
                                   decoration: BoxDecoration(

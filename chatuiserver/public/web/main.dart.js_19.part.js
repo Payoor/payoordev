@@ -1,71 +1,166 @@
 ((a,b,c)=>{a[b]=a[b]||{}
 a[b][c]=a[b][c]||[]
 a[b][c].push({p:"main.dart.js_19",e:"beginPart"})})(self,"$__dart_deferred_initializers__","eventLog")
-$__dart_deferred_initializers__.current=function(a,b,c,$){var A,B,C={
-aRg(){return new C.nK(null)},
-nK:function nK(d){this.a=d},
-SM:function SM(d){this.d=d
+$__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,B,D,F,G,C={
+aY8(){return new C.pG(null)},
+pG:function pG(d){this.a=d},
+a01:function a01(){this.d=!1
 this.c=this.a=null},
-an4:function an4(d){this.a=d},
-an5:function an5(){},
-an6:function an6(d){this.a=d},
-an7:function an7(d){this.a=d}},D,E,F
+ayP:function ayP(d){this.a=d},
+ayQ:function ayQ(d){this.a=d},
+ayO:function ayO(){},
+ayF:function ayF(d){this.a=d},
+ayG:function ayG(d,e){this.a=d
+this.b=e},
+ayH:function ayH(d){this.a=d},
+ayI:function ayI(d,e){this.a=d
+this.b=e},
+ayJ:function ayJ(d){this.a=d},
+ayN:function ayN(d,e){this.a=d
+this.b=e},
+ayK:function ayK(d){this.a=d},
+ayL:function ayL(d){this.a=d},
+ayM:function ayM(){}},E,H
+J=c[1]
 A=c[0]
 B=c[2]
-C=a.updateHolder(c[6],C)
-D=c[20]
-E=c[21]
-F=c[19]
-C.nK.prototype={
-a8(){return new C.SM(A.wU(null,null))}}
-C.SM.prototype={
-xo(d,e){var x=null,w=e?32:24
-return new A.bb(new A.a1(0,w,0,w),A.aB(d,x,x,x,x,x,A.b3(x,x,B.e,x,x,x,x,x,x,x,x,e?48:32,x,x,B.am,x,1.2,!0,x,-0.5,x,x,x,x,x,x),x,x),x)},
-xn(d,e){var x=null,w=e?32:24
-return new A.bb(new A.a1(0,0,0,w),A.aB(d,x,x,x,x,x,A.b3(x,x,B.e,x,x,x,x,x,x,x,x,e?20:16,x,x,B.t,x,1.6,!0,x,0.2,x,x,x,x,x,x),x,x),x)},
-a5L(d,e){var x=null,w=e?24:16,v=e?180:d.b*0.22,u=y.e
-v=A.a([A.eB(A.cc(x,A.k0("assets/payoorlogo.png",x,x,B.c1,e?48:d.d*0.06,v),B.B,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,new C.an4(this),x,x,x,x,x,x),B.aw,x,x,x,x)],u)
-if(!e)v.push(A.cc(x,A.av(x,A.k0("assets/burger.png",x,x,B.c1,d.d*0.12,d.b*0.12),B.l,x,x,x,x,x,x,x,E.fX,x,x,x),B.B,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,new C.an5(),x,x,x,x,x,x))
-if(e)v.push(A.c8(A.a([A.eB(A.cc(x,A.aB("Sign Up/Sign In",x,x,x,x,x,A.b3(x,x,B.e,x,x,x,x,x,x,x,x,20,x,x,B.A,x,x,!0,x,x,x,x,x,x,x,x),x,x),B.B,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,new C.an6(this),x,x,x,x,x,x),B.aw,x,x,x,x)],u),B.p,B.r,B.n))
-return new A.bb(new A.a1(0,0,0,w),A.c8(v,B.p,B.ao,B.n),x)},
-I(d){return D.ln(B.u,new D.k2(new C.an7(this),null),!0)},
-m(){this.d.m()
-this.aC()}}
-var z=a.updateTypes(["pk(F,ab)"])
-C.an4.prototype={
-$0(){var x=this.a.c
+D=c[19]
+F=c[17]
+G=c[12]
+C=a.updateHolder(c[5],C)
+E=c[35]
+H=c[21]
+C.pG.prototype={
+a8(){return new C.a01()}}
+C.a01.prototype={
+ap(){this.aE()
+$.ag.k3$.push(new C.ayP(this))
+A.ij(A.c1(0,0,0,2500,0),new C.ayQ(this),y.F)},
+xE(){var x=0,w=A.J(y.v),v=1,u,t=[],s=this,r,q,p,o,n,m,l
+var $async$xE=A.K(function(d,e){if(d===1){u=e
+x=v}while(true)switch(x){case 0:v=3
+s.P(new C.ayF(s))
+n=s.c
+n.toString
+r=A.bH(n,!1,y.t)
+q=r.a
+x=q!=null?6:8
+break
+case 6:x=9
+return A.R(G.KN(q),$async$xE)
+case 9:p=e
+if(p.a){n=r
+n.b=J.a6(p.b,"token")
+n.ac()
+n=J.a6(p.b,"token")
+window.localStorage.setItem("jwtToken",n)}else s.P(new C.ayG(s,p))
+x=7
+break
+case 8:s.P(new C.ayH(s))
+case 7:t.push(5)
+x=4
+break
+case 3:v=2
+l=u
+o=A.a9(l)
+s.P(new C.ayI(s,o))
+t.push(5)
+x=4
+break
+case 2:t=[1]
+case 4:v=1
+s.P(new C.ayJ(s))
+x=t.pop()
+break
+case 5:return A.H(null,w)
+case 1:return A.G(u,w)}})
+return A.I($async$xE,w)},
+I(d){var x,w,v,u,t,s=this,r=null,q=A.bh(r,A.bq(d,r,y.x).w.a.b*0.15,r),p=s.d?0:1,o=A.c1(0,0,0,500,0)
+p=D.m1(new F.lB("Welcome to Payoor",A.b3(r,r,B.e,r,r,r,r,r,r,r,r,32,r,r,B.am,r,r,!0,r,r,r,r,r,r,r,r),A.c1(0,0,0,1500,0),!0,B.bF,r,r,r,r),B.a3,o,p)
+o=A.bh(r,16,r)
+x=s.d?0:1
+w=A.c1(0,0,0,500,0)
+x=D.m1(new F.lB("Your personal shopping assistant",A.b3(r,r,A.ah(204,B.e.gl(0)>>>16&255,B.e.gl(0)>>>8&255,B.e.gl(0)&255),r,r,r,r,r,r,r,r,18,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),A.c1(0,0,0,1500,0),!0,B.bF,r,r,r,r),B.a3,w,x)
+w=A.bh(r,40,r)
+v=s.d?0:1
+u=A.c1(0,0,0,500,0)
+t=y.u
+v=A.fd(A.bu(A.a([q,p,o,x,w,D.m1(A.bu(A.a([A.aB("What we offer:",r,r,r,r,r,A.b3(r,r,B.e,r,r,r,r,r,r,r,r,20,r,r,B.A,r,r,!0,r,r,r,r,r,r,r,r),r,r),A.bh(r,16,r),s.D9("Smart Shopping Lists","Create and manage your shopping lists efficiently"),s.D9("Personal Assistance","Get help finding the best deals and products"),s.D9("Easy Navigation","Find what you need, when you need it")],t),B.a0,r,B.r,B.n),B.a3,u,v)],t),B.a0,r,B.r,B.n),1)
+q=s.d?0:1
+p=A.c1(0,0,0,500,0)
+return H.lm(B.u,A.DR(!0,new A.bb(new A.a1(20,0,20,0),A.bu(A.a([v,D.m1(new A.bb(new A.a1(0,0,0,40),A.cc(r,A.e0(new C.ayM(),y.t),B.B,!1,r,r,r,r,r,r,r,r,r,r,r,r,r,new C.ayN(s,d),r,r,r,r,r,r),r),B.a3,p,q)],t),B.a0,r,B.r,B.n),r),B.aC,!0),!1)},
+D9(d,e){var x,w,v,u,t=null,s=A.ah(B.d.ah(25.5),B.e.gl(0)>>>16&255,B.e.gl(0)>>>8&255,B.e.gl(0)&255),r=A.b9(8)
+r=A.av(t,A.e3(E.IJ,B.e,20),B.l,t,t,new A.b2(s,t,t,r,t,t,B.z),t,t,t,t,new A.a1(8,8,8,8),t,t,t)
+s=A.bh(t,t,12)
+x=this.c
 x.toString
-return A.dh(x,!1).jS("/",null,y.a)},
+w=y.x
+x=A.bq(x,t,w).w
+v=this.c
+v.toString
+u=y.u
+return new A.bb(new A.a1(0,0,0,20),A.c8(A.a([r,s,A.fd(A.bu(A.a([new A.fc(new A.ab(0,x.a.a,0,A.bq(v,t,w).w.a.b),new F.lB(d,A.b3(t,t,A.ah(204,B.e.gl(0)>>>16&255,B.e.gl(0)>>>8&255,B.e.gl(0)&255),t,t,t,t,t,t,t,t,16,t,t,t,t,t,!0,t,t,t,t,t,t,t,t),A.c1(0,0,0,1500,0),!0,B.bF,t,t,t,t),t),A.bh(t,4,t),A.aB(e,t,t,t,t,t,A.b3(t,t,A.ah(B.d.ah(178.5),B.e.gl(0)>>>16&255,B.e.gl(0)>>>8&255,B.e.gl(0)&255),t,t,t,t,t,t,t,t,14,t,t,t,t,t,!0,t,t,t,t,t,t,t,t),t,t)],u),B.a0,t,B.r,B.n),1)],u),B.a0,B.r,B.n),t)}}
+var z=a.updateTypes([])
+C.ayP.prototype={
+$1(d){this.a.xE()},
+$S:5}
+C.ayQ.prototype={
+$0(){var x=this.a
+if(x.c!=null)x.P(new C.ayO())},
+$S:9}
+C.ayO.prototype={
+$0(){},
 $S:0}
-C.an5.prototype={
-$0(){$.kJ().sl(0,!0)},
+C.ayF.prototype={
+$0(){},
 $S:0}
-C.an6.prototype={
-$0(){var x=this.a.c
-x.toString
-A.dh(x,!1).jS("/auth",null,y.a)},
+C.ayG.prototype={
+$0(){J.a6(this.b.b,"message")},
 $S:0}
-C.an7.prototype={
-$2(d,e){var x,w,v,u,t,s,r,q,p=null,o=e.b,n=o>=1024,m=this.a,l=n?120:24,k=n?32:16,j=y.h,i=A.bq(d,p,j).w,h=n?1200:1/0
-j=A.bq(d,p,j).w
-x=m.a5L(e,n)
-w=A.bh(p,n?32:16,p)
-v=n?80:0
-u=m.xo("About Payoor",n)
-t=n?48:32
-s=A.b9(n?24:16)
-r=A.ah(51,B.h.gl(0)>>>16&255,B.h.gl(0)>>>8&255,B.h.gl(0)&255)
-q=n?20:15
-r=A.a([new A.cq(0,B.be,r,new A.k(0,n?12:8),q)],y.c)
-q=y.e
-t=A.bu(A.a([u,A.av(p,A.k0("assets/like.png",p,p,B.fp,n?500:p,1/0),B.D,p,p,new A.b2(p,p,p,s,r,p,B.z),p,p,p,new A.a1(0,t,0,t),p,p,p,1/0),m.xo("Our Story",n),m.xn('On May 22nd, 2023, Payoor was born out of a simple but powerful truth, grocery shopping can be stressful, and one of our founders "does not like stress". After one too many exhausting market runs, the thought became clear: There has to be a faster, easier way to get fresh groceries for home-cooked meals.',n),m.xn("That single frustration sparked a journey that took over a year of research, development, and fine-tuning to create Payoor; a smart, seamless grocery shopping experience designed for people who value their time but still want quality, fresh ingredients.",n),m.xo("Our Mission",n),m.xn("To make grocery shopping fast, effortless, and stress-free by providing a smart, clean, and convenient way to get fresh food straight to your kitchen. We believe that every meal shouldn't a stressful and tragic backstory.",n),m.xo("Our Vision",n),m.xn("To redefine how people shop for groceries by making convenience, freshness, and simplicity the new standard one home-cooked meal at a time.",n)],q),B.a0,p,B.r,B.n)
-return F.tK(A.av(p,new A.fb(new A.ab(0,h,i.a.b,1/0),A.av(p,A.bu(A.a([x,w,new A.bb(new A.a1(v,0,v,0),t,p),A.bh(p,n?48:32,p)],q),B.a0,p,B.r,B.n),B.l,B.u,p,p,p,p,p,p,p,p,p,j.a.a),p),B.l,p,p,p,p,p,p,p,new A.a1(l,k,l,k),p,p,o),m.d,B.a5)},
-$S:z+0};(function inheritance(){var x=a.inherit,w=a.inheritMany
-x(C.nK,A.T)
-x(C.SM,A.Z)
-w(A.fw,[C.an4,C.an5,C.an6])
-x(C.an7,A.fY)})()
-A.fT(b.typeUniverse,JSON.parse('{"nK":{"T":[],"h":[]},"SM":{"Z":["nK"]}}'))
-var y={c:A.V("n<cq>"),e:A.V("n<h>"),h:A.V("fC"),a:A.V("D?")}};
+C.ayH.prototype={
+$0(){},
+$S:0}
+C.ayI.prototype={
+$0(){A.j(this.b)},
+$S:0}
+C.ayJ.prototype={
+$0(){},
+$S:0}
+C.ayN.prototype={
+$0(){var x=this.a
+x.P(new C.ayK(x))
+A.ij(E.Hv,new C.ayL(this.b),y.F)},
+$S:0}
+C.ayK.prototype={
+$0(){this.a.d=!0},
+$S:0}
+C.ayL.prototype={
+$0(){var x,w=A.dh(this.a,!1),v=w.yA("/authchat",null,y.q)
+v.toString
+v=A.aE1(v,B.lJ,!1,null)
+x=w.e
+x.Xg(0,A.kF()).al1(0,null,!0)
+x.a.push(v)
+x.ac()
+w.xG()
+w.Db()},
+$S:9}
+C.ayM.prototype={
+$3(d,e,f){var x,w,v=null
+if(e.b!=null){x=A.b9(12)
+x=A.av(v,A.dM(A.aB("Get Started",v,v,v,v,v,A.b3(v,v,B.u,v,v,v,v,v,v,v,v,18,v,v,B.am,v,v,!0,v,v,v,v,v,v,v,v),v,v),v,v),B.l,v,v,new A.b2(B.e,v,v,x,v,v,B.z),v,v,v,v,new A.a1(0,16,0,16),v,v,1/0)}else{x=A.ah(B.d.ah(127.5),B.e.gl(0)>>>16&255,B.e.gl(0)>>>8&255,B.e.gl(0)&255)
+w=A.b9(12)
+w=A.av(v,A.dM(A.bh(A.aC5(B.u,2,v),20,20),v,v),B.l,v,v,new A.b2(x,v,v,w,v,v,B.z),v,v,v,v,new A.a1(0,16,0,16),v,v,1/0)
+x=w}return x},
+$C:"$3",
+$R:3,
+$S:79};(function inheritance(){var x=a.inherit,w=a.inheritMany
+x(C.pG,A.T)
+x(C.a01,A.Z)
+w(A.e_,[C.ayP,C.ayM])
+w(A.fb,[C.ayQ,C.ayO,C.ayF,C.ayG,C.ayH,C.ayI,C.ayJ,C.ayN,C.ayK,C.ayL])})()
+A.ft(b.typeUniverse,JSON.parse('{"pG":{"T":[],"h":[]},"a01":{"Z":["pG"]}}'))
+var y={t:A.U("ei"),u:A.U("n<h>"),x:A.U("fE"),F:A.U("b4"),q:A.U("D?"),v:A.U("~")};(function constants(){E.Hv=new A.aW(25e5)
+E.IJ=new A.cO(57686,!1)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_19",e:"endPart",h:b})})($__dart_deferred_initializers__,"MM8bAH25q+7MF/vQXsbLeHltOuM=");
+a.eventLog.push({p:"main.dart.js_19",e:"endPart",h:b})})($__dart_deferred_initializers__,"hFxbytn8wWiHU4BCMfIuIiW50yQ=");

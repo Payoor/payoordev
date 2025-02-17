@@ -13,6 +13,8 @@ import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_banipayprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
 
+import 'package:chatuiv2/src/utils/_global_keys.dart';
+
 //cart.itemCount > 0
 class MessageContent extends StatefulWidget {
   final Message message;
@@ -103,6 +105,8 @@ class _MessageContentState extends State<MessageContent> {
   void initState() {
     super.initState();
     _showProducts = widget.message.isProductsDisplay;
+
+    keys['$widget.key'] = GlobalKey();
   }
 
   @override
@@ -116,8 +120,7 @@ class _MessageContentState extends State<MessageContent> {
         final shouldShowProducts = isLastMessage;
 
         return Column(
-            key: ValueKey(
-                'message_content_${widget.message.clienttimestamp?.millisecondsSinceEpoch}'),
+            key: widget.key,
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,8 +141,7 @@ class _MessageContentState extends State<MessageContent> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TypewriterText(
-                            key: ValueKey(
-                                'message_${widget.message.clienttimestamp?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch}'),
+                            key: widget.key,
                             text: widget.message.text,
                             style: TextStyle(
                               fontSize: 16,
@@ -154,6 +156,8 @@ class _MessageContentState extends State<MessageContent> {
                               });
 
                               _handleMessageInteraction();
+
+                              scrollToSection('$widget.key');
                             },
                             onComplete: () {
                               setState(() {

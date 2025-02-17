@@ -81,10 +81,10 @@ class OrdersRoute {
     }
   }
 
-  static Future<ServerResponse> updateDeliveryDate(
-      String orderId, String deliveryDate) async {
+  static Future<ServerResponse> updateDeliveryDateandAddress(
+      String orderId, String deliveryDate, String orderAddress) async {
     try {
-      final uri = Uri.parse('${Urls.baseUrl}/user/update/order/delivery-date');
+      final uri = Uri.parse('${Urls.baseUrl}/user/update/order/delivery-date-address');
       final jwt = JwtManager.getToken();
 
       final response = await http.post(
@@ -95,7 +95,11 @@ class OrdersRoute {
           'Origin': 'https://chat.payoor.store',
           'Authorization': 'Bearer $jwt',
         },
-        body: jsonEncode({"order_id": orderId, "delivery_date": deliveryDate}),
+        body: jsonEncode({
+          "order_id": orderId,
+          "delivery_date": deliveryDate,
+          "delivery_address": orderAddress
+        }),
       );
 
       if (response.statusCode == 200) {

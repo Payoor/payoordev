@@ -36,9 +36,9 @@ class _ProductOptionsState extends State<ProductOptions> {
 
   Future<void> _loadVariants() async {
     try {
-      print("Loading variants for product ID: ${widget.productId}");
+      //print("Loading variants for product ID: ${widget.productId}");
       List<dynamic> variants = await _getProductVariants();
-      print("Loaded variants: $variants");
+      //print("Loaded variants: $variants");
       setState(() {
         productData = variants;
       });

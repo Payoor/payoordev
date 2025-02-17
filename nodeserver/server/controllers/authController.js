@@ -206,7 +206,7 @@ class AuthController {
 
             //console.log(req.session)
             //console.log(req.session.user)
-            console.log("=========session=========")
+            //console.log("=========session=========")
 
             //console.log('Session ID:', req.sessionID);
 
@@ -220,27 +220,33 @@ class AuthController {
                     userAddress: validUser.location
                 };
 
+                //console.log(userResponse, 'userResponse')
+
+                //console.log(userResponse, 'userResponse')
+
+                const user_data_redis_store = `userdata:${validUser._id.toString()}`;
+
+
+                let userData = {
+                    _id: validUser._id.toString(),
+                    email: validUser.email,
+                    name: validUser.name,
+                    phoneNumber: validUser.phoneNumber,
+                    userAddress: validUser.location,
+                };
+
                 await redisClient.hSet(
-                    `user:${validUser._id.toString()}`, // Convert ObjectId to string
-                    {
-                        token: tokenId.toString(), // Convert to string if it's an ObjectId
-                        user: validUser._id.toString(),
-                        lastLogin: new Date().toISOString(),
-                        recent_queries: JSON.stringify([]),
-                        llm_user_conversation: JSON.stringify([])
-                    }
+                    user_data_redis_store,
+                    JSON.parse(JSON.stringify(userData))
                 );
 
-                await redisClient.expire(
-                    `user:${validUser._id}`,
-                    30 * 24 * 60 * 60
-                );
+                await redisClient.expire(user_data_redis_store, 86400);
 
-                const userData = await redisClient.hGetAll(`user:${validUser._id}`);
+                userData = await redisClient.hGetAll(user_data_redis_store);
 
-                //console.log(userData, 'userData')
+                console.log(userData, 'userData here')
 
-                console.log(userResponse)
+                //console.log(userResponse)
 
                 const response = {
                     success: true,

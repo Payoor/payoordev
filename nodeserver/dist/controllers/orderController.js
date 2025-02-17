@@ -7,6 +7,7 @@ exports["default"] = void 0;
 var _moment = _interopRequireDefault(require("moment"));
 var _order2 = _interopRequireDefault(require("../models/order"));
 var _user = _interopRequireDefault(require("../models/user"));
+var _redisClient = _interopRequireDefault(require("../configs/redisClient"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -34,21 +35,19 @@ var OrderController = /*#__PURE__*/function () {
     key: "createOrder",
     value: function () {
       var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var _req$body, order, order_address, user, items, cart_total, delivery_fee, service_charge, order_items, order_total, validUser, _order, orderSummary, response;
+        var order, user, items, cart_total, delivery_fee, service_charge, order_items, order_total, user_data_redis_store, userData, userAddress, _order, orderSummary, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              _req$body = req.body, order = _req$body.order, order_address = _req$body.order_address;
-              user = req.user;
-              console.log(order);
+              order = req.body.order;
+              user = req.user; //console.log(order);
               items = [];
               cart_total = order.totalAmount;
               delivery_fee = 3500;
               service_charge = cart_total * 0.05;
               order_items = order.items;
-              order_total = cart_total + delivery_fee + service_charge;
-              console.log(delivery_fee, service_charge, cart_total);
+              order_total = cart_total + delivery_fee + service_charge; //console.log(delivery_fee, service_charge, cart_total)
               Object.entries(order_items).forEach(function (_ref) {
                 var _ref2 = _slicedToArray(_ref, 2),
                   id = _ref2[0],
@@ -60,37 +59,32 @@ var OrderController = /*#__PURE__*/function () {
                 };
                 items.push(product_data);
               });
-              if (!user) {
-                _context.next = 27;
+              user_data_redis_store = "userdata:".concat(user.userId.toString());
+              _context.next = 13;
+              return _redisClient["default"].hGetAll(user_data_redis_store);
+            case 13:
+              userData = _context.sent;
+              if (!userData) {
+                _context.next = 26;
                 break;
               }
-              _context.next = 15;
-              return _user["default"].findOne({
-                _id: user.userId
-              });
-            case 15:
-              validUser = _context.sent;
-              if (!validUser) {
-                _context.next = 25;
-                break;
-              }
+              _context.next = 17;
+              return _redisClient["default"].hGet(user_data_redis_store, 'userAddress');
+            case 17:
+              userAddress = _context.sent;
               _order = new _order2["default"]({
-                userId: validUser._id,
+                userId: user.userId,
                 items: items,
-                order_address: order_address,
+                order_address: userAddress,
                 cart_total: cart_total,
                 delivery_fee: delivery_fee,
                 service_charge: service_charge,
                 total: order_total
               });
-              _context.next = 20;
+              _context.next = 21;
               return _order.save();
-            case 20:
-              console.log(_order);
-              items.forEach(function (item) {
-                console.log(item.product_units);
-              });
-              orderSummary = "Your order has been created. Below is your order summary:\n\nOrder Details\n-----------------\nCart Total: \u20A6".concat(cart_total.toLocaleString(), "\nDelivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\nService Charge: \u20A6").concat(service_charge.toLocaleString(), "\nTotal Amount: \u20A6").concat(order_total.toLocaleString(), "\nStatus: Pending Payment\nDelivery Address: ").concat(order_address, "\n\nPlease Click the Pay Button to make payment\n\nClick the pay now button to complete payment.");
+            case 21:
+              orderSummary = "Your order has been created. Below is your order summary:\n\nOrder Details\n-----------------\nCart Total: \u20A6".concat(cart_total.toLocaleString(), "\nDelivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\nService Charge: \u20A6").concat(service_charge.toLocaleString(), "\nTotal Amount: \u20A6").concat(order_total.toLocaleString(), "\nStatus: Pending Payment\nDelivery Address: ").concat(userAddress, "\n\nPlease Click the Pay Button to make payment\n\nClick the pay now button to complete payment.");
               response = {
                 success: true,
                 data: {
@@ -106,30 +100,29 @@ var OrderController = /*#__PURE__*/function () {
                 }
               };
               res.status(200).json(response);
-            case 25:
-              _context.next = 28;
+              _context.next = 27;
               break;
-            case 27:
-              res.status(500).json({
+            case 26:
+              res.status(404).json({
                 success: false,
                 message: 'Error creating order invalid user',
                 error: error.message
               });
-            case 28:
-              _context.next = 36;
+            case 27:
+              _context.next = 35;
               break;
-            case 30:
-              _context.prev = 30;
+            case 29:
+              _context.prev = 29;
               _context.t0 = _context["catch"](0);
               console.log('error here', _context.t0, 'error here');
               _context.t0.statusCode = 400;
               _context.t0.payoorDevErrorMessage = 'Error creating order';
               next(_context.t0);
-            case 36:
+            case 35:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 30]]);
+        }, _callee, null, [[0, 29]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);
@@ -269,32 +262,30 @@ var OrderController = /*#__PURE__*/function () {
             case 6:
               order = _context4.sent;
               if (order) {
-                _context4.next = 10;
+                _context4.next = 9;
                 break;
               }
-              console.log('no order');
               return _context4.abrupt("return", res.status(404).json({
                 status: 'error',
                 message: 'Order not found'
               }));
-            case 10:
-              console.log(order, 'order here');
+            case 9:
               return _context4.abrupt("return", res.status(200).json({
                 status: 'success',
                 data: order
               }));
-            case 14:
-              _context4.prev = 14;
+            case 12:
+              _context4.prev = 12;
               _context4.t0 = _context4["catch"](0);
               console.log('error here', _context4.t0, 'error here');
               _context4.t0.statusCode = 400;
               _context4.t0.payoorDevErrorMessage = 'Error fetching order';
               next(_context4.t0);
-            case 20:
+            case 18:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[0, 14]]);
+        }, _callee4, null, [[0, 12]]);
       }));
       function getUserOrder(_x10, _x11, _x12) {
         return _getUserOrder.apply(this, arguments);
@@ -302,15 +293,15 @@ var OrderController = /*#__PURE__*/function () {
       return getUserOrder;
     }()
   }, {
-    key: "updateDeliveryDate",
+    key: "updateDeliveryDateandAddress",
     value: function () {
-      var _updateDeliveryDate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
-        var _req$body2, order_id, delivery_date, _error, updatedOrder, _error2;
+      var _updateDeliveryDateandAddress = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
+        var _req$body, order_id, delivery_date, delivery_address, _error, updatedOrder, _error2;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
               _context5.prev = 0;
-              _req$body2 = req.body, order_id = _req$body2.order_id, delivery_date = _req$body2.delivery_date; //console.log('Updating delivery date:', order_id, delivery_date);
+              _req$body = req.body, order_id = _req$body.order_id, delivery_date = _req$body.delivery_date, delivery_address = _req$body.delivery_address; //console.log('Updating delivery date:', order_id, delivery_date);
               if (!(!order_id || !delivery_date)) {
                 _context5.next = 6;
                 break;
@@ -321,20 +312,22 @@ var OrderController = /*#__PURE__*/function () {
             case 6:
               _context5.next = 8;
               return _order2["default"].findByIdAndUpdate(order_id, {
-                delivery_date: delivery_date
+                delivery_date: delivery_date,
+                order_address: delivery_address
               }, {
                 "new": true
               });
             case 8:
               updatedOrder = _context5.sent;
+              console.log(updatedOrder, 'updatedOrder');
               if (updatedOrder) {
-                _context5.next = 13;
+                _context5.next = 14;
                 break;
               }
               _error2 = new Error('Order not found');
               _error2.statusCode = 404;
               throw _error2;
-            case 13:
+            case 14:
               res.status(200).json({
                 status: 'success',
                 message: 'Delivery date updated successfully',
@@ -342,25 +335,25 @@ var OrderController = /*#__PURE__*/function () {
                   order: updatedOrder
                 }
               });
-              _context5.next = 22;
+              _context5.next = 23;
               break;
-            case 16:
-              _context5.prev = 16;
+            case 17:
+              _context5.prev = 17;
               _context5.t0 = _context5["catch"](0);
               console.log('error here', _context5.t0, 'error here');
               _context5.t0.statusCode = _context5.t0.statusCode || 400;
               _context5.t0.payoorDevErrorMessage = 'Error setting order delivery date';
               next(_context5.t0);
-            case 22:
+            case 23:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 16]]);
+        }, _callee5, null, [[0, 17]]);
       }));
-      function updateDeliveryDate(_x13, _x14, _x15) {
-        return _updateDeliveryDate.apply(this, arguments);
+      function updateDeliveryDateandAddress(_x13, _x14, _x15) {
+        return _updateDeliveryDateandAddress.apply(this, arguments);
       }
-      return updateDeliveryDate;
+      return updateDeliveryDateandAddress;
     }()
   }]);
 }();

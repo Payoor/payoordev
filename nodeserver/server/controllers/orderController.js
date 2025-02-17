@@ -3,14 +3,16 @@ import moment from "moment";
 import Order from "../models/order";
 import User from "../models/user";
 
+import redisClient from "../configs/redisClient";
+
 class OrderController {
 
     async createOrder(req, res, next) {
         try {
-            const { order, order_address } = req.body;
+            const { order } = req.body;
             const { user } = req;
 
-            console.log(order);
+            //console.log(order);
 
             const items = [];
             const cart_total = order.totalAmount;
@@ -19,7 +21,7 @@ class OrderController {
             const order_items = order.items;
             const order_total = cart_total + delivery_fee + service_charge
 
-            console.log(delivery_fee, service_charge, cart_total)
+            //console.log(delivery_fee, service_charge, cart_total)
 
             Object.entries(order_items).forEach(([id, item]) => {
                 const product_data = {
@@ -31,28 +33,26 @@ class OrderController {
                 items.push(product_data);
             });
 
-            if (user) {
-                const validUser = await User.findOne({ _id: user.userId });
+            const user_data_redis_store = `userdata:${user.userId.toString()}`;
 
-                if (validUser) {
-                    const order = new Order({
-                        userId: validUser._id,
-                        items,
-                        order_address,
-                        cart_total,
-                        delivery_fee,
-                        service_charge,
-                        total: order_total,
-                    });
+            const userData = await redisClient.hGetAll(user_data_redis_store);
 
-                    await order.save();
+            if (userData) {
+                const userAddress = await redisClient.hGet(user_data_redis_store, 'userAddress');
 
-                    console.log(order);
-                    items.forEach(item => {
-                        console.log(item.product_units)
-                    })
+                const order = new Order({
+                    userId: user.userId,
+                    items,
+                    order_address: userAddress,
+                    cart_total,
+                    delivery_fee,
+                    service_charge,
+                    total: order_total,
+                });
 
-                    const orderSummary = `Your order has been created. Below is your order summary:
+                await order.save();
+
+                const orderSummary = `Your order has been created. Below is your order summary:
 
 Order Details
 -----------------
@@ -61,37 +61,35 @@ Delivery Fee: ₦${delivery_fee.toLocaleString()}
 Service Charge: ₦${service_charge.toLocaleString()}
 Total Amount: ₦${order_total.toLocaleString()}
 Status: Pending Payment
-Delivery Address: ${order_address}
+Delivery Address: ${userAddress}
 
 Please Click the Pay Button to make payment
 
 Click the pay now button to complete payment.`;
 
-                    const response = {
-                        success: true,
-                        data: {
-                            message: 'Success response',
-                            chatresponse: {
-                                text: orderSummary,
-                                orderStatus: order.status,
-                                orderId: order._id,
-                                isClient: false,
-                                isRead: false,
-                                payload: order
-                            }
+                const response = {
+                    success: true,
+                    data: {
+                        message: 'Success response',
+                        chatresponse: {
+                            text: orderSummary,
+                            orderStatus: order.status,
+                            orderId: order._id,
+                            isClient: false,
+                            isRead: false,
+                            payload: order
                         }
-                    };
+                    }
+                };
 
-                    res.status(200).json(response);
-                }
+                res.status(200).json(response);
             } else {
-                res.status(500).json({
+                res.status(404).json({
                     success: false,
                     message: 'Error creating order invalid user',
                     error: error.message
                 });
             }
-
         } catch (error) {
             console.log('error here', error, 'error here')
             error.statusCode = 400;
@@ -181,14 +179,14 @@ Click the pay now button to complete payment.`;
             const order = await Order.findOne({ _id: orderId });
 
             if (!order) {
-                console.log('no order')
+                //console.log('no order')
                 return res.status(404).json({
                     status: 'error',
                     message: 'Order not found'
                 });
             }
 
-            console.log(order, 'order here');
+            //console.log(order, 'order here');
 
             return res.status(200).json({
                 status: 'success',
@@ -202,9 +200,9 @@ Click the pay now button to complete payment.`;
         }
     }
 
-    async updateDeliveryDate(req, res, next) {
+    async updateDeliveryDateandAddress(req, res, next) {
         try {
-            const { order_id, delivery_date } = req.body;
+            const { order_id, delivery_date, delivery_address } = req.body;
 
             //console.log('Updating delivery date:', order_id, delivery_date);
 
@@ -216,9 +214,14 @@ Click the pay now button to complete payment.`;
 
             const updatedOrder = await Order.findByIdAndUpdate(
                 order_id,
-                { delivery_date: delivery_date },
+                {
+                    delivery_date: delivery_date,
+                    order_address: delivery_address
+                },
                 { new: true }
             );
+
+            console.log(updatedOrder, 'updatedOrder');
 
             if (!updatedOrder) {
                 const error = new Error('Order not found');

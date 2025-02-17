@@ -313,7 +313,7 @@ var AuthController = /*#__PURE__*/function () {
     key: "getValidUser",
     value: function () {
       var _getValidUser = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
-        var _req$authData, userId, tokenId, validUser, userResponse, userData, response, notFoundResponse;
+        var _req$authData, userId, tokenId, validUser, userResponse, user_data_redis_store, userData, response, notFoundResponse;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
@@ -325,13 +325,8 @@ var AuthController = /*#__PURE__*/function () {
               });
             case 4:
               validUser = _context5.sent;
-              //console.log(req.session)
-              //console.log(req.session.user)
-              console.log("=========session=========");
-
-              //console.log('Session ID:', req.sessionID);
               if (!validUser) {
-                _context5.next = 20;
+                _context5.next = 21;
                 break;
               }
               //console.log(validUser, 'validUser')
@@ -341,29 +336,29 @@ var AuthController = /*#__PURE__*/function () {
                 name: validUser.name,
                 phoneNumber: validUser.phoneNumber,
                 userAddress: validUser.location
+              }; //console.log(userResponse, 'userResponse')
+              //console.log(userResponse, 'userResponse')
+              user_data_redis_store = "userdata:".concat(validUser._id.toString());
+              userData = {
+                _id: validUser._id.toString(),
+                email: validUser.email,
+                name: validUser.name,
+                phoneNumber: validUser.phoneNumber,
+                userAddress: validUser.location
               };
-              _context5.next = 10;
-              return _redisClient["default"].hSet("user:".concat(validUser._id.toString()),
-              // Convert ObjectId to string
-              {
-                token: tokenId.toString(),
-                // Convert to string if it's an ObjectId
-                user: validUser._id.toString(),
-                lastLogin: new Date().toISOString(),
-                recent_queries: JSON.stringify([]),
-                llm_user_conversation: JSON.stringify([])
-              });
-            case 10:
-              _context5.next = 12;
-              return _redisClient["default"].expire("user:".concat(validUser._id), 30 * 24 * 60 * 60);
-            case 12:
-              _context5.next = 14;
-              return _redisClient["default"].hGetAll("user:".concat(validUser._id));
-            case 14:
+              _context5.next = 11;
+              return _redisClient["default"].hSet(user_data_redis_store, JSON.parse(JSON.stringify(userData)));
+            case 11:
+              _context5.next = 13;
+              return _redisClient["default"].expire(user_data_redis_store, 86400);
+            case 13:
+              _context5.next = 15;
+              return _redisClient["default"].hGetAll(user_data_redis_store);
+            case 15:
               userData = _context5.sent;
-              //console.log(userData, 'userData')
+              console.log(userData, 'userData here');
 
-              console.log(userResponse);
+              //console.log(userResponse)
               response = {
                 success: true,
                 data: {
@@ -372,9 +367,9 @@ var AuthController = /*#__PURE__*/function () {
                 }
               }; //console.log(response);
               res.status(200).json(response);
-              _context5.next = 22;
+              _context5.next = 23;
               break;
-            case 20:
+            case 21:
               notFoundResponse = {
                 success: false,
                 data: {
@@ -383,20 +378,20 @@ var AuthController = /*#__PURE__*/function () {
                 }
               };
               res.status(404).json(notFoundResponse);
-            case 22:
-              _context5.next = 29;
+            case 23:
+              _context5.next = 30;
               break;
-            case 24:
-              _context5.prev = 24;
+            case 25:
+              _context5.prev = 25;
               _context5.t0 = _context5["catch"](0);
               console.log('error here', _context5.t0, 'error here');
               _context5.t0.payoorDevErrorMessage = 'Failed to retrieve user';
               next(_context5.t0);
-            case 29:
+            case 30:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[0, 24]]);
+        }, _callee5, null, [[0, 25]]);
       }));
       function getValidUser(_x13, _x14, _x15) {
         return _getValidUser.apply(this, arguments);

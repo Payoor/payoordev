@@ -31,7 +31,7 @@ class CartProvider with ChangeNotifier {
         //print('Quantity: ${details.quantity}');
       });
     });
-    print('\nTotal Amount: $totalAmount');
+    //print('\nTotal Amount: $totalAmount');
   }
 
   void addItem({

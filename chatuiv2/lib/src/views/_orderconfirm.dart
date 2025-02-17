@@ -50,23 +50,26 @@ class _OrderConfirmState extends State<OrderConfirm> {
   bool _confirmingAddress = false;
   bool _openBaniPay = false;
 
-  setOrderDeliveryDate(String selectedDate) async {
+  setOrderDeliveryDateandAddress() async {
     try {
-      final orderId = context.read<BaniPayProvider>().currentOrder;
+      final orderId = widget.orderId;
+
+      context.read<BaniPayProvider>().setCurrentOrder('$orderId');
+
       if (orderId == null) {
         throw Exception('No order ID available');
       }
 
       final DateFormat inputFormatter = DateFormat('EEEE d MMM');
-      final DateTime parsedDate = inputFormatter.parse(selectedDate);
+      final DateTime parsedDate = inputFormatter.parse(selectedTime);
 
       final DateTime dateWithYear =
           DateTime(DateTime.now().year, parsedDate.month, parsedDate.day);
 
       final String formattedDate = dateWithYear.toIso8601String();
 
-      final response =
-          await OrdersRoute.updateDeliveryDate(orderId, formattedDate);
+      final response = await OrdersRoute.updateDeliveryDateandAddress(
+          orderId, formattedDate, selectedAddress);
 
       if (response?.data != null) {
         //print(response.data);
@@ -332,13 +335,12 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                                               true;
                                                                         });
                                                                         try {
-                                                                          await setOrderDeliveryDate(
-                                                                              time);
                                                                           setState(
                                                                               () {
                                                                             selectedTime =
                                                                                 time;
                                                                           });
+                                                                          //await setOrderDeliveryDateandAddress();
                                                                         } finally {
                                                                           setState(
                                                                               () {
@@ -606,14 +608,15 @@ class _OrderConfirmState extends State<OrderConfirm> {
                             // Added to handle large content
                             child: AddressesList(
                               onLocationSelected: (updatedAddress) {
-                                selectAddress(updatedAddress);
+                                selectAddress('$updatedAddress');
                                 closeAddressList();
                               },
                               onAddressSelected: (addressData) {
                                 String value = addressData['address']!;
-                                selectAddress(value);
+                                //print(value);
+                                selectAddress('$value');
                                 closeAddressList();
-                                context.read<GooglePlaces>().clearPredictions();
+                                /*context.read<GooglePlaces>().clearPredictions();*/
                               },
                             ),
                           )
@@ -644,7 +647,8 @@ class _OrderConfirmState extends State<OrderConfirm> {
                         onPressed:
                             selectedAddress.isEmpty || selectedTime.isEmpty
                                 ? null
-                                : () {
+                                : () async {
+                                    await setOrderDeliveryDateandAddress();
                                     handleBaniPayOpen(widget.orderId);
                                   },
                         style: ButtonStyle(

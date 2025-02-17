@@ -260,34 +260,6 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                         Positioned.fill(
                           child: _renderMessages(),
                         ),
-                        if (_confirmingAddress)
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              constraints: BoxConstraints(
-                                maxHeight:
-                                    MediaQuery.of(context).size.height * 0.3,
-                                minHeight: 100,
-                              ),
-                              child: AddressesList(
-                                onLocationSelected: (updatedAddress) {
-                                  _setInputText(updatedAddress);
-                                },
-                                onAddressSelected: (addressData) {
-                                  String value = addressData['address']!;
-                                  _setInputText(value);
-                                  setState(() {
-                                    _confirmingAddress = false;
-                                  });
-                                  context
-                                      .read<GooglePlaces>()
-                                      .clearPredictions();
-                                },
-                              ),
-                            ),
-                          )
                       ],
                     ),
                   ),
@@ -379,6 +351,8 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
         return MessageContent(
             message: message,
             scrollController: _scrollController,
+            key: ValueKey(
+                'message_content_${message.clienttimestamp?.millisecondsSinceEpoch}'),
             index: index,
             tags: message.tags,
             messagesList: messagesList,

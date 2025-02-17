@@ -69,10 +69,17 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
         if (response.data['chatresponse'] != null) {
           final chatResponse = response.data['chatresponse'];
           final orderId = chatResponse['orderId']?.toString();
+
+          //print(orderId);
+          //print('above is the order id');
+
           if (orderId != null) {
             setState(() {
               order = chatResponse['payload'];
             });
+
+            //print(order);
+            //print('above is the order');
             return true;
           }
         }
