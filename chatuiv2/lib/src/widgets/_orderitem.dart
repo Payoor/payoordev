@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
@@ -14,11 +15,13 @@ class OrderItem extends StatefulWidget {
 
 class _OrderItemState extends State<OrderItem> {
   bool _isExpanded = false;
-  
 
   String _formatPrice(dynamic price) {
     if (price == null) return '0.00';
-    return (price / 100).toStringAsFixed(2);
+
+    // Convert to number format with thousands separator
+    final formatter = NumberFormat('#,##0.00');
+    return formatter.format(price);
   }
 
   String _formatDate(String dateStr) {
@@ -241,10 +244,17 @@ class _OrderItemState extends State<OrderItem> {
                               onPressed: () {
                                 // TODO: Implement order completion logic
                                 //print('Complete order: ${widget.order['_id']}');
-                              
+
                                 Provider.of<BaniPayProvider>(context,
                                         listen: false)
                                     .setCurrentOrder(widget.order['_id']);
+
+                                if (mounted && widget.order['_id'] != null) {
+                                  Navigator.pushNamed(context, '/confirmorder',
+                                      arguments: {
+                                        'orderId': widget.order['_id']
+                                      });
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green.shade600,
@@ -291,7 +301,6 @@ class _OrderItemState extends State<OrderItem> {
           ),
         ),
       ),
-
     ]);
   }
 }

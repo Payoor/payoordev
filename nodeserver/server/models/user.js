@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         unique: true,
         required: true
-    }, 
+    },
     phoneNumber: {
         type: String,
         unique: true,
@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     hasBeenWelcomed: {
         type: Boolean,
         default: false
+    },
+    completed_orders: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

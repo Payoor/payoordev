@@ -36,6 +36,10 @@ var userSchema = new _db["default"].Schema({
   hasBeenWelcomed: {
     type: Boolean,
     "default": false
+  },
+  completed_orders: {
+    type: Number,
+    "default": 0
   }
 }, {
   timestamps: true

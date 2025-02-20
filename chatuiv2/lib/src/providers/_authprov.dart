@@ -47,6 +47,9 @@ class AuthProv extends ChangeNotifier {
       final userData = response.data['user'];
 
       _userData = userData;
+
+      //print(_userData);
+      //print('_userData');
       _jwt = jwtToken;
       _error = false;
       _isLoading = false;

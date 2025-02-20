@@ -4,6 +4,7 @@ import 'dart:html' as html;
 import 'dart:ui' as ui;
 
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
+import 'package:chatuiv2/src/widgets/_headerrow.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_authapiroutes.dart';
@@ -19,7 +20,7 @@ class BaniPay extends StatefulWidget {
   final double width;
 
   const BaniPay({
-    super.key,
+    required Key key,
     required this.orderId,
     this.height = double.infinity,
     this.width = double.infinity,
@@ -35,7 +36,7 @@ class _BaniPayState extends State<BaniPay> {
   Map<String, dynamic>? userData;
   dynamic orderData;
   bool isViewRegistered = false;
-  static bool factoryRegistered = false;
+  //static bool factoryRegistered = false;
 
   @override
   void initState() {
@@ -43,15 +44,8 @@ class _BaniPayState extends State<BaniPay> {
     _fetchData();
 
     html.window.onMessage.listen((event) {
-      //print('Received message event:');
-      //print('Event data: ${event.data}');
-      //print('Event type: ${event.type}');
-      //print('Event source: ${event.source}');
-
-      // Check if the event.data is a Map and contains the success message
       if (event.data is Map) {
         final data = event.data as Map;
-        // Only call _handlePaymentSuccess if it's a success message
         if (data['type'] == 'onSuccess') {
           _handlePaymentSuccess(widget.orderId);
         }
@@ -60,11 +54,8 @@ class _BaniPayState extends State<BaniPay> {
   }
 
   void _handlePaymentSuccess(dynamic orderId) {
-    //print(orderId);
     context.read<BaniPayProvider>().setCurrentOrder(null);
-
     context.read<CartProvider>().clear();
-
     Navigator.pushNamed(context, '/');
   }
 
@@ -73,17 +64,19 @@ class _BaniPayState extends State<BaniPay> {
       final String? jwtToken = JwtManager.getToken();
 
       final userResponse = await AuthApiRoutes.getValidUser('$jwtToken');
-      final orderResponse = await OrdersRoute.getUserOrder(widget.orderId!);
+      final orderResponse = await OrdersRoute.getPendingOrder(widget.orderId!);
 
       setState(() {
         userData = userResponse.data['user'];
         orderData = orderResponse.data;
       });
 
-      if (!factoryRegistered) {
-        _registerViewFactory();
-        factoryRegistered = true;
-      }
+      //print(orderData);
+      //print("is this the orderData =======R");
+      //print(userData);
+      //print("is this the userData =======R");
+
+      _registerViewFactory();
 
       setState(() {
         isViewRegistered = true;
@@ -119,6 +112,7 @@ class _BaniPayState extends State<BaniPay> {
   </style>
 </head>
 <body>
+  "${orderData?['total']}"
   <form id="paymentForm">
     <div class="form-group">
       <input type="tel" id="phone-number" value="${userData?['phoneNumber'] ?? ''}" />
@@ -144,7 +138,7 @@ class _BaniPayState extends State<BaniPay> {
         merchantKey: "pub_prod_5AXXSMJ492485SQ4BTEPSY3EQPYTKD",
         bankTransferOnly: true,
         metadata: {
-          order_ref: "${widget.orderId}",
+          order_ref: "${orderData['_id']}"
         },
         merchantRef: "ref-" + Math.random().toString(36).substr(2, 9),
         onClose: (response) => {
@@ -189,41 +183,66 @@ class _BaniPayState extends State<BaniPay> {
 
   @override
   Widget build(BuildContext context) {
-    if (!isViewRegistered) {
-      return Container(
-        height: widget.height,
-        width: widget.width,
-        child: Center(
-          child: AiLoadingIndicator(),
-        ),
-      );
-    }
-
-    return Container(
-      height: widget.height,
-      width: widget.width,
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.greyBlack.withOpacity(.5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const HtmlElementView(viewType: 'bani-iframe'),
-          ),
-          if (isLoading)
-            Container(
-              width: double.infinity,
-              child: Center(
-                child: AiLoadingIndicator(),
-              ),
-            ),
-          if (error != null)
-            Center(
-              child: Text(error!),
-            ),
-        ],
-      ),
+    return Scaffold(
+      body: LayoutBuilder(builder: (context, constraints) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: !isViewRegistered
+              ? Center(child: AiLoadingIndicator())
+              : Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: AppColors.primaryBackgroundWhite,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: HeaderRow(
+                          headerName: "Payoor",
+                          onBurgerMenuTap: () => {},
+                          showBackButton: false,
+                          onBackTap: () {
+                            Navigator.of(context).pushNamed('/');
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 0),
+                            child: Container(
+                              color: AppColors.primaryBackgroundWhite,
+                              width: double.infinity,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryBackgroundWhite,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const HtmlElementView(
+                                        viewType: 'bani-iframe'),
+                                  ),
+                                  if (isLoading)
+                                    Container(
+                                      width: double.infinity,
+                                      child: Center(
+                                        child: AiLoadingIndicator(),
+                                      ),
+                                    ),
+                                  if (error != null)
+                                    Center(
+                                      child: Text(error!),
+                                    ),
+                                ],
+                              ),
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+        );
+      }),
     );
   }
 }

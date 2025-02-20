@@ -10,6 +10,8 @@ orderRoute.get('/user/get/order', verifyToken, OrderController.getOrder);
 
 orderRoute.get('/user/get/client/order', verifyToken, OrderController.getUserOrder)
 
+orderRoute.get('/user/get/pending/order', verifyToken, OrderController.getPendingOrder)
+
 orderRoute.post('/user/create/order', verifyToken, OrderController.createOrder)
 
 orderRoute.post('/user/update/order/delivery-date-address', verifyToken, OrderController.updateDeliveryDateandAddress)

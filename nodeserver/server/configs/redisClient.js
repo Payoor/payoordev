@@ -1,4 +1,3 @@
-const RedisStore = require('connect-redis').default;
 const { createClient } = require('redis');
 
 const redisClient = createClient({

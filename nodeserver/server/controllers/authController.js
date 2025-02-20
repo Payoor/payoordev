@@ -241,7 +241,7 @@ class AuthController {
                     userAddress: validUser.location
                 };
 
-                //console.log(userResponse, 'userResponse')
+                console.log(userResponse, 'userResponse')
 
                 //console.log(userResponse, 'userResponse')
 

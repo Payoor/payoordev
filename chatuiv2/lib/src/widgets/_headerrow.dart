@@ -23,7 +23,7 @@ class HeaderRow extends StatelessWidget {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20, bottom: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

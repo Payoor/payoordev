@@ -12,6 +12,7 @@ var orderRoute = (0, _express["default"])();
 orderRoute.get('/user/get/orders', _verifyToken["default"], _orderController["default"].getUserOrders);
 orderRoute.get('/user/get/order', _verifyToken["default"], _orderController["default"].getOrder);
 orderRoute.get('/user/get/client/order', _verifyToken["default"], _orderController["default"].getUserOrder);
+orderRoute.get('/user/get/pending/order', _verifyToken["default"], _orderController["default"].getPendingOrder);
 orderRoute.post('/user/create/order', _verifyToken["default"], _orderController["default"].createOrder);
 orderRoute.post('/user/update/order/delivery-date-address', _verifyToken["default"], _orderController["default"].updateDeliveryDateandAddress);
 var _default = exports["default"] = orderRoute;

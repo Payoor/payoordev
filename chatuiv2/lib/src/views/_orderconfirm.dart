@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
+import 'package:chatuiv2/src/classes/_authapiroutes.dart';
+import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_addresseslist.dart';
-import 'package:chatuiv2/src/widgets/_banipay.dart';
+import 'package:chatuiv2/src/views/_banipay.dart';
 import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
 
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -29,6 +31,8 @@ class _OrderConfirmState extends State<OrderConfirm> {
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<SwipeUpWidgetState> _swipeKey =
       GlobalKey<SwipeUpWidgetState>();
+  Map<String, dynamic>? userData;
+  dynamic orderData;
 
   String selectedTime = '';
   String selectedAddress = "";
@@ -50,6 +54,24 @@ class _OrderConfirmState extends State<OrderConfirm> {
   bool _confirmingAddress = false;
   bool _openBaniPay = false;
 
+  Future<void> _fetchData() async {
+    try {
+      final String? jwtToken = JwtManager.getToken();
+
+      final userResponse = await AuthApiRoutes.getValidUser('$jwtToken');
+      final orderResponse = await OrdersRoute.getUserOrder(widget.orderId!);
+
+      setState(() {
+        userData = userResponse.data['user'];
+        orderData = orderResponse.data;
+      });
+
+      //print(orderData);
+    } catch (e) {
+      setState(() {});
+    }
+  }
+
   setOrderDeliveryDateandAddress() async {
     try {
       final orderId = widget.orderId;
@@ -70,6 +92,12 @@ class _OrderConfirmState extends State<OrderConfirm> {
 
       final response = await OrdersRoute.updateDeliveryDateandAddress(
           orderId, formattedDate, selectedAddress);
+
+      setState(() {
+        orderData = response.data;
+      });
+
+      //print("orderToPayFor=============");
 
       if (response?.data != null) {
         //print(response.data);
@@ -108,6 +136,8 @@ class _OrderConfirmState extends State<OrderConfirm> {
         authProvider.userData?['userAddress'] ?? 'Set delivery address';
 
     selectAddress(userAddress);
+
+    _fetchData();
 
     _controller.addListener(() {
       context.read<GooglePlaces>().searchPlaces(_controller.text);
@@ -163,31 +193,15 @@ class _OrderConfirmState extends State<OrderConfirm> {
   }
 
   void handleBaniPayOpen(String? orderId) {
-    //context.read<BaniPayProvider>().setCurrentOrder(orderId);
+    context.read<BaniPayProvider>().setCurrentOrder(orderId);
     setState(() {
       _openBaniPay = true;
     });
-  }
 
-  Widget buildBaniPaySwipeUp() {
-    return Consumer<BaniPayProvider>(
-      builder: (context, baniPayProvider, child) {
-        if (baniPayProvider.currentOrder != null && _openBaniPay) {
-          return Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SwipeUpWidget(
-              key: _swipeKey,
-              minHeight: 15,
-              maxHeight: MediaQuery.of(context).size.height * 0.7,
-              child: BaniPay(orderId: baniPayProvider.currentOrder),
-            ),
-          );
-        }
-        return const SizedBox();
-      },
-    );
+    if (mounted && orderId != null) {
+      Navigator.pushNamed(context, '/payfororder',
+          arguments: {'orderId': orderId});
+    }
   }
 
   @override
@@ -438,7 +452,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                             .primaryColor,
                                                       )),
                                                   Text(
-                                                    '₦${cart.totalAmount}',
+                                                    '₦${orderData != null ? orderData['cart_total'] : ""}',
                                                     style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -463,7 +477,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                             .primaryColor,
                                                       )),
                                                   Text(
-                                                    '₦$deliveryFee',
+                                                    '₦${orderData != null ? orderData['delivery_fee'] : ""}',
                                                     style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -488,7 +502,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                             .primaryColor,
                                                       )),
                                                   Text(
-                                                    '₦${cart.totalAmount * 0.05}',
+                                                    '₦${orderData != null ? orderData['service_charge'] : ""}',
                                                     style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -513,7 +527,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                                             .primaryColor,
                                                       )),
                                                   Text(
-                                                    '₦${(cart.totalAmount * 0.05) + deliveryFee + cart.totalAmount}',
+                                                    '₦${orderData != null ? orderData['total'] : ""}',
                                                     style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -649,7 +663,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
                                 ? null
                                 : () async {
                                     await setOrderDeliveryDateandAddress();
-                                    handleBaniPayOpen(widget.orderId);
+                                    handleBaniPayOpen(orderData["order"]["_id"]);
                                   },
                         style: ButtonStyle(
                           backgroundColor:
@@ -683,7 +697,6 @@ class _OrderConfirmState extends State<OrderConfirm> {
                   ),
                 ),
               ),
-              buildBaniPaySwipeUp(),
             ]));
       });
     }));

@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-var RedisStore = require('connect-redis')["default"];
 var _require = require('redis'),
   createClient = _require.createClient;
 var redisClient = createClient({

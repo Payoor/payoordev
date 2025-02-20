@@ -6,9 +6,16 @@ import 'package:chatuiv2/src/classes/_urls.dart';
 import 'package:chatuiv2/src/classes/_jwtmanager.dart';
 
 class OrdersRoute {
-  static Future<ServerResponse> getUserOrders() async {
+  static Future<ServerResponse> getUserOrders(String selectedStatus) async {
     try {
-      final uri = Uri.parse('${Urls.baseUrl}/user/get/orders');
+      final queryParameters = {
+        'status': selectedStatus.toLowerCase(),
+      };
+
+      final uri = Uri.parse('${Urls.baseUrl}/user/get/orders').replace(
+        queryParameters: queryParameters,
+      );
+
       final jwt = JwtManager.getToken();
 
       final response = await http.get(uri, headers: {
@@ -53,6 +60,32 @@ class OrdersRoute {
     }
   }
 
+  static Future<ServerResponse> getPendingOrder(String orderId) async {
+    try {
+      final uri = Uri.parse('${Urls.baseUrl}/user/get/pending/order').replace(
+        queryParameters: {'id': orderId},
+      );
+      final jwt = JwtManager.getToken();
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $jwt',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to fetch pending order. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch pending order: $e');
+    }
+  }
+
   static Future<ServerResponse> createOrder(
       Map<String, dynamic> items, String deliveryAddress) async {
     try {
@@ -84,7 +117,8 @@ class OrdersRoute {
   static Future<ServerResponse> updateDeliveryDateandAddress(
       String orderId, String deliveryDate, String orderAddress) async {
     try {
-      final uri = Uri.parse('${Urls.baseUrl}/user/update/order/delivery-date-address');
+      final uri =
+          Uri.parse('${Urls.baseUrl}/user/update/order/delivery-date-address');
       final jwt = JwtManager.getToken();
 
       final response = await http.post(

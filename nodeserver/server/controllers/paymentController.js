@@ -1,7 +1,9 @@
 import Transaction from "../models/transaction";
 import Order from "../models/order";
 
+import redisClient from "../configs/redisClient";
 import getOrderDetails from '../services/payoor/getOrderDetails';
+import updateUserAddress from '../services/payoor/updateUserAddress';
 
 
 const https = require('https');
@@ -446,6 +448,7 @@ class PaymentController {
             const headers = req.headers;
             const body = req.rawBody;
 
+            // Validate request body
             if (!body) {
                 console.log('no body');
                 return res.status(400).json({
@@ -454,20 +457,19 @@ class PaymentController {
                 });
             }
 
+            // Validate signature header
             if (!headers["bani-hook-signature"]) {
-                return res.status(401).json({
+                return res.status(400).json({
                     status: false,
                     message: "No signature provided"
                 });
             }
 
+            // Verify signature
             const sig = Buffer.from(headers["bani-hook-signature"], "utf8");
-
-            // Calculate HMAC
             const hmac = crypto.createHmac("sha256", merchant_private_key);
             const digest = Buffer.from(hmac.update(body).digest("hex"), "utf8");
 
-            // Verify signature
             if (sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
                 return res.status(401).json({
                     status: false,
@@ -475,34 +477,60 @@ class PaymentController {
                 });
             }
 
-            // Process the webhook payload here
             const webhookData = JSON.parse(body);
-
-            console.log(webhookData, 'webhookData========')
-
-            const orderRef = webhookData.data.custom_data.order_ref;
+            const { order_ref } = webhookData.data.custom_data;
             const paymentStatus = webhookData.data.pay_status;
 
+            console.log(order_ref, 'order_ref');
+
             if (paymentStatus === 'paid') {
-                // Update order status, send confirmation email, etc using orderRef
-                // Example:
-                await Order.findByIdAndUpdate(orderRef, {
+                // Use direct key lookup instead of list search
+                const PENDING_ORDER_ID = `pending:${order_ref}`;
+                const storedOrder = await redisClient.get(PENDING_ORDER_ID);
+
+                if (!storedOrder) {
+                    console.error('Order not found:', order_ref);
+                    return res.status(404).json({
+                        status: false,
+                        message: "Order not found"
+                    });
+                }
+
+                const order = JSON.parse(storedOrder);
+                const { _id, ...orderWithoutId } = order;
+
+                const newMongoOrder = new Order({
+                    ...orderWithoutId,
                     reference: webhookData.data.transaction_ref,
                     status: 'processing'
                 });
 
-                getOrderDetails(orderRef);
-            }
+                await Promise.all([
+                    newMongoOrder.save(),
+                    redisClient.del(PENDING_ORDER_ID)
+                ]);
 
-            // Add your webhook processing logic here
-            // For example:
-            // - Update order status
-            // - Send confirmation emails
-            // - Update database records
+                getOrderDetails(newMongoOrder._id);
+
+                const user_id = newMongoOrder.userId;
+                const user_current_address = newMongoOrder.order_address;
+
+                console.log(newMongoOrder, 'newMongoOrder======newMongoOrder======newMongoOrder')
+
+                updateUserAddress(user_id, user_current_address);
+
+                return res.status(200).json({
+                    status: true,
+                    message: "Payment processed successfully",
+                    data: {
+                        order: newMongoOrder
+                    }
+                });
+            }
 
             return res.status(200).json({
                 status: true,
-                message: "Webhook processed successfully"
+                message: "Webhook received"
             });
 
         } catch (error) {

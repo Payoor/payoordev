@@ -8,7 +8,7 @@ import 'package:chatuiv2/src/providers/_banipayprov.dart';
 
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_orderitem.dart';
-import 'package:chatuiv2/src/widgets/_banipay.dart';
+import 'package:chatuiv2/src/views/_banipay.dart';
 import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
 
 class OrderDisplay extends StatefulWidget {
@@ -26,6 +26,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
   int _totalCount = 0;
   int _itemsPerPage = 0;
   bool _isLoading = true;
+  String _selectedStatus = "pending";
   List<dynamic> _orders = [];
   final GlobalKey<SwipeUpWidgetState> _swipeKeyOrderItem =
       GlobalKey<SwipeUpWidgetState>();
@@ -36,30 +37,9 @@ class _OrderDisplayState extends State<OrderDisplay> {
     _getUserOrders();
   }
 
-  Widget buildBaniPaySwipeUp() {
-    return Consumer<BaniPayProvider>(
-      builder: (context, baniPayProvider, child) {
-        if (baniPayProvider.currentOrder != null) {
-          return Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SwipeUpWidget(
-              key: _swipeKeyOrderItem,
-              minHeight: 15,
-              maxHeight: MediaQuery.of(context).size.height * 0.7,
-              child: BaniPay(orderId: baniPayProvider.currentOrder),
-            ),
-          );
-        }
-        return const SizedBox();
-      },
-    );
-  }
-
   void _getUserOrders() async {
     try {
-      final response = await OrdersRoute.getUserOrders();
+      final response = await OrdersRoute.getUserOrders(_selectedStatus);
       if (response?.data != null) {
         setState(() {
           _page = response.data['page'];
@@ -69,7 +49,6 @@ class _OrderDisplayState extends State<OrderDisplay> {
           _orders = response.data['orders'];
           _isLoading = false;
         });
-
 
         //print(_orders);
       }
@@ -93,6 +72,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
           color: AppColors.primaryBackgroundWhite,
           child: Stack(
             children: [
+              // Header
               Positioned(
                 top: 0,
                 left: 0,
@@ -111,10 +91,34 @@ class _OrderDisplayState extends State<OrderDisplay> {
                 ),
               ),
 
-
-
+              // Order Status Menu
               Positioned(
-                top: 80,
+                top: 60,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildStatusTab(
+                            "Pending", _selectedStatus == "pending"),
+                        const SizedBox(width: 10),
+                        _buildStatusTab(
+                            "Processing", _selectedStatus == "processing"),
+                        const SizedBox(width: 10),
+                        _buildStatusTab(
+                            "Completed", _selectedStatus == "completed"),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Orders List
+              Positioned(
+                top: 120, // Increased to accommodate the menu
                 left: 0,
                 right: 0,
                 bottom: 0,
@@ -123,12 +127,6 @@ class _OrderDisplayState extends State<OrderDisplay> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
                       children: [
-                        Row(
-                          children: [],
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
                         if (_isLoading) ...[
                           const Center(
                             child: CircularProgressIndicator(),
@@ -155,19 +153,56 @@ class _OrderDisplayState extends State<OrderDisplay> {
                               ],
                             ),
                           ),
-                        ] else ...[
-                          ..._orders.map((order) => OrderItem(order)).toList(),
-                        ],
+                        ] else
+                          ..._getFilteredOrders()
+                              .map((order) => OrderItem(order))
+                              .toList(),
                       ],
                     ),
                   ),
                 ),
               ),
-              buildBaniPaySwipeUp(),
             ],
           ),
         );
       }),
     );
+  }
+
+// Add this helper method for the status tabs
+  Widget _buildStatusTab(String status, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedStatus = status.toLowerCase();
+          _getUserOrders();
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : AppColors.greyBlack,
+          ),
+        ),
+        child: Text(
+          status,
+          style: TextStyle(
+            color: isSelected ? Colors.white : AppColors.greyBlack,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
+      ),
+    );
+  }
+
+// Add this helper method to filter orders based on status
+  List _getFilteredOrders() {
+    return _orders
+        .where((order) =>
+            order['status'].toLowerCase() == _selectedStatus.toLowerCase())
+        .toList();
   }
 }

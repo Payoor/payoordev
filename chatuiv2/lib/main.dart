@@ -21,6 +21,7 @@ import 'package:chatuiv2/src/views/_authenticatedchat.dart'
     deferred as authChat;
 import 'package:chatuiv2/src/views/_ordersdisplay.dart' deferred as orders;
 import 'package:chatuiv2/src/views/_orderconfirm.dart' deferred as orderConfirm;
+import 'package:chatuiv2/src/views/_banipay.dart' deferred as baniPay;
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -86,7 +87,7 @@ class MyApp extends StatelessWidget {
                       ),
                 );
               }
-              
+
               return StackWithNav(child: buildWidget());
 
             case ConnectionState.waiting:
@@ -161,6 +162,14 @@ class MyApp extends StatelessWidget {
             return deferredRoute(
               loadLibrary: orders.loadLibrary,
               buildWidget: () => orders.OrderDisplay(),
+            );
+
+          case '/payfororder':
+            final args = settings.arguments as Map<String, dynamic>?;
+            return deferredRoute(
+              loadLibrary: baniPay.loadLibrary,
+              buildWidget: () =>
+                  baniPay.BaniPay(key: UniqueKey(), orderId: args?['orderId']),
             );
         }
 

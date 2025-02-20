@@ -30,6 +30,8 @@ import 'package:chatuiv2/src/classes/_socketservice.dart';
 import 'package:chatuiv2/src/classes/_productroutes.dart';
 import 'package:chatuiv2/src/classes/_serverresponse.dart';
 
+import 'package:chatuiv2/main.dart';
+
 class AuthenticatedChat extends StatefulWidget {
   const AuthenticatedChat({super.key});
 
@@ -365,7 +367,12 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
     return AnimatedOpacity(
       opacity: isInitialAnimationComplete ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 500),
-      child: HeaderRow(onBurgerMenuTap: () {}),
+      child: HeaderRow(
+        headerName: "Payoor",
+        onBurgerMenuTap: () => {},
+        showBackButton: false,
+        onBackTap: () {},
+      ),
     );
   }
 
@@ -535,10 +542,11 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CartDisplayScreen(
+                          builder: (context) => StackWithNav(
+                              child: CartDisplayScreen(
                             closeWidget: () => Navigator.pop(context),
                             //totalAmount: cart.totalAmount,
-                          ),
+                          )),
                         ),
                       );
                     }
