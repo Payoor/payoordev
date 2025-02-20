@@ -196,7 +196,7 @@ class _OrderItemState extends State<OrderItem> {
                           children: [
                             const Text('Subtotal'),
                             Text(
-                                '\$${_formatPrice(widget.order['cart_total'])}'),
+                                '\₦${_formatPrice(widget.order['cart_total'])}'),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -205,7 +205,7 @@ class _OrderItemState extends State<OrderItem> {
                           children: [
                             const Text('Delivery Fee'),
                             Text(
-                                '\$${_formatPrice(widget.order['delivery_fee'])}'),
+                                '\₦${_formatPrice(widget.order['delivery_fee'])}'),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -214,7 +214,7 @@ class _OrderItemState extends State<OrderItem> {
                           children: [
                             const Text('Service Charge'),
                             Text(
-                                '\$${_formatPrice(widget.order['service_charge'])}'),
+                                '\₦${_formatPrice(widget.order['service_charge'])}'),
                           ],
                         ),
                         const Divider(),
@@ -228,7 +228,7 @@ class _OrderItemState extends State<OrderItem> {
                               ),
                             ),
                             Text(
-                              '\$${_formatPrice(widget.order['total'])}',
+                              '\₦${_formatPrice(widget.order['total'])}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),

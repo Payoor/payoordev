@@ -8,6 +8,7 @@ class HeaderRow extends StatelessWidget {
   final VoidCallback? onBurgerMenuTap;
   final String headerName;
   final bool showBackButton;
+  final bool showBurger;
   final VoidCallback? onBackTap;
 
   const HeaderRow({
@@ -15,6 +16,7 @@ class HeaderRow extends StatelessWidget {
     this.onBurgerMenuTap,
     this.headerName = "Payoor",
     this.showBackButton = false,
+    this.showBurger = true,
     this.onBackTap,
   }) : super(key: key);
 
@@ -51,16 +53,29 @@ class HeaderRow extends StatelessWidget {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  sideNavVisible.value = true;
-                },
-                child: Icon(
-                  Icons.menu,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-              )
+              if (showBurger)
+                GestureDetector(
+                  onTap: () {
+                    sideNavVisible.value = true;
+                  },
+                  child: Icon(
+                    Icons.menu,
+                    color: AppColors.primaryColor,
+                    size: 30,
+                  ),
+                )
+              else
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/'),
+                  child: Image.asset(
+                    'assets/payoorcart.png',
+                    width: 30,
+                    height: 30,
+                    fit: BoxFit.contain,
+                    color: AppColors.primaryColor,
+                    colorBlendMode: BlendMode.srcATop,
+                  ),
+                )
             ],
           ),
         ),
