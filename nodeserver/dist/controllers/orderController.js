@@ -40,17 +40,23 @@ var OrderController = /*#__PURE__*/function () {
     key: "createOrder",
     value: function () {
       var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var order, user, ORDERS_KEY, items, cart_total, delivery_fee, service_charge, order_items, order_total, user_data_redis_store, userData, userAddress, order_id, newOrder, serializedOrder, newLength, orderSummary, response;
+        var order, user, user_data_redis_store, completedOrders, ORDERS_KEY, items, cart_total, delivery_fee, service_charge, order_items, order_total, userData, userAddress, order_id, newOrder, serializedOrder, newLength, orderSummary, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               order = req.body.order;
               user = req.user;
+              user_data_redis_store = "userdata:".concat(user.userId.toString());
+              _context.next = 6;
+              return _redisClient["default"].get("".concat(user_data_redis_store, ":completed_orders"));
+            case 6:
+              completedOrders = _context.sent;
+              //console.log(completedOrders, 'completedOrders');
               ORDERS_KEY = "orders:".concat(user.userId);
               items = [];
               cart_total = order.totalAmount;
-              delivery_fee = 3500;
+              delivery_fee = completedOrders && completedOrders == 0 ? 0 : 3500;
               service_charge = cart_total * 0.05;
               order_items = order.items;
               order_total = cart_total + delivery_fee + service_charge;
@@ -65,18 +71,17 @@ var OrderController = /*#__PURE__*/function () {
                 };
                 items.push(product_data);
               });
-              user_data_redis_store = "userdata:".concat(user.userId.toString());
-              _context.next = 14;
+              _context.next = 17;
               return _redisClient["default"].hGetAll(user_data_redis_store);
-            case 14:
+            case 17:
               userData = _context.sent;
               if (!userData) {
-                _context.next = 30;
+                _context.next = 34;
                 break;
               }
-              _context.next = 18;
+              _context.next = 21;
               return _redisClient["default"].hGet(user_data_redis_store, 'userAddress');
-            case 18:
+            case 21:
               userAddress = _context.sent;
               order_id = uuidv4();
               newOrder = {
@@ -95,12 +100,13 @@ var OrderController = /*#__PURE__*/function () {
                 reference: ''
               };
               serializedOrder = JSON.stringify(newOrder); //console.log('About to push to Redis...');
-              _context.next = 24;
+              _context.next = 27;
               return _redisClient["default"].rPush(ORDERS_KEY, serializedOrder);
-            case 24:
+            case 27:
               newLength = _context.sent;
               //console.log('Redis push complete, new length:', newLength);
               orderSummary = "Your order has been created. Below is your order summary:\n    \n    Order Details\n    -----------------\n    Cart Total: \u20A6".concat(cart_total.toLocaleString(), "\n    Delivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\n    Service Charge: \u20A6").concat(service_charge.toLocaleString(), "\n    Total Amount: \u20A6").concat(order_total.toLocaleString(), "\n    Status: Pending Payment\n    Delivery Address: ").concat(userAddress, "\n    \n    Please Click the Pay Button to make payment\n    \n    Click the pay now button to complete payment.");
+              console.log(newOrder, completedOrders, 'newOrder');
               response = {
                 success: true,
                 data: {
@@ -118,29 +124,29 @@ var OrderController = /*#__PURE__*/function () {
                 }
               };
               res.status(200).json(response);
-              _context.next = 31;
+              _context.next = 35;
               break;
-            case 30:
+            case 34:
               res.status(404).json({
                 success: false,
                 message: 'Error creating order invalid user',
                 error: 'User data not found' // Fixed error reference
               });
-            case 31:
-              _context.next = 39;
+            case 35:
+              _context.next = 43;
               break;
-            case 33:
-              _context.prev = 33;
+            case 37:
+              _context.prev = 37;
               _context.t0 = _context["catch"](0);
               console.log('Error creating order:', _context.t0);
               _context.t0.statusCode = 400;
               _context.t0.payoorDevErrorMessage = 'Error creating order';
               next(_context.t0);
-            case 39:
+            case 43:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 33]]);
+        }, _callee, null, [[0, 37]]);
       }));
       function createOrder(_x, _x2, _x3) {
         return _createOrder.apply(this, arguments);

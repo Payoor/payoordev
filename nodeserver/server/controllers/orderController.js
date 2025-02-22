@@ -12,11 +12,18 @@ class OrderController {
             const { order } = req.body;
             const { user } = req;
 
+            const user_data_redis_store = `userdata:${user.userId.toString()}`;
+
+
+            const completedOrders = await redisClient.get(`${user_data_redis_store}:completed_orders`);
+
+            //console.log(completedOrders, 'completedOrders');
+
             const ORDERS_KEY = `orders:${user.userId}`;
 
             const items = [];
             const cart_total = order.totalAmount;
-            const delivery_fee = 3500;
+            const delivery_fee = completedOrders && completedOrders == 0 ? 0 : 3500;
             const service_charge = cart_total * 0.05;
             const order_items = order.items;
             const order_total = cart_total + delivery_fee + service_charge;
@@ -30,7 +37,7 @@ class OrderController {
                 items.push(product_data);
             });
 
-            const user_data_redis_store = `userdata:${user.userId.toString()}`;
+
             const userData = await redisClient.hGetAll(user_data_redis_store);
 
             if (userData) {
@@ -72,6 +79,8 @@ class OrderController {
     Please Click the Pay Button to make payment
     
     Click the pay now button to complete payment.`;
+
+    console.log(newOrder, completedOrders, 'newOrder')
 
                 const response = {
                     success: true,
@@ -252,7 +261,7 @@ class OrderController {
 
     async getPendingOrder(req, res, next) {
         try {
-            const orderId = req.query.id; 
+            const orderId = req.query.id;
             if (!orderId) {
                 const error = new Error('Order ID is required');
                 error.statusCode = 400;

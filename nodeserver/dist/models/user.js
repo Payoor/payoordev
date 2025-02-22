@@ -40,6 +40,14 @@ var userSchema = new _db["default"].Schema({
   completed_orders: {
     type: Number,
     "default": 0
+  },
+  wallet_amount: {
+    type: Number,
+    "default": 0.0
+  },
+  referral_code: {
+    type: String,
+    "default": 'none'
   }
 }, {
   timestamps: true

@@ -1,5 +1,7 @@
-//67a8e9b0d6e27a406bf04ed8
 import Order from '../../models/order';
+import User from '../../models/user';
+
+import redisClient from "../../configs/redisClient";
 
 import sendPaymentConfirmation from '../resend/sendPaymentConfirmation';
 
@@ -15,7 +17,18 @@ async function getOrderDetails(orderid) {
             const order_address = order.order_address;
             const total = order.total;
 
-            console.log(user_name, user_email, itemsWithUnits, order_address, total)
+            const user = await User.findById(order.userId);
+            const user_data_redis_store = `userdata:${user._id.toString()}`;
+
+            user.completed_orders = (user.completed_orders ?? 0) + 1;
+            await user.save();
+
+            await redisClient.set(
+                `${user_data_redis_store}:completed_orders`,
+                user.completed_orders
+            );
+
+            console.log(user_name, user_email, itemsWithUnits, order_address, total);
             sendPaymentConfirmation({
                 email: user_email,
                 orderdetails: {
@@ -26,7 +39,7 @@ async function getOrderDetails(orderid) {
             });
         }
     } catch (error) {
-        console.log(error);
+        console.error('Error updating completed orders:', error);
     }
 }
 

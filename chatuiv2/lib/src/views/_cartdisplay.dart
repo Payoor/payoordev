@@ -444,41 +444,58 @@ class _CartDisplayScreenState extends State<CartDisplayScreen> {
                     child: Consumer<CartProvider>(
                       builder: (context, cart, child) {
                         return ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              isLoading =
-                                  true; // Add this boolean to your state
-                            });
+                          onPressed: cart.totalAmount == 0
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    isLoading =
+                                        true; // Add this boolean to your state
+                                  });
 
-                            try {
-                              await _createOrder();
-                              if (mounted && order.isNotEmpty) {
-                                Navigator.pushNamed(context, '/confirmorder',
-                                    arguments: {'orderId': order['_id']});
-                              }
-                            } catch (e) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Failed to create order: ${e.toString()}')),
-                                );
-                              }
-                            } finally {
-                              if (mounted) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 25,
-                                horizontal: 20), // Added horizontal padding
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                                  try {
+                                    await _createOrder();
+                                    if (mounted && order.isNotEmpty) {
+                                      Navigator.pushNamed(
+                                          context, '/confirmorder',
+                                          arguments: {'orderId': order['_id']});
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Failed to create order: ${e.toString()}')),
+                                      );
+                                    }
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                    }
+                                  }
+                                },
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) {
+                                  return AppColors.primaryColor.withAlpha(128);
+                                }
+                                return AppColors.primaryColor;
+                              },
+                            ),
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              const EdgeInsets.symmetric(
+                                  vertical: 25, horizontal: 20),
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                           ),
                           child: isLoading

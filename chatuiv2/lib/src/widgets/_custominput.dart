@@ -161,15 +161,17 @@ class _CustomInputState extends State<CustomInput> {
 
   InputDecoration _getInputDecoration() {
     return InputDecoration(
+      isDense: true,
       counterText: "",
       filled: true,
       fillColor: AppColors.inputBlack,
       contentPadding: EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: widget.inputType == CustomInputType.multiline ? 20 : 30,
+        horizontal: 20,
+        vertical: widget.inputType == CustomInputType.multiline ? 20 : 16,
       ),
       constraints: BoxConstraints(
-        maxHeight: widget.inputType == CustomInputType.multiline ? 200 : 56,
+        maxHeight: widget.inputType == CustomInputType.multiline ? 200 : 60,
+        minHeight: widget.inputType == CustomInputType.multiline ? 200 : 60,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -204,7 +206,7 @@ class _CustomInputState extends State<CustomInput> {
       hintStyle: TextStyle(
         color: AppColors.white,
       ),
-      errorText: _errorText ?? widget.errorText,
+      //errorText: _errorText ?? widget.errorText,
     );
   }
 
@@ -244,90 +246,105 @@ class _CustomInputState extends State<CustomInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          maxLines: widget.inputType == CustomInputType.multiline ? null : 1,
-          minLines: widget.inputType == CustomInputType.multiline ? 3 : 1,
-          maxLength: widget.inputType == CustomInputType.multiline
-              ? 500
-              : widget.inputType == CustomInputType.name
-                  ? 50
-                  : widget.inputType == CustomInputType.phoneNumber
-                      ? 14
-                      : null,
-          keyboardType: _getKeyboardType(),
-          onTap: _checkClipboard,
-          enableInteractiveSelection: true,
-          onSubmitted: (_) => _handleSubmit(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-          decoration: _getInputDecoration().copyWith(
-            contentPadding: EdgeInsets.only(
-              left: 16,
-              right: _hasClipboardContent
-                  ? 96
-                  : 56, // Extra space for paste button
-              top: widget.inputType == CustomInputType.multiline ? 12 : 8,
-              bottom: widget.inputType == CustomInputType.multiline ? 12 : 8,
-            ),
-          ),
-        ),
-        // Paste button
-        if (_hasClipboardContent)
-          Positioned(
-            right: 50,
-            top: 7,
-            child: GestureDetector(
-              onTap: _pasteContent,
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primaryColor.withOpacity(0.5),
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              Container(
+                  color: Colors.transparent,
+                  height:
+                      widget.inputType == CustomInputType.multiline ? 200 : 60,
+                  child: TextField(
+                      textAlignVertical: TextAlignVertical.center,
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      maxLines: widget.inputType == CustomInputType.multiline
+                          ? null
+                          : 1,
+                      minLines:
+                          widget.inputType == CustomInputType.multiline ? 3 : 1,
+                      maxLength: widget.inputType == CustomInputType.multiline
+                          ? 500
+                          : widget.inputType == CustomInputType.name
+                              ? 50
+                              : widget.inputType == CustomInputType.phoneNumber
+                                  ? 14
+                                  : null,
+                      keyboardType: _getKeyboardType(),
+                      onTap: _checkClipboard,
+                      enableInteractiveSelection: true,
+                      onSubmitted: (_) => _handleSubmit(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        height: 2,
+                      ),
+                      decoration: _getInputDecoration())),
+              // Paste button
+              if (_hasClipboardContent)
+                Positioned(
+                  right: 50,
+                  top: 11,
+                  child: GestureDetector(
+                    onTap: _pasteContent,
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primaryColor.withOpacity(0.5),
+                      ),
+                      child: Icon(
+                        Icons.content_paste,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                    ),
+                  ),
                 ),
-                child: Icon(
-                  Icons.content_paste,
-                  color: Colors.white,
-                  size: 15,
+              // Submit button
+              Positioned(
+                right: 8,
+                top: 11,
+                child: AnimatedOpacity(
+                  duration: Duration(milliseconds: 200),
+                  opacity: _isValid ? 1.0 : 0.5,
+                  child: GestureDetector(
+                    onTap: _isValid ? _handleSubmit : null,
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _isValid
+                            ? AppColors.primaryColor
+                            : AppColors.primaryColor.withOpacity(0.5),
+                      ),
+                      child: Icon(
+                        Icons.arrow_upward,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        // Submit button
-        Positioned(
-          right: 8,
-          top: 7,
-          child: AnimatedOpacity(
-            duration: Duration(milliseconds: 200),
-            opacity: _isValid ? 1.0 : 0.5,
-            child: GestureDetector(
-              onTap: _isValid ? _handleSubmit : null,
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _isValid
-                      ? AppColors.primaryColor
-                      : AppColors.primaryColor.withOpacity(0.5),
-                ),
-                child: Icon(
-                  Icons.arrow_upward,
-                  color: Colors.white,
-                  size: 15,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+          _errorText != null
+              ? Text(
+                  _errorText!,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                    height: 1.5,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )
+              : Container()
+        ]);
   }
 
   @override

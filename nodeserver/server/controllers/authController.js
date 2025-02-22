@@ -261,11 +261,23 @@ class AuthController {
                     JSON.parse(JSON.stringify(userData))
                 );
 
+                if (validUser.completed_orders) {
+                    await redisClient.set(
+                        `${user_data_redis_store}:completed_orders`,
+                        validUser.completed_orders
+                    );
+                } else {
+                    await redisClient.set(
+                        `${user_data_redis_store}:completed_orders`,
+                        0
+                    );
+                }
+
                 await redisClient.expire(user_data_redis_store, 86400);
 
                 userData = await redisClient.hGetAll(user_data_redis_store);
 
-                console.log(userData, 'userData here')
+                //console.log(userData, 'userData here')
 
                 //console.log(userResponse)
 
