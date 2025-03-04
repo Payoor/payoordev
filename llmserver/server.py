@@ -12,7 +12,7 @@ from flask_cors import CORS
 from datetime import datetime
 from threading import Timer
 
-from configurations.mongoose_configuration import ObjectId, productCollection, productVariant 
+from configurations.mongoose_configuration import ObjectId, productCollection, productVariant, search_products
 from configurations.redis_configuration import toggle_bookmark, check_bookmarks_for_product
 
 from classes.logginghandler_class import LoggingHandler
@@ -22,6 +22,10 @@ from classes.algolia_class import AlgoliaManager
 from classes.algolia_class import AlgoliaManager
 from classes.search_class import SearchManager
 from classes.nigerian_training import NigerianGrocerySearch
+
+from methods.genquery import genquery
+from methods.inferrelevance import inferrelevance
+from methods.askclarification import askclarification
 
 load_dotenv()
 
@@ -251,16 +255,83 @@ def get_by_suggestion():
         print(e)
         return jsonify({"error": str(e)}), 500 
 
+@app.route('/more/products', methods=['GET'])
+def get_more_products():
+    offset = request.args.get('offset', default=0, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+    query = request.args.get('query', default='', type=str)
+    results = []
 
+    try:
+        print(offset)
+        print('======offset====')
+        #results = search_products(query, limit=limit, offset=offset)['products']
+
+        search_result = search_products(query, limit=limit, offset=offset)
+
+        results = search_result['products']
+        result_tags = search_result['metadata_tags']
+        total = search_result['total']
+
+        print(results)
+        print('========more found')
+
+        data = {
+            "message": "Success response",
+            "results": results,
+            'totaldocs': total,
+            "result_tags": result_tags,
+        }
+    
+        response_data = {
+            "success": True,
+            "data": data
+        }
+        
+        response = jsonify(response_data)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500 
 
 @app.route('/message/user/send', methods=['POST'])
 def query_data():
 
     data = request.json
     user_query = data.get('text', '').lower()
+    nlpresponse = "I found some items that might be relevant to your query"
+    results = []
+    intent_render = "product"
+    result_tags = []
+    total = 0
+    query = ''
 
     try:
-        response_array = []
+        result = inferrelevance(user_query)
+
+        if result == 'relevant':
+            query = genquery(user_query)
+            search_result = search_products(query)
+
+            results = search_result['products']
+            result_tags = search_result['metadata_tags']
+            total = search_result['total']
+            print(results)
+        else:
+            clarification = askclarification(user_query)
+            results = []
+            print(clarification)
+            nlpresponse = clarification
+
+        '''query = genquery(user_query)
+
+        results = search_products(query)
+
+        print('=========')
+        print(results)'''
+
+        '''response_array = []
         nlp_response = "I found some items that might be relevant to your query"
         intent_render = "product"
 
@@ -289,17 +360,19 @@ def query_data():
             search_results.append(name_tags)
             #result_tags.append(name_tags['tags'])
 
-        print(search_results)
+        print(search_results)'''
     
         data = {
             "message": "Success response",
             "chatresponse": {
-                "text": nlp_response,
-                "results": search_results,
+                "text": nlpresponse,
+                "results": results,#search_results,
                 "result_tags": result_tags,
                 "isClient": False,
                 "isRead": False,
-                "intent_render": intent_render
+                "intent_render": intent_render,
+                "aiquery": query,
+                'totaldocs': total
             }
         }
 

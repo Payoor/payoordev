@@ -65,7 +65,7 @@ class _MessageContentState extends State<MessageContent> {
 
   void _handleMessageInteraction() {
     context.read<ResultListProvider>().updateSuggestedPrompts(widget.tags);
-    _getSuggestions(widget.tags[0]);
+    //_getSuggestions(widget.tags[0]);
     _setCurrentMessage(widget.index);
   }
 
@@ -109,7 +109,6 @@ class _MessageContentState extends State<MessageContent> {
     keys['$widget.key'] = GlobalKey();
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Consumer<MessageProvider>(

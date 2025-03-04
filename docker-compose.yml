@@ -61,6 +61,15 @@ services:
     networks:
       - payoor_network
 
+  browserui:
+    container_name: browserui
+    restart: always
+    build: ./browserui
+    depends_on:
+      - nodeserver
+    networks:
+      - payoor_network
+
   chatuiserver:
     container_name: chatuiserver
     restart: always

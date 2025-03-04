@@ -112,14 +112,12 @@ class ProductRoute {
   }
 
   static Future<ServerResponse> getProductByName(String productName) async {
-    
     try {
       // Create the base URI
       final uri = Uri.parse(Urls.llmUrl).replace(
         path: '/product/get',
         queryParameters: {
-          'productname':
-              productName,
+          'productname': productName,
         },
       );
 
@@ -166,6 +164,36 @@ class ProductRoute {
       }
     } catch (e) {
       throw Exception('Failed to send message: $e');
+    }
+  }
+
+  static Future<ServerResponse> getMoreProducts(
+      int offset, int limit, String query) async {
+        print('getting more products');
+    try {
+      final String queryParam =
+          query.isNotEmpty ? '&query=${Uri.encodeComponent(query)}' : '';
+
+      final uri = Uri.parse(
+          '${Urls.llmUrl}/more/products?offset=$offset&limit=$limit$queryParam');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': 'https://chat.development.payoor.store'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ServerResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception(
+            'Failed to fetch products. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch products: $e');
     }
   }
 }

@@ -12,6 +12,7 @@ import 'package:chatuiv2/src/views/_aboutus.dart';
 import 'package:chatuiv2/src/views/_ordersdisplay.dart';
 import 'package:chatuiv2/src/views/_orderconfirm.dart';
 import 'package:chatuiv2/src/views/_banipay.dart';
+import 'package:chatuiv2/src/widgets/_paymentlinkpage.dart';
 
 import 'package:chatuiv2/src/providers/_onboardingprov.dart';
 import 'package:chatuiv2/src/providers/_authprov.dart';
@@ -69,6 +70,9 @@ class MyApp extends StatelessWidget {
             break;
           case '/orders':
             page = OrderDisplay();
+            break;
+          case '/paymentpage':
+            page = PaymentLinkPage();
             break;
           case '/payfororder':
             final args = settings.arguments as Map<String, dynamic>?;

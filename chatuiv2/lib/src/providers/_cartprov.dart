@@ -4,10 +4,12 @@ import 'package:chatuiv2/src/classes/_cartitem.dart';
 
 class CartProvider with ChangeNotifier {
   Map<String, CartItem> _items = {};
+  String? _paymentLink = '';
 
   Map<String, CartItem> get items => {..._items};
 
   int get itemCount => _items.length;
+  String? get paymentLink => _paymentLink;
 
   Map<String, dynamic> createCartPayload() {
     final cartPayload = {
@@ -142,6 +144,11 @@ class CartProvider with ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  void setPaymentLink(String? link) {
+    _paymentLink = link;
+    notifyListeners();
   }
 
   void clear() {

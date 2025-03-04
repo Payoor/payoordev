@@ -17,6 +17,7 @@ import 'package:chatuiv2/main.dart';
 class ProductCard extends StatefulWidget {
   final String productName;
   final String productTags;
+  final String productId;
   final void Function()? onProductTap;
   final void Function()? onFavoriteTap;
   static final Map<String, String> _imageCache = {};
@@ -25,6 +26,7 @@ class ProductCard extends StatefulWidget {
     super.key,
     required this.productName,
     required this.productTags,
+    required this.productId,
     this.onProductTap,
     this.onFavoriteTap,
   });
@@ -133,6 +135,52 @@ class _ProductCardState extends State<ProductCard> {
     } catch (e) {
       //print('Error fetching product: $e');
     }
+  }
+
+  Widget buildProductTagsWidget() {
+    if (widget.productTags.isEmpty) {
+      return SizedBox.shrink(); // Return an empty widget if no tags exist
+    }
+
+    final firstTag = widget.productTags.split(',').first.trim();
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        GestureDetector(
+          onTap: () => _getTagResults(firstTag),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.2),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryColor.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              firstTag,
+              style: TextStyle(
+                color: AppColors.primaryColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+        ),
+      ], // ✅ Ensure it's a List<Widget>
+    );
   }
 
   void _checkIfProductInBookMarks(String productId) async {
@@ -327,7 +375,8 @@ class _ProductCardState extends State<ProductCard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => StackWithNav(child: ProductOptions(
+                    builder: (context) => StackWithNav(
+                        child: ProductOptions(
                       closeWidget: () => Navigator.pop(context),
                       productName: widget.productName,
                       productId: productId!,
@@ -368,7 +417,9 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
           SizedBox(height: 10),
-          if (widget.productTags.isNotEmpty)
+          buildProductTagsWidget(),
+
+            /* if (widget.productTags.isNotEmpty)
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -407,8 +458,8 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ));
               }).toList(),
-            ),
-          SizedBox(height: 10),
+            ),*/
+            SizedBox(height: 10),
         ],
       ),
     );

@@ -9,10 +9,9 @@ import 'package:chatuiv2/src/views/_cartdisplay.dart';
 import 'package:chatuiv2/src/widgets/_typewritertext.dart';
 import 'package:chatuiv2/src/widgets/_headerrow.dart';
 import 'package:chatuiv2/src/widgets/_ailoadingindicator.dart';
-import 'package:chatuiv2/src/widgets/_paystackviewcontainer.dart';
 import 'package:chatuiv2/src/widgets/_messagecontent.dart';
-import 'package:chatuiv2/src/widgets/_addresseslist.dart';
 import 'package:chatuiv2/src/widgets/_swipeupwidget.dart';
+import 'package:chatuiv2/src/widgets/_paymentlinkpage.dart';
 
 import 'package:chatuiv2/src/providers/_messageprov.dart';
 import 'package:chatuiv2/src/providers/_resultlistprov.dart';
@@ -249,25 +248,27 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                // ✅ Moved Column outside of Expanded
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAnimatedHeader(),
-                  Expanded(
-                    // ✅ Now it's properly placed inside Column
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Positioned.fill(
-                          child: _renderMessages(),
+              child: Consumer<CartProvider>(
+                builder: (context, cartProvider, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildAnimatedHeader(),
+                      Expanded(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Positioned.fill(
+                              child: _renderMessages(),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  _buildPillsSlide(),
-                  _buildTextField(),
-                ],
+                      ),
+                      //_buildPillsSlide(),
+                      _buildTextField(),
+                    ],
+                  );
+                },
               ),
             ),
           );
@@ -697,28 +698,31 @@ class _AuthenticatedChatState extends State<AuthenticatedChat>
 
           Message aiMessage;
           if (chatResponse['results'] != null) {
-            List<Map<String, String>> results =
-                (chatResponse['results'] as List)
-                    .map((item) => Map<String, String>.from(item))
-                    .toList();
+            List<dynamic> results =
+                (chatResponse['results'] as List<dynamic>).toList();
 
             List<String> result_tags = (chatResponse['result_tags'] as List)
                 .map((item) => item.toString())
                 .toList();
+
+            String aiquery = chatResponse['aiquery'];
 
             //print(results);
             //print(result_tags);
 
             setState(() {
               resultTags = result_tags;
-              currentSuggestion = result_tags[0];
+              //currentSuggestion = result_tags.isNotEmpty ? result_tags[0] : '';
             });
 
             //print(results);
 
+            context.read<ResultListProvider>().setAiquery(aiquery);
+
             context.read<ResultListProvider>().updateResults(
                 total: results.length,
                 results: results,
+                totaldocs: chatResponse['totaldocs'],
                 suggested_prompts: result_tags);
 
             aiMessage = Message(

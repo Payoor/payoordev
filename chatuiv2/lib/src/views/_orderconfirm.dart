@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
@@ -37,6 +38,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
   String selectedTime = '';
   String selectedAddress = "";
   bool _isSettingDeliveryDate = false;
+  bool _isLoading = false;
 
   final List<String> deliveryTimes = () {
     final List<String> dates = [];
@@ -193,14 +195,77 @@ class _OrderConfirmState extends State<OrderConfirm> {
   }
 
   void handleBaniPayOpen(String? orderId) {
+    // Set current order in provider
     context.read<BaniPayProvider>().setCurrentOrder(orderId);
+
     setState(() {
       _openBaniPay = true;
     });
 
     if (mounted && orderId != null) {
-      Navigator.pushNamed(context, '/payfororder',
-          arguments: {'orderId': orderId});
+      // Check if userData exists before accessing it
+      if (userData == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User data not available')),
+        );
+        return;
+      }
+
+      // Check if orderData exists and has the expected structure
+      if (orderData == null ||
+          !orderData.containsKey('order') ||
+          orderData['order'] == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Order data not available')),
+        );
+        return;
+      }
+
+      // Build URL parameters
+      final userParams = {
+        'orderId': orderId,
+        'userId': userData!["_id"],
+        'email': Uri.encodeComponent(userData!["email"]),
+        'name': Uri.encodeComponent(userData!["name"]),
+        'phoneNumber': userData!["phoneNumber"],
+        'userAddress': Uri.encodeComponent(userData!["userAddress"]),
+        'total': orderData['order']["total"].toString(),
+      }.entries.map((e) => '${e.key}=${e.value}').join('&');
+
+      String paymentLink = "https://payment.payoor.store?$userParams";
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Use Provider.of instead of creating a new instance
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
+      // Set payment link and clear cart
+      cartProvider.setPaymentLink(paymentLink);
+      cartProvider.clear();
+
+      // Navigate to payment page
+      Navigator.pushNamed(context, '/paymentpage');
+    } else {
+      // Handle case when orderId is null
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid order ID')),
+        );
+      }
     }
   }
 
@@ -658,13 +723,17 @@ class _OrderConfirmState extends State<OrderConfirm> {
                   child: Consumer<CartProvider>(
                     builder: (context, cart, child) {
                       return ElevatedButton(
-                        onPressed:
-                            selectedAddress.isEmpty || selectedTime.isEmpty
-                                ? null
-                                : () async {
-                                    await setOrderDeliveryDateandAddress();
-                                    handleBaniPayOpen(orderData["order"]["_id"]);
-                                  },
+                        onPressed: selectedAddress.isEmpty ||
+                                selectedTime.isEmpty ||
+                                _isLoading
+                            ? null
+                            : () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                await setOrderDeliveryDateandAddress();
+                                handleBaniPayOpen(orderData["order"]["_id"]);
+                              },
                         style: ButtonStyle(
                           backgroundColor:
                               MaterialStateProperty.resolveWith<Color>(
@@ -686,12 +755,23 @@ class _OrderConfirmState extends State<OrderConfirm> {
                             ),
                           ),
                         ),
-                        child: Text('Confirm Order',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            )),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Confirm Order',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
                       );
                     },
                   ),
