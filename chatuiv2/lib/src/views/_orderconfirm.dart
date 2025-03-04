@@ -251,7 +251,6 @@ class _OrderConfirmState extends State<OrderConfirm> {
 
       // Set payment link and clear cart
       cartProvider.setPaymentLink(paymentLink);
-      cartProvider.clear();
 
       // Navigate to payment page
       Navigator.pushNamed(context, '/paymentpage');
