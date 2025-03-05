@@ -320,6 +320,7 @@ def query_data():
             print(results)
         else:
             clarification = askclarification(user_query)
+            print('clarification needed')
             results = []
             print(clarification)
             nlpresponse = clarification

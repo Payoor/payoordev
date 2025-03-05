@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:chatuiv2/src/classes/_appcolors.dart';
 import 'package:chatuiv2/src/classes/_orderroutes.dart';
@@ -194,6 +195,20 @@ class _OrderConfirmState extends State<OrderConfirm> {
     );
   }
 
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.inAppWebView,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  void navigateToUrl(String url) {
+    html.window.location.href = url;
+  }
+
   void handleBaniPayOpen(String? orderId) {
     // Set current order in provider
     context.read<BaniPayProvider>().setCurrentOrder(orderId);
@@ -241,10 +256,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
       }.entries.map((e) => '${e.key}=${e.value}').join('&');
 
       String paymentLink = "https://payment.payoor.store?$userParams";
-
-      setState(() {
-        _isLoading = false;
-      });
+      //String paymentLink = "http://localhost:3000?$userParams";
 
       // Use Provider.of instead of creating a new instance
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
@@ -253,7 +265,12 @@ class _OrderConfirmState extends State<OrderConfirm> {
       cartProvider.setPaymentLink(paymentLink);
 
       // Navigate to payment page
-      Navigator.pushNamed(context, '/paymentpage');
+      //Navigator.pushNamed(context, '/paymentpage');
+      navigateToUrl(paymentLink);
+
+      setState(() {
+        _isLoading = false;
+      });
     } else {
       // Handle case when orderId is null
       setState(() {

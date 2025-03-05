@@ -26,6 +26,7 @@ def genquery(query_text):
                     "3. Separate each item with a comma.\n"
                     "4. Include quantities if specified in the query, otherwise just list the items.\n"
                     "5. Focus on Nigerian staples and ingredients when appropriate.\n\n"
+                    "6. If it looks like a search query or is just a single word simply return the search query or single word"
                     "Examples:\n"
                     'User: "I want to make jollof rice"\n'
                     "Response: rice, tomatoes, onions, red bell peppers, scotch bonnet peppers, "

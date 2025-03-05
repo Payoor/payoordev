@@ -16,7 +16,7 @@ def inferrelevance(query_response: str) -> str:
     response = openai.chat.completions.create(
         model="gpt-4-turbo", 
         messages=[
-            {"role": "system", "content": "How relevant is this text to an ai grocery shopping assistant? Respond with 'relevant' or 'not relevant'."},
+            {"role": "system", "content": "How relevant is this text to food and groceries? Respond with 'relevant' or 'not relevant'. "},
             {"role": "user", "content": query_response}
         ],
         temperature=0,

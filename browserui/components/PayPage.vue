@@ -1,6 +1,5 @@
 <template>
     <div>
-      {{ orderData.total }}
       <form id="paymentForm">
         <div class="form-group">
           <input type="tel" id="phone-number" :value="userData.phoneNumber || ''" />
@@ -104,6 +103,8 @@
             console.log('Sending message to parent:', message);
             window.parent.postMessage(message, '*');
             console.log('Message sent to parent');
+
+            window.location.href = "https://payoor.store";
           }
         });
         handler;
