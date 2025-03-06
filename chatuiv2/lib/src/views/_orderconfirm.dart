@@ -266,11 +266,13 @@ class _OrderConfirmState extends State<OrderConfirm> {
 
       // Navigate to payment page
       //Navigator.pushNamed(context, '/paymentpage');
-      navigateToUrl(paymentLink);
+      //navigateToUrl(paymentLink);
 
       setState(() {
-        _isLoading = false;
+        //_isLoading = false;
       });
+      Navigator.pushNamed(context, '/payfororder',
+          arguments: {'orderId': orderId, 'paymentLink': paymentLink});
     } else {
       // Handle case when orderId is null
       setState(() {

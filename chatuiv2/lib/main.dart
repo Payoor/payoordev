@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
             break;
           case '/payfororder':
             final args = settings.arguments as Map<String, dynamic>?;
-            page = BaniPay(key: UniqueKey(), orderId: args?['orderId']);
+            page = BaniPay(key: UniqueKey(), orderId: args?['orderId'], paymentLink: args?['paymentLink']);
             break;
           default:
             if (settings.name?.startsWith('/confirmorder') ?? false) {

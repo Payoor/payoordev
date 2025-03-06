@@ -16,12 +16,14 @@ import 'package:chatuiv2/src/providers/_cartprov.dart';
 
 class BaniPay extends StatefulWidget {
   final String? orderId;
+  final String? paymentLink;
   final double height;
   final double width;
 
   const BaniPay({
     required Key key,
     required this.orderId,
+    required this.paymentLink,
     this.height = double.infinity,
     this.width = double.infinity,
   });
@@ -32,23 +34,42 @@ class BaniPay extends StatefulWidget {
 
 class _BaniPayState extends State<BaniPay> {
   bool isLoading = true;
+  bool isIframeLoading = true;
   String? error;
-  Map<String, dynamic>? userData;
-  dynamic orderData;
   bool isViewRegistered = false;
-  //static bool factoryRegistered = false;
+  String? paymentUrl;
+  final String viewType = 'bani-iframe';
+
+  // Flag to avoid registering view factory more than once
+  static bool viewFactoryRegistered = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
 
+    // Register view factory outside of the build method
+    _registerViewFactory();
+
+    // Set payment URL
+    paymentUrl = widget.paymentLink;
+
+    // Set up message listener
     html.window.onMessage.listen((event) {
       if (event.data is Map) {
         final data = event.data as Map;
         if (data['type'] == 'onSuccess') {
           _handlePaymentSuccess(widget.orderId);
         }
+      }
+    });
+
+    // Set initial state after setup
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        setState(() {
+          isViewRegistered = true;
+          isLoading = false;
+        });
       }
     });
   }
@@ -59,136 +80,89 @@ class _BaniPayState extends State<BaniPay> {
     Navigator.pushNamed(context, '/');
   }
 
-  Future<void> _fetchData() async {
-    try {
-      final String? jwtToken = JwtManager.getToken();
+  void _registerViewFactory() {
+    // Only register the view factory once
+    if (!viewFactoryRegistered) {
+      // ignore: undefined_prefixed_name
+      ui.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
+        final iframe = html.IFrameElement()
+          ..style.border = 'none'
+          ..style.height = '100%'
+          ..style.width = '100%';
 
-      final userResponse = await AuthApiRoutes.getValidUser('$jwtToken');
-      final orderResponse = await OrdersRoute.getPendingOrder(widget.orderId!);
+        // We'll set the src when the element is created, not during registration
 
-      setState(() {
-        userData = userResponse.data['user'];
-        orderData = orderResponse.data;
+        // Register iframe lifecycle events
+        iframe.onLoad.listen((event) {
+          // Use Future.delayed to avoid setState during build
+          Future.delayed(Duration.zero, () {
+            if (mounted) {
+              setState(() {
+                isIframeLoading = false;
+              });
+            }
+          });
+        });
+
+        iframe.onError.listen((event) {
+          Future.delayed(Duration.zero, () {
+            if (mounted) {
+              setState(() {
+                error = 'Failed to load payment interface';
+                isIframeLoading = false;
+              });
+            }
+          });
+        });
+
+        return iframe;
       });
 
-      //print(orderData);
-      //print("is this the orderData =======R");
-      //print(userData);
-      //print("is this the userData =======R");
-
-      _registerViewFactory();
-
-      setState(() {
-        isViewRegistered = true;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        error = 'Failed to load user data';
-        isLoading = false;
-      });
+      viewFactoryRegistered = true;
     }
   }
 
-  void _registerViewFactory() {
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory('bani-iframe', (int viewId) {
-      final iframe = html.IFrameElement()
-        ..style.border = 'none'
-        ..style.height = '100%'
-        ..style.width = '100%'
-        ..srcdoc = '''
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      padding: 16px;
-      background-color: transparent;
+  // Function to set the iframe src when it's created
+  void _updateIframeSrc() {
+    final iframes = html.document.getElementsByTagName('iframe');
+    for (var i = 0; i < iframes.length; i++) {
+      // Cast to IFrameElement to access src property
+      final iframe = iframes[i] as html.IFrameElement;
+      if (iframe.src!.isEmpty && paymentUrl != null) {
+        iframe.src = paymentUrl!;
+      }
     }
-    .form-group { display: none; }
-  </style>
-</head>
-<body>
-  "${orderData?['total']}"
-  <form id="paymentForm">
-    <div class="form-group">
-      <input type="tel" id="phone-number" value="${userData?['phoneNumber'] ?? ''}" />
-      <input type="email" id="email" value="${userData?['email'] ?? ''}" />
-      <input type="number" id="amount" value="${orderData?['total'] ?? '200'}" />
-      <input type="text" id="first-name" value="${userData?['name'] ?? ''}" />
-      <input type="text" id="last-name" value="${userData?['name'] ?? ''}${userData?['name'] ?? ''}" />
-    </div>
-  </form>
-  <script src="https://bani-assets.s3.eu-west-2.amazonaws.com/static/widget/js/window.js"></script>
-  <script>
-    window.onload = function() {
-      const paymentForm = document.getElementById('paymentForm');
-      const phoneNumber = document.getElementById('phone-number').value;
-      const formattedPhone = "+234" + phoneNumber.replace(/^0+/, '');
-  
-      let handler = BaniPopUp({
-        amount: document.getElementById('amount').value,
-        phoneNumber: formattedPhone,
-        email: document.getElementById('email').value,
-        firstName: document.getElementById('first-name').value,
-        lastName: document.getElementById('last-name').value,
-        merchantKey: "pub_prod_5AXXSMJ492485SQ4BTEPSY3EQPYTKD",
-        bankTransferOnly: true,
-        metadata: {
-          order_ref: "${orderData['_id']}"
-        },
-        merchantRef: "ref-" + Math.random().toString(36).substr(2, 9),
-        onClose: (response) => {
-            console.log('Bani Close Event:', response);
-            window.parent.postMessage({type: 'onClose', data: response}, '*');
-        },
-        callback: function(response) {
-            console.log('Bani Success Event:', response);
-            const message = {type: 'onSuccess', data: response};
-            console.log('Sending message to parent:', message);
-            window.parent.postMessage(message, '*');
-            console.log('Message sent to parent');
-        }
-      });
-      handler;
-    };
-  </script>
-</body>
-</html>
-''';
+  }
 
-      iframe.onLoad.listen((event) {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
+  @override
+  void didUpdateWidget(BaniPay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // If the payment link changed, update it
+    if (widget.paymentLink != oldWidget.paymentLink) {
+      setState(() {
+        paymentUrl = widget.paymentLink;
+        isIframeLoading = true;
       });
 
-      iframe.onError.listen((event) {
-        if (mounted) {
-          setState(() {
-            error = 'Failed to load payment interface';
-            isLoading = false;
-          });
-        }
-      });
-
-      return iframe;
-    });
+      // Schedule iframe update after this build cycle
+      Future.delayed(Duration.zero, _updateIframeSrc);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // After the iframe is inserted into the DOM, update its src attribute
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateIframeSrc();
+    });
+
     return Scaffold(
       body: LayoutBuilder(builder: (context, constraints) {
         return Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: !isViewRegistered
+          child: isLoading
               ? Center(child: AiLoadingIndicator())
               : Container(
                   width: double.infinity,
@@ -216,24 +190,73 @@ class _BaniPayState extends State<BaniPay> {
                               width: double.infinity,
                               child: Stack(
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryBackgroundWhite,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const HtmlElementView(
-                                        viewType: 'bani-iframe'),
-                                  ),
-                                  if (isLoading)
+                                  // Always include the HtmlElementView once registered
+                                  if (isViewRegistered)
                                     Container(
-                                      width: double.infinity,
-                                      child: Center(
-                                        child: AiLoadingIndicator(),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryBackgroundWhite,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child:
+                                          HtmlElementView(viewType: viewType),
+                                    ),
+
+                                  // Show loading indicator while iframe is loading
+                                  if (isIframeLoading)
+                                    Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          AiLoadingIndicator(),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            "Loading payment interface...",
+                                            style: TextStyle(
+                                              color: AppColors.black,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
+
+                                  // Show error if loading fails
                                   if (error != null)
                                     Center(
-                                      child: Text(error!),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.error_outline,
+                                            color: Colors.red,
+                                            size: 48,
+                                          ),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            error!,
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 16,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 24),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                error = null;
+                                                isIframeLoading = true;
+                                              });
+                                              // Schedule iframe update after this build cycle
+                                              Future.delayed(Duration.zero,
+                                                  _updateIframeSrc);
+                                            },
+                                            child: Text("Try Again"),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                 ],
                               ),
