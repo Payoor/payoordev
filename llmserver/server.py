@@ -308,10 +308,11 @@ def query_data():
     query = ''
 
     try:
-        result = inferrelevance(user_query)
+        result = 'relevant'#inferrelevance(user_query)
 
         if result == 'relevant':
-            query = genquery(user_query)
+            #query = genquery(user_query)
+            query = user_query
             search_result = search_products(query)
 
             results = search_result['products']
