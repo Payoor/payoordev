@@ -48,7 +48,7 @@ export default {
       ordersopen: false,
       authenticator_open: false,
       available_locations: false,
-      phoneNumber: "08121249923",
+      phoneNumber: "08138718022",
     };
   },
   computed: {
