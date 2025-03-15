@@ -1,4 +1,5 @@
-const isLocalhost = window.location.hostname.includes("localhost");
+const isClient = typeof window !== 'undefined';
+const isLocalhost = isClient ? window.location.hostname.includes("localhost") : process.env.NODE_ENV === 'development';
 
 export const url = isLocalhost ? "http://localhost:3030" : "https://server.payoor.store";
 
