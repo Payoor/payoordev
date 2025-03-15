@@ -6,6 +6,7 @@ const corsOriginArray = {
     production: [
         'https://admin.payoor.store',
         'https://chat.payoor.store',
+        'https://shop.payoor.store',
         'https://payoor.store'
     ]
 };
