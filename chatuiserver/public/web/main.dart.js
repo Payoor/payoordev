@@ -45427,7 +45427,7 @@ p=l.r
 p.toString
 o=t.N
 p=A.a0(["orderId",a,"userId",i,"email",s,"name",r,"phoneNumber",q,"userAddress",A.pH(B.hr,J.a1(p,"userAddress"),B.a2,!1),"total",J.dz(J.a1(J.a1(l.w,j),"total"))],o,t.z)
-n="https://payoor.store/pay?"+p.ge7(p).f2(0,new A.auS(),o).bM(0,"&")
+n="https://shop.payoor.store/pay?"+p.ge7(p).f2(0,new A.auS(),o).bM(0,"&")
 p=l.c
 p.toString
 m=A.bM(p,!1,t.BW)
