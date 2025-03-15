@@ -1,5 +1,83 @@
 {
+  "Authenticator": {
+    "description": "Auto imported from components/Authenticator.vue"
+  },
+  "Cart": {
+    "description": "Auto imported from components/Cart.vue"
+  },
+  "CartItem": {
+    "description": "Auto imported from components/CartItem.vue"
+  },
+  "Categories": {
+    "description": "Auto imported from components/Categories.vue"
+  },
+  "DeliveryDetails": {
+    "description": "Auto imported from components/DeliveryDetails.vue"
+  },
+  "Header": {
+    "description": "Auto imported from components/Header.vue"
+  },
+  "HeaderAuthenticated": {
+    "description": "Auto imported from components/HeaderAuthenticated.vue"
+  },
+  "Jumbotron": {
+    "description": "Auto imported from components/Jumbotron.vue"
+  },
+  "Landing": {
+    "description": "Auto imported from components/Landing.vue"
+  },
+  "LandingCopy": {
+    "description": "Auto imported from components/LandingCopy.vue"
+  },
+  "LandingFaq": {
+    "description": "Auto imported from components/LandingFaq.vue"
+  },
+  "LandingFooter": {
+    "description": "Auto imported from components/LandingFooter.vue"
+  },
+  "Locations": {
+    "description": "Auto imported from components/Locations.vue"
+  },
+  "Onboarding": {
+    "description": "Auto imported from components/Onboarding.vue"
+  },
+  "Order": {
+    "description": "Auto imported from components/Order.vue"
+  },
+  "OrderItem": {
+    "description": "Auto imported from components/OrderItem.vue"
+  },
+  "Orders": {
+    "description": "Auto imported from components/Orders.vue"
+  },
   "PayPage": {
     "description": "Auto imported from components/PayPage.vue"
+  },
+  "ProductCard": {
+    "description": "Auto imported from components/ProductCard.vue"
+  },
+  "ProductOption": {
+    "description": "Auto imported from components/ProductOption.vue"
+  },
+  "ProductOptions": {
+    "description": "Auto imported from components/ProductOptions.vue"
+  },
+  "RenderCartItems": {
+    "description": "Auto imported from components/RenderCartItems.vue"
+  },
+  "ReviewsSlide": {
+    "description": "Auto imported from components/ReviewsSlide.vue"
+  },
+  "SearchBody": {
+    "description": "Auto imported from components/SearchBody.vue"
+  },
+  "SearchView": {
+    "description": "Auto imported from components/SearchView.vue"
+  },
+  "TypeWriterText": {
+    "description": "Auto imported from components/TypeWriterText.vue"
+  },
+  "UnHeaderAuthenticated": {
+    "description": "Auto imported from components/UnHeaderAuthenticated.vue"
   }
 }

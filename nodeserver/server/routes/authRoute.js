@@ -16,6 +16,6 @@ authRoute.post('/auth/genjwt', AuthController.generateJWT);
 
 authRoute.get('/auth/getvaliduser', verifyToken, AuthController.getValidUser);
 
-authRoute.post('/auth/jwt/delete', verifyToken, AuthController.handleSignOut)
+authRoute.post('/auth/jwt/delete', verifyToken, AuthController.handleSignOut);
 
 export default authRoute;

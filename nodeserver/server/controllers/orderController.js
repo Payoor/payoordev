@@ -9,7 +9,7 @@ class OrderController {
 
     async createOrder(req, res, next) {
         try {
-            const { order } = req.body;
+            const { order, order_address } = req.body;
             const { user } = req;
 
             const user_data_redis_store = `userdata:${user.userId.toString()}`;
@@ -48,7 +48,7 @@ class OrderController {
                     _id: order_id,
                     userId: user.userId,
                     items,
-                    order_address: userAddress,
+                    order_address: order_address.length ? order_address : userAddress,
                     cart_total,
                     delivery_fee,
                     service_charge,
@@ -60,6 +60,7 @@ class OrderController {
                 }
 
                 const serializedOrder = JSON.stringify(newOrder);
+
 
                 //console.log('About to push to Redis...');
                 const newLength = await redisClient.rPush(ORDERS_KEY, serializedOrder);
@@ -80,7 +81,7 @@ class OrderController {
     
     Click the pay now button to complete payment.`;
 
-    console.log(newOrder, completedOrders, 'newOrder')
+                console.log(newOrder, completedOrders, 'newOrder')
 
                 const response = {
                     success: true,
@@ -148,7 +149,7 @@ class OrderController {
             const limit = parseInt(req.query.limit) || 10;
             const skip = (page - 1) * limit;
 
-            //console.log(status, 'status')
+            console.log(status, 'status')
 
             let orders;
 

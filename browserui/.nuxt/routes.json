@@ -1,5 +1,59 @@
 [
   {
+    "name": "aboutus",
+    "path": "/aboutus",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/aboutus.vue",
+    "chunkName": "pages/aboutus"
+  },
+  {
+    "name": "checkout",
+    "path": "/checkout",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/checkout.vue",
+    "chunkName": "pages/checkout"
+  },
+  {
+    "name": "onboarding",
+    "path": "/onboarding",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/index.vue",
+    "chunkName": "pages/onboarding/index"
+  },
+  {
+    "name": "pay",
+    "path": "/pay",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/pay.vue",
+    "chunkName": "pages/pay"
+  },
+  {
+    "name": "search",
+    "path": "/search",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/search.vue",
+    "chunkName": "pages/search"
+  },
+  {
+    "name": "try",
+    "path": "/try",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/try.vue",
+    "chunkName": "pages/try"
+  },
+  {
+    "name": "onboarding-address",
+    "path": "/onboarding/address",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/address/index.vue",
+    "chunkName": "pages/onboarding/address/index"
+  },
+  {
+    "name": "onboarding-name",
+    "path": "/onboarding/name",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/name/index.vue",
+    "chunkName": "pages/onboarding/name/index"
+  },
+  {
+    "name": "onboarding-phonenumber",
+    "path": "/onboarding/phonenumber",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/phonenumber/index.vue",
+    "chunkName": "pages/onboarding/phonenumber/index"
+  },
+  {
     "name": "index",
     "path": "/",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/index.vue",

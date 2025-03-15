@@ -1,0 +1,104 @@
+$breakpoints: ( // Mobile devices
+    'xxs': 280px, // Extra extra small devices (very small phones)
+    'xs': 320px, // Extra small devices (small phones)
+    'sm': 576px, // Small devices (large phones)
+
+    // Tablets
+    'md': 768px, // Medium devices (tablets)
+    'md-lg': 896px, // Medium-large devices (large tablets)
+
+    // Desktops
+    'lg': 992px, // Large devices (small desktops)
+    'lg-xl': 1100px, // Large to extra large transition
+    'xl': 1200px, // Extra large devices (standard desktops)
+    'xxl': 1400px, // Extra extra large devices (large desktops)
+
+    // Larger screens
+    'hd': 1600px, // HD displays
+    'fhd': 1920px, // Full HD displays
+    'wqhd': 2520px, // Wide Quad HD displays
+    '4k': 3840px, // 4K displays
+    '5k': 5120px, // 5K displays (Apple iMac, etc.)
+    '8k': 7680px // 8K displays
+);
+
+@mixin breakpoint-down($size) {
+    @if map-has-key($breakpoints, $size) {
+        @media (min-width: map-get($breakpoints, $size) - 1) {
+            @content;
+        }
+    }
+
+    @else {
+        @warn "Undefined breakpoint: #{$size}";
+    }
+}
+
+@mixin section-header {
+    &__header {
+        color: $white;
+        text-align: center;
+        font-size: 5rem;
+        font-weight: 400;
+        margin-bottom: 6rem;
+    }
+}
+
+@mixin section {
+    background: $primary-color;
+    padding: 0 20rem;
+    padding-top: 6rem;
+
+    @include breakpoint-down(wqhd) {
+        padding: 0 54rem;
+        padding-top: 6rem;
+    }
+}
+
+@mixin fullscreen-overlay($background-color: rgba($black, 0.6), $z-index: 20) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: $background-color;
+    z-index: $z-index;
+}
+
+@mixin modal-container($background: $white, $width: 120rem, $height: 80rem, $margin-top: 10rem, $border-radius: 1rem) {
+    background: $background;
+    border-radius: $border-radius;
+    margin: 0 auto;
+    width: $width;
+    height: $height;
+    margin-top: $margin-top;
+}
+
+@mixin sideviewright {
+    position: relative;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    right: 0;
+    z-index: 5;
+
+    &__overlay {
+        height: 100vh;
+        background: rgba($black, 0.5);
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    &__container {
+        position: relative;
+        background: $white;
+        padding: 3rem;
+        width: 45rem;
+        transition: all 0.5s ease;
+        animation: slideInFromRight 0.5s ease forwards;
+        padding-bottom: 8rem;
+    }
+}

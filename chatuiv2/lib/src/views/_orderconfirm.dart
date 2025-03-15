@@ -255,7 +255,7 @@ class _OrderConfirmState extends State<OrderConfirm> {
         'total': orderData['order']["total"].toString(),
       }.entries.map((e) => '${e.key}=${e.value}').join('&');
 
-      String paymentLink = "https://payment.payoor.store?$userParams";
+      String paymentLink = "https://payoor.store/pay?$userParams";
       //String paymentLink = "http://localhost:3000?$userParams";
 
       // Use Provider.of instead of creating a new instance

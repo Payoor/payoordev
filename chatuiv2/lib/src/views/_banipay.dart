@@ -173,9 +173,9 @@ class _BaniPayState extends State<BaniPay> {
                         color: AppColors.primaryBackgroundWhite,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: HeaderRow(
-                          headerName: "Order Completion",
+                          headerName: "Order Payment",
                           onBurgerMenuTap: () => {},
-                          showBackButton: true,
+                          showBackButton: false,
                           showBurger: false,
                           onBackTap: () {
                             Navigator.of(context).pop();

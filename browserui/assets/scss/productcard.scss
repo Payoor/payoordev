@@ -1,0 +1,314 @@
+.productcard {
+    background: rgba($sky-blue-lite, 0.2);
+    border-radius: 1rem;
+    width: 27rem;
+    flex-shrink: 0;
+    position: relative;
+
+    &__content {
+        position: relative;
+    }
+
+    &__name {
+        padding: 0 2rem;
+        padding-top: 2rem;
+        width: 90%;
+
+        &--p {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: $black;
+        }
+    }
+
+    &__details {
+        padding: 2rem;
+        position: relative;
+
+        &--toparea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &--bookmarkbtn {
+            outline: none;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            fill: $primary-color;
+            background: rgba($faint-primary-color, 0.5);
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 3rem;
+            width: 3rem;
+            margin: 1.5rem;
+
+            & svg {
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+        }
+
+        &--optionsbtn {
+            border-radius: 1rem 0 1rem 0;
+            border: none;
+            background: $primary-color;
+            padding: 1rem;
+            color: $black;
+            font-weight: 400;
+            cursor: pointer;
+            outline: none;
+            background: rgba($faint-primary-color, 1);
+            flex-shrink: 0;
+            height: 3.5rem;
+            padding: 0 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+
+            &:hover+.productcard__optiondiv {
+                display: block;
+            }
+
+            & span {
+                display: flex;
+                align-items: center;
+                margin-right: 0.4rem;
+
+                &.dropdown {
+                    & svg {
+                        height: 1.8rem;
+                        width: 1.8rem;
+                        fill: $black;
+                        color: $black;
+                    }
+                }
+            }
+        }
+
+        &--imgarea {
+            position: relative;
+            padding-bottom: 5rem;
+        }
+
+        &--tags {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+            width: 100%;
+
+            & span {
+                font-size: 1rem;
+                border-radius: 3rem;
+                margin-right: 0.5rem;
+                border: 0.1px solid rgba($faint-primary-color, 1);
+                background: rgba($faint-primary-color, 1);
+                color: $white;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+                display: inline-block;
+                margin-bottom: 0.5rem;
+                color: $black;
+                font-weight: 500;
+            }
+        }
+
+        &--img {
+            height: 20rem;
+            width: 100%;
+
+            & img {
+                object-fit: cover;
+                height: 100%;
+                width: 100%;
+            }
+        }
+
+        &--top {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &--price {
+            font-size: 2rem;
+            font-weight: 500;
+            color: $primary-color;
+        }
+
+        &--addremovebtns {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+
+        &--addremove {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-right: 2rem;
+            padding-bottom: 2rem;
+
+            & p {
+                &.amount {
+                    font-size: 1.4rem;
+                    padding: 1rem 0;
+                    font-weight: 600;
+                    color: rgba($primary-color, 1);
+                }
+            }
+
+            & button {
+                height: 3.3rem;
+                width: 3.3rem;
+                border-radius: 100%;
+                cursor: pointer;
+                outline: none;
+                border: none;
+                font-size: 2rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: 100;
+                transition: all 0.5s ease;
+                background: $primary-color;
+                color: $white;
+
+                &:nth-child(1) {
+                    //transform: translateY(-2rem);
+                }
+
+                & span {
+                    & svg {
+                        height: 1.4rem;
+                        width: 1.4rem;
+                        fill: $white;
+                        color: $white;
+                    }
+                }
+            }
+        }
+    }
+
+    &__options {
+        background: $white;
+        position: absolute;
+        top: 0;
+        left: -20rem;
+        //border: .3px solid $black;
+        width: 31rem;
+        z-index: 5;
+        padding: 2.4rem;
+        border-radius: 1rem;
+
+        overflow-y: scroll;
+        overflow-x: hidden;
+
+        transition: all .3s ease;
+
+        box-shadow:
+            0 2px 4px rgba(36, 155, 72, 0.1),
+            0 4px 8px rgba(36, 155, 72, 0.1),
+            0 0 0 1px rgba(36, 155, 72, 0.05),
+            0 0 0 4px rgba(36, 155, 72, 0.05);
+
+        &:hover {
+            //display: block;
+        }
+
+        &--h5 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        &--item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border: .3px solid rgba($primary-color, 1);
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1.3rem;
+        }
+
+        &--itemleft {
+            display: flex;
+            flex-direction: column;
+
+            & span {
+
+                &.name {
+                    font-size: 1.4rem;
+                    color: $primary-color;
+                    font-weight: 600;
+                    margin-bottom: .4rem;
+                }
+
+                &.price {
+                    font-size: 1.4rem;
+                }
+            }
+        }
+
+        &--itemright {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            & span {
+
+                &.amount {
+                    margin: 0 1rem;
+                    font-size: 1.3rem;
+                    color: rgba($primary-color, 1);
+                    font-weight: 600;
+                }
+            }
+
+            & button {
+                background: transparent;
+                outline: none;
+                border: none;
+                border-radius: 100%;
+                width: 3rem;
+                height: 3rem;
+                background: rgba($primary-color, 1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+
+                & span {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    & svg {
+                        height: 1.5rem;
+                        width: 1.5rem;
+                        fill: $white;
+                    }
+                }
+            }
+        }
+    }
+
+    &__optiondiv {
+        display: none;
+
+        &:hover {
+            display: block;
+        }
+    }
+}

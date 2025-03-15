@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'administration',
+    title: 'Payoor',
     htmlAttrs: {
       lang: 'en'
     },
@@ -45,6 +45,10 @@ export default {
       '~/assets/scss/shop.scss',
       '~/assets/scss/classes.scss',
       '~/assets/scss/animations.scss',
+      '~/assets/scss/productcard.scss',
+      '~/assets/scss/header.scss',
+      '~/assets/scss/onboarding.scss',
+      '~/assets/scss/jumbotron.scss',
     ],
     hoistUseStatements: true
   },

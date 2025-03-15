@@ -1,7 +1,9 @@
 <template>
-    <div>
-        <div class="">
-            <PayPage />
-        </div>
+  <div>
+    <div class="">
+      <!--<PayPage />-->
+
+      <Landing />
     </div>
+  </div>
 </template>

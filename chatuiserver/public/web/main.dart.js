@@ -44906,7 +44906,7 @@ $2(a,b){var s,r,q,p,o,n=null,m=t.w,l=A.bp(a,n,m).w
 m=A.bp(a,n,m).w
 s=this.a
 if(s.d)s=A.e3(new A.ul(n),n,n)
-else{r=A.ao(n,new A.kQ("Order Completion",!0,!1,new A.apq(a),n),B.l,B.aq,n,n,n,n,n,n,B.bD,n,n,n)
+else{r=A.ao(n,new A.kQ("Order Payment",!1,!1,new A.apq(a),n),B.l,B.aq,n,n,n,n,n,n,B.bD,n,n,n)
 q=t.p
 p=A.a([],q)
 if(s.r)p.push(A.ao(n,new A.Nc("bani-iframe",n),B.l,n,n,new A.aY(B.aq,n,n,A.b0(12),n,n,B.y),n,n,n,n,n,n,n,n))
@@ -45427,7 +45427,7 @@ p=l.r
 p.toString
 o=t.N
 p=A.a0(["orderId",a,"userId",i,"email",s,"name",r,"phoneNumber",q,"userAddress",A.pH(B.hr,J.a1(p,"userAddress"),B.a2,!1),"total",J.dz(J.a1(J.a1(l.w,j),"total"))],o,t.z)
-n="https://payment.payoor.store?"+p.ge7(p).f2(0,new A.auS(),o).bM(0,"&")
+n="https://payoor.store/pay?"+p.ge7(p).f2(0,new A.auS(),o).bM(0,"&")
 p=l.c
 p.toString
 m=A.bM(p,!1,t.BW)

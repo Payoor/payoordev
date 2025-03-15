@@ -63,6 +63,41 @@ class SearchManager:
             print(f"Error searching for product: {e}")
             return None
 
+    def search_product_in_mongodb_byId(self, product_id):
+        try:
+            if not product_id or not isinstance(product_id, str):
+                print(f"Invalid product ID: {product_id}")
+                return None
+        
+            cleaned_id = product_id.strip()
+            print(cleaned_id)
+        
+            if not cleaned_id:
+                print("Product ID is empty after cleaning")
+                return None
+        
+            from bson.objectid import ObjectId
+            try:
+                object_id = ObjectId(cleaned_id)
+            except Exception as e:
+                print(f"Invalid MongoDB ObjectId format: {e}")
+                return None
+        
+            product = productCollection.find_one({
+                "_id": object_id
+            })
+        
+            if product:
+                return product
+            else:
+                print('none here')
+                print(cleaned_id)
+                return None
+            
+        except Exception as e:
+            print(f"Error searching for product: {e}")
+            return None
+
     def search_using_algolia(self, char_array):
         results_array = []
 

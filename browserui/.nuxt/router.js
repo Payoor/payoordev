@@ -4,6 +4,15 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
+const _8b669e44 = () => interopDefault(import('../pages/aboutus.vue' /* webpackChunkName: "pages/aboutus" */))
+const _472e1f63 = () => interopDefault(import('../pages/checkout.vue' /* webpackChunkName: "pages/checkout" */))
+const _91ab560a = () => interopDefault(import('../pages/onboarding/index.vue' /* webpackChunkName: "pages/onboarding/index" */))
+const _25015d9b = () => interopDefault(import('../pages/pay.vue' /* webpackChunkName: "pages/pay" */))
+const _92a9d7f6 = () => interopDefault(import('../pages/search.vue' /* webpackChunkName: "pages/search" */))
+const _159cad2e = () => interopDefault(import('../pages/try.vue' /* webpackChunkName: "pages/try" */))
+const _092333a0 = () => interopDefault(import('../pages/onboarding/address/index.vue' /* webpackChunkName: "pages/onboarding/address/index" */))
+const _e0cca016 = () => interopDefault(import('../pages/onboarding/name/index.vue' /* webpackChunkName: "pages/onboarding/name/index" */))
+const _034b04ba = () => interopDefault(import('../pages/onboarding/phonenumber/index.vue' /* webpackChunkName: "pages/onboarding/phonenumber/index" */))
 const _29a48605 = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
@@ -18,6 +27,42 @@ export const routerOptions = {
   scrollBehavior,
 
   routes: [{
+    path: "/aboutus",
+    component: _8b669e44,
+    name: "aboutus"
+  }, {
+    path: "/checkout",
+    component: _472e1f63,
+    name: "checkout"
+  }, {
+    path: "/onboarding",
+    component: _91ab560a,
+    name: "onboarding"
+  }, {
+    path: "/pay",
+    component: _25015d9b,
+    name: "pay"
+  }, {
+    path: "/search",
+    component: _92a9d7f6,
+    name: "search"
+  }, {
+    path: "/try",
+    component: _159cad2e,
+    name: "try"
+  }, {
+    path: "/onboarding/address",
+    component: _092333a0,
+    name: "onboarding-address"
+  }, {
+    path: "/onboarding/name",
+    component: _e0cca016,
+    name: "onboarding-name"
+  }, {
+    path: "/onboarding/phonenumber",
+    component: _034b04ba,
+    name: "onboarding-phonenumber"
+  }, {
     path: "/",
     component: _29a48605,
     name: "index"

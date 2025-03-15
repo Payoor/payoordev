@@ -1,0 +1,129 @@
+
+
+.animate-up {
+    animation: moveInUp 0.3s ease forwards;
+}
+
+.btn {
+    background: none;
+    outline: none;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+
+    &-checkout-button {
+        background: $primary-color;
+        color: $white;
+        padding: 2rem 4rem;
+        font-size: 1.7rem;
+        border-radius: 0.4rem;
+        width: 100%;
+    }
+}
+
+.box-shadow {
+    box-shadow: 0 0 10px rgba($primary-color, 0.3);
+
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.box:hover {
+    box-shadow: 0 0 15px rgba($primary-color, 0.5);
+}
+
+/* Webkit browsers (Chrome, Safari, newer versions of Opera, etc) */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: lighten($primary-color, 35%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $primary-color;
+    border-radius: 10px;
+    border: 3px solid lighten($primary-color, 35%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: darken($primary-color, 10%);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: $primary-color lighten($primary-color, 35%);
+}
+
+.navigation {
+
+    &__h3 {
+        color: $primary-color;
+        font-weight: 500;
+        font-size: 2.4rem;
+    }
+
+    &__top {
+        display: flex;
+        align-items: center;
+        color: $primary-color;
+        cursor: pointer;
+
+        & span {
+            display: inline-block;
+            margin-right: 0.5rem;
+            cursor: pointer;
+
+            &.svg {
+                & svg {
+                    height: 2.6rem;
+                    width: 2.6rem;
+                    fill: $primary-color;
+                    color: $primary-color;
+                }
+            }
+        }
+    }
+}
+
+.fade-element {
+    opacity: 0;
+    animation: fadeIn .1s ease-in-out forwards;
+}
+
+.disabled-btn {
+    opacity: .4;
+}
+
+.disabled {
+    opacity: .4;
+}
+
+.invisible {
+    opacity: 0;
+    z-index: -1;
+}
+
+.loading {
+
+
+    &.address-loading {
+        display: flex;
+        justify-content: center;
+        padding-bottom: 1rem;
+    }
+
+    & span {
+        animation: spin 1s infinite linear reverse;
+        display: inline-block;
+        height: 5rem;
+        width: 5rem;
+        border-radius: 100%;
+        border: 2px solid rgba($white, .7);
+        border-right: 2px solid rgba($white, 0);
+        background: transparent;
+    }
+}

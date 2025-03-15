@@ -1,0 +1,91 @@
+.jumbotron {
+    &__searcharea {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 13rem;
+        position: relative;
+        z-index: 1;
+        background: $primary-color;
+
+        &.search-results {}
+        
+        &--header {
+            text-transform: capitalize;
+        }
+
+        &--header {
+            color: $white;
+            display: flex;
+            flex-direction: column;
+            justify-self: center;
+            align-items: center;
+            font-size: 5rem;
+            font-weight: 400;
+            line-height: 7rem;
+
+            & span {
+                &:nth-child(2) {
+                    font-weight: 700;
+                }
+            }
+        }
+
+        &--input {
+            position: relative;
+            background: transparent;
+            border-radius: 5rem;
+            width: 100rem;
+            height: 6.9rem;
+            margin-top: 4rem;
+            border: 1px solid $white;
+
+            &.search-results {
+                border: 1px solid $primary-color;
+                width: 118rem;
+                max-width: 118rem;
+            }
+
+            & input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                outline: none;
+                border: none;
+                background: transparent;
+                padding: 1rem 3rem;
+                color: $white;
+                font-size: 3rem;
+
+                &.search-results {
+                    color: $primary-color;
+
+                    &::placeholder {
+                        color: rgba($primary-color, .7);
+                    }
+                }
+            }
+
+            & span {
+                &.search-svg {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    height: 100%;
+
+                    padding: 2rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    & svg {
+                        height: 3.5rem;
+                    }
+                }
+            }
+        }
+    }
+}

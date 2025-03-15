@@ -40,12 +40,12 @@ var OrderController = /*#__PURE__*/function () {
     key: "createOrder",
     value: function () {
       var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var order, user, user_data_redis_store, completedOrders, ORDERS_KEY, items, cart_total, delivery_fee, service_charge, order_items, order_total, userData, userAddress, order_id, newOrder, serializedOrder, newLength, orderSummary, response;
+        var _req$body, order, order_address, user, user_data_redis_store, completedOrders, ORDERS_KEY, items, cart_total, delivery_fee, service_charge, order_items, order_total, userData, userAddress, order_id, newOrder, serializedOrder, newLength, orderSummary, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              order = req.body.order;
+              _req$body = req.body, order = _req$body.order, order_address = _req$body.order_address;
               user = req.user;
               user_data_redis_store = "userdata:".concat(user.userId.toString());
               _context.next = 6;
@@ -89,7 +89,7 @@ var OrderController = /*#__PURE__*/function () {
                 _id: order_id,
                 userId: user.userId,
                 items: items,
-                order_address: userAddress,
+                order_address: order_address.length ? order_address : userAddress,
                 cart_total: cart_total,
                 delivery_fee: delivery_fee,
                 service_charge: service_charge,
@@ -212,16 +212,17 @@ var OrderController = /*#__PURE__*/function () {
               status = req.query.status;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
-              skip = (page - 1) * limit; //console.log(status, 'status')
+              skip = (page - 1) * limit;
+              console.log(status, 'status');
               if (!(status === 'pending')) {
-                _context3.next = 15;
+                _context3.next = 16;
                 break;
               }
               ORDERS_KEY = "orders:".concat(req.user.userId);
               pendingOrders = [];
-              _context3.next = 10;
+              _context3.next = 11;
               return _redisClient["default"].lRange(ORDERS_KEY, 0, -1);
-            case 10:
+            case 11:
               serializedOrders = _context3.sent;
               if (serializedOrders && serializedOrders.length > 0) {
                 pendingOrders.push.apply(pendingOrders, _toConsumableArray(serializedOrders.map(function (order) {
@@ -229,10 +230,10 @@ var OrderController = /*#__PURE__*/function () {
                 })));
               }
               orders = pendingOrders;
-              _context3.next = 18;
+              _context3.next = 19;
               break;
-            case 15:
-              _context3.next = 17;
+            case 16:
+              _context3.next = 18;
               return _order2["default"].find({
                 userId: req.user.userId,
                 status: status
@@ -241,9 +242,9 @@ var OrderController = /*#__PURE__*/function () {
               }).sort({
                 createdAt: -1
               }).skip(skip).limit(limit);
-            case 17:
-              orders = _context3.sent;
             case 18:
+              orders = _context3.sent;
+            case 19:
               //console.log(orders)
               formattedOrders = orders.map(function (order) {
                 return _objectSpread(_objectSpread({}, order.toObject ? order.toObject() : order), {}, {
@@ -263,20 +264,20 @@ var OrderController = /*#__PURE__*/function () {
                 success: true,
                 data: data
               });
-              _context3.next = 30;
+              _context3.next = 31;
               break;
-            case 24:
-              _context3.prev = 24;
+            case 25:
+              _context3.prev = 25;
               _context3.t0 = _context3["catch"](0);
               console.log('error here', _context3.t0, 'error here');
               _context3.t0.statusCode = 400;
               _context3.t0.payoorDevErrorMessage = 'Error fetching orders';
               next(_context3.t0);
-            case 30:
+            case 31:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[0, 24]]);
+        }, _callee3, null, [[0, 25]]);
       }));
       function getUserOrders(_x7, _x8, _x9) {
         return _getUserOrders.apply(this, arguments);
@@ -424,12 +425,12 @@ var OrderController = /*#__PURE__*/function () {
     key: "updateDeliveryDateandAddress",
     value: function () {
       var _updateDeliveryDateandAddress = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res, next) {
-        var _req$body, order_id, delivery_date, delivery_address, user, error, ORDERS_KEY, serializedOrders, _error3, orderIndex, _error4, orderStr, parsedOrder, updatedOrder, PENDING_ORDER_ID, storedOrder, order;
+        var _req$body2, order_id, delivery_date, delivery_address, user, error, ORDERS_KEY, serializedOrders, _error3, orderIndex, _error4, orderStr, parsedOrder, updatedOrder, PENDING_ORDER_ID, storedOrder, order;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
               _context6.prev = 0;
-              _req$body = req.body, order_id = _req$body.order_id, delivery_date = _req$body.delivery_date, delivery_address = _req$body.delivery_address;
+              _req$body2 = req.body, order_id = _req$body2.order_id, delivery_date = _req$body2.delivery_date, delivery_address = _req$body2.delivery_address;
               user = req.user;
               if (!(!order_id || !delivery_date)) {
                 _context6.next = 7;

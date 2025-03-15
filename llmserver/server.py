@@ -35,7 +35,7 @@ port = int(os.getenv('PORT'))
 if app.debug or os.environ.get('FLASK_ENV') == 'development':
     CORS(app, resources={
         r"/*": {
-            "origins": ["http://localhost:63882"],  # Updated to match your frontend port
+            "origins": ["http://localhost:3000"],  # Updated to match your frontend port
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": [
                 "Content-Type",
@@ -122,6 +122,40 @@ def check_book_marked():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500 
+
+@app.route('/product/get/byid', methods=['GET'])
+def get_product_by_id():
+    product_id = request.args.get('product_id')
+    if not product_id:
+        return {'error': 'Product ID is required'}, 400
+
+    try:
+        product = search_manager.search_product_in_mongodb_byId(product_id)
+
+        if product is None:
+            print(f"Product not found with ID: {product_id}")
+            return jsonify({
+                "success": False,
+                "error": "Product not found"
+            }), 404
+
+        product['_id'] = str(product['_id'])
+
+        data = {
+            "message": "Success response",
+            "product_data": product
+        }
+
+        response_data = {
+            "success": True,
+            "data": data
+        }
+
+        return jsonify(response_data), 200
+    
+    except Exception as e:
+        print(f"Error getting product by ID: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/product/get', methods=['GET'])
 def get_product():

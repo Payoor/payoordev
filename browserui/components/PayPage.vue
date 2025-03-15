@@ -36,13 +36,11 @@ export default {
     };
   },
   created() {
-    // Only run on client-side
     if (typeof window !== "undefined") {
       this.parseQueryParams();
     }
   },
   mounted() {
-    // mounted only runs on client-side, so it's safe
     this.parseQueryParams();
     this.loadBaniScript();
   },
@@ -52,14 +50,12 @@ export default {
 
       const queryParams = new URLSearchParams(window.location.search);
 
-      // Extract user data
       this.userData.userId = queryParams.get("userId") || "";
       this.userData.email = queryParams.get("email") || "";
       this.userData.name = queryParams.get("name") || "";
       this.userData.phoneNumber = queryParams.get("phoneNumber") || "";
       this.userData.userAddress = queryParams.get("userAddress") || "";
 
-      // Extract order data
       this.orderData._id = queryParams.get("orderId") || "";
       this.orderData.total = queryParams.get("total") || "200";
     },
@@ -75,7 +71,6 @@ export default {
     initializeBani() {
       if (typeof window === "undefined") return;
 
-      // Make sure elements exist before accessing them
       const phoneElement = document.getElementById("phone-number");
       if (!phoneElement) return;
 
@@ -102,7 +97,7 @@ export default {
         },
         merchantRef: "ref-" + Math.random().toString(36).substr(2, 9),
         onClose: (response) => {
-          console.log("Bani Close Event:", response);
+          //console.log("Bani Close Event:", response);
           window.parent.postMessage({ type: "onClose", data: response }, "*");
         },
         callback: (response) => {

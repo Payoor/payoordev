@@ -1,0 +1,101 @@
+.onboarding {
+    position: relative;
+    height: 82rem;
+    background: rgba($primary-color, 1);
+    padding: 0 10.5rem;
+    padding-top: 5rem;
+  
+    &__top {
+        
+      &--textarea {
+        display: flex;
+      }
+  
+      &--back {
+        height: 5rem;
+        width: 5rem;
+        background: rgba($white, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 100%;
+        cursor: pointer;
+        margin-right: 1rem;
+  
+        & svg {
+          height: 2rem;
+          width: 2rem;
+          fill: rgba($primary-color, 1);
+        }
+      }
+    }
+  
+    &__bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      padding: 0 10.5rem;
+      width: 100%;
+  
+      flex-direction: column;
+  
+      &--input {
+        position: relative;
+  
+        & span {
+          &.send-svg {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            height: 5rem;
+            width: 5rem;
+            border-radius: 100%;
+            background: rgba($white, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.7);
+            cursor: pointer;
+  
+            & svg {
+              fill: $primary-color;
+              height: 2.5rem;
+              width: 2.5rem;
+            }
+          }
+        }
+      }
+    }
+  
+    &__textarea {
+      outline: none;
+      background: rgba($primary-color, 1);
+      border: 1px solid $white;
+      border-radius: 3rem;
+      width: 100rem;
+      height: 20rem;
+      padding: 3rem;
+      color: $white;
+      font-size: 2rem;
+      resize: none;
+      width: 100%;
+    }
+  
+    &__input {
+      outline: none;
+      border: none;
+      border: 1px solid $white;
+      background: transparent;
+      padding: 1rem 3rem;
+      color: $white;
+      border-radius: 5rem;
+      width: 100%;
+      height: 6.9rem;
+      font-size: 2rem;
+
+      &::placeholder {
+        color: rgba($white, 1)
+      }
+    }
+  }
