@@ -4,7 +4,7 @@
       <div class="jumbotron__searcharea">
         <h1 class="jumbotron__searcharea--header">
           <span>Hi, {{ user ? user.name : "I'm Payoor" }}</span>
-          <span>What will you like to eat?</span>
+          <span>Make a grocery list and Leave the rest to me</span>
           <!-- <span>Make a grocery list</span>
           <span>and leave the rest to me</span>-->
         </h1>

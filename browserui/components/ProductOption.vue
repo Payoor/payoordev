@@ -3,7 +3,7 @@
     <div class="productcard__options--item">
       <div class="productcard__options--itemleft">
         <span class="name">{{ productoption.unit }}</span>
-        <span class="price">${{ productoption.price }}</span>
+        <span class="price">₦{{ productoption.price }}</span>
       </div>
 
       <div class="productcard__options--itemright">
