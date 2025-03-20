@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="authenticator" @click.stop="closeAuthenticator">
+    <div class="authenticator" @click.stop="close">
       <div class="authenticator__content animate-up">
         <div class="authenticator__body">
           <div class="authenticator__section formarea" @click.stop="() => {}">
@@ -13,12 +13,16 @@
               <div></div>
             </div>
 
-            <div class="authenticator__sub" v-if="!displayMsg.length">
-              <h4>Please enter your details</h4>
+            <div class="authenticator__sub" :class="{ error }" v-if="!displayMsg.length">
+              <h4>{{ isAffiliateCodeView ? "Your new affiliate code" : heading }}</h4>
             </div>
 
-            <p v-if="displayMsg.length" class="authenticator__displaymsg">
-              {{ displayMsg }}
+            <p
+              v-if="displayMsg.length"
+              class="authenticator__displaymsg"
+              :class="{ error }"
+            >
+              {{ isAffiliateCodeView ? "Your affiliate application has been received!" : displayMsg }}
             </p>
 
             <div class="authenticator__form">
@@ -32,13 +36,82 @@
                   />
                 </span>
 
-                <span>
+                <div v-if="affiliatesignup && affiliateAuth">
+                  <span>
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      v-model="name"
+                      :disabled="isLoading"
+                    />
+                  </span>
+
+                  <span>
+                    <input
+                      type="text"
+                      placeholder="Enter your phonenumber"
+                      v-model="phonenumber"
+                      :disabled="isLoading"
+                    />
+                  </span>
+
+                  <span>
+                    <input
+                      type="text"
+                      placeholder="Enter your social media link if any"
+                      v-model="socialmedialink"
+                      :disabled="isLoading"
+                    />
+                  </span>
+                </div>
+
+                <span v-if="!affiliateAuth">
                   <button v-if="!isValidEmail || isLoading" class="disabled-btn" disabled>
                     <span v-if="isLoading" class="loader"></span>
                     <span v-else>Continue</span>
                   </button>
                   <button v-else @click="triggerotp">Continue</button>
                 </span>
+
+                <span v-if="affiliatesignup && affiliateAuth">
+                  <button
+                    v-if="
+                      !isValidEmail || !isValidName || !isValidPhoneNumber || isLoading
+                    "
+                    class="disabled-btn"
+                    disabled
+                  >
+                    <span v-if="isLoading" class="loader"></span>
+                    <span v-else>Continue</span>
+                  </button>
+                  <button v-else @click="triggerotp">Continue</button>
+                </span>
+
+                <span v-if="!affiliatesignup && affiliateAuth">
+                  <button v-if="!isValidEmail || isLoading" class="disabled-btn" disabled>
+                    <span v-if="isLoading" class="loader"></span>
+                    <span v-else>Continue</span>
+                  </button>
+                  <button v-else @click="triggerotp">Continue</button>
+                </span>
+
+                <!--<div
+                  class="authenticator__form--btmbtns"
+                  v-if="affiliatesignup && affiliateAuth"
+                >
+                  <span class="">Already an affiliate?</span>
+                  <span class="link" @click="toggleaffiliatesignup"
+                    >Simply generate coupon</span
+                  >
+                </div>-->
+
+                <div
+                  class="authenticator__form--btmbtns"
+                  v-if="!affiliatesignup && affiliateAuth"
+                >
+                  <span class="">Not an affiliate?</span>
+                  <span class="link" @click="toggleaffiliatesignup">Sign up</span>
+                </div>
               </div>
 
               <div class="authenticator__otp" v-if="isOtpView">
@@ -73,6 +146,12 @@
                   <button>Google</button>
                 </span>
               </div>-->
+
+              <div v-if="isAffiliateCodeView && affiliateCode !== null">
+                <div class="authenticator__coupon">
+                  <TypeWriterText :text="affiliateCode" :color="'rgba(36, 155, 72, 1)'" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -89,20 +168,29 @@
 
 <script>
 import authenticationMixin from "@/mixins/authentication";
+import utilsMixin from "@/mixins/utils";
 
 export default {
-  mixins: [authenticationMixin],
-  props: ["closeAuthenticator"],
+  mixins: [authenticationMixin, utilsMixin],
+  props: ["closeAuthenticator", "heading", "affiliateAuth"],
   data() {
     return {
       otpArray: [1, 2, 3, 4, 5, 6],
       email: null,
+      name: null,
+      phonenumber: null,
+      socialmedialink: null,
       otpDigits: [null, null, null, null, null, null],
       isEmailView: true,
       isOtpView: false,
+      isAffiliateCodeView: false,
+      affiliateCode: null,
       displayMsg: "",
       isLoading: false,
       isVerifying: false,
+      affiliatesignup: true,
+      affiliatesignin: false,
+      error: false,
     };
   },
   computed: {
@@ -111,6 +199,16 @@ export default {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       return typeof email === "string" && emailRegex.test(email);
+    },
+    isValidName() {
+      const { name } = this;
+
+      return name && name.length;
+    },
+    isValidPhoneNumber() {
+      const { phonenumber } = this;
+
+      return phonenumber && phonenumber.length;
     },
     isOtpFilled() {
       const { otpDigits } = this;
@@ -128,37 +226,73 @@ export default {
     async otpDigits(newValue) {
       if (this.isOtpFilled && !this.isVerifying) {
         this.isVerifying = true;
+        const otpValue = this.getOtpValue();
+
         try {
-          const otpValue = this.getOtpValue();
+          if (this.affiliateAuth) {
+            const success = await this.$store.dispatch("verifyaffiliateotp", {
+              otp: otpValue,
+              email: this.email,
+            });
 
-          const success = await this.$store.dispatch("verifyotp", {
-            otp: otpValue,
-            email: this.email,
-          });
+            console.log(success);
 
-          if (success && success.data) {
-            if (!success.data.userExists) {
-              this.$router.push({
-                path: "/onboarding/name",
-                query: {
+            if (success && success.message) {
+              // Handle error cases
+              this.error = true;
+              this.displayMsg = success.message;
+              return;
+            }
+
+            // Handle 200 success responses
+            if (success && success.data) {
+              if (success.data.message === "Your new affiliate coupon code") {
+                const affiliateCode = success.data.coupon.code;
+                this.affiliateCode = affiliateCode;
+                this.isOtpView = false;
+                this.isAffiliateCodeView = true;
+                return;
+              }
+
+              if (success.data.message === "Your aplication has been created") {
+                //const affiliateCode = success.data.coupon.code;
+                //this.affiliateCode = affiliateCode;
+                this.isOtpView = false;
+                this.isAffiliateCodeView = true;
+                this.displayMsg = "Your application has been created successfully!";
+                return;
+              }
+            }
+
+            // Fallback for unexpected success response format
+            this.error = true;
+            this.displayMsg = "Something went wrong. Please try again.";
+            return;
+          } else {
+            const success = await this.$store.dispatch("verifyotp", {
+              otp: otpValue,
+              email: this.email,
+            });
+
+            if (success && success.data) {
+              if (!success.data.userExists) {
+                this.pageRouter("/onboarding/name", {
                   email: this.email,
-                },
-              });
-            } else {
-              this.closeAuthenticator();
+                });
 
-              const userid = success.data.id;
+                /*this.$router.push({
+                  path: "/onboarding/name",
+                  query: {
+                    email: this.email,
+                  },
+                });*/
+              } else {
+                this.closeAuthenticator();
 
-              this.getJWTWithUserId(userid);
+                const userid = success.data.id;
 
-              /*this.$store.dispatch("genJWT", { userid });
-
-              this.$router.push({
-                path: "/",
-                query: {
-                  user: userid,
-                },
-              });*/
+                this.getJWTWithUserId(userid);
+              }
             }
           }
         } catch (error) {
@@ -177,8 +311,20 @@ export default {
         }
       }
     },
+    email() {
+      this.error = false;
+      this.displayMsg = "";
+    },
+    name() {
+      this.error = false;
+      this.displayMsg = "";
+    },
   },
   methods: {
+    toggleaffiliatesignup() {
+      this.affiliatesignup = !this.affiliatesignup;
+      this.affiliatesignin = !this.affiliatesignin;
+    },
     async triggerotp() {
       if (this.isLoading) return;
 
@@ -186,14 +332,89 @@ export default {
       this.displayMsg = "";
 
       try {
-        const success = await this.$store.dispatch("authenticate", { email: this.email });
+        let success;
+
+        if (
+          (this.affiliatesignup && this.affiliateAuth) ||
+          (this.affiliatesignin && this.affiliateAuth)
+        ) {
+          success = await this.$store.dispatch("authenticate", {
+            email: this.email,
+            name: this.name,
+            phonenumber: this.phonenumber,
+            socialmedialink: this.socialmedialink,
+            affiliatesignup: this.affiliatesignup,
+            affiliatesignin: this.affiliatesignin,
+            isAffiliateLink: this.affiliateAuth,
+          });
+        } else {
+          success = await this.$store.dispatch("authenticate", {
+            email: this.email,
+          });
+        }
 
         if (success) {
+          if (success && success.message === "affiliate already exists") {
+            this.error = true;
+            this.displayMsg = "affiliate already exists";
+            return;
+          }
+
+          if (
+            success &&
+            success.message === "Your OTP has expired. Please request a new one."
+          ) {
+            this.error = true;
+            this.displayMsg = "Your OTP has expired. Please request a new one.";
+            return;
+          }
+
+          if (
+            success &&
+            success.message === "Affiliate account not found. Please sign up first."
+          ) {
+            this.error = true;
+            this.displayMsg = "Affiliate account not found. Please sign up first.";
+            return;
+          }
+
+          if (
+            success &&
+            success.message ===
+              "Your affiliate account has been deactivated. Please contact support."
+          ) {
+            this.error = true;
+            this.displayMsg =
+              "Your affiliate account has been deactivated or is inactive. Please contact support.";
+            return;
+          }
+
+          if (
+            success &&
+            success.message ===
+              "The OTP you entered is invalid. Please check and try again."
+          ) {
+            this.error = true;
+            this.displayMsg =
+              "The OTP you entered is invalid. Please check and try again.";
+            return;
+          }
+
+          if (
+            success &&
+            success.message ===
+              "Failed to create your affiliate coupon. Please try again later."
+          ) {
+            this.error = true;
+            this.displayMsg =
+              "Failed to create your affiliate coupon. Please try again later.";
+            return;
+          }
+
           this.displayMsg = "We sent an OTP to your email";
           this.isEmailView = false;
           this.isOtpView = true;
 
-          // Focus on first OTP input after view changes
           this.$nextTick(() => {
             if (this.$refs.otp1 && this.$refs.otp1[0]) {
               this.$refs.otp1[0].focus();
@@ -249,6 +470,11 @@ export default {
       const focusRef = `otp${lastFilledIndex}`;
       if (this.$refs[focusRef] && this.$refs[focusRef][0]) {
         this.$refs[focusRef][0].focus();
+      }
+    },
+    close() {
+      if (this.closeAuthenticator) {
+        this.closeAuthenticator();
       }
     },
   },
@@ -351,6 +577,20 @@ export default {
     }
   }
 
+  &__coupon {
+    text-align: center;
+
+    & p {
+      &:nth-child(1) {
+        font-size: 2.5rem;
+        color: rgba($primary-color, 0.8);
+        font-weight: 500;
+        text-align: center;
+        letter-spacing: 1rem;
+      }
+    }
+  }
+
   &__verifying {
     display: flex;
     flex-direction: column;
@@ -407,6 +647,19 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+    }
+
+    &--btmbtns {
+      margin-top: 3rem;
+
+      & span {
+        font-size: 1.3rem;
+
+        &.link {
+          color: rgba($primary-color, 0.8);
+          cursor: pointer;
+        }
       }
     }
 

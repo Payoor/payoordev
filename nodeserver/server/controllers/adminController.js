@@ -1,3 +1,6 @@
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
+
 import axios from "axios";
 
 const path = require('path');
@@ -11,6 +14,13 @@ import Transaction from "../models/transaction";
 import Order from "../models/order";
 import NewProduct from "../models/newProduct";
 import ProductVariant from "../models/productVariant";
+import Affiliate from "../models/affiliate";
+import Coupon from "../models/coupon";
+
+import generateOTP from "../services/payoor/generateOTP";
+
+import sendAffiliateActiveStatus from "../services/resend/sendAffiliateActiveStatus";
+import sendAffiliateDeactivation from "../services/resend/sendAffiliateDeactivation";
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -917,6 +927,104 @@ class AdminController {
         } catch (error) {
             console.log('error here', error, 'error here');
             error.payoorDevErrorMessage = 'Failed to retrieve dashboard data';
+            next(error);
+        }
+    }
+
+    async getAffiliates(req, res, next) {
+        try {
+            const affiltes = await Affiliate.find({})
+            //console.log(affiltes)
+            res.status(200).json({
+                affiliates: affiltes
+            })
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Error deleting user';
+            next(error);
+        }
+    }
+
+    async toggleAffiliateActiveState(req, res, next) {
+        try {
+            const { affiliate_id, email, isActive } = req.body;
+
+            const activeStatus = typeof isActive === 'string'
+                ? isActive === 'true'
+                : Boolean(isActive);
+
+            const updatedAffiliate = await Affiliate.findOneAndUpdate(
+                { _id: affiliate_id },
+                { isActive: activeStatus },
+                { new: true }
+            );
+
+            if (!updatedAffiliate) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Affiliate not found'
+                });
+            }
+
+            if (activeStatus) {
+                const couponCode = await generateOTP();
+
+                const affiliateCoupon = new Coupon({
+                    code: couponCode,
+                    email,
+                    affiliate: affiliate_id,
+                    type: 'affiliate program',
+                    metadata: {
+                        email,
+                        type: 'affiliate program',
+                    }
+                });
+
+                await affiliateCoupon.save();
+                await sendAffiliateActiveStatus({ email, affiliateCode: affiliateCoupon.code });
+
+                await Affiliate.findOneAndUpdate(
+                    { _id: affiliate_id },
+                    { coupon: affiliateCoupon.code },
+                    { new: true }
+                );
+            } else {
+                try {
+                    const couponObjectId = typeof affiliate_id === 'string' ? new ObjectId(affiliate_id) : affiliate_id;
+
+                    const coupons = await Coupon.find({ affiliate: couponObjectId });
+
+                    if (coupons.length === 0) {
+                        await sendAffiliateDeactivation({
+                            email,
+                            affiliateCode: "N/A",
+                            reason: "Account deactivated"
+                        });
+                    } else {
+                        const deleteResult = await Coupon.deleteMany({ affiliate: couponObjectId });
+                        console.log(`Deleted ${deleteResult.deletedCount} coupons for affiliate ${affiliate_id}`);
+
+                        await sendAffiliateDeactivation({
+                            email,
+                            affiliateCode: coupons[0].code,
+                            reason: "Account deactivated"
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error during coupon deactivation:', error);
+                    throw new Error(`Failed to deactivate affiliate coupons: ${error.message}`);
+                }
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: `Affiliate status updated to ${activeStatus ? 'active' : 'inactive'}`,
+                affiliate: updatedAffiliate
+            });
+
+        } catch (error) {
+            console.log('error here', error, 'error here');
+            error.payoorDevErrorMessage = 'Error updating affiliate active status';
             next(error);
         }
     }

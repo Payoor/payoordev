@@ -30,7 +30,10 @@
 </template>
 
 <script>
+import utilsMixin from "@/mixins/utils";
+
 export default {
+  mixins: [utilsMixin],
   data() {
     return {
       name: "",
@@ -47,13 +50,18 @@ export default {
         return;
       }
 
-      this.$router.push({
+      this.pageRouter("/onboarding/phonenumber", {
+        email: this.email,
+        name: this.name,
+      });
+
+      /*this.$router.push({
         path: "/onboarding/phonenumber",
         query: {
           email: this.email,
           name: this.name,
         },
-      });
+      });*/
     },
   },
 };

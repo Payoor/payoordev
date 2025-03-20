@@ -47,6 +47,10 @@ var OrderSchema = new _db["default"].Schema({
   },
   delivery_date: {
     type: String
+  },
+  metadata: {
+    type: Object,
+    "default": {}
   }
 });
 module.exports = _db["default"].model('Order', OrderSchema);

@@ -1,6 +1,10 @@
 <template>
-  <div class="typewritertext">
-    <span v-for="(character, index) in renderedText" :key="index" class="character fade-element">
+  <div class="typewritertext" :style="{ color }">
+    <span
+      v-for="(character, index) in renderedText"
+      :key="index"
+      class="character fade-element"
+    >
       <template v-if="character === ' '">&nbsp;</template>
       <template v-else>{{ character }}</template>
     </span>
@@ -13,6 +17,10 @@ export default {
     text: {
       type: String,
       required: true,
+    },
+    color: {
+      type: String,
+      default: "#fff",
     },
     typingDelay: {
       type: Number,
@@ -64,7 +72,7 @@ export default {
   font-size: 3rem;
   color: $white;
 
-  transition: all .5s ease;
+  transition: all 0.5s ease;
 }
 
 .character {

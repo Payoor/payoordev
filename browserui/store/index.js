@@ -6,6 +6,7 @@ export const state = () => ({
     jwt: null,
     products: [],
     productstotal: 0,
+    affiliatecode: null
 });
 
 export const mutations = {
@@ -45,19 +46,78 @@ export const mutations = {
 export const actions = {
     async authenticate({ commit }, credentials) {
         try {
-            const { email } = credentials;
+            const { email, name, phonenumber, socialmedialink, affiliatesignup, affiliatesignin, isAffiliateLink } = credentials;
 
-            const response = await fetch(`${url}/auth/email/otp`, {
+            let authUrl;
+            let reqBody;
+
+            if (affiliatesignup || affiliatesignin) {
+                authUrl = `${url}/auth/email/otp?affiliatesignup=${affiliatesignup}&affiliatesignin=${affiliatesignin}`;
+
+                reqBody = {
+                    email,
+                    name,
+                    phonenumber,
+                    socialmedialink,
+                    isAffiliateLink
+                }
+            } else {
+                authUrl = `${url}/auth/email/otp`;
+
+                reqBody = {
+                    email,
+                }
+            }
+
+            const response = await fetch(authUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    email
-                })
+                body: JSON.stringify(reqBody)
             })
 
             if (!response.ok) {
+                const data = await response.json();
+                console.log('Failure:', data.data);
+
+                if (data.data.message === "affiliate already exists") {
+                    return {
+                        message: "affiliate already exists",
+                    };
+                }
+
+                if (data.data.message === "OTP has expired") {
+                    return {
+                        message: "Your OTP has expired. Please request a new one.",
+                    };
+                }
+
+                if (data.data.message === "affiliate does not exist sign up") {
+                    console.log('the affilaiet is not existent')
+                    return {
+                        message: "Affiliate account not found. Please sign up first.",
+                    };
+                }
+
+                if (data.data.message === "affiliate has been deactivated") {
+                    return {
+                        message: "Your affiliate account has been deactivated. Please contact support.",
+                    };
+                }
+
+                if (data.data.message === "Invalid OTP") {
+                    return {
+                        message: "The OTP you entered is invalid. Please check and try again.",
+                    };
+                }
+
+                if (data.data.message === "failed to create coupon") {
+                    return {
+                        message: "Failed to create your affiliate coupon. Please try again later.",
+                    };
+                }
+
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
@@ -66,7 +126,73 @@ export const actions = {
             return data;
 
         } catch (error) {
-            console.log(error)
+            console.log(error, 'error')
+        }
+    },
+
+    async verifyaffiliateotp({ commit }, { otp, email }) {
+        try {
+            let affurl = `${url}/auth/affiliate/email/verify`;
+
+            const response = await fetch(affurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    otp,
+                    email
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.log('Failure:', data.data);
+
+                if (data.data.message === "OTP has expired") {
+                    return {
+                        message: "Your OTP has expired. Please request a new one.",
+                    };
+                }
+
+                if (data.data.message === "affiliate does not exist sign up") {
+                    return {
+                        message: "Affiliate account not found. Please sign up first.",
+                    };
+                }
+
+                if (data.data.message === "affiliate has been deactivated") {
+                    return {
+                        message: "Your affiliate account has been deactivated. Please contact support.",
+                    };
+                }
+
+                if (data.data.message === "Invalid OTP") {
+                    return {
+                        message: "The OTP you entered is invalid. Please check and try again.",
+                    };
+                }
+
+                if (data.data.message === "failed to create coupon") {
+                    return {
+                        message: "Failed to create your affiliate coupon. Please try again later.",
+                    };
+                }
+
+                return {
+                    message: `HTTP error! Status: ${response.status}`,
+                };
+            }
+
+            console.log('Success:', data.data);
+            return data;
+
+        } catch (error) {
+            console.log(error);
+            return {
+                message: "An unexpected error occurred. Please try again.",
+            };
         }
     },
 
@@ -106,7 +232,7 @@ export const actions = {
 
             const data = await response.json();
             const token = data.data.token
-            console.log('Success in authentication:', data.data.token);
+            //console.log('Success in authentication:', data.data.token);
             commit('SET_JWT', token)
 
             localStorage.setItem('jwt_token', token);
@@ -120,8 +246,6 @@ export const actions = {
     async getvaliduser({ commit }) {
         try {
             const token = localStorage.getItem('jwt_token');
-
-            console.log(token)
 
             if (token) {
                 commit('SET_JWT', token);

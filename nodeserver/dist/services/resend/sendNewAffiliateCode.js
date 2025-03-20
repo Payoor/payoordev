@@ -11,23 +11,23 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 require('dotenv').config();
 var resend = new _resend.Resend("".concat(process.env.RESEND_API_KEY));
-function sendOtp(_x) {
-  return _sendOtp.apply(this, arguments);
+function sendNewAffiliateCode(_x) {
+  return _sendNewAffiliateCode.apply(this, arguments);
 }
-function _sendOtp() {
-  _sendOtp = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
-    var email, otp, data;
+function _sendNewAffiliateCode() {
+  _sendNewAffiliateCode = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+    var email, affiliateCode, data;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          email = _ref.email, otp = _ref.otp;
+          email = _ref.email, affiliateCode = _ref.affiliateCode;
           _context.prev = 1;
           _context.next = 4;
           return resend.emails.send({
-            from: "Payoor <hello@otp.payoor.store>",
+            from: "Payoor <confirmation@affiliate.payoor.store>",
             to: ["".concat(email)],
-            subject: "Otp from Payoor",
-            html: "\n          <!DOCTYPE html>\n          <html>\n            <head>\n              <meta charset=\"UTF-8\">\n              <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n              <title>Your Verification Code</title>\n            </head>\n            <body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;\">\n              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%; background-color: #f4f4f4; padding: 20px;\">\n                <tr>\n                  <td align=\"center\">\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">\n                      <!-- Header -->\n                      <tr>\n                        <td style=\"background-color: rgba(36, 155, 72, 1); padding: 30px 0; text-align: center;\">\n                          \n                        </td>\n                      </tr>\n                      \n                      <!-- Content -->\n                      <tr>\n                        <td style=\"padding: 40px 30px;\">\n                          <h1 style=\"margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: bold;\">\n                            Verification Code\n                          </h1>\n                          <p style=\"margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 24px;\">\n                            To complete your verification, please use the following code:\n                          </p>\n                          <div style=\"background-color: #f8f8f8; border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 30px;\">\n                            <span style=\"font-family: monospace; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: rgba(36, 155, 72, 1);\">\n                              ".concat(otp, "\n                            </span>\n                          </div>\n                          <p style=\"margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 24px;\">\n                            This code will expire in 10 minutes for security purposes. If you didn't request this code, please ignore this email.\n                          </p>\n                          <p style=\"margin: 0; color: #666666; font-size: 14px; line-height: 20px;\">\n                            For security reasons, please do not share this code with anyone.\n                          </p>\n                        </td>\n                      </tr>\n                      \n                      <!-- Footer -->\n                      <tr>\n                        <td style=\"padding: 20px 30px; background-color: #f8f8f8; text-align: center;\">\n                          <p style=\"margin: 0; color: #999999; font-size: 14px;\">\n                            This is an automated message, please do not reply to this email.\n                          </p>\n                          <p style=\"margin: 10px 0 0; color: #999999; font-size: 14px;\">\n                            \xA9 2025 Payoor. All rights reserved.\n                          </p>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n            </body>\n          </html>\n        ")
+            subject: "Your New Affiliate Code",
+            html: "\n          <!DOCTYPE html>\n          <html>\n            <head>\n              <meta charset=\"UTF-8\">\n              <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n              <title>Your New Affiliate Code</title>\n            </head>\n            <body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;\">\n              <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%; background-color: #f4f4f4; padding: 20px;\">\n                <tr>\n                  <td align=\"center\">\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">\n                      <!-- Header -->\n                      <tr>\n                        <td style=\"background-color: rgba(36, 155, 72, 1); padding: 30px 0; text-align: center;\">\n                        </td>\n                      </tr>\n                      \n                      <!-- Content -->\n                      <tr>\n                        <td style=\"padding: 40px 30px;\">\n                          <h1 style=\"margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: bold; text-align: center;\">\n                            Your New Affiliate Code\n                          </h1>\n                          <div style=\"background-color: #f8f8f8; border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 30px;\">\n                            <span style=\"font-family: monospace; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: rgba(36, 155, 72, 1);\">\n                              ".concat(affiliateCode, "\n                            </span>\n                          </div>\n                          <p style=\"margin: 0; color: #666666; font-size: 16px; line-height: 24px; text-align: center;\">\n                            Use this code for all your affiliate activities.\n                          </p>\n                        </td>\n                      </tr>\n                      \n                      <!-- Footer -->\n                      <tr>\n                        <td style=\"padding: 20px 30px; background-color: #f8f8f8; text-align: center;\">\n                          <p style=\"margin: 0; color: #999999; font-size: 14px;\">\n                            This is an automated message, please do not reply to this email.\n                          </p>\n                          <p style=\"margin: 10px 0 0; color: #999999; font-size: 14px;\">\n                            \xA9 2025 Payoor. All rights reserved.\n                          </p>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n            </body>\n          </html>\n        ")
           });
         case 4:
           data = _context.sent;
@@ -36,13 +36,13 @@ function _sendOtp() {
         case 9:
           _context.prev = 9;
           _context.t0 = _context["catch"](1);
-          throw new Error('email sending failed, try again');
+          throw new Error('Failed to send new affiliate code email, please try again');
         case 12:
         case "end":
           return _context.stop();
       }
     }, _callee, null, [[1, 9]]);
   }));
-  return _sendOtp.apply(this, arguments);
+  return _sendNewAffiliateCode.apply(this, arguments);
 }
-var _default = exports["default"] = sendOtp;
+var _default = exports["default"] = sendNewAffiliateCode;

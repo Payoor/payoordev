@@ -188,3 +188,18 @@ const updateAllVariantCountsCronJob = cron.schedule('0 0 * * *', async () => {
 });
 
 //updateAllVariantCountsCronJob.start();
+
+async function deleteAllAffiliates() {
+  try {
+    await Affiliate.deleteMany({});
+    await Coupon.deleteMany({});
+    console.log("All affiliates and coupons have been deleted successfully");
+  } catch (error) {
+    console.log("Error deleting affiliates:", error);
+  }
+}
+
+
+//updateAffiliate('638477', '40303', '200');
+
+//deleteAllAffiliates();

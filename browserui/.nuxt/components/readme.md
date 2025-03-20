@@ -10,6 +10,7 @@ You can directly use them in pages and other components without the need to impo
 - `<Cart>` | `<cart>` (components/Cart.vue)
 - `<CartItem>` | `<cart-item>` (components/CartItem.vue)
 - `<Categories>` | `<categories>` (components/Categories.vue)
+- `<CenterPopup>` | `<center-popup>` (components/CenterPopup.vue)
 - `<DeliveryDetails>` | `<delivery-details>` (components/DeliveryDetails.vue)
 - `<Header>` | `<header>` (components/Header.vue)
 - `<HeaderAuthenticated>` | `<header-authenticated>` (components/HeaderAuthenticated.vue)

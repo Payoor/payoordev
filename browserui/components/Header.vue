@@ -9,7 +9,10 @@
     </div>
 
     <div class="" v-if="authenticator_open">
-      <Authenticator :closeAuthenticator="closeAuthenticator" />
+      <Authenticator
+        :heading="'Please enter your details'"
+        :closeAuthenticator="closeAuthenticator"
+      />
     </div>
 
     <div v-if="available_locations">
@@ -38,7 +41,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   props: ["closecartprop"],
@@ -93,6 +96,8 @@ export default {
   },
   mounted() {
     this.$store.dispatch("getvaliduser");
+
+    console.log(this.$route.query);
   },
 };
 </script>

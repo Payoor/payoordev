@@ -85,4 +85,8 @@ adminRoute.get('/admin/get/transaction', authenticate, AdminController.getTransa
 
 adminRoute.get('/admin/get/dashboard-stats', authenticate, AdminController.getDashboardAggregateData);
 
+adminRoute.get('/admin/get/affiliates', authenticate, AdminController.getAffiliates)
+
+adminRoute.post('/admin/toggleactive/affiliate', authenticate, AdminController.toggleAffiliateActiveState)
+
 export default adminRoute;

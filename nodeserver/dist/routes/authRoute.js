@@ -11,6 +11,7 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var authRoute = (0, _express["default"])();
 authRoute.post('/auth/email/otp', _authController["default"].generateOtp);
 authRoute.post('/auth/email/verify', _authController["default"].verifyOtp);
+authRoute.post('/auth/affiliate/email/verify', _authController["default"].verifyAffiliateOtp);
 authRoute.post('/auth/signup', _authController["default"].handleSignUp);
 authRoute.post('/auth/genjwt', _authController["default"].generateJWT);
 authRoute.get('/auth/getvaliduser', _verifyToken["default"], _authController["default"].getValidUser);

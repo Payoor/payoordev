@@ -67,4 +67,6 @@ adminRoute.get('/admin/get/transactions', authenticate, _adminController["defaul
 adminRoute.get('/admin/get/user-transactions', authenticate, _adminController["default"].getUserTransactions);
 adminRoute.get('/admin/get/transaction', authenticate, _adminController["default"].getTransaction);
 adminRoute.get('/admin/get/dashboard-stats', authenticate, _adminController["default"].getDashboardAggregateData);
+adminRoute.get('/admin/get/affiliates', authenticate, _adminController["default"].getAffiliates);
+adminRoute.post('/admin/toggleactive/affiliate', authenticate, _adminController["default"].toggleAffiliateActiveState);
 var _default = exports["default"] = adminRoute;

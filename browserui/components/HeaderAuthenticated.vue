@@ -86,8 +86,10 @@
 
 <script>
 import { mapState } from "vuex";
+import utilsMixin from "@/mixins/utils";
 
 export default {
+  mixins: [utilsMixin],
   props: {
     helpPhoneNumber: {
       type: String,
@@ -117,10 +119,12 @@ export default {
   },
   methods: {
     goToHome() {
-      this.$router.push("/");
+      //this.$router.push("/");
+      this.pageRouter("/", {});
     },
     goToAboutUs() {
-      this.$router.push("/aboutus");
+      //this.$router.push("/aboutus");
+      this.pageRouter("/aboutus", {});
     },
     onOpenLocations() {
       this.openAvailLocations();

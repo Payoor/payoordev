@@ -9,7 +9,10 @@ var _order = _interopRequireDefault(require("../models/order"));
 var _redisClient = _interopRequireDefault(require("../configs/redisClient"));
 var _getOrderDetails = _interopRequireDefault(require("../services/payoor/getOrderDetails"));
 var _updateUserAddress = _interopRequireDefault(require("../services/payoor/updateUserAddress"));
-var _excluded = ["_id"];
+var _sendAffiliateCouponUsageAlert = _interopRequireDefault(require("../services/resend/sendAffiliateCouponUsageAlert"));
+var _affiliate = _interopRequireDefault(require("../models/affiliate"));
+var _coupon = _interopRequireDefault(require("../models/coupon"));
+var _excluded = ["_id", "metadata"];
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -528,7 +531,7 @@ var PaymentController = /*#__PURE__*/function () {
     key: "handleBaniPayment",
     value: function () {
       var _handleBaniPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
-        var merchant_private_key, headers, body, sig, hmac, digest, webhookData, order_ref, paymentStatus, PENDING_ORDER_ID, storedOrder, order, _id, orderWithoutId, newMongoOrder, user_id, user_current_address;
+        var merchant_private_key, headers, body, sig, hmac, digest, webhookData, order_ref, paymentStatus, PENDING_ORDER_ID, storedOrder, order, _id, metadata, orderWithoutId, affiliatecode, newMongoOrder, total, payout, user_id, user_current_address;
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) switch (_context8.prev = _context8.next) {
             case 0:
@@ -570,20 +573,19 @@ var PaymentController = /*#__PURE__*/function () {
             case 14:
               webhookData = JSON.parse(body);
               order_ref = webhookData.data.custom_data.order_ref;
-              paymentStatus = webhookData.data.pay_status;
-              console.log(order_ref, 'order_ref');
+              paymentStatus = webhookData.data.pay_status; //console.log(order_ref, 'order_ref');
               if (!(paymentStatus === 'paid')) {
-                _context8.next = 37;
+                _context8.next = 41;
                 break;
               }
               // Use direct key lookup instead of list search
               PENDING_ORDER_ID = "pending:".concat(order_ref);
-              _context8.next = 22;
+              _context8.next = 21;
               return _redisClient["default"].get(PENDING_ORDER_ID);
-            case 22:
+            case 21:
               storedOrder = _context8.sent;
               if (storedOrder) {
-                _context8.next = 26;
+                _context8.next = 25;
                 break;
               }
               console.error('Order not found:', order_ref);
@@ -591,17 +593,25 @@ var PaymentController = /*#__PURE__*/function () {
                 status: false,
                 message: "Order not found"
               }));
-            case 26:
+            case 25:
               order = JSON.parse(storedOrder);
-              _id = order._id, orderWithoutId = _objectWithoutProperties(order, _excluded);
+              _id = order._id, metadata = order.metadata, orderWithoutId = _objectWithoutProperties(order, _excluded);
+              console.log(metadata, 'metadata');
+              affiliatecode = metadata.affiliatecode;
               newMongoOrder = new _order["default"](_objectSpread(_objectSpread({}, orderWithoutId), {}, {
                 reference: webhookData.data.transaction_ref,
-                status: 'processing'
+                status: 'processing',
+                metadata: metadata
               }));
-              _context8.next = 31;
+              _context8.next = 32;
               return Promise.all([newMongoOrder.save(), _redisClient["default"].del(PENDING_ORDER_ID)]);
-            case 31:
+            case 32:
               (0, _getOrderDetails["default"])(newMongoOrder._id);
+              total = newMongoOrder.total;
+              payout = total * 0.1;
+              if (affiliatecode) {
+                updateAffiliate(affiliatecode, total, payout);
+              }
               user_id = newMongoOrder.userId;
               user_current_address = newMongoOrder.order_address;
               console.log(newMongoOrder, 'newMongoOrder======newMongoOrder======newMongoOrder');
@@ -613,13 +623,13 @@ var PaymentController = /*#__PURE__*/function () {
                   order: newMongoOrder
                 }
               }));
-            case 37:
+            case 41:
               return _context8.abrupt("return", res.status(200).json({
                 status: true,
                 message: "Webhook received"
               }));
-            case 40:
-              _context8.prev = 40;
+            case 44:
+              _context8.prev = 44;
               _context8.t0 = _context8["catch"](0);
               console.error('Webhook processing error:', _context8.t0);
               return _context8.abrupt("return", res.status(500).json({
@@ -627,11 +637,11 @@ var PaymentController = /*#__PURE__*/function () {
                 message: "Error processing webhook",
                 error: _context8.t0.message
               }));
-            case 44:
+            case 48:
             case "end":
               return _context8.stop();
           }
-        }, _callee8, null, [[0, 40]]);
+        }, _callee8, null, [[0, 44]]);
       }));
       function handleBaniPayment(_x14, _x15) {
         return _handleBaniPayment.apply(this, arguments);
@@ -655,3 +665,57 @@ var formatAmount = function formatAmount(amount) {
   });
   return formatter.format(amount);
 };
+function updateAffiliate(_x16, _x17, _x18) {
+  return _updateAffiliate.apply(this, arguments);
+}
+function _updateAffiliate() {
+  _updateAffiliate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(coupon, amountSpent, payout) {
+    var couponCode, affiliate, email;
+    return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+      while (1) switch (_context9.prev = _context9.next) {
+        case 0:
+          _context9.prev = 0;
+          _context9.next = 3;
+          return _coupon["default"].findOne({
+            code: coupon
+          });
+        case 3:
+          couponCode = _context9.sent;
+          _context9.next = 6;
+          return _affiliate["default"].findOne({
+            coupon: coupon
+          });
+        case 6:
+          affiliate = _context9.sent;
+          couponCode.usedCount = couponCode.usedCount + 1;
+          _context9.next = 10;
+          return couponCode.save();
+        case 10:
+          if (!(couponCode && affiliate)) {
+            _context9.next = 15;
+            break;
+          }
+          console.log(couponCode, affiliate);
+          email = affiliate.email;
+          _context9.next = 15;
+          return (0, _sendAffiliateCouponUsageAlert["default"])({
+            email: email,
+            affiliateCode: coupon,
+            amountSpent: amountSpent,
+            payout: payout
+          });
+        case 15:
+          _context9.next = 20;
+          break;
+        case 17:
+          _context9.prev = 17;
+          _context9.t0 = _context9["catch"](0);
+          console.log(_context9.t0);
+        case 20:
+        case "end":
+          return _context9.stop();
+      }
+    }, _callee9, null, [[0, 17]]);
+  }));
+  return _updateAffiliate.apply(this, arguments);
+}

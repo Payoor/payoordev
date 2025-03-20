@@ -45,6 +45,10 @@ const OrderSchema = new mongoose.Schema({
     },
     delivery_date: {
         type: String,
+    },
+    metadata: {
+        type: Object,
+        default: {}
     }
 });
 

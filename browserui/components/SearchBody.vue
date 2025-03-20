@@ -13,7 +13,10 @@
 </template>
 
 <script>
+import utilsMixin from "@/mixins/utils";
+
 export default {
+  mixins: [utilsMixin],
   props: ["closesearch"],
   data() {
     return {
@@ -33,12 +36,17 @@ export default {
       }
     },
     handleEnterKey() {
-      this.$router.push({
+      /*this.$router.push({
         path: "/search",
         query: {
           user: this.user_id,
           searchcontent: this.content,
         },
+      });*/
+
+      this.pageRouter("/search", {
+        user: this.user_id,
+        searchcontent: this.content,
       });
 
       this.closesearch();

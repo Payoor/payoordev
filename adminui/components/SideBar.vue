@@ -14,6 +14,12 @@
             </NuxtLink>
           </li>
           <li>
+            <NuxtLink to="/affiliates">
+              <DashboardIcon />
+              <span>Affiliates</span>
+            </NuxtLink>
+          </li>
+          <li>
             <NuxtLink to="/all-products">
               <CartIcon />
               <span>Products</span>

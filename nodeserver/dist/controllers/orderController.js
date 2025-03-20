@@ -425,12 +425,12 @@ var OrderController = /*#__PURE__*/function () {
     key: "updateDeliveryDateandAddress",
     value: function () {
       var _updateDeliveryDateandAddress = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res, next) {
-        var _req$body2, order_id, delivery_date, delivery_address, user, error, ORDERS_KEY, serializedOrders, _error3, orderIndex, _error4, orderStr, parsedOrder, updatedOrder, PENDING_ORDER_ID, storedOrder, order;
+        var _req$body2, order_id, delivery_date, delivery_address, couponcode, user, error, ORDERS_KEY, serializedOrders, _error3, orderIndex, _error4, orderStr, parsedOrder, updatedOrder, PENDING_ORDER_ID, storedOrder, order;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
               _context6.prev = 0;
-              _req$body2 = req.body, order_id = _req$body2.order_id, delivery_date = _req$body2.delivery_date, delivery_address = _req$body2.delivery_address;
+              _req$body2 = req.body, order_id = _req$body2.order_id, delivery_date = _req$body2.delivery_date, delivery_address = _req$body2.delivery_address, couponcode = _req$body2.couponcode;
               user = req.user;
               if (!(!order_id || !delivery_date)) {
                 _context6.next = 7;
@@ -469,7 +469,10 @@ var OrderController = /*#__PURE__*/function () {
               updatedOrder = _objectSpread(_objectSpread({}, parsedOrder), {}, {
                 delivery_date: delivery_date,
                 order_address: delivery_address,
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+                metadata: {
+                  affiliatecode: couponcode ? couponcode : null
+                }
               });
               _context6.next = 25;
               return _redisClient["default"].lSet(ORDERS_KEY, orderIndex, JSON.stringify(updatedOrder));

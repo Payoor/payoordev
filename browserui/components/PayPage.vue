@@ -107,7 +107,8 @@ export default {
           window.parent.postMessage(message, "*");
           console.log("Message sent to parent");
 
-          window.location.href = "https://payoor.store";
+          window.location.href = "https://payoor.store/paymentconfirmation";
+          //window.location.href = "http://localhost:3000/paymentconfirmation"
         },
       });
       handler;

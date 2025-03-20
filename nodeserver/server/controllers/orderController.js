@@ -297,7 +297,7 @@ class OrderController {
 
     async updateDeliveryDateandAddress(req, res, next) {
         try {
-            const { order_id, delivery_date, delivery_address } = req.body;
+            const { order_id, delivery_date, delivery_address, couponcode } = req.body;
             const { user } = req;
 
             if (!order_id || !delivery_date) {
@@ -330,7 +330,10 @@ class OrderController {
                 ...parsedOrder,
                 delivery_date,
                 order_address: delivery_address,
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+                metadata: {
+                    affiliatecode: couponcode ? couponcode : null
+                }
             };
 
             await redisClient.lSet(ORDERS_KEY, orderIndex, JSON.stringify(updatedOrder));

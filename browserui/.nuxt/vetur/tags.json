@@ -11,6 +11,9 @@
   "Categories": {
     "description": "Auto imported from components/Categories.vue"
   },
+  "CenterPopup": {
+    "description": "Auto imported from components/CenterPopup.vue"
+  },
   "DeliveryDetails": {
     "description": "Auto imported from components/DeliveryDetails.vue"
   },

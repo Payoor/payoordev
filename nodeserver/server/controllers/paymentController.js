@@ -5,6 +5,10 @@ import redisClient from "../configs/redisClient";
 import getOrderDetails from '../services/payoor/getOrderDetails';
 import updateUserAddress from '../services/payoor/updateUserAddress';
 
+import sendAffiliateCouponUsageAlert from "../services/resend/sendAffiliateCouponUsageAlert";
+
+import Affiliate from "../models/affiliate";
+import Coupon from "../models/coupon"
 
 const https = require('https');
 const crypto = require('crypto');
@@ -481,7 +485,7 @@ class PaymentController {
             const { order_ref } = webhookData.data.custom_data;
             const paymentStatus = webhookData.data.pay_status;
 
-            console.log(order_ref, 'order_ref');
+            //console.log(order_ref, 'order_ref');
 
             if (paymentStatus === 'paid') {
                 // Use direct key lookup instead of list search
@@ -497,12 +501,16 @@ class PaymentController {
                 }
 
                 const order = JSON.parse(storedOrder);
-                const { _id, ...orderWithoutId } = order;
+                const { _id, metadata, ...orderWithoutId } = order;
+
+                console.log(metadata, 'metadata')
+                const { affiliatecode } = metadata;
 
                 const newMongoOrder = new Order({
                     ...orderWithoutId,
                     reference: webhookData.data.transaction_ref,
-                    status: 'processing'
+                    status: 'processing',
+                    metadata
                 });
 
                 await Promise.all([
@@ -511,6 +519,13 @@ class PaymentController {
                 ]);
 
                 getOrderDetails(newMongoOrder._id);
+
+                const { total } = newMongoOrder;
+                const payout = total * 0.1;
+
+                if (affiliatecode) {
+                    updateAffiliate(affiliatecode, total, payout)
+                }
 
                 const user_id = newMongoOrder.userId;
                 const user_current_address = newMongoOrder.order_address;
@@ -564,4 +579,24 @@ const formatAmount = (amount) => {
     });
 
     return formatter.format(amount);
+}
+
+
+async function updateAffiliate(coupon, amountSpent, payout) {
+    try {
+        const couponCode = await Coupon.findOne({ code: coupon });
+        const affiliate = await Affiliate.findOne({ coupon: coupon });
+
+        couponCode.usedCount = couponCode.usedCount + 1;
+
+        await couponCode.save();
+
+        if (couponCode && affiliate) {
+            console.log(couponCode, affiliate)
+            const { email, } = affiliate
+            await sendAffiliateCouponUsageAlert({ email, affiliateCode: coupon, amountSpent, payout })
+        }
+    } catch (error) {
+        console.log(error)
+    }
 }

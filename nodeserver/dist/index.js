@@ -251,3 +251,34 @@ var updateAllVariantCountsCronJob = _nodeCron["default"].schedule('0 0 * * *', /
 });
 
 //updateAllVariantCountsCronJob.start();
+function deleteAllAffiliates() {
+  return _deleteAllAffiliates.apply(this, arguments);
+} //updateAffiliate('638477', '40303', '200');
+//deleteAllAffiliates();
+function _deleteAllAffiliates() {
+  _deleteAllAffiliates = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          _context5.next = 3;
+          return Affiliate.deleteMany({});
+        case 3:
+          _context5.next = 5;
+          return Coupon.deleteMany({});
+        case 5:
+          console.log("All affiliates and coupons have been deleted successfully");
+          _context5.next = 11;
+          break;
+        case 8:
+          _context5.prev = 8;
+          _context5.t0 = _context5["catch"](0);
+          console.log("Error deleting affiliates:", _context5.t0);
+        case 11:
+        case "end":
+          return _context5.stop();
+      }
+    }, _callee5, null, [[0, 8]]);
+  }));
+  return _deleteAllAffiliates.apply(this, arguments);
+}

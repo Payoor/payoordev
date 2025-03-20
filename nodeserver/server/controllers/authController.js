@@ -3,11 +3,15 @@ const jwt = require('jsonwebtoken');
 import User from "../models/user";
 import EmailOtp from "../models/emailOtp";
 import JwtToken from "../models/jwttoken";
+import Coupon from "../models/coupon";
+import Affiliate from "../models/affiliate";
 
 import generateOTP from "../services/payoor/generateOTP";
 import generateJWT from "../services/payoor/generateJWT";
 
 import sendOtp from "../services/resend/sendOtp";
+import sendAffiliateApplicationConfirmation from "../services/resend/sendAffiliateApplicationConfirmation";
+import sendNewAffiliateCode from "../services/resend/sendNewAffiliateCode";
 
 import redisClient from "../configs/redisClient";
 
@@ -16,6 +20,60 @@ class AuthController {
     async generateOtp(req, res, next) {
         try {
             const { email } = req.body;
+            const { affiliatesignup, affiliatesignin } = req.query;
+
+            const isAffiliateSignup = affiliatesignup === 'true';
+            const isAffiliateSignin = affiliatesignin === 'true';
+
+            console.log(affiliatesignup, affiliatesignin, 'check auth state for affiliate')
+
+            if (isAffiliateSignup) {
+                const { name, phonenumber, socialmedialink } = req.body;
+
+                const foundAffiliate = await Affiliate.findOne({ email });
+
+                if (foundAffiliate) {
+                    const response = {
+                        success: false,
+                        data: {
+                            message: 'affiliate already exists'
+                        }
+                    }
+
+                    return res.status(400).json(response);
+                }
+
+                const newAffiliate = new Affiliate({
+                    name,
+                    email,
+                    socialmedia: socialmedialink && socialmedialink.length ? socialmedialink : "",
+                    phonenumber,
+                });
+
+                const key = `affiliate:${email}:unverified`
+
+                await redisClient.set(key, JSON.stringify(newAffiliate));
+
+                //const value = await redisClient.get(key);
+
+                //console.log(value);
+            }
+
+            if (isAffiliateSignin) {
+                console.log('for affiliate sign in')
+                const foundAffiliate = await Affiliate.findOne({ email });
+
+                if (!foundAffiliate) {
+                    const response = {
+                        success: false,
+                        data: {
+                            message: 'affiliate does not exist sign up'
+                        }
+                    }
+
+                    return res.status(400).json(response);
+                }
+            }
 
             const otpcode = await generateOTP();
 
@@ -30,6 +88,7 @@ class AuthController {
                 email,
                 otp: otpcode
             });
+
             await newEmailOtp.save();
 
             const response = {
@@ -46,6 +105,155 @@ class AuthController {
         } catch (error) {
             console.log('error here', error, 'error here');
             error.payoorDevErrorMessage = 'Failed to send OTP';
+            next(error);
+        }
+    }
+
+    async verifyAffiliateOtp(req, res, next) {
+        try {
+            const { email, otp } = req.body;
+            let newaffiliate = false;
+
+            const isValid = await EmailOtp.findOne({
+                email,
+                otp,
+                used: false
+            });
+
+            if (isValid) {
+
+                if (isValid.isExpired()) {
+                    const expiredResponse = {
+                        success: false,
+                        data: {
+                            message: 'OTP has expired',
+                            timestamp: new Date().toISOString(),
+                            verified: false
+                        }
+                    };
+                    return res.status(400).json(expiredResponse);
+                }
+
+                await EmailOtp.updateOne(
+                    { email, otp },
+                    {
+                        $set: {
+                            used: true,
+                            verifiedAt: new Date()
+                        }
+                    }
+                );
+
+                let foundAffiliate;
+
+                const key = `affiliate:${email}:unverified`;
+
+                foundAffiliate = await Affiliate.findOne({ email });
+
+                if (!foundAffiliate) {
+                    foundAffiliate = await redisClient.get(key);
+
+                    if (foundAffiliate) {
+                        const newAffiliate = new Affiliate({
+                            ...JSON.parse(foundAffiliate)
+                        });
+
+                        console.log(newAffiliate, 'newAffiliate')
+
+                        await newAffiliate.save();
+                        const result = await redisClient.del(key);
+                        newaffiliate = true;
+
+                        if (newaffiliate) {
+                            const response = {
+                                success: true,
+                                data: {
+                                    message: "Your aplication has been created",
+                                }
+                            };
+
+                            sendAffiliateApplicationConfirmation({ email });
+
+                            return res.status(200).json(response);
+                        }
+                    }
+                }
+
+                if (!foundAffiliate) {
+                    const response = {
+                        success: false,
+                        data: {
+                            message: 'affiliate does not exist sign up'
+                        }
+                    };
+
+                    return res.status(400).json(response);
+                }
+
+                if (foundAffiliate && !foundAffiliate.isActive) {
+                    const response = {
+                        success: false,
+                        data: {
+                            message: 'affiliate has been deactivated'
+                        }
+                    };
+
+
+                    return res.status(400).json(response);
+                }
+
+
+                if (foundAffiliate && foundAffiliate.isActive) {
+                    const couponCode = await generateOTP();
+
+                    const affiliateCoupon = new Coupon({
+                        code: couponCode,
+                        affiliate: foundAffiliate._id,
+                        email,
+                        type: 'affiliate program',
+                        metadata: {
+                            email,
+                            type: 'affiliate program',
+                        }
+                    });
+
+                    await affiliateCoupon.save();
+
+                    const savedAffiliateCoupon = await Coupon.findOne({ _id: affiliateCoupon._id });
+
+                    if (savedAffiliateCoupon) {
+                        const response = {
+                            success: true,
+                            data: {
+                                message: "Your new affiliate coupon code",
+                                coupon: savedAffiliateCoupon
+                            }
+                        };
+
+                        await sendNewAffiliateCode({ email, affiliateCode: couponCode });
+
+                        res.status(200).json(response);
+                    } else {
+                        res.status(400).json({
+                            message: "failed to create coupon"
+                        });
+                    }
+                }
+            } else {
+                const invalidResponse = {
+                    success: false,
+                    data: {
+                        message: 'Invalid OTP',
+                        timestamp: new Date().toISOString(),
+                        verified: false
+                    }
+                };
+
+                res.status(400).json(invalidResponse);
+            }
+        } catch (error) {
+            console.log('error here', error, 'error here');
+            error.payoorDevErrorMessage = 'Failed to verify OTP';
             next(error);
         }
     }
@@ -77,6 +285,7 @@ class AuthController {
                             verified: false
                         }
                     };
+
                     return res.status(400).json(expiredResponse);
                 }
 

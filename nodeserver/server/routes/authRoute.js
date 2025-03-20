@@ -10,6 +10,8 @@ authRoute.post('/auth/email/otp', AuthController.generateOtp);
 
 authRoute.post('/auth/email/verify', AuthController.verifyOtp);
 
+authRoute.post('/auth/affiliate/email/verify', AuthController.verifyAffiliateOtp);
+
 authRoute.post('/auth/signup', AuthController.handleSignUp);
 
 authRoute.post('/auth/genjwt', AuthController.generateJWT);

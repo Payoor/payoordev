@@ -13,6 +13,11 @@ var _transaction = _interopRequireDefault(require("../models/transaction"));
 var _order = _interopRequireDefault(require("../models/order"));
 var _newProduct = _interopRequireDefault(require("../models/newProduct"));
 var _productVariant = _interopRequireDefault(require("../models/productVariant"));
+var _affiliate = _interopRequireDefault(require("../models/affiliate"));
+var _coupon = _interopRequireDefault(require("../models/coupon"));
+var _generateOTP = _interopRequireDefault(require("../services/payoor/generateOTP"));
+var _sendAffiliateActiveStatus = _interopRequireDefault(require("../services/resend/sendAffiliateActiveStatus"));
+var _sendAffiliateDeactivation = _interopRequireDefault(require("../services/resend/sendAffiliateDeactivation"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
@@ -29,6 +34,8 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 var path = require('path');
 var XLSX = require('xlsx');
 if (process.env.NODE_ENV !== 'production') {
@@ -1719,6 +1726,177 @@ var AdminController = /*#__PURE__*/function () {
       }
       return getDashboardAggregateData;
     }()
+  }, {
+    key: "getAffiliates",
+    value: function () {
+      var _getAffiliates = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee27(req, res, next) {
+        var affiltes;
+        return _regeneratorRuntime().wrap(function _callee27$(_context27) {
+          while (1) switch (_context27.prev = _context27.next) {
+            case 0:
+              _context27.prev = 0;
+              _context27.next = 3;
+              return _affiliate["default"].find({});
+            case 3:
+              affiltes = _context27.sent;
+              //console.log(affiltes)
+              res.status(200).json({
+                affiliates: affiltes
+              });
+              _context27.next = 12;
+              break;
+            case 7:
+              _context27.prev = 7;
+              _context27.t0 = _context27["catch"](0);
+              console.log('error here', _context27.t0, 'error here');
+              _context27.t0.payoorDevErrorMessage = 'Error deleting user';
+              next(_context27.t0);
+            case 12:
+            case "end":
+              return _context27.stop();
+          }
+        }, _callee27, null, [[0, 7]]);
+      }));
+      function getAffiliates(_x77, _x78, _x79) {
+        return _getAffiliates.apply(this, arguments);
+      }
+      return getAffiliates;
+    }()
+  }, {
+    key: "toggleAffiliateActiveState",
+    value: function () {
+      var _toggleAffiliateActiveState = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee28(req, res, next) {
+        var _req$body5, affiliate_id, email, isActive, activeStatus, updatedAffiliate, couponCode, affiliateCoupon, couponObjectId, coupons, deleteResult;
+        return _regeneratorRuntime().wrap(function _callee28$(_context28) {
+          while (1) switch (_context28.prev = _context28.next) {
+            case 0:
+              _context28.prev = 0;
+              _req$body5 = req.body, affiliate_id = _req$body5.affiliate_id, email = _req$body5.email, isActive = _req$body5.isActive;
+              activeStatus = typeof isActive === 'string' ? isActive === 'true' : Boolean(isActive);
+              _context28.next = 5;
+              return _affiliate["default"].findOneAndUpdate({
+                _id: affiliate_id
+              }, {
+                isActive: activeStatus
+              }, {
+                "new": true
+              });
+            case 5:
+              updatedAffiliate = _context28.sent;
+              if (updatedAffiliate) {
+                _context28.next = 8;
+                break;
+              }
+              return _context28.abrupt("return", res.status(404).json({
+                success: false,
+                message: 'Affiliate not found'
+              }));
+            case 8:
+              if (!activeStatus) {
+                _context28.next = 21;
+                break;
+              }
+              _context28.next = 11;
+              return (0, _generateOTP["default"])();
+            case 11:
+              couponCode = _context28.sent;
+              affiliateCoupon = new _coupon["default"]({
+                code: couponCode,
+                email: email,
+                affiliate: affiliate_id,
+                type: 'affiliate program',
+                metadata: {
+                  email: email,
+                  type: 'affiliate program'
+                }
+              });
+              _context28.next = 15;
+              return affiliateCoupon.save();
+            case 15:
+              _context28.next = 17;
+              return (0, _sendAffiliateActiveStatus["default"])({
+                email: email,
+                affiliateCode: affiliateCoupon.code
+              });
+            case 17:
+              _context28.next = 19;
+              return _affiliate["default"].findOneAndUpdate({
+                _id: affiliate_id
+              }, {
+                coupon: affiliateCoupon.code
+              }, {
+                "new": true
+              });
+            case 19:
+              _context28.next = 43;
+              break;
+            case 21:
+              _context28.prev = 21;
+              couponObjectId = typeof affiliate_id === 'string' ? new ObjectId(affiliate_id) : affiliate_id;
+              _context28.next = 25;
+              return _coupon["default"].find({
+                affiliate: couponObjectId
+              });
+            case 25:
+              coupons = _context28.sent;
+              if (!(coupons.length === 0)) {
+                _context28.next = 31;
+                break;
+              }
+              _context28.next = 29;
+              return (0, _sendAffiliateDeactivation["default"])({
+                email: email,
+                affiliateCode: "N/A",
+                reason: "Account deactivated"
+              });
+            case 29:
+              _context28.next = 37;
+              break;
+            case 31:
+              _context28.next = 33;
+              return _coupon["default"].deleteMany({
+                affiliate: couponObjectId
+              });
+            case 33:
+              deleteResult = _context28.sent;
+              console.log("Deleted ".concat(deleteResult.deletedCount, " coupons for affiliate ").concat(affiliate_id));
+              _context28.next = 37;
+              return (0, _sendAffiliateDeactivation["default"])({
+                email: email,
+                affiliateCode: coupons[0].code,
+                reason: "Account deactivated"
+              });
+            case 37:
+              _context28.next = 43;
+              break;
+            case 39:
+              _context28.prev = 39;
+              _context28.t0 = _context28["catch"](21);
+              console.error('Error during coupon deactivation:', _context28.t0);
+              throw new Error("Failed to deactivate affiliate coupons: ".concat(_context28.t0.message));
+            case 43:
+              return _context28.abrupt("return", res.status(200).json({
+                success: true,
+                message: "Affiliate status updated to ".concat(activeStatus ? 'active' : 'inactive'),
+                affiliate: updatedAffiliate
+              }));
+            case 46:
+              _context28.prev = 46;
+              _context28.t1 = _context28["catch"](0);
+              console.log('error here', _context28.t1, 'error here');
+              _context28.t1.payoorDevErrorMessage = 'Error updating affiliate active status';
+              next(_context28.t1);
+            case 51:
+            case "end":
+              return _context28.stop();
+          }
+        }, _callee28, null, [[0, 46], [21, 39]]);
+      }));
+      function toggleAffiliateActiveState(_x80, _x81, _x82) {
+        return _toggleAffiliateActiveState.apply(this, arguments);
+      }
+      return toggleAffiliateActiveState;
+    }()
   }]);
 }();
 var _default = exports["default"] = new AdminController();
@@ -1730,36 +1908,36 @@ function readExcelSheetFromFromPath(filepath) {
   var excelSheetData = XLSX.utils.sheet_to_json(worksheet);
   return excelSheetData;
 }
-function processExcelSheetData(_x77, _x78) {
+function processExcelSheetData(_x83, _x84) {
   return _processExcelSheetData.apply(this, arguments);
 }
 function _processExcelSheetData() {
-  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee27(excelSheetData, filepath) {
+  _processExcelSheetData = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee29(excelSheetData, filepath) {
     var index, productData;
-    return _regeneratorRuntime().wrap(function _callee27$(_context27) {
-      while (1) switch (_context27.prev = _context27.next) {
+    return _regeneratorRuntime().wrap(function _callee29$(_context29) {
+      while (1) switch (_context29.prev = _context29.next) {
         case 0:
-          _context27.t0 = _regeneratorRuntime().keys(excelSheetData);
+          _context29.t0 = _regeneratorRuntime().keys(excelSheetData);
         case 1:
-          if ((_context27.t1 = _context27.t0()).done) {
-            _context27.next = 8;
+          if ((_context29.t1 = _context29.t0()).done) {
+            _context29.next = 8;
             break;
           }
-          index = _context27.t1.value;
+          index = _context29.t1.value;
           productData = new _product["default"]({
             filepath: filepath,
             data: excelSheetData[index]
           });
-          _context27.next = 6;
+          _context29.next = 6;
           return productData.save();
         case 6:
-          _context27.next = 1;
+          _context29.next = 1;
           break;
         case 8:
         case "end":
-          return _context27.stop();
+          return _context29.stop();
       }
-    }, _callee27);
+    }, _callee29);
   }));
   return _processExcelSheetData.apply(this, arguments);
 }

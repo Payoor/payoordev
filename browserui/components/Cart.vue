@@ -35,8 +35,10 @@
 
 <script>
 import { mapState } from "vuex";
+import utilsMixin from "@/mixins/utils";
 
 export default {
+  mixins: [utilsMixin],
   props: ["closecart"],
   computed: {
     ...mapState("cart", {
@@ -45,7 +47,8 @@ export default {
   },
   methods: {
     checkoutOrder() {
-      this.$router.push("/checkout");
+      this.pageRouter("/checkout", {});
+      //this.$router.push("/checkout");
     },
   },
 };

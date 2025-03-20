@@ -3,12 +3,29 @@
     <div class="deliverydetails">
       <div class="deliverydetails__detail">
         <label class="deliverydetails__detail--label">Reachable Phone Number</label>
-        <input class="deliverydetails__detail--input" v-model="phoneNumber" />
+        <input
+          class="deliverydetails__detail--input"
+          :value="phoneNumber"
+          @input="$emit('update:phoneNumber', $event.target.value)"
+        />
       </div>
 
       <div class="deliverydetails__detail">
         <label class="deliverydetails__detail--label">Your current address</label>
-        <input class="deliverydetails__detail--input" v-model="userAddress" />
+        <input
+          class="deliverydetails__detail--input"
+          :value="userAddress"
+          @input="$emit('update:userAddress', $event.target.value)"
+        />
+      </div>
+
+      <div class="deliverydetails__detail">
+        <label class="deliverydetails__detail--label">Affiliate Code</label>
+        <input
+          class="deliverydetails__detail--input"
+          :value="affiliateCode"
+          @input="$emit('update:affiliateCode', $event.target.value)"
+        />
       </div>
 
       <div class="deliverydetails__detail">
@@ -33,13 +50,17 @@
 </template>
 
 <script>
+import utilsMixin from "@/mixins/utils";
+
 export default {
+  mixins: [utilsMixin],
   props: [
     "userAddress",
     "phoneNumber",
     "availableDates",
     "selectDeliveryDate",
     "deliveryDate",
+    "affiliateCode",
   ],
   data() {
     return {
@@ -55,6 +76,7 @@ export default {
   mounted() {
     console.log(this.availableDates);
   },
+  emits: ["update:phoneNumber", "update:userAddress", "update:affiliateCode"],
 };
 </script>
 
@@ -63,7 +85,7 @@ export default {
   &__detail {
     display: flex;
     flex-direction: column;
-    margin-bottom: 3.5rem;
+    margin-bottom: 2rem;
 
     &--label {
       font-size: 1.5rem;

@@ -25,7 +25,7 @@ export const addProduct = (data) => $http.post(`${serverUrl}/admin/create/produc
 
 export const addProductVariant = (productId, data) => $http.post(`${serverUrl}/admin/add/product-variant?id=${productId}`, data, getDefaultHeader());
 
-export const getAllProducts = ({page, limit, search}) => $http.get(`${serverUrl}/admin/get/products?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
+export const getAllProducts = ({ page, limit, search }) => $http.get(`${serverUrl}/admin/get/products?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
 
 export const getSingleProduct = (productId) => $http.get(`${serverUrl}/admin/get/product?id=${productId}`, getDefaultHeader());
 
@@ -49,13 +49,13 @@ export const generateBankTransferDetails = (data) => $http.post(`${serverUrl}/fl
 
 
 // User Management
-export const getUsers = ({page, limit, search}) => $http.get(`${serverUrl}/admin/get/users?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
+export const getUsers = ({ page, limit, search }) => $http.get(`${serverUrl}/admin/get/users?page=${page}&limit=${limit}&search=${search}`, getDefaultHeader());
 
 export const getUser = (userId) => $http.get(`${serverUrl}/admin/get/user?id=${userId}`, getDefaultHeader());
 
 
 // Order Management
-export const getOrders = ({page, limit, search, status}) => $http.get(`${serverUrl}/admin/get/orders?page=${page}&limit=${limit}&search=${search}&status=${status}`, getDefaultHeader());
+export const getOrders = ({ page, limit, search, status }) => $http.get(`${serverUrl}/admin/get/orders?page=${page}&limit=${limit}&search=${search}&status=${status}`, getDefaultHeader());
 
 export const getUserOrders = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-orders?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
@@ -63,7 +63,7 @@ export const getOrder = (orderId) => $http.get(`${serverUrl}/admin/get/order?id=
 
 
 // Transaction Management
-export const getTransactions = ({page, limit, search, status}) => $http.get(`${serverUrl}/admin/get/transactions?page=${page}&limit=${limit}&search=${search}&status=${status}`, getDefaultHeader());
+export const getTransactions = ({ page, limit, search, status }) => $http.get(`${serverUrl}/admin/get/transactions?page=${page}&limit=${limit}&search=${search}&status=${status}`, getDefaultHeader());
 
 export const getUserTransactions = (userId, page, limit) => $http.get(`${serverUrl}/admin/get/user-transactions?userId=${userId}&page=${page}&limit=${limit}`, getDefaultHeader());
 
@@ -76,3 +76,13 @@ export const getConversation = (userId) => $http.get(`${serverUrl}/messages?room
 
 
 export const getDashboardStats = () => $http.get(`${serverUrl}/admin/get/dashboard-stats`, getDefaultHeader());
+
+export const getAffiliates = () => $http.get(`${serverUrl}/admin/get/affiliates`, getDefaultHeader());
+
+export const toggleAffiliateActiveState = (affiliate_id, isActive, email) => {
+    return $http.post(
+        `${serverUrl}/admin/toggleactive/affiliate`,
+        { affiliate_id, isActive, email },
+        getDefaultHeader()
+    );
+};

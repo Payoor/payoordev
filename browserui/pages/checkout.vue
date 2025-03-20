@@ -124,10 +124,14 @@
             <div>
               <DeliveryDetails
                 :userAddress="userAddress"
+                @update:userAddress="userAddress = $event"
                 :phoneNumber="userPhoneNumber"
+                @update:phoneNumber="userPhoneNumber = $event"
                 :availableDates="availableDates"
                 :selectDeliveryDate="selectDeliveryDate"
                 :deliveryDate="deliveryDate"
+                :affiliateCode="affiliateCode"
+                @update:affiliateCode="affiliateCode = $event"
               />
             </div>
           </div>
@@ -140,21 +144,28 @@
 <script>
 import { mapState } from "vuex";
 import { url } from "@/api";
+import utilsMixin from "@/mixins/utils";
 
 export default {
+  mixins: [utilsMixin],
   data() {
     return {
       userAddress: "",
       userPhoneNumber: "",
       currentview: "orderitems", //or deliverydetails //orderitems
       deliveryDate: null,
+      affiliateCode: "",
       order: null,
     };
+  },
+  mounted() {
+    if (this.agentCode) {
+      this.affiliateCode = this.agentCode;
+    }
   },
   watch: {
     user: {
       handler(newValue) {
-        console.log(newValue);
         if (newValue) {
           if (newValue.userAddress) {
             this.userAddress = newValue.userAddress;
@@ -165,6 +176,9 @@ export default {
     },
   },
   computed: {
+    agentCode() {
+      return this.$route.query.affiliatecode;
+    },
     ...mapState("cart", {
       cart: (state) => state.items,
       cartTotal: (state) => state.total,
@@ -240,7 +254,6 @@ export default {
       }
 
       if (currentview === "deliverydetails") {
-        //this.getDeliveryDetails();
         this.createOrder();
       }
 
@@ -269,7 +282,6 @@ export default {
         const data = await response.json();
 
         if (data) {
-          //console.log(data.data.chatresponse.payload);
           const order = data.data.chatresponse.payload;
           this.order = order;
         }
@@ -290,6 +302,7 @@ export default {
             order_id: this.order._id,
             delivery_date: this.deliveryDate,
             delivery_address: this.userAddress,
+            couponcode: this.affiliateCode
           }),
         });
 
@@ -302,18 +315,14 @@ export default {
         if (data) {
           const order = data.data.order;
 
-          console.log(order);
-          this.$router.push({
-            path: "/pay",
-            query: {
-              userId: this.user._id,
-              email: this.user.email,
-              name: this.user.name,
-              phoneNumber: this.userPhoneNumber,
-              userAddress: this.userAddress,
-              orderId: order._id,
-              total: order.total,
-            },
+          this.pageRouter("/pay", {
+            userId: this.user._id,
+            email: this.user.email,
+            name: this.user.name,
+            phoneNumber: this.userPhoneNumber,
+            userAddress: this.userAddress,
+            orderId: order._id,
+            total: order.total,
           });
         }
       } catch (error) {
@@ -326,7 +335,6 @@ export default {
 
 <style scoped lang="scss">
 .checkout {
-  //height: 100vh;
   background: $white;
 
   &__container {
@@ -338,26 +346,18 @@ export default {
     padding-bottom: 5rem;
     overflow-x: hidden;
     overflow-y: scroll;
-    //background: blue;
   }
 
   &__section {
     position: relative;
-    //margin-top: 5rem;
     width: 60rem;
     padding-bottom: 7rem;
-    //height: 100%;
-    //height: 86rem;
-  }
-
-  &__orderitems {
   }
 
   &__main {
     display: flex;
     margin-top: 4rem;
     padding-bottom: 11rem;
-    //background: green;
   }
 
   &__h3 {
@@ -454,10 +454,6 @@ export default {
     padding-bottom: 3rem;
     z-index: 3;
     background: $white;
-
-    &--btnarea {
-      // width: 61rem;
-    }
   }
 }
 </style>

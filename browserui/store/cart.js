@@ -4,6 +4,7 @@ export const state = () => ({
     items: {},
     total: 0,
     subtotal: 0,
+    coupon: null
 })
 
 export const mutations = {

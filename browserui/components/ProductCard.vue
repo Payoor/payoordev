@@ -103,8 +103,10 @@
 
 <script>
 import { search_url } from "@/api";
+import utilsMixin from "@/mixins/utils";
 
 export default {
+  mixins: [utilsMixin],
   props: ["product"],
   data() {
     return {
@@ -144,12 +146,17 @@ export default {
   methods: {
     async searchtag(tag) {
       try {
-        this.$router.push({
+        /*this.$router.push({
           path: "/search",
           query: {
             user: this.user_id,
             searchcontent: `${tag}, ${this.searchcontent}`,
           },
+        });*/
+
+        this.pageRouter("/search", {
+          user: this.user_id,
+          searchcontent: `${tag}, ${this.searchcontent}`,
         });
 
         this.$store.dispatch("handlesearch", { query: tag });
