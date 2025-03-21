@@ -196,6 +196,10 @@ export default {
     margin: 0 auto;
 
     padding: 20px;
+
+    @include respond(tab-land) {
+      padding: 0;
+    }
   }
 }
 </style>
