@@ -22,7 +22,11 @@
               class="authenticator__displaymsg"
               :class="{ error }"
             >
-              {{ isAffiliateCodeView ? "Your affiliate application has been received!" : displayMsg }}
+              {{
+                isAffiliateCodeView
+                  ? "Your affiliate application has been received!"
+                  : displayMsg
+              }}
             </p>
 
             <div class="authenticator__form">
@@ -484,6 +488,8 @@ export default {
 <style scoped lang="scss">
 .authenticator {
   @include fullscreen-overlay();
+
+  overflow: scroll;
 
   &__content {
     @include modal-container();

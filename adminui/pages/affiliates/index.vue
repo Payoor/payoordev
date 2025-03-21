@@ -26,8 +26,8 @@
               <th>Name</th>
               <th>Email</th>
               <th>Phone Number</th>
-              <th>Social Media</th>
               <th>Code</th>
+              <th>Social Media</th>
               <th>Actions</th>
             </tr>
           </thead>

@@ -71,6 +71,10 @@
   &__grids {
     background: $faint-primary-color;
     border-radius: 1rem;
+
+    @include respond(tab-land) {
+      margin-bottom: 6rem;
+    }
   }
 
   &__grid {
