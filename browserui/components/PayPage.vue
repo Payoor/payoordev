@@ -103,12 +103,21 @@ export default {
         callback: (response) => {
           console.log("Bani Success Event:", response);
           const message = { type: "onSuccess", data: response };
-          console.log("Sending message to parent:", message);
+          //console.log("Sending message to parent:", message);
           window.parent.postMessage(message, "*");
-          console.log("Message sent to parent");
+          //console.log("Message sent to parent");
 
-          window.location.href = "https://payoor.store/paymentconfirmation";
-          //window.location.href = "http://localhost:3000/paymentconfirmation"
+          const urlParams = new URLSearchParams(window.location.search);
+          const affiliateCode = urlParams.get("affiliatecode");
+
+          let redirectUrl = "https://payoor.store/paymentconfirmation";
+
+          if (affiliateCode) {
+            redirectUrl += `?affiliatecode=${encodeURIComponent(affiliateCode)}`;
+          }
+
+          // Redirect
+          window.location.href = redirectUrl;
         },
       });
       handler;

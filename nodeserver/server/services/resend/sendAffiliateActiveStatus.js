@@ -4,12 +4,12 @@ import { Resend } from "resend";
 const resend = new Resend(`${process.env.RESEND_API_KEY}`);
 
 async function sendAffiliateActiveStatus({ email, affiliateCode }) {
-    try {
-        const data = await resend.emails.send({
-            from: "Payoor <updates@affiliate.payoor.store>",
-            to: [`${email}`],
-            subject: "Your Payoor Affiliate Application is Approved",
-            html: `
+  try {
+    const data = await resend.emails.send({
+      from: "Payoor <updates@affiliate.payoor.store>",
+      to: [`${email}`],
+      subject: "Your Payoor Affiliate Application is Approved",
+      html: `
           <!DOCTYPE html>
           <html>
             <head>
@@ -35,11 +35,11 @@ async function sendAffiliateActiveStatus({ email, affiliateCode }) {
                             Congratulations! Your application to the Payoor affiliate program has been accepted.
                           </p>
                           <p style="margin: 0 0 20px; color: #666666; font-size: 18px; line-height: 24px; text-align: center;">
-                            Your affiliate coupon code is:
+                            Your affiliate link is:
                           </p>
                           <div style="background-color: #f8f8f8; border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <span style="font-family: monospace; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: rgba(36, 155, 72, 1);">
-                              ${affiliateCode}
+                            https://payoor.store?affiliatecode=${affiliateCode}
                             </span>
                           </div>
                           
@@ -73,13 +73,13 @@ async function sendAffiliateActiveStatus({ email, affiliateCode }) {
             </body>
           </html>
         `
-        });
-        
-        console.log(data, 'data');
-        return data;
-    } catch (error) {
-        throw new Error('Failed to send affiliate approval email, please try again');
-    }
+    });
+
+    console.log(data, 'data');
+    return data;
+  } catch (error) {
+    throw new Error('Failed to send affiliate approval email, please try again');
+  }
 }
 
 export default sendAffiliateActiveStatus;

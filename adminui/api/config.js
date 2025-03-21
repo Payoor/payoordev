@@ -23,10 +23,13 @@ export const getFileHeader = () => {
   }
 };
 
-export const NODE_ENVIRONMENT = 'development';
+const isClient = typeof window !== 'undefined';
+const isLocalhost = isClient ? window.location.hostname.includes("localhost") : process.env.NODE_ENV === 'development';
+
+export const serverUrl = isLocalhost ? "http://localhost:3030" : "https://server.payoor.store";
 
 
 //export const serverUrl = 'http://localhost:3030';
 
-export const serverUrl = 'https://server.payoor.store';
+//export const serverUrl = 'https://server.payoor.store';
 
