@@ -8,12 +8,12 @@ import path from 'path';
 import cors from 'cors';
 import cron from 'node-cron';
 import bodyParser from 'body-parser';
+import mongoose from './db';
 import fs from 'fs';
 
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-//const mongoose = require('mongoose');
 const crypto = require('crypto');
 
 // 2. Import models
@@ -37,6 +37,9 @@ import errorHandler from './middleware/errorHandler';
 import requestLogger from './middleware/requestLogger';
 
 import updateAllVariantCounts from './utils/updateAllVariantCounts';
+
+import Affiliate from "./models/affiliate";
+import Coupon from "./models/coupon";
 
 // 5. Constants and configurations
 const PORT = process.env.PORT;
@@ -199,6 +202,25 @@ async function deleteAllAffiliates() {
   }
 }
 
+async function dropNameIndex() {
+  try {
+    const collection = mongoose.connection.collection('affiliates');
+    const indexes = await collection.indexes();
+    //console.log(indexes)
+    //await collection.dropIndex('name_1');
+    //const updatedIndexes = await collection.indexes();
+    //console.log(updatedIndexes);
+    const name_index = indexes.find(ind => ind.name === 'name_1')
+
+    if (name_index) {
+      await collection.dropIndex('name_1');
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+dropNameIndex();
 
 //updateAffiliate('638477', '40303', '200');
 

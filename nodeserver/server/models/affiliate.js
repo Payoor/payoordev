@@ -4,11 +4,13 @@ const AffiliateSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: false 
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     socialmedia: {
         type: String,

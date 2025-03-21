@@ -24,7 +24,7 @@
             >
               {{
                 isAffiliateCodeView
-                  ? "Your affiliate application has been received!"
+                  ? "Your affiliate application has been received! You'll be receiving email updates on your application"
                   : displayMsg
               }}
             </p>
@@ -493,6 +493,15 @@ export default {
 
   &__content {
     @include modal-container();
+
+    @include respond(tab-port) {
+      height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+      overflow-y: scroll;
+
+      margin-top: 0;
+    }
   }
 
   &__body {
@@ -504,6 +513,12 @@ export default {
     display: flex;
     justify-content: space-between;
     overflow: hidden;
+
+    @include respond(tab-port) {
+      width: 100vw;
+      min-width: 100vw;
+      justify-content: center;
+    }
   }
 
   &__header {
@@ -511,6 +526,10 @@ export default {
       color: $primary-color;
       font-size: 3rem;
       font-weight: 500;
+
+      @include respond(tab-port) {
+        font-size: 4rem;
+      }
 
       & span {
       }
@@ -525,6 +544,10 @@ export default {
     & h4 {
       font-weight: 400;
       font-size: 1.5rem;
+
+      @include respond(tab-port) {
+        font-size: 3rem;
+      }
     }
   }
 
@@ -535,11 +558,20 @@ export default {
       flex-direction: column;
       align-items: center;
       padding-top: 15rem;
+
+      @include respond(tab-port) {
+        padding: 0 1.5rem;
+        padding-top: 10rem;
+      }
     }
 
     &.bike {
       background: $primary-color;
       width: 62rem;
+
+      @include respond(tab-port) {
+        display: none;
+      }
     }
 
     & figure {
@@ -571,6 +603,15 @@ export default {
       font-size: 1.8rem;
       text-align: center;
       color: rgba($primary-color, 1);
+
+      @include respond(tab-port) {
+        height: 17rem;
+        width: 8rem;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-size: 3rem;
+        margin: 0 1rem;
+      }
 
       &.occupied {
         border: 1px solid rgba($primary-color, 0.8);
@@ -613,6 +654,10 @@ export default {
   &__form {
     width: 50rem;
 
+    @include respond(tab-port) {
+      width: auto;
+    }
+
     &--email {
       display: flex;
       flex-direction: column;
@@ -626,6 +671,14 @@ export default {
         padding: 1.3rem 1rem;
         margin-bottom: 2rem;
         font-size: 1.5rem;
+
+        @include respond(tab-port) {
+          width: 100%;
+          //height: 7rem;
+          font-size: 2.2rem;
+          padding: 2.3rem 2rem;
+          margin-bottom: 3rem;
+        }
 
         &:disabled {
           background-color: rgba($black, 0.05);
@@ -653,6 +706,11 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        @include respond(tab-port) {
+          padding: 3rem;
+          font-size: 3rem;
+        }
       }
     }
 
@@ -712,6 +770,11 @@ export default {
 
     margin-top: 1rem;
     margin-bottom: 3rem;
+
+    @include respond(tab-port) {
+      font-size: 2.4rem;
+      margin-top: 5rem;
+    }
   }
 }
 
