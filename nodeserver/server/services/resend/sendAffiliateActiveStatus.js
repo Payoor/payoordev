@@ -43,15 +43,22 @@ async function sendAffiliateActiveStatus({ email, affiliateCode }) {
                             </span>
                           </div>
                           
-                          <!--<p style="margin: 25px 0; color: #666666; font-size: 16px; line-height: 24px; text-align: center;">
-                            Need more affiliate codes? Generate them here:
+                          <p style="margin: 30px 0 10px; color: #333333; font-size: 18px; font-weight: bold; text-align: center;">
+                            How to Start Earning:
+                          </p>
+                          <ul style="color: #666666; font-size: 16px; line-height: 24px; padding-left: 20px;">
+                            <li>✅ Share your link with friends, family, and followers.</li>
+                            <li>✅ Earn 11% commission instantly when they make a purchase.</li>
+                            <li>✅ Get an extra ₦15,000 instantly when 10 people you refer make a purchase within a week!</li>
+                          </ul>
+                          
+                          <p style="margin: 20px 0; color: #333333; font-size: 16px; font-weight: bold; text-align: center;">
+                            Bonus Tip: First-time users get FREE delivery, making it easier for them to try Payoor! 🚀
                           </p>
                           
-                          <div style="text-align: center; margin-bottom: 20px;">
-                            <a href="https://payoor.store/affiliateprogram/generate-codes" style="display: inline-block; padding: 12px 24px; background-color: rgba(36, 155, 72, 1); color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
-                              Generate More Codes
-                            </a>
-                          </div>-->
+                          <p style="margin: 25px 0; color: #666666; font-size: 16px; line-height: 24px; text-align: center;">
+                            Start sharing now and watch your earnings grow.
+                          </p>
                         </td>
                       </tr>
                       
@@ -81,5 +88,6 @@ async function sendAffiliateActiveStatus({ email, affiliateCode }) {
     throw new Error('Failed to send affiliate approval email, please try again');
   }
 }
+
 
 export default sendAffiliateActiveStatus;
