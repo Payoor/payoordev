@@ -11,6 +11,7 @@ const _91ab560a = () => interopDefault(import('../pages/onboarding/index.vue' /*
 const _25015d9b = () => interopDefault(import('../pages/pay.vue' /* webpackChunkName: "pages/pay" */))
 const _82433b88 = () => interopDefault(import('../pages/payment/index.vue' /* webpackChunkName: "pages/payment/index" */))
 const _90160aa4 = () => interopDefault(import('../pages/paymentconfirmation.vue' /* webpackChunkName: "pages/paymentconfirmation" */))
+const _dfad5f5a = () => interopDefault(import('../pages/paystackconfirm.vue' /* webpackChunkName: "pages/paystackconfirm" */))
 const _92a9d7f6 = () => interopDefault(import('../pages/search.vue' /* webpackChunkName: "pages/search" */))
 const _159cad2e = () => interopDefault(import('../pages/try.vue' /* webpackChunkName: "pages/try" */))
 const _092333a0 = () => interopDefault(import('../pages/onboarding/address/index.vue' /* webpackChunkName: "pages/onboarding/address/index" */))
@@ -57,6 +58,10 @@ export const routerOptions = {
     path: "/paymentconfirmation",
     component: _90160aa4,
     name: "paymentconfirmation"
+  }, {
+    path: "/paystackconfirm",
+    component: _dfad5f5a,
+    name: "paystackconfirm"
   }, {
     path: "/search",
     component: _92a9d7f6,

@@ -42,6 +42,12 @@
     "chunkName": "pages/paymentconfirmation"
   },
   {
+    "name": "paystackconfirm",
+    "path": "/paystackconfirm",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/paystackconfirm.vue",
+    "chunkName": "pages/paystackconfirm"
+  },
+  {
     "name": "search",
     "path": "/search",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/search.vue",
