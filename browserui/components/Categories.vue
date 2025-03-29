@@ -83,6 +83,13 @@
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 9rem;
 
+    @include respond(tab-port) {
+      display: grid;
+      padding: 2rem;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 1rem;
+    }
+
     &:nth-child(1) {
       padding-bottom: 1.5rem;
     }

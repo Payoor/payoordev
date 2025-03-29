@@ -36,7 +36,7 @@ function _getOrderDetails() {
         case 3:
           order = _context.sent;
           if (!order) {
-            _context.next = 21;
+            _context.next = 20;
             break;
           }
           itemsWithUnits = getItemUnits(order.items);
@@ -56,7 +56,7 @@ function _getOrderDetails() {
           _context.next = 19;
           return _redisClient["default"].set("".concat(user_data_redis_store, ":completed_orders"), user.completed_orders);
         case 19:
-          console.log(user_name, user_email, itemsWithUnits, order_address, total);
+          //console.log(user_name, user_email, itemsWithUnits, order_address, total);
           (0, _sendPaymentConfirmation["default"])({
             email: user_email,
             orderdetails: {
@@ -65,18 +65,18 @@ function _getOrderDetails() {
               order_address: order_address
             }
           });
-        case 21:
-          _context.next = 26;
+        case 20:
+          _context.next = 25;
           break;
-        case 23:
-          _context.prev = 23;
+        case 22:
+          _context.prev = 22;
           _context.t0 = _context["catch"](0);
           console.error('Error updating completed orders:', _context.t0);
-        case 26:
+        case 25:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 23]]);
+    }, _callee, null, [[0, 22]]);
   }));
   return _getOrderDetails.apply(this, arguments);
 }

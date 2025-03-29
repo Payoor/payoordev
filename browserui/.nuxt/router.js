@@ -9,6 +9,7 @@ const _f6e09692 = () => interopDefault(import('../pages/affiliateprogram/index.v
 const _472e1f63 = () => interopDefault(import('../pages/checkout.vue' /* webpackChunkName: "pages/checkout" */))
 const _91ab560a = () => interopDefault(import('../pages/onboarding/index.vue' /* webpackChunkName: "pages/onboarding/index" */))
 const _25015d9b = () => interopDefault(import('../pages/pay.vue' /* webpackChunkName: "pages/pay" */))
+const _82433b88 = () => interopDefault(import('../pages/payment/index.vue' /* webpackChunkName: "pages/payment/index" */))
 const _90160aa4 = () => interopDefault(import('../pages/paymentconfirmation.vue' /* webpackChunkName: "pages/paymentconfirmation" */))
 const _92a9d7f6 = () => interopDefault(import('../pages/search.vue' /* webpackChunkName: "pages/search" */))
 const _159cad2e = () => interopDefault(import('../pages/try.vue' /* webpackChunkName: "pages/try" */))
@@ -48,6 +49,10 @@ export const routerOptions = {
     path: "/pay",
     component: _25015d9b,
     name: "pay"
+  }, {
+    path: "/payment",
+    component: _82433b88,
+    name: "payment"
   }, {
     path: "/paymentconfirmation",
     component: _90160aa4,

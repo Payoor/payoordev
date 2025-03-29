@@ -46,6 +46,9 @@ export default {
 
 <style scoped lang="scss">
 .landingpage {
+  width: 100vw;
+  overflow: hidden;
+  
   &__content {
     background: $primary-color;
   }

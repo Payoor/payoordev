@@ -5,7 +5,136 @@ import Order from "../models/order";
 
 import redisClient from "../configs/redisClient";
 
+const ORDERSPENDING = 'orders:pending';
+
 class OrderController {
+
+    async saveOrderToRedis(req, res, next) {
+        try {
+            const { order, order_address } = req.body;
+            const { user } = req;
+
+            const userDataRedisStore = `userdata:${user.userId.toString()}`;
+            const completedOrders = await redisClient.get(`${userDataRedisStore}:completed_orders`);
+            const userAddress = await redisClient.hGet(userDataRedisStore, 'userAddress');
+
+            const items = [];
+            const cart_total = order.totalAmount;
+            const delivery_fee = completedOrders && completedOrders == 0 ? 0 : 3500;
+            const service_charge = cart_total * 0.05;
+            const order_items = order.items;
+            const order_total = cart_total + delivery_fee + service_charge;
+
+            const order_id = uuidv4();
+
+            Object.entries(order_items).forEach(([id, item]) => {
+                const product_data = {
+                    product_id: id,
+                    product_name: item.name,
+                    product_units: sanitizeUnitKeys(item.units)
+                }
+                items.push(product_data);
+            });
+
+            const newOrder = {
+                _id: order_id,
+                userId: user.userId,
+                items,
+                order_address: order_address.length ? order_address : userAddress,
+                cart_total,
+                delivery_fee,
+                service_charge,
+                total: order_total,
+                status: 'pending',
+                createdAt: `${Date.now()}`,
+                delivery_date: 'not set',
+                reference: ''
+            }
+
+            const orderString = JSON.stringify(newOrder);
+
+            redisClient.set(`${userDataRedisStore}:pendingorder`, orderString);
+
+            const pendingOrder = await redisClient.lPush(
+                ORDERSPENDING, [`${orderString}`]
+            );
+
+            const response = {
+                success: true,
+                data: {
+                    message: 'Success response',
+                    chatresponse: {
+                        orderStatus: newOrder.status,
+                        orderId: newOrder._id,
+                        payload: newOrder
+                    }
+                }
+            };
+
+            res.status(200).json(response);
+        } catch (error) {
+            console.log('Error creating order:', error);
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Error creating order';
+            next(error);
+        }
+    }
+
+    async confirmOrder(req, res, next) {
+        try {
+            const { delivery_date, delivery_address, couponcode } = req.body;
+            const { user } = req;
+
+            const userDataRedisStore = `userdata:${user.userId.toString()}`;
+            const pendingOrder = await redisClient.get(`${userDataRedisStore}:pendingorder`);
+
+            const parsedPendingOrder = {
+                ...JSON.parse(pendingOrder),
+                delivery_date,
+                order_address: delivery_address,
+                metadata: {
+                    affiliatecode: couponcode ? couponcode : null
+                }
+            };
+
+            const pendingOrdersLength = await redisClient.lLen(ORDERSPENDING);
+            const pendingOrders = await redisClient.lRange(ORDERSPENDING, 0, pendingOrdersLength);
+
+            for (let i = 0; i < pendingOrders.length; i++) {
+                const orderStr = pendingOrders[i];
+                let order = JSON.parse(orderStr);
+
+                if (order._id === parsedPendingOrder._id) {
+                    order = parsedPendingOrder;
+
+                    redisClient.lRem(ORDERSPENDING, 1, orderStr);
+
+                    const orderString = JSON.stringify(order);
+
+                    const pendingOrder = await redisClient.lPush(
+                        ORDERSPENDING, [`${orderString}`]
+                    );
+
+                    redisClient.set(`${userDataRedisStore}:pendingorder`, orderString);
+
+                    //console.log(orderString, pendingOrder)
+                }
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Delivery date and address updated successfully',
+                data: {
+                    order: parsedPendingOrder
+                }
+            });
+        } catch (error) {
+            console.log('Error creating order:', error);
+            error.statusCode = 400;
+            error.payoorDevErrorMessage = 'Error creating order';
+            next(error);
+        }
+    }
 
     async createOrder(req, res, next) {
         try {

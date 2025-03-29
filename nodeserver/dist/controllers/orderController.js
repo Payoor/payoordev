@@ -9,13 +9,13 @@ var _order2 = _interopRequireDefault(require("../models/order"));
 var _redisClient = _interopRequireDefault(require("../configs/redisClient"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -32,34 +32,38 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var _require = require('uuid'),
   uuidv4 = _require.v4;
+var ORDERSPENDING = 'orders:pending';
 var OrderController = /*#__PURE__*/function () {
   function OrderController() {
     _classCallCheck(this, OrderController);
   }
   return _createClass(OrderController, [{
-    key: "createOrder",
+    key: "saveOrderToRedis",
     value: function () {
-      var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
-        var _req$body, order, order_address, user, user_data_redis_store, completedOrders, ORDERS_KEY, items, cart_total, delivery_fee, service_charge, order_items, order_total, userData, userAddress, order_id, newOrder, serializedOrder, newLength, orderSummary, response;
+      var _saveOrderToRedis = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+        var _req$body, order, order_address, user, userDataRedisStore, completedOrders, userAddress, items, cart_total, delivery_fee, service_charge, order_items, order_total, order_id, newOrder, orderString, pendingOrder, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
               _req$body = req.body, order = _req$body.order, order_address = _req$body.order_address;
               user = req.user;
-              user_data_redis_store = "userdata:".concat(user.userId.toString());
+              userDataRedisStore = "userdata:".concat(user.userId.toString());
               _context.next = 6;
-              return _redisClient["default"].get("".concat(user_data_redis_store, ":completed_orders"));
+              return _redisClient["default"].get("".concat(userDataRedisStore, ":completed_orders"));
             case 6:
               completedOrders = _context.sent;
-              //console.log(completedOrders, 'completedOrders');
-              ORDERS_KEY = "orders:".concat(user.userId);
+              _context.next = 9;
+              return _redisClient["default"].hGet(userDataRedisStore, 'userAddress');
+            case 9:
+              userAddress = _context.sent;
               items = [];
               cart_total = order.totalAmount;
               delivery_fee = completedOrders && completedOrders == 0 ? 0 : 3500;
               service_charge = cart_total * 0.05;
               order_items = order.items;
               order_total = cart_total + delivery_fee + service_charge;
+              order_id = uuidv4();
               Object.entries(order_items).forEach(function (_ref) {
                 var _ref2 = _slicedToArray(_ref, 2),
                   id = _ref2[0],
@@ -71,18 +75,188 @@ var OrderController = /*#__PURE__*/function () {
                 };
                 items.push(product_data);
               });
-              _context.next = 17;
-              return _redisClient["default"].hGetAll(user_data_redis_store);
-            case 17:
-              userData = _context.sent;
-              if (!userData) {
-                _context.next = 34;
+              newOrder = {
+                _id: order_id,
+                userId: user.userId,
+                items: items,
+                order_address: order_address.length ? order_address : userAddress,
+                cart_total: cart_total,
+                delivery_fee: delivery_fee,
+                service_charge: service_charge,
+                total: order_total,
+                status: 'pending',
+                createdAt: "".concat(Date.now()),
+                delivery_date: 'not set',
+                reference: ''
+              };
+              orderString = JSON.stringify(newOrder);
+              _redisClient["default"].set("".concat(userDataRedisStore, ":pendingorder"), orderString);
+              _context.next = 23;
+              return _redisClient["default"].lPush(ORDERSPENDING, ["".concat(orderString)]);
+            case 23:
+              pendingOrder = _context.sent;
+              response = {
+                success: true,
+                data: {
+                  message: 'Success response',
+                  chatresponse: {
+                    orderStatus: newOrder.status,
+                    orderId: newOrder._id,
+                    payload: newOrder
+                  }
+                }
+              };
+              res.status(200).json(response);
+              _context.next = 34;
+              break;
+            case 28:
+              _context.prev = 28;
+              _context.t0 = _context["catch"](0);
+              console.log('Error creating order:', _context.t0);
+              _context.t0.statusCode = 400;
+              _context.t0.payoorDevErrorMessage = 'Error creating order';
+              next(_context.t0);
+            case 34:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, null, [[0, 28]]);
+      }));
+      function saveOrderToRedis(_x, _x2, _x3) {
+        return _saveOrderToRedis.apply(this, arguments);
+      }
+      return saveOrderToRedis;
+    }()
+  }, {
+    key: "confirmOrder",
+    value: function () {
+      var _confirmOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
+        var _req$body2, delivery_date, delivery_address, couponcode, user, userDataRedisStore, pendingOrder, parsedPendingOrder, pendingOrdersLength, pendingOrders, i, orderStr, order, orderString, _pendingOrder;
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.prev = 0;
+              _req$body2 = req.body, delivery_date = _req$body2.delivery_date, delivery_address = _req$body2.delivery_address, couponcode = _req$body2.couponcode;
+              user = req.user;
+              userDataRedisStore = "userdata:".concat(user.userId.toString());
+              _context2.next = 6;
+              return _redisClient["default"].get("".concat(userDataRedisStore, ":pendingorder"));
+            case 6:
+              pendingOrder = _context2.sent;
+              parsedPendingOrder = _objectSpread(_objectSpread({}, JSON.parse(pendingOrder)), {}, {
+                delivery_date: delivery_date,
+                order_address: delivery_address,
+                metadata: {
+                  affiliatecode: couponcode ? couponcode : null
+                }
+              });
+              _context2.next = 10;
+              return _redisClient["default"].lLen(ORDERSPENDING);
+            case 10:
+              pendingOrdersLength = _context2.sent;
+              _context2.next = 13;
+              return _redisClient["default"].lRange(ORDERSPENDING, 0, pendingOrdersLength);
+            case 13:
+              pendingOrders = _context2.sent;
+              i = 0;
+            case 15:
+              if (!(i < pendingOrders.length)) {
+                _context2.next = 29;
                 break;
               }
-              _context.next = 21;
+              orderStr = pendingOrders[i];
+              order = JSON.parse(orderStr);
+              if (!(order._id === parsedPendingOrder._id)) {
+                _context2.next = 26;
+                break;
+              }
+              order = parsedPendingOrder;
+              _redisClient["default"].lRem(ORDERSPENDING, 1, orderStr);
+              orderString = JSON.stringify(order);
+              _context2.next = 24;
+              return _redisClient["default"].lPush(ORDERSPENDING, ["".concat(orderString)]);
+            case 24:
+              _pendingOrder = _context2.sent;
+              _redisClient["default"].set("".concat(userDataRedisStore, ":pendingorder"), orderString);
+
+              //console.log(orderString, pendingOrder)
+            case 26:
+              i++;
+              _context2.next = 15;
+              break;
+            case 29:
+              return _context2.abrupt("return", res.status(200).json({
+                success: true,
+                message: 'Delivery date and address updated successfully',
+                data: {
+                  order: parsedPendingOrder
+                }
+              }));
+            case 32:
+              _context2.prev = 32;
+              _context2.t0 = _context2["catch"](0);
+              console.log('Error creating order:', _context2.t0);
+              _context2.t0.statusCode = 400;
+              _context2.t0.payoorDevErrorMessage = 'Error creating order';
+              next(_context2.t0);
+            case 38:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, null, [[0, 32]]);
+      }));
+      function confirmOrder(_x4, _x5, _x6) {
+        return _confirmOrder.apply(this, arguments);
+      }
+      return confirmOrder;
+    }()
+  }, {
+    key: "createOrder",
+    value: function () {
+      var _createOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+        var _req$body3, order, order_address, user, user_data_redis_store, completedOrders, ORDERS_KEY, items, cart_total, delivery_fee, service_charge, order_items, order_total, userData, userAddress, order_id, newOrder, serializedOrder, newLength, orderSummary, response;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              _req$body3 = req.body, order = _req$body3.order, order_address = _req$body3.order_address;
+              user = req.user;
+              user_data_redis_store = "userdata:".concat(user.userId.toString());
+              _context3.next = 6;
+              return _redisClient["default"].get("".concat(user_data_redis_store, ":completed_orders"));
+            case 6:
+              completedOrders = _context3.sent;
+              //console.log(completedOrders, 'completedOrders');
+              ORDERS_KEY = "orders:".concat(user.userId);
+              items = [];
+              cart_total = order.totalAmount;
+              delivery_fee = completedOrders && completedOrders == 0 ? 0 : 3500;
+              service_charge = cart_total * 0.05;
+              order_items = order.items;
+              order_total = cart_total + delivery_fee + service_charge;
+              Object.entries(order_items).forEach(function (_ref3) {
+                var _ref4 = _slicedToArray(_ref3, 2),
+                  id = _ref4[0],
+                  item = _ref4[1];
+                var product_data = {
+                  product_id: id,
+                  product_name: item.name,
+                  product_units: sanitizeUnitKeys(item.units)
+                };
+                items.push(product_data);
+              });
+              _context3.next = 17;
+              return _redisClient["default"].hGetAll(user_data_redis_store);
+            case 17:
+              userData = _context3.sent;
+              if (!userData) {
+                _context3.next = 34;
+                break;
+              }
+              _context3.next = 21;
               return _redisClient["default"].hGet(user_data_redis_store, 'userAddress');
             case 21:
-              userAddress = _context.sent;
+              userAddress = _context3.sent;
               order_id = uuidv4();
               newOrder = {
                 // Renamed from order to newOrder
@@ -100,10 +274,10 @@ var OrderController = /*#__PURE__*/function () {
                 reference: ''
               };
               serializedOrder = JSON.stringify(newOrder); //console.log('About to push to Redis...');
-              _context.next = 27;
+              _context3.next = 27;
               return _redisClient["default"].rPush(ORDERS_KEY, serializedOrder);
             case 27:
-              newLength = _context.sent;
+              newLength = _context3.sent;
               //console.log('Redis push complete, new length:', newLength);
               orderSummary = "Your order has been created. Below is your order summary:\n    \n    Order Details\n    -----------------\n    Cart Total: \u20A6".concat(cart_total.toLocaleString(), "\n    Delivery Fee: \u20A6").concat(delivery_fee.toLocaleString(), "\n    Service Charge: \u20A6").concat(service_charge.toLocaleString(), "\n    Total Amount: \u20A6").concat(order_total.toLocaleString(), "\n    Status: Pending Payment\n    Delivery Address: ").concat(userAddress, "\n    \n    Please Click the Pay Button to make payment\n    \n    Click the pay now button to complete payment.");
               console.log(newOrder, completedOrders, 'newOrder');
@@ -124,7 +298,7 @@ var OrderController = /*#__PURE__*/function () {
                 }
               };
               res.status(200).json(response);
-              _context.next = 35;
+              _context3.next = 35;
               break;
             case 34:
               res.status(404).json({
@@ -133,22 +307,22 @@ var OrderController = /*#__PURE__*/function () {
                 error: 'User data not found' // Fixed error reference
               });
             case 35:
-              _context.next = 43;
+              _context3.next = 43;
               break;
             case 37:
-              _context.prev = 37;
-              _context.t0 = _context["catch"](0);
-              console.log('Error creating order:', _context.t0);
-              _context.t0.statusCode = 400;
-              _context.t0.payoorDevErrorMessage = 'Error creating order';
-              next(_context.t0);
+              _context3.prev = 37;
+              _context3.t0 = _context3["catch"](0);
+              console.log('Error creating order:', _context3.t0);
+              _context3.t0.statusCode = 400;
+              _context3.t0.payoorDevErrorMessage = 'Error creating order';
+              next(_context3.t0);
             case 43:
             case "end":
-              return _context.stop();
+              return _context3.stop();
           }
-        }, _callee, null, [[0, 37]]);
+        }, _callee3, null, [[0, 37]]);
       }));
-      function createOrder(_x, _x2, _x3) {
+      function createOrder(_x7, _x8, _x9) {
         return _createOrder.apply(this, arguments);
       }
       return createOrder;
@@ -156,22 +330,22 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getOrder",
     value: function () {
-      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
+      var _getOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res, next) {
         var orderId, order;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
             case 0:
-              _context2.prev = 0;
+              _context4.prev = 0;
               orderId = req.query.id;
-              _context2.next = 4;
+              _context4.next = 4;
               return _order2["default"].findById(orderId).populate('userId', 'name email');
             case 4:
-              order = _context2.sent;
+              order = _context4.sent;
               if (order) {
-                _context2.next = 7;
+                _context4.next = 7;
                 break;
               }
-              return _context2.abrupt("return", res.status(404).json({
+              return _context4.abrupt("return", res.status(404).json({
                 success: false,
                 message: 'Order not found'
               }));
@@ -180,22 +354,22 @@ var OrderController = /*#__PURE__*/function () {
                 success: true,
                 data: order
               });
-              _context2.next = 16;
+              _context4.next = 16;
               break;
             case 10:
-              _context2.prev = 10;
-              _context2.t0 = _context2["catch"](0);
-              console.log('error here', _context2.t0, 'error here');
-              _context2.t0.statusCode = 400;
-              _context2.t0.payoorDevErrorMessage = 'Error fetching order';
-              next(_context2.t0);
+              _context4.prev = 10;
+              _context4.t0 = _context4["catch"](0);
+              console.log('error here', _context4.t0, 'error here');
+              _context4.t0.statusCode = 400;
+              _context4.t0.payoorDevErrorMessage = 'Error fetching order';
+              next(_context4.t0);
             case 16:
             case "end":
-              return _context2.stop();
+              return _context4.stop();
           }
-        }, _callee2, null, [[0, 10]]);
+        }, _callee4, null, [[0, 10]]);
       }));
-      function getOrder(_x4, _x5, _x6) {
+      function getOrder(_x10, _x11, _x12) {
         return _getOrder.apply(this, arguments);
       }
       return getOrder;
@@ -203,37 +377,37 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrders",
     value: function () {
-      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+      var _getUserOrders = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
         var status, page, limit, skip, orders, ORDERS_KEY, pendingOrders, serializedOrders, formattedOrders, total, data;
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _context3.prev = 0;
+              _context5.prev = 0;
               status = req.query.status;
               page = parseInt(req.query.page) || 1;
               limit = parseInt(req.query.limit) || 10;
               skip = (page - 1) * limit;
               console.log(status, 'status');
               if (!(status === 'pending')) {
-                _context3.next = 16;
+                _context5.next = 16;
                 break;
               }
               ORDERS_KEY = "orders:".concat(req.user.userId);
               pendingOrders = [];
-              _context3.next = 11;
+              _context5.next = 11;
               return _redisClient["default"].lRange(ORDERS_KEY, 0, -1);
             case 11:
-              serializedOrders = _context3.sent;
+              serializedOrders = _context5.sent;
               if (serializedOrders && serializedOrders.length > 0) {
                 pendingOrders.push.apply(pendingOrders, _toConsumableArray(serializedOrders.map(function (order) {
                   return JSON.parse(order);
                 })));
               }
               orders = pendingOrders;
-              _context3.next = 19;
+              _context5.next = 19;
               break;
             case 16:
-              _context3.next = 18;
+              _context5.next = 18;
               return _order2["default"].find({
                 userId: req.user.userId,
                 status: status
@@ -243,7 +417,7 @@ var OrderController = /*#__PURE__*/function () {
                 createdAt: -1
               }).skip(skip).limit(limit);
             case 18:
-              orders = _context3.sent;
+              orders = _context5.sent;
             case 19:
               //console.log(orders)
               formattedOrders = orders.map(function (order) {
@@ -264,22 +438,22 @@ var OrderController = /*#__PURE__*/function () {
                 success: true,
                 data: data
               });
-              _context3.next = 31;
+              _context5.next = 31;
               break;
             case 25:
-              _context3.prev = 25;
-              _context3.t0 = _context3["catch"](0);
-              console.log('error here', _context3.t0, 'error here');
-              _context3.t0.statusCode = 400;
-              _context3.t0.payoorDevErrorMessage = 'Error fetching orders';
-              next(_context3.t0);
+              _context5.prev = 25;
+              _context5.t0 = _context5["catch"](0);
+              console.log('error here', _context5.t0, 'error here');
+              _context5.t0.statusCode = 400;
+              _context5.t0.payoorDevErrorMessage = 'Error fetching orders';
+              next(_context5.t0);
             case 31:
             case "end":
-              return _context3.stop();
+              return _context5.stop();
           }
-        }, _callee3, null, [[0, 25]]);
+        }, _callee5, null, [[0, 25]]);
       }));
-      function getUserOrders(_x7, _x8, _x9) {
+      function getUserOrders(_x13, _x14, _x15) {
         return _getUserOrders.apply(this, arguments);
       }
       return getUserOrders;
@@ -287,16 +461,16 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getUserOrder",
     value: function () {
-      var _getUserOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res, next) {
+      var _getUserOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res, next) {
         var orderId, user, error, ORDERS_KEY, serializedOrders, orderIndex, orderStr, _order, order, _error;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context4.prev = 0;
+              _context6.prev = 0;
               orderId = req.query.orderId;
               user = req.user;
               if (orderId) {
-                _context4.next = 7;
+                _context6.next = 7;
                 break;
               }
               error = new Error('Order ID is required');
@@ -304,62 +478,62 @@ var OrderController = /*#__PURE__*/function () {
               throw error;
             case 7:
               ORDERS_KEY = "orders:".concat(user.userId);
-              _context4.next = 10;
+              _context6.next = 10;
               return _redisClient["default"].lRange(ORDERS_KEY, 0, -1);
             case 10:
-              serializedOrders = _context4.sent;
+              serializedOrders = _context6.sent;
               if (!(serializedOrders && serializedOrders.length > 0)) {
-                _context4.next = 17;
+                _context6.next = 17;
                 break;
               }
               orderIndex = serializedOrders.findIndex(function (orderStr) {
                 return orderStr.includes(orderId);
               });
               if (!(orderIndex !== -1)) {
-                _context4.next = 17;
+                _context6.next = 17;
                 break;
               }
               orderStr = serializedOrders[orderIndex];
               _order = JSON.parse(orderStr);
-              return _context4.abrupt("return", res.status(200).json({
+              return _context6.abrupt("return", res.status(200).json({
                 success: true,
                 message: 'Order retrieved successfully',
                 data: _order
               }));
             case 17:
-              _context4.next = 19;
+              _context6.next = 19;
               return _order2["default"].findOne({
                 _id: orderId
               });
             case 19:
-              order = _context4.sent;
+              order = _context6.sent;
               if (order) {
-                _context4.next = 24;
+                _context6.next = 24;
                 break;
               }
               _error = new Error('Order not found');
               _error.statusCode = 404;
               throw _error;
             case 24:
-              return _context4.abrupt("return", res.status(200).json({
+              return _context6.abrupt("return", res.status(200).json({
                 success: true,
                 message: 'Order retrieved successfully',
                 data: order
               }));
             case 27:
-              _context4.prev = 27;
-              _context4.t0 = _context4["catch"](0);
-              console.error('Error fetching order:', _context4.t0);
-              _context4.t0.statusCode = _context4.t0.statusCode || 400;
-              _context4.t0.payoorDevErrorMessage = 'Error fetching order';
-              next(_context4.t0);
+              _context6.prev = 27;
+              _context6.t0 = _context6["catch"](0);
+              console.error('Error fetching order:', _context6.t0);
+              _context6.t0.statusCode = _context6.t0.statusCode || 400;
+              _context6.t0.payoorDevErrorMessage = 'Error fetching order';
+              next(_context6.t0);
             case 33:
             case "end":
-              return _context4.stop();
+              return _context6.stop();
           }
-        }, _callee4, null, [[0, 27]]);
+        }, _callee6, null, [[0, 27]]);
       }));
-      function getUserOrder(_x10, _x11, _x12) {
+      function getUserOrder(_x16, _x17, _x18) {
         return _getUserOrder.apply(this, arguments);
       }
       return getUserOrder;
@@ -367,15 +541,15 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "getPendingOrder",
     value: function () {
-      var _getPendingOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
+      var _getPendingOrder = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res, next) {
         var orderId, error, PENDING_ORDER_ID, storedOrder, _error2, order;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context5.prev = 0;
+              _context7.prev = 0;
               orderId = req.query.id;
               if (orderId) {
-                _context5.next = 6;
+                _context7.next = 6;
                 break;
               }
               error = new Error('Order ID is required');
@@ -383,12 +557,12 @@ var OrderController = /*#__PURE__*/function () {
               throw error;
             case 6:
               PENDING_ORDER_ID = "pending:".concat(orderId);
-              _context5.next = 9;
+              _context7.next = 9;
               return _redisClient["default"].get(PENDING_ORDER_ID);
             case 9:
-              storedOrder = _context5.sent;
+              storedOrder = _context7.sent;
               if (storedOrder) {
-                _context5.next = 14;
+                _context7.next = 14;
                 break;
               }
               _error2 = new Error('Pending order not found');
@@ -401,22 +575,22 @@ var OrderController = /*#__PURE__*/function () {
                 status: 'success',
                 data: order
               });
-              _context5.next = 25;
+              _context7.next = 25;
               break;
             case 19:
-              _context5.prev = 19;
-              _context5.t0 = _context5["catch"](0);
-              console.error('Error fetching order:', _context5.t0);
-              _context5.t0.statusCode = _context5.t0.statusCode || 400;
-              _context5.t0.payoorDevErrorMessage = 'Error fetching order';
-              next(_context5.t0);
+              _context7.prev = 19;
+              _context7.t0 = _context7["catch"](0);
+              console.error('Error fetching order:', _context7.t0);
+              _context7.t0.statusCode = _context7.t0.statusCode || 400;
+              _context7.t0.payoorDevErrorMessage = 'Error fetching order';
+              next(_context7.t0);
             case 25:
             case "end":
-              return _context5.stop();
+              return _context7.stop();
           }
-        }, _callee5, null, [[0, 19]]);
+        }, _callee7, null, [[0, 19]]);
       }));
-      function getPendingOrder(_x13, _x14, _x15) {
+      function getPendingOrder(_x19, _x20, _x21) {
         return _getPendingOrder.apply(this, arguments);
       }
       return getPendingOrder;
@@ -424,16 +598,16 @@ var OrderController = /*#__PURE__*/function () {
   }, {
     key: "updateDeliveryDateandAddress",
     value: function () {
-      var _updateDeliveryDateandAddress = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res, next) {
-        var _req$body2, order_id, delivery_date, delivery_address, couponcode, user, error, ORDERS_KEY, serializedOrders, _error3, orderIndex, _error4, orderStr, parsedOrder, updatedOrder, PENDING_ORDER_ID, storedOrder, order;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+      var _updateDeliveryDateandAddress = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res, next) {
+        var _req$body4, order_id, delivery_date, delivery_address, couponcode, user, error, ORDERS_KEY, serializedOrders, _error3, orderIndex, _error4, orderStr, parsedOrder, updatedOrder, PENDING_ORDER_ID, storedOrder, order;
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
-              _context6.prev = 0;
-              _req$body2 = req.body, order_id = _req$body2.order_id, delivery_date = _req$body2.delivery_date, delivery_address = _req$body2.delivery_address, couponcode = _req$body2.couponcode;
+              _context8.prev = 0;
+              _req$body4 = req.body, order_id = _req$body4.order_id, delivery_date = _req$body4.delivery_date, delivery_address = _req$body4.delivery_address, couponcode = _req$body4.couponcode;
               user = req.user;
               if (!(!order_id || !delivery_date)) {
-                _context6.next = 7;
+                _context8.next = 7;
                 break;
               }
               error = new Error('Order ID and delivery date are required');
@@ -441,12 +615,12 @@ var OrderController = /*#__PURE__*/function () {
               throw error;
             case 7:
               ORDERS_KEY = "orders:".concat(user.userId);
-              _context6.next = 10;
+              _context8.next = 10;
               return _redisClient["default"].lRange(ORDERS_KEY, 0, -1);
             case 10:
-              serializedOrders = _context6.sent;
+              serializedOrders = _context8.sent;
               if (!(!serializedOrders || serializedOrders.length === 0)) {
-                _context6.next = 15;
+                _context8.next = 15;
                 break;
               }
               _error3 = new Error('No orders found');
@@ -457,7 +631,7 @@ var OrderController = /*#__PURE__*/function () {
                 return orderStr.includes(order_id);
               });
               if (!(orderIndex === -1)) {
-                _context6.next = 20;
+                _context8.next = 20;
                 break;
               }
               _error4 = new Error('Order not found');
@@ -474,22 +648,22 @@ var OrderController = /*#__PURE__*/function () {
                   affiliatecode: couponcode ? couponcode : null
                 }
               });
-              _context6.next = 25;
+              _context8.next = 25;
               return _redisClient["default"].lSet(ORDERS_KEY, orderIndex, JSON.stringify(updatedOrder));
             case 25:
               PENDING_ORDER_ID = "pending:".concat(updatedOrder._id);
               console.log(PENDING_ORDER_ID, 'PENDING_ORDER_ID');
-              _context6.next = 29;
+              _context8.next = 29;
               return _redisClient["default"].set(PENDING_ORDER_ID, JSON.stringify(updatedOrder), {
                 EX: 60 * 60 // 1 hour
               });
             case 29:
-              _context6.next = 31;
+              _context8.next = 31;
               return _redisClient["default"].get(PENDING_ORDER_ID);
             case 31:
-              storedOrder = _context6.sent;
+              storedOrder = _context8.sent;
               order = JSON.parse(storedOrder); //console.log(order, 'stored pending order');
-              return _context6.abrupt("return", res.status(200).json({
+              return _context8.abrupt("return", res.status(200).json({
                 success: true,
                 message: 'Delivery date and address updated successfully',
                 data: {
@@ -497,19 +671,19 @@ var OrderController = /*#__PURE__*/function () {
                 }
               }));
             case 36:
-              _context6.prev = 36;
-              _context6.t0 = _context6["catch"](0);
-              console.error('Error updating order:', _context6.t0);
-              _context6.t0.statusCode = _context6.t0.statusCode || 400;
-              _context6.t0.payoorDevErrorMessage = 'Error updating order delivery date and address';
-              next(_context6.t0);
+              _context8.prev = 36;
+              _context8.t0 = _context8["catch"](0);
+              console.error('Error updating order:', _context8.t0);
+              _context8.t0.statusCode = _context8.t0.statusCode || 400;
+              _context8.t0.payoorDevErrorMessage = 'Error updating order delivery date and address';
+              next(_context8.t0);
             case 42:
             case "end":
-              return _context6.stop();
+              return _context8.stop();
           }
-        }, _callee6, null, [[0, 36]]);
+        }, _callee8, null, [[0, 36]]);
       }));
-      function updateDeliveryDateandAddress(_x16, _x17, _x18) {
+      function updateDeliveryDateandAddress(_x22, _x23, _x24) {
         return _updateDeliveryDateandAddress.apply(this, arguments);
       }
       return updateDeliveryDateandAddress;
@@ -527,10 +701,10 @@ function getTotalAmount(text) {
 }
 function sanitizeUnitKeys(units) {
   var sanitizedUnits = {};
-  Object.entries(units).forEach(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-      key = _ref4[0],
-      value = _ref4[1];
+  Object.entries(units).forEach(function (_ref5) {
+    var _ref6 = _slicedToArray(_ref5, 2),
+      key = _ref6[0],
+      value = _ref6[1];
     var sanitizedKey = key.replace(/\./g, '_');
     sanitizedUnits[sanitizedKey] = value;
   });

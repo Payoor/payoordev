@@ -3,84 +3,78 @@
     "name": "aboutus",
     "path": "/aboutus",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/aboutus.vue",
-    "chunkName": "pages/aboutus",
-    "_name": "_8b669e44"
+    "chunkName": "pages/aboutus"
   },
   {
     "name": "affiliateprogram",
     "path": "/affiliateprogram",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/affiliateprogram/index.vue",
-    "chunkName": "pages/affiliateprogram/index",
-    "_name": "_f6e09692"
+    "chunkName": "pages/affiliateprogram/index"
   },
   {
     "name": "checkout",
     "path": "/checkout",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/checkout.vue",
-    "chunkName": "pages/checkout",
-    "_name": "_472e1f63"
+    "chunkName": "pages/checkout"
   },
   {
     "name": "onboarding",
     "path": "/onboarding",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/index.vue",
-    "chunkName": "pages/onboarding/index",
-    "_name": "_91ab560a"
+    "chunkName": "pages/onboarding/index"
   },
   {
     "name": "pay",
     "path": "/pay",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/pay.vue",
-    "chunkName": "pages/pay",
-    "_name": "_25015d9b"
+    "chunkName": "pages/pay"
+  },
+  {
+    "name": "payment",
+    "path": "/payment",
+    "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/payment/index.vue",
+    "chunkName": "pages/payment/index"
   },
   {
     "name": "paymentconfirmation",
     "path": "/paymentconfirmation",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/paymentconfirmation.vue",
-    "chunkName": "pages/paymentconfirmation",
-    "_name": "_90160aa4"
+    "chunkName": "pages/paymentconfirmation"
   },
   {
     "name": "search",
     "path": "/search",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/search.vue",
-    "chunkName": "pages/search",
-    "_name": "_92a9d7f6"
+    "chunkName": "pages/search"
   },
   {
     "name": "try",
     "path": "/try",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/try.vue",
-    "chunkName": "pages/try",
-    "_name": "_159cad2e"
+    "chunkName": "pages/try"
   },
   {
     "name": "onboarding-address",
     "path": "/onboarding/address",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/address/index.vue",
-    "chunkName": "pages/onboarding/address/index",
-    "_name": "_092333a0"
+    "chunkName": "pages/onboarding/address/index"
   },
   {
     "name": "onboarding-name",
     "path": "/onboarding/name",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/name/index.vue",
-    "chunkName": "pages/onboarding/name/index",
-    "_name": "_e0cca016"
+    "chunkName": "pages/onboarding/name/index"
   },
   {
     "name": "onboarding-phonenumber",
     "path": "/onboarding/phonenumber",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/onboarding/phonenumber/index.vue",
-    "chunkName": "pages/onboarding/phonenumber/index",
-    "_name": "_034b04ba"
+    "chunkName": "pages/onboarding/phonenumber/index"
   },
   {
     "name": "index",
     "path": "/",
     "component": "/Users/emmanuelnwogbo/work/code/Work/payoordev/browserui/pages/index.vue",
-    "chunkName": "pages/index",
-    "_name": "_29a48605"
+    "chunkName": "pages/index"
   }
 ]

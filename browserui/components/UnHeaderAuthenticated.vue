@@ -1,5 +1,6 @@
 <template>
   <div class="header__menu">
+
     <div class="header__menu--left" @click="goToHome">
       <figure>
         <img src="@/assets/imgs/payoor-white-logo.png" />

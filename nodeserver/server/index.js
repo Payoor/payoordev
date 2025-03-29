@@ -220,7 +220,7 @@ async function dropNameIndex() {
   }
 }
 
-dropNameIndex();
+//dropNameIndex();
 
 //updateAffiliate('638477', '40303', '200');
 

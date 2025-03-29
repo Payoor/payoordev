@@ -12,7 +12,8 @@ var _updateUserAddress = _interopRequireDefault(require("../services/payoor/upda
 var _sendAffiliateCouponUsageAlert = _interopRequireDefault(require("../services/resend/sendAffiliateCouponUsageAlert"));
 var _affiliate = _interopRequireDefault(require("../models/affiliate"));
 var _coupon = _interopRequireDefault(require("../models/coupon"));
-var _excluded = ["_id", "metadata"];
+var _excluded = ["_id"],
+  _excluded2 = ["_id", "metadata"];
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -28,6 +29,7 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var ORDERSPENDING = 'orders:pending';
 var https = require('https');
 var crypto = require('crypto');
 if (process.env.NODE_ENV !== 'production') {
@@ -40,28 +42,160 @@ var PaymentController = /*#__PURE__*/function () {
     _classCallCheck(this, PaymentController);
   }
   return _createClass(PaymentController, [{
+    key: "generatePayStackLink",
+    value: function () {
+      var _generatePayStackLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res, next) {
+        var _req$body, email, orderId, userId, userDataRedisStore, currentOrder, parsedCurrentOrder, total, makePaystackRequest, paystackResponse;
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _context.prev = 0;
+              _req$body = req.body, email = _req$body.email, orderId = _req$body.orderId, userId = _req$body.userId;
+              if (!(!email || !userId)) {
+                _context.next = 4;
+                break;
+              }
+              return _context.abrupt("return", res.status(400).json({
+                error: 'Missing required fields'
+              }));
+            case 4:
+              userDataRedisStore = "userdata:".concat(userId.toString());
+              _context.next = 7;
+              return _redisClient["default"].get("".concat(userDataRedisStore, ":pendingorder"));
+            case 7:
+              currentOrder = _context.sent;
+              if (currentOrder) {
+                _context.next = 10;
+                break;
+              }
+              return _context.abrupt("return", res.status(404).json({
+                error: 'No pending order found'
+              }));
+            case 10:
+              parsedCurrentOrder = JSON.parse(currentOrder);
+              total = parsedCurrentOrder.total;
+              if (!(!total || total <= 0)) {
+                _context.next = 14;
+                break;
+              }
+              return _context.abrupt("return", res.status(400).json({
+                error: 'Invalid order total'
+              }));
+            case 14:
+              makePaystackRequest = function makePaystackRequest() {
+                return new Promise(function (resolve, reject) {
+                  var params = JSON.stringify({
+                    email: email,
+                    amount: Math.round(total * 100),
+                    metadata: {
+                      orderId: orderId,
+                      userId: userId
+                    },
+                    channels: ["bank_transfer"]
+                  });
+                  var options = {
+                    hostname: 'api.paystack.co',
+                    port: 443,
+                    path: '/transaction/initialize',
+                    method: 'POST',
+                    headers: {
+                      Authorization: "Bearer ".concat(process.env.PAYSTACK_SECRET_KEY),
+                      'Content-Type': 'application/json'
+                    }
+                  };
+                  var paymentReq = https.request(options, function (response) {
+                    var data = '';
+                    response.on('data', function (chunk) {
+                      data += chunk;
+                    });
+                    response.on('end', function () {
+                      try {
+                        var parsedData = JSON.parse(data);
+                        resolve(parsedData);
+                      } catch (error) {
+                        reject(new Error('Failed to parse PayStack response'));
+                      }
+                    });
+                  });
+                  paymentReq.on('error', function (error) {
+                    reject(error);
+                  });
+                  paymentReq.write(params);
+                  paymentReq.end();
+                });
+              };
+              _context.next = 17;
+              return makePaystackRequest();
+            case 17:
+              paystackResponse = _context.sent;
+              if (paystackResponse.status) {
+                _context.next = 20;
+                break;
+              }
+              return _context.abrupt("return", res.status(400).json({
+                error: 'Payment initialization failed',
+                message: paystackResponse.message
+              }));
+            case 20:
+              parsedCurrentOrder.metadata.paystackreference = paystackResponse.data.reference;
+              _context.next = 23;
+              return _redisClient["default"].set("".concat(userDataRedisStore, ":paymentreference:").concat(paystackResponse.data.reference), JSON.stringify({
+                orderId: orderId,
+                total: total,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+              }), 'EX', 86400 // Expire after 24 hours
+              );
+            case 23:
+              console.log(parsedCurrentOrder, 'parsedCurrentOrder');
+              return _context.abrupt("return", res.status(200).json({
+                success: true,
+                data: {
+                  authorizationUrl: paystackResponse.data.authorization_url,
+                  reference: paystackResponse.data.reference,
+                  accessCode: paystackResponse.data.access_code
+                }
+              }));
+            case 27:
+              _context.prev = 27;
+              _context.t0 = _context["catch"](0);
+              console.log('error here', _context.t0, 'error here');
+              _context.t0.payoorDevErrorMessage = 'Failed to generate paystack link';
+              next(_context.t0);
+            case 32:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, null, [[0, 27]]);
+      }));
+      function generatePayStackLink(_x, _x2, _x3) {
+        return _generatePayStackLink.apply(this, arguments);
+      }
+      return generatePayStackLink;
+    }()
+  }, {
     key: "generateTransferDetails",
     value: function () {
-      var _generateTransferDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res, next) {
-        var email, total, orderId, userId, name, _req$body, delivery_fee, service_charge, amount, amountTotal, tx_ref, params, options, flutterwaveReq;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
+      var _generateTransferDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+        var _email, _total, _orderId, _userId, name, _req$body2, delivery_fee, service_charge, amount, amountTotal, tx_ref, params, options, flutterwaveReq;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _context2.prev = 0;
-              email = req.email, total = req.total, orderId = req.orderId, userId = req.userId, name = req.name;
-              _req$body = req.body, delivery_fee = _req$body.delivery_fee, service_charge = _req$body.service_charge;
-              amount = total;
-              if (!(!email || !amount)) {
-                _context2.next = 7;
+              _context3.prev = 0;
+              _email = req.email, _total = req.total, _orderId = req.orderId, _userId = req.userId, name = req.name;
+              _req$body2 = req.body, delivery_fee = _req$body2.delivery_fee, service_charge = _req$body2.service_charge;
+              amount = _total;
+              if (!(!_email || !amount)) {
+                _context3.next = 7;
                 break;
               }
               console.log('email and amount are required');
-              return _context2.abrupt("return", res.status(400).json({
+              return _context3.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
             case 7:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context2.next = 9;
+                _context3.next = 9;
                 break;
               }
               throw new Error('All amounts must be numbers');
@@ -70,7 +204,7 @@ var PaymentController = /*#__PURE__*/function () {
               tx_ref = generateTransactionReference();
               params = JSON.stringify({
                 amount: amountTotal,
-                email: email,
+                email: _email,
                 currency: "NGN",
                 tx_ref: tx_ref,
                 fullname: name
@@ -103,10 +237,10 @@ var PaymentController = /*#__PURE__*/function () {
                     }
                   }
                 };
-                flutterwaveRes.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+                flutterwaveRes.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
                   var transfer_reference, transaction;
-                  return _regeneratorRuntime().wrap(function _callee$(_context) {
-                    while (1) switch (_context.prev = _context.next) {
+                  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+                    while (1) switch (_context2.prev = _context2.next) {
                       case 0:
                         console.log('Response:', data);
                         transfer_reference = JSON.parse(data).meta.authorization.transfer_reference;
@@ -117,17 +251,17 @@ var PaymentController = /*#__PURE__*/function () {
                         response.data.transaction_reference = tx_ref;
                         res.status(200).json(response);
                         transaction = new _transaction["default"]({
-                          initiatorId: userId,
-                          orderId: orderId,
+                          initiatorId: _userId,
+                          orderId: _orderId,
                           amount: amount,
                           reference: tx_ref
                         });
-                        _context.next = 11;
+                        _context2.next = 11;
                         return transaction.save();
                       case 11:
-                        _context.next = 13;
+                        _context2.next = 13;
                         return _order["default"].findOneAndUpdate({
-                          _id: orderId
+                          _id: _orderId
                         }, {
                           $set: {
                             reference: tx_ref
@@ -138,9 +272,9 @@ var PaymentController = /*#__PURE__*/function () {
                         });
                       case 13:
                       case "end":
-                        return _context.stop();
+                        return _context2.stop();
                     }
-                  }, _callee);
+                  }, _callee2);
                 })));
               });
               flutterwaveReq.on('error', function (error) {
@@ -151,21 +285,21 @@ var PaymentController = /*#__PURE__*/function () {
               });
               flutterwaveReq.write(params);
               flutterwaveReq.end();
-              _context2.next = 25;
+              _context3.next = 25;
               break;
             case 20:
-              _context2.prev = 20;
-              _context2.t0 = _context2["catch"](0);
-              console.log('error here', _context2.t0, 'error here');
-              _context2.t0.payoorDevErrorMessage = 'Failed to generate bank transfer details';
-              next(_context2.t0);
+              _context3.prev = 20;
+              _context3.t0 = _context3["catch"](0);
+              console.log('error here', _context3.t0, 'error here');
+              _context3.t0.payoorDevErrorMessage = 'Failed to generate bank transfer details';
+              next(_context3.t0);
             case 25:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
-        }, _callee2, null, [[0, 20]]);
+        }, _callee3, null, [[0, 20]]);
       }));
-      function generateTransferDetails(_x, _x2, _x3) {
+      function generateTransferDetails(_x4, _x5, _x6) {
         return _generateTransferDetails.apply(this, arguments);
       }
       return generateTransferDetails;
@@ -173,19 +307,19 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handleFlutterwavePaymentResponse",
     value: function () {
-      var _handleFlutterwavePaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res, next) {
+      var _handleFlutterwavePaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res, next) {
         var secretHash, signature, event, paymentData, txRef;
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
             case 0:
-              _context3.prev = 0;
+              _context4.prev = 0;
               secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
               signature = req.headers["verif-hash"];
               if (!(!signature || signature !== secretHash)) {
-                _context3.next = 5;
+                _context4.next = 5;
                 break;
               }
-              return _context3.abrupt("return", res.status(401).json({
+              return _context4.abrupt("return", res.status(401).json({
                 success: false,
                 message: "Unauthorized request"
               }));
@@ -193,12 +327,12 @@ var PaymentController = /*#__PURE__*/function () {
               event = req.body;
               paymentData = req.body.data;
               if (!(event.event === "charge.completed" && event.data.status === "successful")) {
-                _context3.next = 13;
+                _context4.next = 13;
                 break;
               }
               txRef = paymentData.tx_ref;
               console.log("Payment received for:", txRef);
-              _context3.next = 12;
+              _context4.next = 12;
               return _transaction["default"].findOneAndUpdate({
                 reference: txRef
               }, {
@@ -210,28 +344,28 @@ var PaymentController = /*#__PURE__*/function () {
                 runValidators: true
               });
             case 12:
-              return _context3.abrupt("return", res.status(200).json({
+              return _context4.abrupt("return", res.status(200).json({
                 success: true,
                 message: "Payment verified successfully",
                 mailResponse: mailResponse
               }));
             case 13:
               console.log('Unhandled event type:', event.event);
-              _context3.next = 21;
+              _context4.next = 21;
               break;
             case 16:
-              _context3.prev = 16;
-              _context3.t0 = _context3["catch"](0);
-              console.log('error here', _context3.t0, 'error here');
-              _context3.t0.payoorDevErrorMessage = 'Failed verify payment';
-              next(_context3.t0);
+              _context4.prev = 16;
+              _context4.t0 = _context4["catch"](0);
+              console.log('error here', _context4.t0, 'error here');
+              _context4.t0.payoorDevErrorMessage = 'Failed verify payment';
+              next(_context4.t0);
             case 21:
             case "end":
-              return _context3.stop();
+              return _context4.stop();
           }
-        }, _callee3, null, [[0, 16]]);
+        }, _callee4, null, [[0, 16]]);
       }));
-      function handleFlutterwavePaymentResponse(_x4, _x5, _x6) {
+      function handleFlutterwavePaymentResponse(_x7, _x8, _x9) {
         return _handleFlutterwavePaymentResponse.apply(this, arguments);
       }
       return handleFlutterwavePaymentResponse;
@@ -239,33 +373,33 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "generatePaymentLink",
     value: function () {
-      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res, next) {
-        var email, total, orderId, userId, _req$body2, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+      var _generatePaymentLink = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res, next) {
+        var _email2, _total2, _orderId2, _userId2, _req$body3, delivery_fee, service_charge, amount, amountTotal, params, options, paystackRequest;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
-              email = req.email, total = req.total, orderId = req.orderId, userId = req.userId;
-              _req$body2 = req.body, delivery_fee = _req$body2.delivery_fee, service_charge = _req$body2.service_charge; //const { order, user } = res.locals;
-              amount = total; //console.log('amount', amount);
-              if (!(!email || !amount)) {
-                _context5.next = 7;
+              _context6.prev = 0;
+              _email2 = req.email, _total2 = req.total, _orderId2 = req.orderId, _userId2 = req.userId;
+              _req$body3 = req.body, delivery_fee = _req$body3.delivery_fee, service_charge = _req$body3.service_charge; //const { order, user } = res.locals;
+              amount = _total2; //console.log('amount', amount);
+              if (!(!_email2 || !amount)) {
+                _context6.next = 7;
                 break;
               }
               console.log('email and amount are required');
-              return _context5.abrupt("return", res.status(400).json({
+              return _context6.abrupt("return", res.status(400).json({
                 message: 'email and amount are required'
               }));
             case 7:
               if (!(typeof delivery_fee !== 'number' || typeof service_charge !== 'number' || typeof amount !== 'number')) {
-                _context5.next = 9;
+                _context6.next = 9;
                 break;
               }
               throw new Error('All amounts must be numbers');
             case 9:
               amountTotal = 1000; //(delivery_fee + service_charge + amount).toFixed(2);
               params = JSON.stringify({
-                "email": email,
+                "email": _email2,
                 "amount": Math.round(amountTotal * 100) // this conversion can be done either on the client side or server side.
                 // channels: ["bank_transfer"]
               });
@@ -295,10 +429,10 @@ var PaymentController = /*#__PURE__*/function () {
                     }
                   }
                 };
-                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+                paystackResponse.on('end', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
                   var transaction_reference, transaction, order_update;
-                  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-                    while (1) switch (_context4.prev = _context4.next) {
+                  return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+                    while (1) switch (_context5.prev = _context5.next) {
                       case 0:
                         console.log('data here', data);
                         transaction_reference = JSON.parse(data).data.reference;
@@ -310,15 +444,15 @@ var PaymentController = /*#__PURE__*/function () {
 
                         res.status(200).json(response);
                         transaction = new _transaction["default"]({
-                          initiatorId: userId,
-                          orderId: orderId,
+                          initiatorId: _userId2,
+                          orderId: _orderId2,
                           amount: amount,
                           reference: transaction_reference
                         });
                         transaction.save();
-                        _context4.next = 10;
+                        _context5.next = 10;
                         return _order["default"].findOneAndUpdate({
-                          _id: orderId
+                          _id: _orderId2
                         }, {
                           $set: {
                             reference: transaction_reference
@@ -328,12 +462,12 @@ var PaymentController = /*#__PURE__*/function () {
                           runValidators: true
                         });
                       case 10:
-                        order_update = _context4.sent;
+                        order_update = _context5.sent;
                       case 11:
                       case "end":
-                        return _context4.stop();
+                        return _context5.stop();
                     }
-                  }, _callee4);
+                  }, _callee5);
                 })));
               }).on('error', function (error) {
                 console.log(error);
@@ -343,21 +477,21 @@ var PaymentController = /*#__PURE__*/function () {
               });
               paystackRequest.write(params);
               paystackRequest.end();
-              _context5.next = 22;
+              _context6.next = 22;
               break;
             case 17:
-              _context5.prev = 17;
-              _context5.t0 = _context5["catch"](0);
-              console.log('error here', _context5.t0, 'error here');
-              _context5.t0.payoorDevErrorMessage = 'Failed to generate payment link';
-              next(_context5.t0);
+              _context6.prev = 17;
+              _context6.t0 = _context6["catch"](0);
+              console.log('error here', _context6.t0, 'error here');
+              _context6.t0.payoorDevErrorMessage = 'Failed to generate payment link';
+              next(_context6.t0);
             case 22:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
-        }, _callee5, null, [[0, 17]]);
+        }, _callee6, null, [[0, 17]]);
       }));
-      function generatePaymentLink(_x7, _x8, _x9) {
+      function generatePaymentLink(_x10, _x11, _x12) {
         return _generatePaymentLink.apply(this, arguments);
       }
       return generatePaymentLink;
@@ -365,74 +499,69 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handlePayStackPaymentResponse",
     value: function () {
-      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
-        var paystackSignature, hash, event, paymentData, _mailResponse;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+      var _handlePayStackPaymentResponse = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+        var paystackSignature, hash, event, paymentData, metadata, _orderId3, _userId3, userDataRedisStore, pendingOrder, parsedPendingOrder, _id, processingOrder, newProcessingOrder;
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context6.prev = 0;
+              _context7.prev = 0;
               paystackSignature = req.headers['x-paystack-signature'];
               hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY).update(JSON.stringify(req.body)).digest('hex');
               if (!(hash !== paystackSignature)) {
-                _context6.next = 5;
+                _context7.next = 5;
                 break;
               }
-              return _context6.abrupt("return", res.status(401).json({
+              return _context7.abrupt("return", res.status(401).json({
                 message: 'Unauthorized request'
               }));
             case 5:
               event = req.body;
               paymentData = event.data;
-              _context6.t0 = event.event;
-              _context6.next = _context6.t0 === 'charge.success' ? 10 : _context6.t0 === 'transfer.success' ? 12 : _context6.t0 === 'charge.failed' ? 14 : 15;
-              break;
-            case 10:
-              console.log('charge successful:', paymentData);
-              return _context6.abrupt("break", 16);
+              metadata = paymentData.metadata;
+              _orderId3 = metadata.orderId, _userId3 = metadata.userId;
+              userDataRedisStore = "userdata:".concat(_userId3.toString());
+              _context7.next = 12;
+              return _redisClient["default"].get("".concat(userDataRedisStore, ":pendingorder"));
             case 12:
-              console.log('transfer successful:', paymentData);
-              return _context6.abrupt("break", 16);
-            case 14:
-              return _context6.abrupt("break", 16);
-            case 15:
-              console.log('Unhandled event type:', event.event);
-            case 16:
-              _context6.next = 18;
-              return _transaction["default"].findOneAndUpdate({
-                reference: paymentData.reference
-              }, {
-                $set: {
-                  status: "verified"
-                }
-              }, {
-                "new": true,
-                runValidators: true
-              });
+              pendingOrder = _context7.sent;
+              parsedPendingOrder = JSON.parse(pendingOrder);
+              _id = parsedPendingOrder._id, processingOrder = _objectWithoutProperties(parsedPendingOrder, _excluded); //console.log(req.body.id, 'req.body.id;');
+              _context7.t0 = event.event;
+              _context7.next = _context7.t0 === 'charge.success' ? 18 : 26;
+              break;
             case 18:
-              _context6.next = 20;
-              return sendTransactionVerification({
-                email: paymentData.customer.email,
-                amount: formatAmount(paymentData.amount / 100)
+              console.log('transfer successful:');
+              newProcessingOrder = new _order["default"](_objectSpread({}, processingOrder));
+              _context7.next = 22;
+              return newProcessingOrder.save();
+            case 22:
+              _redisClient["default"].lRem(ORDERSPENDING, 1, pendingOrder);
+              _redisClient["default"].del("".concat(userDataRedisStore, ":pendingorder"));
+              (0, _getOrderDetails["default"])(newProcessingOrder._id);
+              return _context7.abrupt("break", 27);
+            case 26:
+              console.log('Unhandled event type:', event.event);
+            case 27:
+              res.status(200).json({
+                status: 'success',
+                message: 'Webhook received successfully'
               });
-            case 20:
-              _mailResponse = _context6.sent;
-              return _context6.abrupt("return", res.status(200).json({
-                message: 'Webhook processed successfully',
-                mailResponse: _mailResponse
-              }));
-            case 24:
-              _context6.prev = 24;
-              _context6.t1 = _context6["catch"](0);
-              console.log('error here', _context6.t1, 'error here');
-              _context6.t1.payoorDevErrorMessage = 'Failed verify payment';
-              next(_context6.t1);
-            case 29:
+              _context7.next = 36;
+              break;
+            case 30:
+              _context7.prev = 30;
+              _context7.t1 = _context7["catch"](0);
+              console.log('error here', _context7.t1, 'error here');
+              _context7.t1.payoorDevErrorMessage = 'Failed verify payment';
+              err.statusCode = 200;
+              next(_context7.t1);
+            case 36:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
-        }, _callee6, null, [[0, 24]]);
+        }, _callee7, null, [[0, 30]]);
       }));
-      function handlePayStackPaymentResponse(_x10, _x11) {
+      function handlePayStackPaymentResponse(_x13, _x14) {
         return _handlePayStackPaymentResponse.apply(this, arguments);
       }
       return handlePayStackPaymentResponse;
@@ -440,12 +569,12 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "verifyPayment",
     value: function () {
-      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(req, res) {
+      var _verifyPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
         var _https, transactionReference, options, transaction, verificationRequest, errorResponse;
-        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-          while (1) switch (_context7.prev = _context7.next) {
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
-              _context7.prev = 0;
+              _context8.prev = 0;
               _https = require('https');
               transactionReference = req.body.transactionReference;
               options = {
@@ -457,17 +586,17 @@ var PaymentController = /*#__PURE__*/function () {
                   Authorization: "Bearer ".concat(PAYSTACK_SECRET_KEY)
                 }
               };
-              _context7.next = 6;
+              _context8.next = 6;
               return _transaction["default"].findOne({
                 reference: transactionReference
               });
             case 6:
-              transaction = _context7.sent;
+              transaction = _context8.sent;
               if (transaction) {
-                _context7.next = 9;
+                _context8.next = 9;
                 break;
               }
-              return _context7.abrupt("return", res.status(404).json({
+              return _context8.abrupt("return", res.status(404).json({
                 message: 'Transaction not found.'
               }));
             case 9:
@@ -501,28 +630,28 @@ var PaymentController = /*#__PURE__*/function () {
                 });
               });
               verificationRequest.end();
-              _context7.next = 18;
+              _context8.next = 18;
               break;
             case 13:
-              _context7.prev = 13;
-              _context7.t0 = _context7["catch"](0);
-              console.log(_context7.t0);
+              _context8.prev = 13;
+              _context8.t0 = _context8["catch"](0);
+              console.log(_context8.t0);
               errorResponse = {
                 success: false,
                 data: {
-                  message: _context7.t0.message || 'Failed to verify payment',
-                  error: process.env.NODE_ENV === 'development' ? _context7.t0.toString() : undefined,
+                  message: _context8.t0.message || 'Failed to verify payment',
+                  error: process.env.NODE_ENV === 'development' ? _context8.t0.toString() : undefined,
                   timestamp: new Date().toISOString()
                 }
               };
               res.status(500).json(errorResponse);
             case 18:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
-        }, _callee7, null, [[0, 13]]);
+        }, _callee8, null, [[0, 13]]);
       }));
-      function verifyPayment(_x12, _x13) {
+      function verifyPayment(_x15, _x16) {
         return _verifyPayment.apply(this, arguments);
       }
       return verifyPayment;
@@ -530,30 +659,30 @@ var PaymentController = /*#__PURE__*/function () {
   }, {
     key: "handleBaniPayment",
     value: function () {
-      var _handleBaniPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(req, res) {
-        var merchant_private_key, headers, body, sig, hmac, digest, webhookData, order_ref, paymentStatus, PENDING_ORDER_ID, storedOrder, order, _id, metadata, orderWithoutId, affiliatecode, newMongoOrder, total, payout, user_id, user_current_address;
-        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
+      var _handleBaniPayment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(req, res) {
+        var merchant_private_key, headers, body, sig, hmac, digest, webhookData, order_ref, paymentStatus, PENDING_ORDER_ID, storedOrder, order, _id, metadata, orderWithoutId, affiliatecode, newMongoOrder, _total3, payout, user_id, user_current_address;
+        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+          while (1) switch (_context9.prev = _context9.next) {
             case 0:
-              _context8.prev = 0;
+              _context9.prev = 0;
               merchant_private_key = process.env.MERCHANT_PRIVATE_KEY_BANI;
               headers = req.headers;
               body = req.rawBody; // Validate request body
               if (body) {
-                _context8.next = 7;
+                _context9.next = 7;
                 break;
               }
               console.log('no body');
-              return _context8.abrupt("return", res.status(400).json({
+              return _context9.abrupt("return", res.status(400).json({
                 status: false,
                 message: "No body provided"
               }));
             case 7:
               if (headers["bani-hook-signature"]) {
-                _context8.next = 9;
+                _context9.next = 9;
                 break;
               }
-              return _context8.abrupt("return", res.status(400).json({
+              return _context9.abrupt("return", res.status(400).json({
                 status: false,
                 message: "No signature provided"
               }));
@@ -563,10 +692,10 @@ var PaymentController = /*#__PURE__*/function () {
               hmac = crypto.createHmac("sha256", merchant_private_key);
               digest = Buffer.from(hmac.update(body).digest("hex"), "utf8");
               if (!(sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig))) {
-                _context8.next = 14;
+                _context9.next = 14;
                 break;
               }
-              return _context8.abrupt("return", res.status(401).json({
+              return _context9.abrupt("return", res.status(401).json({
                 status: false,
                 message: "Invalid signature"
               }));
@@ -575,27 +704,27 @@ var PaymentController = /*#__PURE__*/function () {
               order_ref = webhookData.data.custom_data.order_ref;
               paymentStatus = webhookData.data.pay_status; //console.log(order_ref, 'order_ref');
               if (!(paymentStatus === 'paid')) {
-                _context8.next = 41;
+                _context9.next = 41;
                 break;
               }
               // Use direct key lookup instead of list search
               PENDING_ORDER_ID = "pending:".concat(order_ref);
-              _context8.next = 21;
+              _context9.next = 21;
               return _redisClient["default"].get(PENDING_ORDER_ID);
             case 21:
-              storedOrder = _context8.sent;
+              storedOrder = _context9.sent;
               if (storedOrder) {
-                _context8.next = 25;
+                _context9.next = 25;
                 break;
               }
               console.error('Order not found:', order_ref);
-              return _context8.abrupt("return", res.status(404).json({
+              return _context9.abrupt("return", res.status(404).json({
                 status: false,
                 message: "Order not found"
               }));
             case 25:
               order = JSON.parse(storedOrder);
-              _id = order._id, metadata = order.metadata, orderWithoutId = _objectWithoutProperties(order, _excluded);
+              _id = order._id, metadata = order.metadata, orderWithoutId = _objectWithoutProperties(order, _excluded2);
               console.log(metadata, 'metadata');
               affiliatecode = metadata.affiliatecode;
               newMongoOrder = new _order["default"](_objectSpread(_objectSpread({}, orderWithoutId), {}, {
@@ -603,20 +732,20 @@ var PaymentController = /*#__PURE__*/function () {
                 status: 'processing',
                 metadata: metadata
               }));
-              _context8.next = 32;
+              _context9.next = 32;
               return Promise.all([newMongoOrder.save(), _redisClient["default"].del(PENDING_ORDER_ID)]);
             case 32:
               (0, _getOrderDetails["default"])(newMongoOrder._id);
-              total = newMongoOrder.total;
-              payout = total * 0.1;
+              _total3 = newMongoOrder.total;
+              payout = _total3 * 0.1;
               if (affiliatecode) {
-                updateAffiliate(affiliatecode, total, payout);
+                updateAffiliate(affiliatecode, _total3, payout);
               }
               user_id = newMongoOrder.userId;
               user_current_address = newMongoOrder.order_address;
               console.log(newMongoOrder, 'newMongoOrder======newMongoOrder======newMongoOrder');
               (0, _updateUserAddress["default"])(user_id, user_current_address);
-              return _context8.abrupt("return", res.status(200).json({
+              return _context9.abrupt("return", res.status(200).json({
                 status: true,
                 message: "Payment processed successfully",
                 data: {
@@ -624,26 +753,26 @@ var PaymentController = /*#__PURE__*/function () {
                 }
               }));
             case 41:
-              return _context8.abrupt("return", res.status(200).json({
+              return _context9.abrupt("return", res.status(200).json({
                 status: true,
                 message: "Webhook received"
               }));
             case 44:
-              _context8.prev = 44;
-              _context8.t0 = _context8["catch"](0);
-              console.error('Webhook processing error:', _context8.t0);
-              return _context8.abrupt("return", res.status(500).json({
+              _context9.prev = 44;
+              _context9.t0 = _context9["catch"](0);
+              console.error('Webhook processing error:', _context9.t0);
+              return _context9.abrupt("return", res.status(500).json({
                 status: false,
                 message: "Error processing webhook",
-                error: _context8.t0.message
+                error: _context9.t0.message
               }));
             case 48:
             case "end":
-              return _context8.stop();
+              return _context9.stop();
           }
-        }, _callee8, null, [[0, 44]]);
+        }, _callee9, null, [[0, 44]]);
       }));
-      function handleBaniPayment(_x14, _x15) {
+      function handleBaniPayment(_x17, _x18) {
         return _handleBaniPayment.apply(this, arguments);
       }
       return handleBaniPayment;
@@ -665,57 +794,57 @@ var formatAmount = function formatAmount(amount) {
   });
   return formatter.format(amount);
 };
-function updateAffiliate(_x16, _x17, _x18) {
+function updateAffiliate(_x19, _x20, _x21) {
   return _updateAffiliate.apply(this, arguments);
 }
 function _updateAffiliate() {
-  _updateAffiliate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(coupon, amountSpent, payout) {
-    var couponCode, affiliate, email;
-    return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-      while (1) switch (_context9.prev = _context9.next) {
+  _updateAffiliate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(coupon, amountSpent, payout) {
+    var couponCode, affiliate, _email3;
+    return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+      while (1) switch (_context10.prev = _context10.next) {
         case 0:
-          _context9.prev = 0;
-          _context9.next = 3;
+          _context10.prev = 0;
+          _context10.next = 3;
           return _coupon["default"].findOne({
             code: coupon
           });
         case 3:
-          couponCode = _context9.sent;
-          _context9.next = 6;
+          couponCode = _context10.sent;
+          _context10.next = 6;
           return _affiliate["default"].findOne({
             coupon: coupon
           });
         case 6:
-          affiliate = _context9.sent;
+          affiliate = _context10.sent;
           couponCode.usedCount = couponCode.usedCount + 1;
-          _context9.next = 10;
+          _context10.next = 10;
           return couponCode.save();
         case 10:
           if (!(couponCode && affiliate)) {
-            _context9.next = 15;
+            _context10.next = 15;
             break;
           }
           console.log(couponCode, affiliate);
-          email = affiliate.email;
-          _context9.next = 15;
+          _email3 = affiliate.email;
+          _context10.next = 15;
           return (0, _sendAffiliateCouponUsageAlert["default"])({
-            email: email,
+            email: _email3,
             affiliateCode: coupon,
             amountSpent: amountSpent,
             payout: payout
           });
         case 15:
-          _context9.next = 20;
+          _context10.next = 20;
           break;
         case 17:
-          _context9.prev = 17;
-          _context9.t0 = _context9["catch"](0);
-          console.log(_context9.t0);
+          _context10.prev = 17;
+          _context10.t0 = _context10["catch"](0);
+          console.log(_context10.t0);
         case 20:
         case "end":
-          return _context9.stop();
+          return _context10.stop();
       }
-    }, _callee9, null, [[0, 17]]);
+    }, _callee10, null, [[0, 17]]);
   }));
   return _updateAffiliate.apply(this, arguments);
 }

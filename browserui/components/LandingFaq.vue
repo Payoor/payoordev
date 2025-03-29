@@ -101,6 +101,10 @@ export default {
   @include section;
   padding-top: 0;
 
+  @include respond(tab-port) {
+    padding: 0
+  }
+
   &__content {
     background: $white;
     padding: 3rem;

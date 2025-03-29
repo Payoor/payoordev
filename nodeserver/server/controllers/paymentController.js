@@ -8,7 +8,9 @@ import updateUserAddress from '../services/payoor/updateUserAddress';
 import sendAffiliateCouponUsageAlert from "../services/resend/sendAffiliateCouponUsageAlert";
 
 import Affiliate from "../models/affiliate";
-import Coupon from "../models/coupon"
+import Coupon from "../models/coupon";
+
+const ORDERSPENDING = 'orders:pending';
 
 const https = require('https');
 const crypto = require('crypto');
@@ -21,6 +23,117 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const FLUTTERWAVE_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY;
 
 class PaymentController {
+    async generatePayStackLink(req, res, next) {
+        try {
+            const { email, orderId, userId } = req.body;
+
+            if (!email || !userId) {
+                return res.status(400).json({ error: 'Missing required fields' });
+            }
+
+            const userDataRedisStore = `userdata:${userId.toString()}`;
+
+            const currentOrder = await redisClient.get(`${userDataRedisStore}:pendingorder`);
+
+            if (!currentOrder) {
+                return res.status(404).json({ error: 'No pending order found' });
+            }
+
+            const parsedCurrentOrder = JSON.parse(currentOrder);
+            const { total } = parsedCurrentOrder;
+
+            if (!total || total <= 0) {
+                return res.status(400).json({ error: 'Invalid order total' });
+            }
+
+            const makePaystackRequest = () => {
+                return new Promise((resolve, reject) => {
+                    const params = JSON.stringify({
+                        email,
+                        amount: Math.round(total * 100),
+                        metadata: {
+                            orderId,
+                            userId
+                        },
+                        channels: ["bank_transfer"]
+                    });
+
+                    const options = {
+                        hostname: 'api.paystack.co',
+                        port: 443,
+                        path: '/transaction/initialize',
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    };
+
+                    const paymentReq = https.request(options, (response) => {
+                        let data = '';
+
+                        response.on('data', (chunk) => {
+                            data += chunk;
+                        });
+
+                        response.on('end', () => {
+                            try {
+                                const parsedData = JSON.parse(data);
+                                resolve(parsedData);
+                            } catch (error) {
+                                reject(new Error('Failed to parse PayStack response'));
+                            }
+                        });
+                    });
+
+                    paymentReq.on('error', (error) => {
+                        reject(error);
+                    });
+
+                    paymentReq.write(params);
+                    paymentReq.end();
+                });
+            };
+
+            const paystackResponse = await makePaystackRequest();
+
+            if (!paystackResponse.status) {
+                return res.status(400).json({
+                    error: 'Payment initialization failed',
+                    message: paystackResponse.message
+                });
+            }
+
+            parsedCurrentOrder.metadata.paystackreference = paystackResponse.data.reference;
+
+            await redisClient.set(
+                `${userDataRedisStore}:paymentreference:${paystackResponse.data.reference}`,
+                JSON.stringify({
+                    orderId,
+                    total,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                }),
+                'EX', 86400 // Expire after 24 hours
+            );
+
+            console.log(parsedCurrentOrder, 'parsedCurrentOrder')
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    authorizationUrl: paystackResponse.data.authorization_url,
+                    reference: paystackResponse.data.reference,
+                    accessCode: paystackResponse.data.access_code
+                }
+            });
+        } catch (error) {
+            console.log('error here', error, 'error here')
+            error.payoorDevErrorMessage = 'Failed to generate paystack link';
+            next(error);
+        }
+    }
+
     async generateTransferDetails(req, res, next) {
         try {
             const { email, total, orderId, userId, name } = req;
@@ -319,51 +432,47 @@ class PaymentController {
 
             const event = req.body;
             const paymentData = event.data;
+            const metadata = paymentData.metadata
+
+            const { orderId, userId } = metadata;
+
+            const userDataRedisStore = `userdata:${userId.toString()}`;
+
+            const pendingOrder = await redisClient.get(`${userDataRedisStore}:pendingorder`);
+            const parsedPendingOrder = JSON.parse(pendingOrder);
+
+            const { _id, ...processingOrder } = parsedPendingOrder;
+
+            //console.log(req.body.id, 'req.body.id;');
 
             switch (event.event) {
                 case 'charge.success':
-                    console.log('charge successful:', paymentData);
-                    break;
+                    console.log('transfer successful:');
 
-                case 'transfer.success':
-                    console.log('transfer successful:', paymentData);
-                    break;
+                    const newProcessingOrder = new Order({
+                        ...processingOrder
+                    });
 
-                case 'charge.failed':
-                    // Handle failed charge
+                    await newProcessingOrder.save();
+
+                    redisClient.lRem(ORDERSPENDING, 1, pendingOrder);
+                    redisClient.del(`${userDataRedisStore}:pendingorder`);
+
+                    getOrderDetails(newProcessingOrder._id);
                     break;
 
                 default:
                     console.log('Unhandled event type:', event.event);
             }
 
-            await Transaction.findOneAndUpdate(
-                { reference: paymentData.reference },
-                {
-                    $set: {
-                        status: "verified"
-                    }
-                },
-                {
-                    new: true,
-                    runValidators: true,
-                },
-            );
-
-            const mailResponse = await sendTransactionVerification({
-                email: paymentData.customer.email,
-                amount: formatAmount(paymentData.amount / 100)
+            res.status(200).json({
+                status: 'success',
+                message: 'Webhook received successfully'
             });
-
-            return res.status(200).json({
-                message: 'Webhook processed successfully',
-                mailResponse
-            });
-
-
         } catch (error) {
             console.log('error here', error, 'error here')
             error.payoorDevErrorMessage = 'Failed verify payment';
+            err.statusCode = 200
             next(error);
         }
     }

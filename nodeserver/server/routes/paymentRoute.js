@@ -18,4 +18,6 @@ paymentRoute.post('/flutter/verify-payment', PaymentController.handleFlutterwave
 
 paymentRoute.post('/bani/payment-response', PaymentController.handleBaniPayment);
 
+paymentRoute.post('/v2/paystack/generate-paystack-link', PaymentController.generatePayStackLink)
+
 export default paymentRoute;

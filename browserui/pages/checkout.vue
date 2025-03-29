@@ -44,7 +44,7 @@
                     :class="{
                       disabled: !deliveryDate || deliveryDate.length == 0,
                     }"
-                    @click="updateDeliveryDateandAddress"
+                    @click="confirmOrder"
                   >
                     Make Payment
                   </button>
@@ -261,8 +261,9 @@ export default {
     },
     async createOrder() {
       const { cartPayload } = this;
+
       try {
-        const response = await fetch(`${url}/user/create/order`, {
+        const response = await fetch(`${url}/v2/user/create/order/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -289,9 +290,9 @@ export default {
         console.error("Error creating order:", error);
       }
     },
-    async updateDeliveryDateandAddress() {
+    async confirmOrder() {
       try {
-        const response = await fetch(`${url}/user/update/order/delivery-date-address`, {
+        const response = await fetch(`${url}/v2/user/confirm/order/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -302,7 +303,7 @@ export default {
             order_id: this.order._id,
             delivery_date: this.deliveryDate,
             delivery_address: this.userAddress,
-            couponcode: this.affiliateCode
+            couponcode: this.affiliateCode,
           }),
         });
 
@@ -315,7 +316,9 @@ export default {
         if (data) {
           const order = data.data.order;
 
-          this.pageRouter("/pay", {
+          console.log(order);
+
+          this.pageRouter("/payment", {
             userId: this.user._id,
             email: this.user.email,
             name: this.user.name,

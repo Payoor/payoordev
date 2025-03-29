@@ -125,6 +125,8 @@ $packaged-with-love-and-care: rgba(240, 186, 168, 1);
       align-items: flex-start;
       flex-direction: column;
 
+      z-index: 4;
+
       & h5 {
         font-size: 3.5rem;
         font-weight: 400;
@@ -141,6 +143,15 @@ $packaged-with-love-and-care: rgba(240, 186, 168, 1);
       position: relative;
       width: 40%;
 
+      @include respond(tab-port) {
+        position: absolute;
+        top: 5rem;
+        right: -4rem;
+        z-index: 2;
+        height: 76%;
+        width: 43%;
+      }
+
       & figure {
         height: 40rem;
         position: absolute;
@@ -151,22 +162,41 @@ $packaged-with-love-and-care: rgba(240, 186, 168, 1);
           width: 100%;
           height: 100%;
           object-fit: cover;
+
+          @include respond(tab-port) {
+            height: 69%;
+          }
         }
 
         &.sample-dish {
           right: -7rem;
           top: -6rem;
+
+          @include respond(tab-port) {
+            right: 0;
+            top: 0;
+          }
         }
 
         &.paper-basket {
           right: -7rem;
           top: -6rem;
+
+          @include respond(tab-port) {
+            right: 0;
+            top: 0;
+          }
         }
 
         &.paper-box {
           right: -7rem;
           top: -6rem;
           transform: scale(1.1);
+
+          @include respond(tab-port) {
+            right: 0;
+            top: 0;
+          }
         }
       }
     }

@@ -132,6 +132,7 @@ body {
   padding: 16px;
   background-color: transparent;
 }
+
 .form-group {
   display: none;
 }

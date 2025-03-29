@@ -285,7 +285,9 @@ function _deleteAllAffiliates() {
 }
 function dropNameIndex() {
   return _dropNameIndex.apply(this, arguments);
-}
+} //dropNameIndex();
+//updateAffiliate('638477', '40303', '200');
+//deleteAllAffiliates();
 function _dropNameIndex() {
   _dropNameIndex = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
     var collection, indexes, name_index;
@@ -326,8 +328,3 @@ function _dropNameIndex() {
   }));
   return _dropNameIndex.apply(this, arguments);
 }
-dropNameIndex();
-
-//updateAffiliate('638477', '40303', '200');
-
-//deleteAllAffiliates();

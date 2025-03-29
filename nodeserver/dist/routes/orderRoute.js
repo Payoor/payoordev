@@ -14,5 +14,7 @@ orderRoute.get('/user/get/order', _verifyToken["default"], _orderController["def
 orderRoute.get('/user/get/client/order', _verifyToken["default"], _orderController["default"].getUserOrder);
 orderRoute.get('/user/get/pending/order', _verifyToken["default"], _orderController["default"].getPendingOrder);
 orderRoute.post('/user/create/order', _verifyToken["default"], _orderController["default"].createOrder);
+orderRoute.post('/v2/user/create/order/', _verifyToken["default"], _orderController["default"].saveOrderToRedis);
+orderRoute.post('/v2/user/confirm/order/', _verifyToken["default"], _orderController["default"].confirmOrder);
 orderRoute.post('/user/update/order/delivery-date-address', _verifyToken["default"], _orderController["default"].updateDeliveryDateandAddress);
 var _default = exports["default"] = orderRoute;

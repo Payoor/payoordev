@@ -28,7 +28,7 @@ async function getOrderDetails(orderid) {
                 user.completed_orders
             );
 
-            console.log(user_name, user_email, itemsWithUnits, order_address, total);
+            //console.log(user_name, user_email, itemsWithUnits, order_address, total);
             sendPaymentConfirmation({
                 email: user_email,
                 orderdetails: {
