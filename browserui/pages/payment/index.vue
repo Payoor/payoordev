@@ -5,10 +5,12 @@
       <div v-if="paystackurl">
         <div id="container" class="payment__container--widget" :class="{}">
           <iframe
+            ref="paystackIframe"
             :src="paystackurl"
             width="100%"
             height="100%"
             style="border: none"
+            @load="checkIframeRedirect"
           ></iframe>
         </div>
       </div>
@@ -32,8 +34,19 @@ export default {
   },
   mounted() {
     this.getPaystackLink();
+
+    window.addEventListener("message", (event) => {
+      if (event.data === "payment_complete") {
+        const affiliateCode = new URLSearchParams(window.location.search).get(
+          "affiliatecode"
+        );
+        window.location.href = `https://payoor.store/paymentconfirmation?affiliatecode=${encodeURIComponent(
+          affiliateCode
+        )}`;
+      }
+    });
   },
-  watch: {
+  /*watch: {
     paystackredirect(newValue) {
       if (newValue) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -51,7 +64,7 @@ export default {
     paystackredirect() {
       return this.$route.query.paymentconfirm;
     },
-  },
+  },*/
   methods: {
     parseQueryParams() {
       if (typeof window === "undefined") return;
@@ -88,11 +101,29 @@ export default {
         const data = await response.json();
 
         if (data) {
-          console.log(data.data.authorizationUrl);
+          // console.log(data.data.authorizationUrl);
           this.paystackurl = data.data.authorizationUrl;
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    checkIframeRedirect() {
+      const iframe = this.$refs.paystackIframe;
+
+      try {
+        const currentUrl = iframe.contentWindow.location.href;
+
+        if (currentUrl.includes("https://shop.payoor.store/paystackconfirm")) {
+          const affiliateCode = new URLSearchParams(window.location.search).get(
+            "affiliatecode"
+          );
+          window.location.href = `https://payoor.store/paymentconfirmation?affiliatecode=${encodeURIComponent(
+            affiliateCode
+          )}`;
+        }
+      } catch (err) {
+        console.log(err, "CORS blocks iframe inspection. Use postMessage instead.");
       }
     },
   },
